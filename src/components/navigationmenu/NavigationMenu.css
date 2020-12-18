@@ -1,0 +1,55 @@
+.v-navigation-drawer {
+  background-color: var(--v-primary-base) !important;
+}
+
+.navigation-menu {
+  padding-top: 0px;
+}
+
+.navigation-menu-header {
+  height: 80px;
+  background-color: var(--v-text4-base);
+  margin-bottom: 40px;
+}
+
+.fraunhofer-logo {
+  margin-left: 58px;
+  margin-top: 21px;
+}
+
+.navigation-menu .v-list-item__title {
+  font-size: 19px;
+}
+
+.navigation-menu .activeitem {
+  background-color: var(--v-primaryhighlight-base);
+}
+
+.navigation-menu .activeitem .v-list-item__title {
+  color: var(--v-accent-base) !important;
+}
+
+.navigation-menu .v-icon {
+  color: white !important;
+}
+
+.navigation-menu .v-list-group__items {
+  margin-left: 7px;
+}
+
+.navigation-menu .v-list-item__title {
+  color: var(--v-lighttext-base) !important;
+}
+
+.navigation-menu .v-list-item:hover {
+  background-color: var(--v-primaryhighlight2-base);
+}
+
+.navigation-menu .v-list-group__items .v-list-item__title {
+  font-size: 16px;
+  color: var(--v-textgrey-base);
+}
+
+.navigation-menu .v-list-item--link:before {
+  background-color: rgba(0, 0, 0, 0) !important;
+}

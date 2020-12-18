@@ -1,0 +1,4 @@
+.info-box {
+    background-color: var(--v-info-base) !important;
+    color: var(--v-accent-base) !important;
+}

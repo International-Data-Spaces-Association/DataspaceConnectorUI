@@ -1,0 +1,17 @@
+<dashboard-card class="offeredresourcescard" max-width="400">
+    <template v-slot:header>
+        Offered Resources
+    </template>
+    <template v-slot:content>
+        <div class="statsdiv">
+            <div class="statsrow">
+                <div class="number">{{ totalNumber }}</div>
+                <div class="type">{{ totalNumberType }}</div>
+            </div>
+            <div class="statsrow">
+                <div class="number"> {{ totalSize }}</div>
+                <div class="type">{{ totalSizeType }}</div>
+            </div>
+        </div>
+    </template>
+</dashboard-card>

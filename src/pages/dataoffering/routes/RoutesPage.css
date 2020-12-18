@@ -1,0 +1,27 @@
+.routespagebutton {
+    margin-right: 10px;
+}
+
+.routespagechart {
+    margin-top: 25px;
+}
+
+.backendnode {
+    rx: 0px;
+    fill: var(--v-primary-base);
+}
+
+.appnode {
+    rx: 0px;
+    fill: var(--v-primary3-base);
+}
+
+.resourcenode {
+    rx: 30px;
+    fill: white;
+}
+
+.selectedNode {
+    stroke: var(--v-accent-base);
+    stroke-width: 3px;
+}

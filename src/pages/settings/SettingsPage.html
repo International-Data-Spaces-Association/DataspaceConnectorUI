@@ -1,0 +1,22 @@
+<div>
+    <v-row no-gutters>
+        <v-col cols="12" md="2">
+            Proxy Settings
+        </v-col>
+        <v-col cols="12" md="9">
+            <v-text-field label="Proxy URL" v-model="proxyUrl"> </v-text-field>
+            <v-checkbox v-model="proxyAuthenticationNeeded" label="Use authentication"></v-checkbox>
+            <div class="proxy-authentication"
+                v-bind:class="{ visible: proxyAuthenticationNeeded, invisible: !proxyAuthenticationNeeded }">
+                <v-text-field label="Username" v-model="proxyUsername"> </v-text-field>
+                <v-text-field label="Password" v-model="proxyPassword" :type="showPassword ? 'text' : 'password'"
+                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="showPassword = !showPassword">
+                </v-text-field>
+            </div>
+            <v-textarea label="Do not use the proxy settings for these hosts and domains" v-model="proxyNoProxy">
+            </v-textarea>
+        </v-col>
+    </v-row>
+    <v-btn color="primary" @click.native="saveSettings">Save</v-btn>
+</div>

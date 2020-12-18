@@ -1,0 +1,32 @@
+<v-app id="inspire">
+    <v-navigation-drawer overlay-color="white" v-model="drawer" width="324" app>
+        <navigation-menu />
+    </v-navigation-drawer>
+
+    <v-app-bar app height="80">
+        <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+
+        <v-toolbar-title class="main-title">IDS Configuration Manager</v-toolbar-title>
+    </v-app-bar>
+
+    <v-main>
+        <div class="main-header">
+            <v-breadcrumbs :items="breadcrumbs">
+                <template v-slot:divider>
+                    <v-icon>mdi-chevron-right</v-icon>
+                </template>
+            </v-breadcrumbs>
+        </div>
+        <v-row no-gutters>
+            <v-col cols="12" md="6">
+                <router-view class="main-content"></router-view>
+            </v-col>
+            <v-col cols="12" md="2">
+                <info-box></info-box>
+            </v-col>
+        </v-row>
+        <v-overlay :value="showBusyIndicator">
+            <v-progress-circular indeterminate :size="70" :width="7" color="primary"></v-progress-circular>
+        </v-overlay>
+    </v-main>
+</v-app>

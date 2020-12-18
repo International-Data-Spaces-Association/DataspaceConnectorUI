@@ -1,0 +1,36 @@
+<!--  -->
+<v-list class="navigation-menu">
+  <div class="navigation-menu-header">
+    <img src="@/assets/images/fraunhofer_logo_schwarz.png" class="fraunhofer-logo"></img>
+  </div>
+  <template v-for="item in items">
+    <v-list-item v-if="!item.subitems" v-bind:class="{activeitem: isActive(item)}" :key="item.title" :to="item.to">
+      <v-list-item-icon>
+        <img :src="item.icon" alt=""></img>
+        <!-- <v-icon color="white">{{item.icon}}</v-icon> -->
+      </v-list-item-icon>
+
+      <v-list-item-content>
+        <v-list-item-title>{{item.title}}</v-list-item-title>
+      </v-list-item-content>
+    </v-list-item>
+
+    <v-list-group v-if="item.subitems" v-model="item.active" :key="item.title" no-action>
+      <template v-slot:activator>
+        <v-list-item-icon>
+          <img :src="item.icon" alt=""></img>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title v-text="item.title"></v-list-item-title>
+        </v-list-item-content>
+      </template>
+
+      <v-list-item v-for="child in item.subitems" v-bind:class="{activeitem: isActive(child)}" :key="child.title"
+        :to="child.to">
+        <v-list-item-content>
+          <v-list-item-title v-text="child.title"></v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list-group>
+  </template>
+</v-list>

@@ -1,0 +1,31 @@
+<v-dialog v-model="dialog" width="500">
+    <template v-slot:activator="{ on, attrs }">
+        <v-btn v-bind="attrs" v-on="on" elevation="1" color="primary"
+            class="buttontext--text addbackendconnectionbutton" @click="addButtonClicked">Add Backend
+            Connection
+        </v-btn>
+    </template>
+
+    <v-card>
+        <v-card-title class="headline grey lighten-2">
+            {{title}}
+        </v-card-title>
+
+        <v-card-text>
+            <v-text-field label="URL" v-model="url"> </v-text-field>
+            <v-text-field label="Username" v-model="username"> </v-text-field>
+            <v-text-field label="Password" v-model="password" :type="showPassword ? 'text' : 'password'"
+                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append="showPassword = !showPassword">
+            </v-text-field>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="saveBackendConnection">
+                Save
+            </v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>

@@ -1,0 +1,34 @@
+.offeredresourcescard {
+    width: 400px;
+    height: 300px;
+}
+
+.offeredresourcescard .statsdiv {
+    margin-left: 10px;
+}
+
+.offeredresourcescard .statsrow {
+    clear: left;
+    margin-top: 50px;
+}
+
+.offeredresourcescard .cardtext {
+    font-size: 20px;
+}
+
+.offeredresourcescard .row {
+    margin-bottom: 40px;
+}
+
+.offeredresourcescard .number {
+    font-size: 60px;
+    font-weight: bold;
+    float: left;
+    color: var(--v-accent-base);
+}
+
+.offeredresourcescard .type {
+    font-size: 24px;
+    left: 5px;
+    position: relative;
+}

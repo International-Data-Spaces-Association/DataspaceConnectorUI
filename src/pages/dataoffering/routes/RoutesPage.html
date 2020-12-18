@@ -1,0 +1,23 @@
+<div>
+    <v-row no-gutters>
+        <v-col cols="12" md="12">
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addBackend">Add
+                Backend
+            </v-btn>
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addApp">Add App
+            </v-btn>
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addResource">Add IDS
+                Offer
+            </v-btn>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="12">
+            <flowchart class="routespagechart" :nodes="nodes" :connections="connections" :render="render"
+                @editnode="handleEditNode" @editconnection="handleEditConnection" ref="chart">
+            </flowchart>
+        </v-col>
+    </v-row>
+    <node-dialog ref="nodeDialog">
+    </node-dialog>
+</div>

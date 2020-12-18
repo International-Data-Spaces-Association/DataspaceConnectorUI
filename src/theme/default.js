@@ -1,0 +1,21 @@
+export default {
+    primary: '#239b7e',
+    primary2: '#5FB6A1',
+    primary3: '#ACDACF',
+    primary4: '#E8F5F2',
+    secondary: '#435a62',
+    accent: '#E96A22',
+    accent2: '#EF935E',
+    accent3: '#F7C7AC',
+    accent4: '#FDF0E8',
+    primaryhighlight: '#E8F5F2',
+    primaryhighlight2: '#5FB6A1',
+    error: '#FF5252',
+    info: '#FDF0E8',
+    success: '#4CAF50',
+    warning: '#FFC107',
+    textgrey: '#cccccc',
+    text1: '#808080',
+    text4: '#F2F2F2',
+    lighttext: '#ffffff'
+};
