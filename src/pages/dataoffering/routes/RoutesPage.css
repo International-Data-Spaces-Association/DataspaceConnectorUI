@@ -25,3 +25,8 @@
     stroke: var(--v-accent-base);
     stroke-width: 3px;
 }
+
+.resourceline {
+    stroke: var(--v-accent-base);
+    stroke-width: 1px;
+}
