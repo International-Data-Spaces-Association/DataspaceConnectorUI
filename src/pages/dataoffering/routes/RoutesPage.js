@@ -1,34 +1,58 @@
 import * as d3 from "d3";
 import NodeDialog from "@/pages/dataoffering/routes/dialog/NodeDialog.vue";
-
+import AddBackendDialog from "@/pages/dataoffering/routes/dialog/AddBackendDialog.vue";
+import dataUtils from "../../../utils/dataUtils";
 
 export default {
     components: {
-        NodeDialog
+        NodeDialog,
+        AddBackendDialog
     },
     data() {
         return {
             nodes: [],
-            connections: []
+            connections: [],
+            backendConnections: []
         };
     },
-    mounted: function () {},
+    mounted: function () {
+        this.getBackendConnections();
+    },
     methods: {
+        getBackendConnections() {
+            dataUtils.getBackendConnections(backendConnections => {
+                this.$data.backendConnections = backendConnections;
+            });
+        },
         handleEditNode(node) {
-            console.log(">>> handleEditNode: ", node);
             this.$refs.nodeDialog.title = "Edit " + node.name;
             this.$refs.nodeDialog.dialog = true;
         },
         handleEditConnection(connection) {
             console.log(">>> handleEditConnection: ", connection);
         },
-        addBackend() {
+        showAddBackendDialog() {
+            this.$refs.addBackendDialog.show(this.$data.backendConnections);
+        },
+        getBackendConnection(id) {
+            var result = null;
+            for (var backendConnection of this.$data.backendConnections) {
+                if (id == backendConnection.routeId) {
+                    result = backendConnection;
+                    break;
+                }
+            }
+            return result;
+        },
+        addBackend(backendId) {
+            var backend = this.getBackendConnection(backendId);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: 20,
                 y: 150,
                 name: 'Backend',
                 type: 'backendnode',
+                url: backend.url,
                 approvers: [],
             });
         },
@@ -42,8 +66,10 @@ export default {
                 approvers: [],
             });
         },
+        saveRoute() {
+
+        },
         render: function (g, node, isSelected) {
-            console.log(">>> ", g);
             node.width = node.width || 120;
             node.height = node.height || 180;
             let borderColor = isSelected ? "#666666" : "#bbbbbb";
@@ -96,6 +122,29 @@ export default {
                         textLength = self.node().getComputedTextLength();
                     }
                 });
+
+            // < defs >
+            //     <
+            //     !--define lines
+            // for text lies on-- >
+            // <
+            // path id = "path1"
+            // d = "M10,30 H100 M10,60 H100 M10,90 H100 M10,120 H100" > < /path> <
+            //     /defs>  <
+            //     text transform = "translate(80,255)"
+            // fill = "red"
+            // font - size = "20" >
+            //     <
+            //     textPath xlink: href = "#path1" > This is a long long long text...... < /textPath> <
+            //     /text>
+
+            if (node.type == "backendnode") {
+                g.append("defs").append("path").attr("id", "path1").attr("d", "M10,20 H100 M10,40 H100 M10,60 H100 M10,80 H100");
+                g.append("text")
+                    .attr("style", "font-size: 11px")
+                    .attr("transform", "translate(" + (node.x) + ", " + (node.y + 100) + ")")
+                    .attr("class", "unselectable").append("textPath").attr("xlink:href", "#path1").text(node.url);
+            }
         }
     }
 };

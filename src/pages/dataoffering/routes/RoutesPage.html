@@ -1,7 +1,8 @@
 <div>
     <v-row no-gutters>
         <v-col cols="12" md="12">
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addBackend">Add
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
+                @click="showAddBackendDialog">Add
                 Backend
             </v-btn>
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addApp">Add App
@@ -15,6 +16,14 @@
             </flowchart>
         </v-col>
     </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="12">
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="saveRoute">Save
+            </v-btn>
+        </v-col>
+    </v-row>
     <node-dialog ref="nodeDialog">
     </node-dialog>
+    <add-backend-dialog ref="addBackendDialog" :backendConnections="backendConnections" @addClicked="addBackend">
+    </add-backend-dialog>
 </div>

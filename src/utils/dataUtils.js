@@ -83,5 +83,27 @@
             } else {
                 callback(sourcTypes);
             }
-        }
+        },
+
+        getBackendConnections(callback) {
+            let backendConnections = [];
+            Axios.get("http://localhost:80/approutes").then(response => {
+                var appRoutes = response.data;
+
+                for (var appRoute of appRoutes) {
+                    if (appRoute["ids:appRouteStart"] !== undefined && appRoute["ids:appRouteStart"].length > 0) {
+                        backendConnections.push({
+                            routeId: appRoute["@id"],
+                            route: appRoute,
+                            url: appRoute["ids:appRouteStart"][0]["ids:accessURL"]["@id"],
+                            appRouteOutput: appRoute["ids:appRouteOutput"]
+                        });
+                    }
+                }
+                callback(backendConnections);
+            }).catch(error => {
+                console.log("Error in getAppRoutes(): ", error);
+                callback([]);
+            });
+        },
     }
