@@ -1,27 +1,36 @@
 import * as d3 from "d3";
 import NodeDialog from "@/pages/dataoffering/routes/dialog/NodeDialog.vue";
 import AddBackendDialog from "@/pages/dataoffering/routes/dialog/AddBackendDialog.vue";
+import AddAppDialog from "@/pages/dataoffering/routes/dialog/AddAppDialog.vue";
 import dataUtils from "../../../utils/dataUtils";
 
 export default {
     components: {
         NodeDialog,
-        AddBackendDialog
+        AddBackendDialog,
+        AddAppDialog
     },
     data() {
         return {
             nodes: [],
             connections: [],
-            backendConnections: []
+            backendConnections: [],
+            apps: []
         };
     },
     mounted: function () {
         this.getBackendConnections();
+        this.getApps();
     },
     methods: {
         getBackendConnections() {
             dataUtils.getBackendConnections(backendConnections => {
                 this.$data.backendConnections = backendConnections;
+            });
+        },
+        getApps() {
+            dataUtils.getApps(apps => {
+                this.$data.apps = apps;
             });
         },
         handleEditNode(node) {
@@ -34,11 +43,24 @@ export default {
         showAddBackendDialog() {
             this.$refs.addBackendDialog.show(this.$data.backendConnections);
         },
+        showAddAppDialog() {
+            this.$refs.addAppDialog.show(this.$data.apps);
+        },
         getBackendConnection(id) {
             var result = null;
             for (var backendConnection of this.$data.backendConnections) {
                 if (id == backendConnection.routeId) {
                     result = backendConnection;
+                    break;
+                }
+            }
+            return result;
+        },
+        getApp(id) {
+            var result = null;
+            for (var app of this.$data.apps) {
+                if (id == app.id) {
+                    result = app;
                     break;
                 }
             }
@@ -52,22 +74,28 @@ export default {
                 y: 150,
                 name: 'Backend',
                 type: 'backendnode',
-                url: backend.url,
+                text: backend.url,
                 approvers: [],
             });
         },
-        addApp() {
+        addApp(appId) {
+            var app = this.getApp(appId);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: 300,
                 y: 150,
                 name: 'App',
                 type: 'appnode',
+                text: app.title,
                 approvers: [],
             });
         },
         saveRoute() {
-
+            this.$refs.chart.save();
+        },
+        handleChartSave(nodes, connections) {
+            console.log(">>> handleChartSave: ", nodes);
+            console.log(">>> CONN: ", connections);
         },
         render: function (g, node, isSelected) {
             node.width = node.width || 120;
@@ -138,13 +166,12 @@ export default {
             //     textPath xlink: href = "#path1" > This is a long long long text...... < /textPath> <
             //     /text>
 
-            if (node.type == "backendnode") {
-                g.append("defs").append("path").attr("id", "path1").attr("d", "M10,20 H100 M10,40 H100 M10,60 H100 M10,80 H100");
-                g.append("text")
-                    .attr("style", "font-size: 11px")
-                    .attr("transform", "translate(" + (node.x) + ", " + (node.y + 100) + ")")
-                    .attr("class", "unselectable").append("textPath").attr("xlink:href", "#path1").text(node.url);
-            }
+            g.append("defs").append("path").attr("id", "path1").attr("d", "M10,20 H100 M10,40 H100 M10,60 H100 M10,80 H100");
+            g.append("text")
+                .attr("style", "font-size: 11px")
+                .attr("transform", "translate(" + (node.x) + ", " + (node.y + 100) + ")")
+                .attr("class", "unselectable").append("textPath").attr("xlink:href", "#path1").text(node.text);
+
         }
     }
 };

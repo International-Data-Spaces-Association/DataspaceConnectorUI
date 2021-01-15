@@ -5,14 +5,15 @@
                 @click="showAddBackendDialog">Add
                 Backend
             </v-btn>
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addApp">Add App
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="showAddAppDialog">Add
+                App
             </v-btn>
         </v-col>
     </v-row>
     <v-row no-gutters>
         <v-col cols="12" md="12">
             <flowchart class="routespagechart" :nodes="nodes" :connections="connections" :render="render"
-                @editnode="handleEditNode" @editconnection="handleEditConnection" ref="chart">
+                @editnode="handleEditNode" @editconnection="handleEditConnection" @save="handleChartSave" ref="chart">
             </flowchart>
         </v-col>
     </v-row>
@@ -26,4 +27,6 @@
     </node-dialog>
     <add-backend-dialog ref="addBackendDialog" :backendConnections="backendConnections" @addClicked="addBackend">
     </add-backend-dialog>
+    <add-app-dialog ref="addAppDialog" :apps="apps" @addClicked="addApp">
+    </add-app-dialog>
 </div>

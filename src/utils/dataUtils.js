@@ -102,8 +102,22 @@
                 }
                 callback(backendConnections);
             }).catch(error => {
-                console.log("Error in getAppRoutes(): ", error);
+                console.log("Error in getBackendConnections(): ", error);
                 callback([]);
             });
         },
+
+        getApps(callback) {
+            let apps = [];
+            Axios.get("http://localhost:80/apps").then(response => {
+                let appsResponse = response.data;
+                for (var app of appsResponse) {
+                    apps.push(app[1]);
+                }
+                callback(apps);
+            }).catch(error => {
+                console.log("Error in getApps(): ", error);
+                callback([]);
+            });
+        }
     }

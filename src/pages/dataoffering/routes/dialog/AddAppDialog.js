@@ -9,11 +9,11 @@ export default {
             search: '',
             valid: false,
             headers: [{
-                text: 'URL',
-                value: 'url'
+                text: 'App title',
+                value: 'title'
             }],
             selected: [],
-            backendConnections: []
+            apps: []
         };
     },
     watch: {
@@ -23,13 +23,13 @@ export default {
     },
     mounted: function () {},
     methods: {
-        show(backendConnections) {
+        show(apps) {
             this.$data.selected = [];
-            this.$data.backendConnections = backendConnections;
+            this.$data.apps = apps;
             this.$data.dialog = true;
         },
         add() {
-            this.$emit('addClicked', this.$data.selected[0].routeId);
+            this.$emit('addClicked', this.$data.selected[0].id);
             this.dialog = false;
         }
     }

@@ -166,6 +166,15 @@ app.delete('/approute', (req, res) => {
     });
 });
 
+app.get('/apps', (req, res) => {
+    axios.get("http://localhost:" + configModelPort + "/api/ui/apps").then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on GET /apps", error.response.status);
+        res.send(error);
+    });
+});
+
 app.get('/test', (req, res) => {
     axios.get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
         let output = "";
