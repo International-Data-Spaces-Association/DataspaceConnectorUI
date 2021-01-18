@@ -357,6 +357,60 @@ app.get('/enum', (req, res) => {
     });
 });
 
+app.post('/createnewroute', (req, res) => {
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute?routeDeployMethod=custom");
+    axios.post("http://localhost:" + configModelPort + "/api/ui/approute?routeDeployMethod=custom").then(response => {
+        console.log(">>> new route response: ", response.data);
+        res.send(response.data.id);
+    }).catch(error => {
+        console.log("Error on POST /createnewroute", error.response.status);
+        res.send(error);
+    });
+});
+
+app.post('/approute/start', (req, res) => {
+    let params = "?routeId=" + req.query.routeId + "&accessUrl=" + req.query.accessUrl + "&username=" + req.query.username + "&password=" + req.query.password;
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute/start" + params);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/start" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on POST /approute/start", error.response.status);
+        res.send(error);
+    });
+});
+
+app.post('/approute/end', (req, res) => {
+    let params = "?routeId=" + req.query.routeId + "&accessUrl=" + req.query.accessUrl;
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute/end" + params);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/end" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on POST /approute/end", error.response.status);
+        res.send(error);
+    });
+});
+
+app.post('/approute/subroute', (req, res) => {
+    let params = "?routeId=" + req.query.routeId + "&routeDeployMethod=custom";
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute/subroute" + params);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/subroute" + params).then(response => {
+        res.send(response.data.subrouteId);
+    }).catch(error => {
+        console.log("Error on POST /approute/subroute", error.response.status);
+        res.send(error);
+    });
+});
+
+app.post('/approute/subroute/end', (req, res) => {
+    let params = "?routeId=" + req.query.routeId + "&routeStepId=" + req.query.routeStepId + "&accessUrl=" + req.query.accessUrl;
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute/subroute/end" + params);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/subroute/end" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on POST /approute/subroute/end", error.response.status);
+        res.send(error);
+    });
+});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)

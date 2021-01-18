@@ -75,7 +75,7 @@ export default {
                 name: 'Backend',
                 type: 'backendnode',
                 text: backend.url,
-                approvers: [],
+                objectId: backendId,
             });
         },
         addApp(appId) {
@@ -87,15 +87,53 @@ export default {
                 name: 'App',
                 type: 'appnode',
                 text: app.title,
-                approvers: [],
+                objectId: appId,
             });
         },
         saveRoute() {
             this.$refs.chart.save();
         },
         handleChartSave(nodes, connections) {
-            console.log(">>> handleChartSave: ", nodes);
-            console.log(">>> CONN: ", connections);
+            var connectionsCopy = [];
+            for (var connection of connections) {
+                connectionsCopy.push(connection);
+            }
+            // var source = this.getNode(connection.source.id, nodes);
+            // var destination = this.getNode(connection.destination.id, nodes);
+            // console.log(">>> ", source.text, " => ", destination.text);
+            var source = this.getNode(connectionsCopy[0].source.id, nodes);
+            var destination = this.getNode(connectionsCopy[0].destination.id, nodes);
+            let backend = this.getBackendConnection(source.objectId).route["ids:appRouteStart"][0];
+            let app1 = this.getApp(destination.objectId);
+
+            console.log(">>> createNewRoute: ", backend, app1);
+            dataUtils.createNewRoute(routeId => {
+                console.log(">>> setAppRouteStart: ", routeId, backend["ids:accessURL"]["@id"], backend["ids:genericEndpointAuthentication"]["ids:authUsername"],
+                    backend["ids:genericEndpointAuthentication"]["ids:authPassword"]);
+                dataUtils.setAppRouteStart(routeId, backend["ids:accessURL"]["@id"], backend["ids:genericEndpointAuthentication"]["ids:authUsername"],
+                    backend["ids:genericEndpointAuthentication"]["ids:authPassword"], () => {
+                        dataUtils.setAppRouteEnd(routeId, app1.appUri, () => {
+                            dataUtils.createSubRoute(routeId, subRouteId => {
+                                console.log(">>> subRouteId: ", subRouteId);
+                                dataUtils.setSubRouteEnd(routeId, subRouteId, app1.appUri, () => {
+                                    console.log(">>> subRouteId: ", subRouteId);
+                                });
+                            });
+                        });
+                    });
+            });
+
+
+        },
+        getNode(id, nodes) {
+            let node = null;
+            for (let n of nodes) {
+                if (n.id == id) {
+                    node = n;
+                    break;
+                }
+            }
+            return node;
         },
         render: function (g, node, isSelected) {
             node.width = node.width || 120;

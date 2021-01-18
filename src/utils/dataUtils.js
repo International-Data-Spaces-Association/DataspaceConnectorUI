@@ -119,5 +119,50 @@
                 console.log("Error in getApps(): ", error);
                 callback([]);
             });
+        },
+
+        createNewRoute(callback) {
+            Axios.post("http://localhost:80/createnewroute").then(response => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in createNewRoute(): ", error);
+            });
+        },
+
+        setAppRouteStart(routeId, accessUrl, username,
+            password, callback) {
+            let params = "?routeId=" + routeId + "&accessUrl=" + accessUrl + "&username=" + username + "&password=" + password;
+            Axios.post("http://localhost:80/approute/start" + params).then(response => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in setAppRouteStart(): ", error);
+            });
+        },
+
+        setAppRouteEnd(routeId, accessUrl, callback) {
+            let params = "?routeId=" + routeId + "&accessUrl=" + accessUrl;
+            Axios.post("http://localhost:80/approute/end" + params).then(response => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in setAppRouteEnd(): ", error);
+            });
+        },
+
+        createSubRoute(routeId, callback) {
+            let params = "?routeId=" + routeId;
+            Axios.post("http://localhost:80/approute/subroute" + params).then(response => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in createSubRoute(): ", error);
+            });
+        },
+
+        setSubRouteEnd(routeId, subRouteId, accessUrl, callback) {
+            let params = "?routeId=" + routeId + "&routeStepId=" + subRouteId + "&accessUrl=" + accessUrl;
+            Axios.post("http://localhost:80/approute/subroute/end" + params).then(response => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in setSubRouteEnd(): ", error);
+            });
         }
     }
