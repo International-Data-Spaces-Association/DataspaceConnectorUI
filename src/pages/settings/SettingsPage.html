@@ -1,7 +1,7 @@
 <div>
     <v-row no-gutters>
         <v-col cols="12" md="2">
-            Proxy Settings
+            Proxy
         </v-col>
         <v-col cols="12" md="9">
             <v-text-field label="Proxy URL" v-model="proxyUrl"> </v-text-field>
@@ -16,6 +16,15 @@
             </div>
             <v-textarea label="Do not use the proxy settings for these hosts and domains" v-model="proxyNoProxy">
             </v-textarea>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="2">
+            Deploy
+        </v-col>
+        <v-col cols="12" md="9">
+            <v-select label="Deploy Method" v-model="deployMethod" :items="deployMethods">
+            </v-select>
         </v-col>
     </v-row>
     <v-btn color="primary" @click.native="saveSettings">Save</v-btn>

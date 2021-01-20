@@ -391,6 +391,25 @@ app.put('/proxy', (req, res) => {
     });
 });
 
+app.get('/route/deploymethod', (req, res) => {
+    axios.get("http://localhost:" + configModelPort + "/api/ui/route/deploymethod").then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on GET /route/deploymethod", error.response.status);
+        res.send(error);
+    });
+});
+
+app.post('/route/deploymethod', (req, res) => {
+    let params = "?deployMethod=" + req.query.deployMethod;
+    axios.put("http://localhost:" + configModelPort + "/api/ui/route/deploymethod" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on POST /route/deploymethod", error.response.status);
+        res.send(error);
+    });
+});
+
 app.get('/enum', (req, res) => {
     axios.get("http://localhost:" + configModelPort + "/api/ui/enum/" + req.query.enumName).then(response => {
         res.send(response.data);

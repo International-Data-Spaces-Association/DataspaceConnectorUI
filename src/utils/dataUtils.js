@@ -188,5 +188,53 @@
             }).catch(error => {
                 console.log("Error in setSubRouteEnd(): ", error);
             });
-        }
+        },
+
+        getProxySettings(callback) {
+            Axios.get("http://localhost:80/proxy").then((response) => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in getProxySettings(): ", error);
+                callback(null);
+            });
+        },
+
+        changeProxySettings(proxyUrl, proxyNoProxy, username, password, callback) {
+            let params = "?proxyUri=" + proxyUrl + "&noProxyUri=" + proxyNoProxy + "&username=" +
+                username + "&password=" + password;
+            Axios.put("http://localhost:80/proxy" + params).then(() => {
+                callback();
+            }).catch(error => {
+                console.log("Error in changeProxySettings(): ", error);
+                callback();
+            });
+        },
+
+        getDeployMethods(callback) {
+            Axios.get("http://localhost:80/enum?enumName=deployMethod").then((response) => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in getDeployMethod(): ", error);
+                callback(null);
+            });
+        },
+
+        getDeployMethod(callback) {
+            Axios.get("http://localhost:80/route/deploymethod").then((response) => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in getDeployMethod(): ", error);
+                callback(null);
+            });
+        },
+
+        changeDeployMethod(deployMethod, callback) {
+            let params = "?deployMethod=" + deployMethod;
+            Axios.post("http://localhost:80/route/deploymethod" + params).then(() => {
+                callback();
+            }).catch(error => {
+                console.log("Error in changeDeployMethod(): ", error);
+                callback();
+            });
+        },
     }
