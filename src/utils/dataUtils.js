@@ -87,23 +87,47 @@
 
         getBackendConnections(callback) {
             let backendConnections = [];
-            Axios.get("http://localhost:80/approutes").then(response => {
-                var appRoutes = response.data;
+            Axios.get("http://localhost:80/backend/connections").then(response => {
+                var genericEndpoints = response.data;
 
-                for (var appRoute of appRoutes) {
-                    if (appRoute["ids:appRouteStart"] !== undefined && appRoute["ids:appRouteStart"].length > 0) {
-                        backendConnections.push({
-                            routeId: appRoute["@id"],
-                            route: appRoute,
-                            url: appRoute["ids:appRouteStart"][0]["ids:accessURL"]["@id"],
-                            appRouteOutput: appRoute["ids:appRouteOutput"]
-                        });
-                    }
+                for (var genericEndpoint of genericEndpoints) {
+                    backendConnections.push({
+                        id: genericEndpoint["@id"],
+                        endpoint: genericEndpoint,
+                        url: genericEndpoint["ids:accessURL"]["@id"]
+                    });
                 }
                 callback(backendConnections);
             }).catch(error => {
                 console.log("Error in getBackendConnections(): ", error);
                 callback([]);
+            });
+        },
+
+        createBackendConnection(url, username, password, callback) {
+            Axios.post("http://localhost:80/backend/connection?accessUrl=" + url + "&username=" + username + "&password=" + password).then(() => {
+                callback();
+            }).catch(error => {
+                console.log("Error in saveBackendConnection(): ", error);
+                callback();
+            });
+        },
+
+        updateBackendConnection(id, url, username, password, callback) {
+            Axios.put("http://localhost:80/backend/connection?id=" + id + "&accessUrl=" + url + "&username=" + username + "&password=" + password).then(() => {
+                callback();
+            }).catch(error => {
+                console.log("Error in saveBackendConnection(): ", error);
+                callback();
+            });
+        },
+
+        deleteBackendConnection(id, callback) {
+            Axios.delete("http://localhost:80/backend/connection?id=" + id).then(() => {
+                callback();
+            }).catch(error => {
+                console.log("Error in saveBackendConnection(): ", error);
+                callback();
             });
         },
 

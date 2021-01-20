@@ -128,6 +128,49 @@ app.get('/approutes', (req, res) => {
     });
 });
 
+app.get('/backend/connections', (req, res) => {
+    axios.get("http://localhost:" + configModelPort + "/api/ui/backend/connections").then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on GET /approutes", error.response.status);
+        res.send(error);
+    });
+});
+
+app.post('/backend/connection', (req, res) => {
+    console.log(">>> http://localhost:" + configModelPort + "/api/ui/backend/connection?accessURL=" + req.query.accessUrl + "&username=" +
+        req.query.username + "&password=" + req.query.password);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/backend/connection?accessURL=" + req.query.accessUrl + "&username=" +
+        req.query.username + "&password=" + req.query.password).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on POST /backend/connection", error.response.status);
+        res.send(error);
+    });
+});
+
+app.put('/backend/connection', (req, res) => {
+    console.log(">>> http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
+        req.query.username + "&password=" + req.query.password);
+    axios.put("http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
+        req.query.username + "&password=" + req.query.password).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on PUT /backend/connection", error.response.status);
+        res.send(error);
+    });
+});
+
+app.delete('/backend/connection', (req, res) => {
+    console.log(">>> http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id);
+    axios.delete("http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on DELETE /backend/connection", error.response.status);
+        res.send(error);
+    });
+});
+
 app.post('/approute', (req, res) => {
     axios.post("http://localhost:" + configModelPort + "/api/ui/approute/endpoint?accessUrl=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password).then(response => {
