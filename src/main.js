@@ -5,7 +5,6 @@ import vuetify from './plugins/vuetify';
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import routes from "./routes/routes";
 import VueApexCharts from 'vue-apexcharts';
-import FlowChart from 'flowchart-vue';
 
 
 // configure router
@@ -16,7 +15,6 @@ const router = new VueRouter({
 });
 
 Vue.use(VueRouter);
-Vue.use(FlowChart);
 Vue.component('apexchart', VueApexCharts)
 
 Vue.config.productionTip = false

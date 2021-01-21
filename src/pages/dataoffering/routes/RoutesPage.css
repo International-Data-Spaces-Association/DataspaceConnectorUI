@@ -28,6 +28,19 @@
 }
 
 .resourceline {
-    stroke: var(--v-accent-base);
+    stroke: var(--v-text1-base);
     stroke-width: 1px;
+}
+
+.connection path {
+    stroke: var(--v-text1-base);
+    stroke-width: 1px;
+}
+
+.connection.selected path {
+    stroke: var(--v-accent-base);
+}
+
+.backendnode-text {
+    fill: white;
 }

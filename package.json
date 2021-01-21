@@ -20,7 +20,7 @@
     "axios": "0.19.0",
     "apexcharts": "3.11.1",
     "vue-apexcharts": "1.6.0",
-    "flowchart-vue": "0.15.4"
+    "d3": "5.15.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

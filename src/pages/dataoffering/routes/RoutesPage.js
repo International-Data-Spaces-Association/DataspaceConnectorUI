@@ -2,13 +2,15 @@ import * as d3 from "d3";
 import NodeDialog from "@/pages/dataoffering/routes/dialog/NodeDialog.vue";
 import AddBackendDialog from "@/pages/dataoffering/routes/dialog/AddBackendDialog.vue";
 import AddAppDialog from "@/pages/dataoffering/routes/dialog/AddAppDialog.vue";
+import Flowchart from "@/components/flowchart/Flowchart.vue";
 import dataUtils from "../../../utils/dataUtils";
 
 export default {
     components: {
         NodeDialog,
         AddBackendDialog,
-        AddAppDialog
+        AddAppDialog,
+        Flowchart
     },
     data() {
         return {
@@ -177,6 +179,7 @@ export default {
                 .attr("y", node.y + 80)
                 .attr("text-anchor", "middle")
                 .attr("class", "unselectable")
+                .classed(node.type + "-text", true)
                 .text(() => node.name)
                 .each(function wrap() {
                     let self = d3.select(this),
@@ -208,7 +211,9 @@ export default {
             g.append("text")
                 .attr("style", "font-size: 11px")
                 .attr("transform", "translate(" + (node.x) + ", " + (node.y + 100) + ")")
-                .attr("class", "unselectable").append("textPath").attr("xlink:href", "#path1").text(node.text);
+                .attr("class", "unselectable")
+                .classed(node.type + "-text", true)
+                .append("textPath").attr("xlink:href", "#path1").text(node.text);
 
         }
     }
