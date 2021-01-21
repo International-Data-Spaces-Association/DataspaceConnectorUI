@@ -1,8 +1,7 @@
 import AddResourceFilePage from "@/pages/dataoffering/addresource/file/AddResourceFilePage.vue";
 import AddResourceDatabasePage from "@/pages/dataoffering/addresource/database/AddResourceDatabasePage.vue";
 import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/dialog/AddBackendConnectionDialog.vue";
-import Axios from "axios";
-import DataUtils from "@/utils/dataUtils";
+import dataUtils from "@/utils/dataUtils";
 
 export default {
     components: {
@@ -37,12 +36,12 @@ export default {
         }
     },
     mounted: function () {
-        this.getAppRoutes();
+        this.getBackendConnections();
         this.loadSourceTypes();
     },
     methods: {
         async loadSourceTypes() {
-            DataUtils.getSourceTypes(sourceTypes => {
+            dataUtils.getSourceTypes(sourceTypes => {
                 this.$data.sourceTypeItems = sourceTypes;
             });
         },
@@ -53,22 +52,12 @@ export default {
             this.$emit('save')
         },
         backendConnectionSaved() {
-            this.getAppRoutes();
+            this.getBackendConnections();
         },
-        getAppRoutes() {
-            Axios.get("http://localhost:80/approutes").then(response => {
-                var appRoutes = response.data;
-                this.$data.backendConnections = [];
-
-                for (var appRoute of appRoutes) {
-                    if (appRoute["ids:appRouteStart"] !== undefined && appRoute["ids:appRouteStart"].length > 0) {
-                        this.$data.backendConnections.push({
-                            routeId: appRoute["@id"],
-                            url: appRoute["ids:appRouteStart"][0]["ids:accessURL"]["@id"],
-                            appRouteOutput: appRoute["ids:appRouteOutput"]
-                        });
-                    }
-                }
+        getBackendConnections() {
+            dataUtils.getBackendConnections(backendConnections => {
+                console.log(">>> bc: ", backendConnections);
+                this.$data.backendConnections = backendConnections;
 
                 if (this.$parent.$parent.$parent.$parent.currentResource != null) {
                     this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
@@ -76,12 +65,7 @@ export default {
 
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
-            }).catch(error => {
-                console.log("Error in getAppRoutes(): ", error);
-                this.$root.$emit('showBusyIndicator', false);
             });
-
-
         },
         loadResource(resource) {
             if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
