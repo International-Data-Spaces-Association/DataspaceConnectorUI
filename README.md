@@ -11,7 +11,7 @@ The following illustration visualizes the interaction of [Dataspace Connector](h
 Use the package manager [npm](https://nodejs.org/en/download/) in root directory to install Configurationmanager UI:
 
 ```bash
-npm install
+npm install --no-audit
 ```
 
 ## Usage
