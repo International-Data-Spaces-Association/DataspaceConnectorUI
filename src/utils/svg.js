@@ -1,15 +1,17 @@
 import * as d3 from 'd3';
-import {approximatelyEquals} from './math';
+import {
+  approximatelyEquals
+} from './math';
 
 function lineTo(g, x1, y1, x2, y2, lineWidth, strokeStyle, dash) {
   let sta = [x1, y1];
   let end = [x2, y2];
   let lineGenerator = d3.line().x(d => d[0]).y(d => d[1]);
   let path = g.append('path').
-      attr('stroke', strokeStyle).
-      attr('stroke-width', lineWidth).
-      attr('fill', 'none').
-      attr('d', lineGenerator([sta, end]));
+  attr('stroke', strokeStyle).
+  attr('stroke-width', lineWidth).
+  attr('fill', 'none').
+  attr('d', lineGenerator([sta, end]));
   if (dash) {
     path.style('stroke-dasharray', dash.join(','));
   }
@@ -17,45 +19,45 @@ function lineTo(g, x1, y1, x2, y2, lineWidth, strokeStyle, dash) {
 }
 
 function line2(g, x1, y1, x2, y2, startPosition, endPosition, lineWidth,
-    strokeStyle, markered) {
+  strokeStyle, markered, cssClass) {
   let points = [];
   let start = [x1, y1];
   let end = [x2, y2];
   let centerX = start[0] + (end[0] - start[0]) / 2;
   let centerY = start[1] + (end[1] - start[1]) / 2;
   let second;
-  let addVerticalCenterLine = function() {
+  let addVerticalCenterLine = function () {
     let third = [centerX, second[1]];
     let forth = [centerX, penult[1]];
     points.push(third);
     points.push(forth);
   };
-  let addHorizontalCenterLine = function() {
+  let addHorizontalCenterLine = function () {
     let third = [second[0], centerY];
     let forth = [penult[0], centerY];
     points.push(third);
     points.push(forth);
   };
-  let addHorizontalTopLine = function() {
+  let addHorizontalTopLine = function () {
     points.push([second[0], start[1] - 50]);
     points.push([penult[0], start[1] - 50]);
   };
-  let addHorizontalBottomLine = function() {
+  let addHorizontalBottomLine = function () {
     points.push([second[0], start[1] + 50]);
     points.push([penult[0], start[1] + 50]);
   };
-  let addVerticalRightLine = function() {
+  let addVerticalRightLine = function () {
     points.push([start[0] + 80, second[1]]);
     points.push([start[0] + 80, penult[1]]);
   };
-  let addVerticalLeftLine = function() {
+  let addVerticalLeftLine = function () {
     points.push([start[0] - 80, second[1]]);
     points.push([start[0] - 80, penult[1]]);
   };
-  let addSecondXPenultY = function() {
+  let addSecondXPenultY = function () {
     points.push([second[0], penult[1]]);
   };
-  let addPenultXSecondY = function() {
+  let addPenultXSecondY = function () {
     points.push([penult[0], second[1]]);
   };
   switch (startPosition) {
@@ -550,8 +552,8 @@ function line2(g, x1, y1, x2, y2, startPosition, endPosition, lineWidth,
       } else if (startPosition === 'right' && endPosition === 'bottom') {
         addSecondXPenultY();
       } else if (
-          (startPosition === 'right' && endPosition === 'top') ||
-          (startPosition === 'right' && endPosition === 'right')
+        (startPosition === 'right' && endPosition === 'top') ||
+        (startPosition === 'right' && endPosition === 'right')
       ) {
         addPenultXSecondY();
       } else if (startPosition === 'bottom' && endPosition === 'left') {
@@ -599,36 +601,41 @@ function line2(g, x1, y1, x2, y2, startPosition, endPosition, lineWidth,
     let finish = i === points.length - 2;
     if (finish && markered) {
       let path = arrowTo(g, source[0], source[1], destination[0],
-          destination[1], lineWidth, strokeStyle);
+        destination[1], lineWidth, strokeStyle);
+      path.classed(cssClass, true);
       paths.push(path);
       break;
     } else {
       let path = lineTo(g, source[0], source[1], destination[0], destination[1],
-          lineWidth, strokeStyle);
+        lineWidth, strokeStyle);
+      path.classed(cssClass, true);
       paths.push(path);
     }
     if (finish) {
       break;
     }
   }
-  return {lines, paths};
+  return {
+    lines,
+    paths
+  };
 }
 
 function arrowTo(g, x1, y1, x2, y2, lineWidth, strokeStyle) {
   let path = lineTo(g, x1, y1, x2, y2, lineWidth, strokeStyle);
   const id = 'arrow' + strokeStyle.replace('#', '');
   g.append('marker').
-      attr('id', id).
-      attr('markerUnits', 'strokeWidth').
-      attr('viewBox', '0 0 12 12').
-      attr('refX', 9).
-      attr('refY', 6).
-      attr('markerWidth', 12).
-      attr('markerHeight', 12).
-      attr('orient', 'auto').
-      append('path').
-      attr('d', 'M2,2 L10,6 L2,10 L6,6 L2,2').
-      attr('fill', strokeStyle);
+  attr('id', id).
+  attr('markerUnits', 'strokeWidth').
+  attr('viewBox', '0 0 12 12').
+  attr('refX', 9).
+  attr('refY', 6).
+  attr('markerWidth', 12).
+  attr('markerHeight', 12).
+  attr('orient', 'auto').
+  append('path').
+  attr('d', 'M2,2 L10,6 L2,10 L6,6 L2,2').
+  attr('fill', strokeStyle);
   path.attr('marker-end', 'url(#' + id + ')');
   return path;
 }

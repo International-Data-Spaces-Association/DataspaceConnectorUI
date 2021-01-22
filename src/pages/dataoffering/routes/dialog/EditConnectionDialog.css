@@ -1,0 +1,11 @@
+.inoutarrowcol {
+    display: flex;
+}
+
+.inoutarrow {
+    font-size: 50px;
+    display: flex;
+    align-self: center;
+    flex-grow: 1;
+    justify-content: center;
+}

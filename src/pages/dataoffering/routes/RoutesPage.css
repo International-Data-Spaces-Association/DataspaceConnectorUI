@@ -5,6 +5,7 @@
 .routespagechart {
     margin-top: 25px;
     margin-bottom: 25px;
+    height: 600px !important;
 }
 
 .backendnode {
@@ -34,7 +35,10 @@
 
 .connection path {
     stroke: var(--v-text1-base);
-    stroke-width: 1px;
+}
+
+.transparent-connection {
+    stroke: transparent !important;
 }
 
 .connection.selected path {
@@ -43,4 +47,12 @@
 
 .backendnode-text {
     fill: white;
+}
+
+.reset-route-button {
+    margin-right: 0px;
+}
+
+.reset-route-col {
+    text-align: right;
 }

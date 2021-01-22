@@ -1,9 +1,9 @@
 #svg {
     background-size: 20px 20px, 20px 20px, 10px 10px, 10px 10px;
     background-image: linear-gradient(to right, #dfdfdf 1px, transparent 1px),
-    linear-gradient(to bottom, #dfdfdf 1px, transparent 1px),
-    linear-gradient(to right, #f1f1f1 1px, transparent 1px),
-    linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);
+        linear-gradient(to bottom, #dfdfdf 1px, transparent 1px),
+        linear-gradient(to right, #f1f1f1 1px, transparent 1px),
+        linear-gradient(to bottom, #f1f1f1 1px, transparent 1px);
     background-position: left -1px top -1px, left -1px top -1px, left -1px top -1px, left -1px top -1px;
     height: 100%;
     width: 100%;
@@ -11,8 +11,6 @@
 
 #chart {
     position: relative;
-    width: 800px;
-    height: 600px;
     border: 1px solid #dfdfdf;
 }
 

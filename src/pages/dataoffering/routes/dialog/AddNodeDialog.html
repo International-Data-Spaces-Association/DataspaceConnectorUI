@@ -1,14 +1,14 @@
 <v-dialog v-model="dialog" width="500">
     <v-card>
         <v-card-title class="headline grey lighten-2">
-            Add Backend Connection
+            Add {{nodeType}}
         </v-card-title>
 
         <v-card-text>
             <v-row no-gutters>
                 <v-col cols="12" md="11" sm="12">
-                    <v-data-table v-model="selected" :headers="headers" :items="backendConnections" :items-per-page="5"
-                        :search="search" show-select :single-select=true item-key="url">
+                    <v-data-table v-model="selected" :headers="headers" :items="items" :items-per-page="5"
+                        :search="search" show-select :single-select=true :item-key="itemKey">
                     </v-data-table>
                 </v-col>
             </v-row>

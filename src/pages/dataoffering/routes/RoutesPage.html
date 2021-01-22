@@ -8,6 +8,10 @@
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="showAddAppDialog">Add
                 App
             </v-btn>
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
+                @click="showAddEndpointDialog">Add
+                IDS Endpoint
+            </v-btn>
         </v-col>
     </v-row>
     <v-row no-gutters>
@@ -18,15 +22,24 @@
         </v-col>
     </v-row>
     <v-row no-gutters>
-        <v-col cols="12" md="12">
+        <v-col cols="12" md="10">
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="saveRoute">Save
             </v-btn>
         </v-col>
+        <v-col cols="12" md="2" class="reset-route-col">
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton reset-route-button"
+                @click="resetRoute">Reset
+            </v-btn>
+        </v-col>
     </v-row>
-    <node-dialog ref="nodeDialog">
-    </node-dialog>
-    <add-backend-dialog ref="addBackendDialog" :backendConnections="backendConnections" @addClicked="addBackend">
-    </add-backend-dialog>
-    <add-app-dialog ref="addAppDialog" :apps="apps" @addClicked="addApp">
-    </add-app-dialog>
+    <edit-node-dialog ref="editNodeDialog">
+    </edit-node-dialog>
+    <edit-connection-dialog ref="editConnectionDialog">
+    </edit-connection-dialog>
+    <add-node-dialog ref="addBackendDialog" @addClicked="addBackend">
+    </add-node-dialog>
+    <add-node-dialog ref="addAppDialog" @addClicked="addApp">
+    </add-node-dialog>
+    <add-node-dialog ref="addEndpointDialog" @addClicked="addEndpoint">
+    </add-node-dialog>
 </div>

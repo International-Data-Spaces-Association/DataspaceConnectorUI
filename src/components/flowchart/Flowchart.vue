@@ -56,11 +56,11 @@ export default {
     },
     width: {
       type: [String, Number],
-      default: 800,
+      default: "100%",
     },
     height: {
       type: [String, Number],
-      default: 600,
+      default: 50,
     },
     readonly: {
       type: Boolean,
@@ -380,7 +380,8 @@ export default {
         endPosition,
         1,
         color || "#a3a3a3",
-        true
+        true,
+        ""
       );
       // a 5px cover to make mouse operation conveniently
       return line2(
@@ -393,7 +394,8 @@ export default {
         endPosition,
         5,
         "transparent",
-        false
+        false,
+        "transparent-connection"
       );
     },
     renderNode(node, isSelected) {

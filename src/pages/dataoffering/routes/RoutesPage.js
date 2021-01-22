@@ -1,15 +1,15 @@
 import * as d3 from "d3";
-import NodeDialog from "@/pages/dataoffering/routes/dialog/NodeDialog.vue";
-import AddBackendDialog from "@/pages/dataoffering/routes/dialog/AddBackendDialog.vue";
-import AddAppDialog from "@/pages/dataoffering/routes/dialog/AddAppDialog.vue";
+import EditNodeDialog from "@/pages/dataoffering/routes/dialog/EditNodeDialog.vue";
+import EditConnectionDialog from "@/pages/dataoffering/routes/dialog/EditConnectionDialog.vue";
+import AddNodeDialog from "@/pages/dataoffering/routes/dialog/AddNodeDialog.vue";
 import Flowchart from "@/components/flowchart/Flowchart.vue";
 import dataUtils from "../../../utils/dataUtils";
 
 export default {
     components: {
-        NodeDialog,
-        AddBackendDialog,
-        AddAppDialog,
+        EditNodeDialog,
+        EditConnectionDialog,
+        AddNodeDialog,
         Flowchart
     },
     data() {
@@ -17,7 +17,8 @@ export default {
             nodes: [],
             connections: [],
             backendConnections: [],
-            apps: []
+            apps: [],
+            endpoints: []
         };
     },
     mounted: function () {
@@ -36,22 +37,27 @@ export default {
             });
         },
         handleEditNode(node) {
-            this.$refs.nodeDialog.title = "Edit " + node.name;
-            this.$refs.nodeDialog.dialog = true;
+            this.$refs.editNodeDialog.title = "Edit " + node.name;
+            this.$refs.editNodeDialog.dialog = true;
         },
         handleEditConnection(connection) {
-            console.log(">>> handleEditConnection: ", connection);
+            console.log(">>> EDIT CONN: ", connection, this.$refs.chart.internalNodes);
+            this.$refs.editConnectionDialog.title = "Edit Connection";
+            this.$refs.editConnectionDialog.dialog = true;
         },
         showAddBackendDialog() {
-            this.$refs.addBackendDialog.show(this.$data.backendConnections);
+            this.$refs.addBackendDialog.show(this.$data.backendConnections, "Backend Connection", "URL", "url");
         },
         showAddAppDialog() {
-            this.$refs.addAppDialog.show(this.$data.apps);
+            this.$refs.addAppDialog.show(this.$data.apps, "App", "App title", "title");
+        },
+        showAddEndpointDialog() {
+            this.$refs.addEndpointDialog.show(this.$data.endpoints, "IDS Endpoint", "", "");
         },
         getBackendConnection(id) {
             var result = null;
             for (var backendConnection of this.$data.backendConnections) {
-                if (id == backendConnection.routeId) {
+                if (id == backendConnection.id) {
                     result = backendConnection;
                     break;
                 }
@@ -68,8 +74,8 @@ export default {
             }
             return result;
         },
-        addBackend(backendId) {
-            var backend = this.getBackendConnection(backendId);
+        addBackend(item) {
+            var backend = this.getBackendConnection(item.id);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: 20,
@@ -77,11 +83,11 @@ export default {
                 name: 'Backend',
                 type: 'backendnode',
                 text: backend.url,
-                objectId: backendId,
+                objectId: item.routeId,
             });
         },
-        addApp(appId) {
-            var app = this.getApp(appId);
+        addApp(item) {
+            var app = this.getApp(item.id);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: 300,
@@ -89,11 +95,17 @@ export default {
                 name: 'App',
                 type: 'appnode',
                 text: app.title,
-                objectId: appId,
+                objectId: item.id,
             });
+        },
+        addEndpoint(item) {
+            console.log(">>> addEndpoint: ", item);
         },
         saveRoute() {
             this.$refs.chart.save();
+        },
+        resetRoute() {
+            // TODO reset chart.
         },
         handleChartSave(nodes, connections) {
             var connectionsCopy = [];
