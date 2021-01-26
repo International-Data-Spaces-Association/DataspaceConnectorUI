@@ -107,6 +107,10 @@ export default {
         resetRoute() {
             // TODO reset chart.
         },
+        cancelRoute() {
+            this.resetRoute();
+            this.$router.go(-1);
+        },
         handleChartSave(nodes, connections) {
             var connectionsCopy = [];
             for (var connection of connections) {

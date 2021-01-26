@@ -386,6 +386,7 @@ app.get('/proxy', (req, res) => {
 app.put('/proxy', (req, res) => {
     let params = "?proxyUri=" + req.query.proxyUri + "&noProxyUri=" + req.query.noProxyUri + "&username=" +
         req.query.username + "&password=" + req.query.password;
+    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/configmodel/proxy" + params);
     axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel/proxy" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
