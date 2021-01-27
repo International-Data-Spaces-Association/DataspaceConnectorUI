@@ -135,7 +135,7 @@ app.get('/backend/connections', (req, res) => {
     axios.get("http://localhost:" + configModelPort + "/api/ui/backend/connections").then(response => {
         res.send(response.data);
     }).catch(error => {
-        console.log("Error on GET /approutes", error.response.status);
+        console.log("Error on GET /backend/connections", error.response.status);
         res.send(error);
     });
 });
@@ -434,49 +434,26 @@ app.post('/createnewroute', (req, res) => {
     });
 });
 
-app.post('/approute/start', (req, res) => {
-    let params = "?routeId=" + req.query.routeId + "&accessUrl=" + req.query.accessUrl + "&username=" + req.query.username + "&password=" + req.query.password;
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute/start" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/start" + params).then(response => {
+app.post('/approute/step', (req, res) => {
+    let params;
+    if (req.query.resourceId == null) {
+        params = "?routeId=" + req.query.routeId + "&startId=" + req.query.startId + "&startCoordinateX=" + req.query.startCoordinateX +
+            "&startCoordinateY=" + req.query.startCoordinateY + "&endId=" + req.query.endId + "&endCoordinateX=" + req.query.endCoordinateX +
+            "&endCoordinateY=" + req.query.endCoordinateY;
+    } else {
+        params = "?routeId=" + req.query.routeId + "&startId=" + req.query.startId + "&startCoordinateX=" + req.query.startCoordinateX +
+            "&startCoordinateY=" + req.query.startCoordinateY + "&endId=" + req.query.endId + "&endCoordinateX=" + req.query.endCoordinateX +
+            "&endCoordinateY=" + req.query.endCoordinateY + "&resourceId=" + req.query.resourceId;
+    }
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute/step" + params);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/step" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
-        console.log("Error on POST /approute/start", error.response.status);
+        console.log("Error on POST /approute/step", error.response.status);
         res.send(error);
     });
 });
 
-app.post('/approute/end', (req, res) => {
-    let params = "?routeId=" + req.query.routeId + "&accessUrl=" + req.query.accessUrl;
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute/end" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/end" + params).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on POST /approute/end", error.response.status);
-        res.send(error);
-    });
-});
-
-app.post('/approute/subroute', (req, res) => {
-    let params = "?routeId=" + req.query.routeId + "&routeDeployMethod=custom";
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute/subroute" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/subroute" + params).then(response => {
-        res.send(response.data.subrouteId);
-    }).catch(error => {
-        console.log("Error on POST /approute/subroute", error.response.status);
-        res.send(error);
-    });
-});
-
-app.post('/approute/subroute/end', (req, res) => {
-    let params = "?routeId=" + req.query.routeId + "&routeStepId=" + req.query.routeStepId + "&accessUrl=" + req.query.accessUrl;
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute/subroute/end" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/subroute/end" + params).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on POST /approute/subroute/end", error.response.status);
-        res.send(error);
-    });
-});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)

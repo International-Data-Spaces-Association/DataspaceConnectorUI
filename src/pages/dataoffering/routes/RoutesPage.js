@@ -40,9 +40,15 @@ export default {
             this.$refs.editNodeDialog.title = "Edit " + node.name;
             this.$refs.editNodeDialog.dialog = true;
         },
-        handleEditConnection(connection) {
-            console.log(">>> EDIT CONN: ", connection, this.$refs.chart.internalNodes);
+        addConnection(connection) {
             this.$refs.editConnectionDialog.title = "Edit Connection";
+            this.$refs.editConnectionDialog.setConnection(connection, this.$refs.chart.internalNodes);
+            this.$refs.chart.internalConnections.push(connection);
+            this.$refs.editConnectionDialog.dialog = true;
+        },
+        editConnection(connection) {
+            this.$refs.editConnectionDialog.title = "Edit Connection";
+            this.$refs.editConnectionDialog.setConnection(connection, this.$refs.chart.internalNodes);
             this.$refs.editConnectionDialog.dialog = true;
         },
         showAddBackendDialog() {
@@ -54,28 +60,9 @@ export default {
         showAddEndpointDialog() {
             this.$refs.addEndpointDialog.show(this.$data.endpoints, "IDS Endpoint", "", "");
         },
-        getBackendConnection(id) {
-            var result = null;
-            for (var backendConnection of this.$data.backendConnections) {
-                if (id == backendConnection.id) {
-                    result = backendConnection;
-                    break;
-                }
-            }
-            return result;
-        },
-        getApp(id) {
-            var result = null;
-            for (var app of this.$data.apps) {
-                if (id == app.id) {
-                    result = app;
-                    break;
-                }
-            }
-            return result;
-        },
         addBackend(item) {
-            var backend = this.getBackendConnection(item.id);
+
+            var backend = dataUtils.getBackendConnection(item.id);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: 20,
@@ -83,11 +70,11 @@ export default {
                 name: 'Backend',
                 type: 'backendnode',
                 text: backend.url,
-                objectId: item.routeId,
+                objectId: item.id,
             });
         },
         addApp(item) {
-            var app = this.getApp(item.id);
+            var app = dataUtils.getApp(item.id);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: 300,
@@ -111,47 +98,25 @@ export default {
             this.resetRoute();
             this.$router.go(-1);
         },
+        connectionAdded(connection) {
+            this.addConnection(connection);
+        },
         handleChartSave(nodes, connections) {
             var connectionsCopy = [];
             for (var connection of connections) {
                 connectionsCopy.push(connection);
             }
-            // var source = this.getNode(connection.source.id, nodes);
-            // var destination = this.getNode(connection.destination.id, nodes);
-            // console.log(">>> ", source.text, " => ", destination.text);
-            var source = this.getNode(connectionsCopy[0].source.id, nodes);
-            var destination = this.getNode(connectionsCopy[0].destination.id, nodes);
-            let backend = this.getBackendConnection(source.objectId).route["ids:appRouteStart"][0];
-            let app1 = this.getApp(destination.objectId);
-
-            console.log(">>> createNewRoute: ", backend, app1);
             dataUtils.createNewRoute(routeId => {
-                console.log(">>> setAppRouteStart: ", routeId, backend["ids:accessURL"]["@id"], backend["ids:genericEndpointAuthentication"]["ids:authUsername"],
-                    backend["ids:genericEndpointAuthentication"]["ids:authPassword"]);
-                dataUtils.setAppRouteStart(routeId, backend["ids:accessURL"]["@id"], backend["ids:genericEndpointAuthentication"]["ids:authUsername"],
-                    backend["ids:genericEndpointAuthentication"]["ids:authPassword"], () => {
-                        dataUtils.setAppRouteEnd(routeId, app1.appUri, () => {
-                            dataUtils.createSubRoute(routeId, subRouteId => {
-                                console.log(">>> subRouteId: ", subRouteId);
-                                dataUtils.setSubRouteEnd(routeId, subRouteId, app1.appUri, () => {
-                                    console.log(">>> subRouteId: ", subRouteId);
-                                });
-                            });
+                for (var connection of connections) {
+                    console.log(">>> createSubRoute: ", routeId, connection.sourceEndpointId, connection.destinationEndpointId);
+                    var sourceNode = dataUtils.getNode(connection.source.id, nodes);
+                    var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
+                    dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x, sourceNode.y,
+                        connection.destinationEndpointId, destinationNode.x, destinationNode.y, null, () => {
+
                         });
-                    });
-            });
-
-
-        },
-        getNode(id, nodes) {
-            let node = null;
-            for (let n of nodes) {
-                if (n.id == id) {
-                    node = n;
-                    break;
                 }
-            }
-            return node;
+            });
         },
         render: function (g, node, isSelected) {
             node.width = node.width || 120;

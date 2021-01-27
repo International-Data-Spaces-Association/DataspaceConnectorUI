@@ -152,7 +152,8 @@ export default {
               type: "pass",
               name: "Pass",
             };
-            this.internalConnections.push(conn);
+            // this.internalConnections.push(conn);
+            this.$emit("connectionAdded", conn);
           }
         }
         this.connectingInfo.source = null;

@@ -20,6 +20,8 @@
 
     var languages = null;
     var sourcTypes = null;
+    var apps = null;
+    var backendConnections = null;
 
     export default {
         POLICY_N_TIMES_USAGE,
@@ -86,7 +88,7 @@
         },
 
         getBackendConnections(callback) {
-            let backendConnections = [];
+            backendConnections = [];
             Axios.get("http://localhost:80/backend/connections").then(response => {
                 var genericEndpoints = response.data;
 
@@ -132,7 +134,7 @@
         },
 
         getApps(callback) {
-            let apps = [];
+            apps = [];
             Axios.get("http://localhost:80/apps").then(response => {
                 let appsResponse = response.data;
                 for (var app of appsResponse) {
@@ -145,6 +147,56 @@
             });
         },
 
+        getEndpointList(node, endpointType) {
+            var endpointList = [];
+            if (node.type == "backendnode") {
+                let endpoint = this.getBackendConnection(node.objectId).endpoint;
+                endpointList.push(endpoint);
+            } else if (node.type == "appnode") {
+                let appEndpoints = this.getApp(node.objectId).appEndpointList[1];
+                console.log(">>> appEndpoints: ", appEndpoints);
+                for (let appEndpoint of appEndpoints) {
+                    if (appEndpoint[1].endpoint["ids:appEndpointType"]["@id"] == endpointType) {
+                        endpointList.push(appEndpoint[1].endpoint);
+                    }
+                }
+            }
+            return endpointList;
+        },
+
+        getBackendConnection(id) {
+            var result = null;
+            for (var backendConnection of backendConnections) {
+                if (id == backendConnection.id) {
+                    result = backendConnection;
+                    break;
+                }
+            }
+            return result;
+        },
+
+        getApp(id) {
+            var result = null;
+            for (var app of apps) {
+                if (id == app.id) {
+                    result = app;
+                    break;
+                }
+            }
+            return result;
+        },
+
+        getNode(id, nodes) {
+            let node = null;
+            for (let n of nodes) {
+                if (n.id == id) {
+                    node = n;
+                    break;
+                }
+            }
+            return node;
+        },
+
         createNewRoute(callback) {
             Axios.post("http://localhost:80/createnewroute").then(response => {
                 callback(response.data);
@@ -153,28 +205,11 @@
             });
         },
 
-        setAppRouteStart(routeId, accessUrl, username,
-            password, callback) {
-            let params = "?routeId=" + routeId + "&accessUrl=" + accessUrl + "&username=" + username + "&password=" + password;
-            Axios.post("http://localhost:80/approute/start" + params).then(response => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in setAppRouteStart(): ", error);
-            });
-        },
-
-        setAppRouteEnd(routeId, accessUrl, callback) {
-            let params = "?routeId=" + routeId + "&accessUrl=" + accessUrl;
-            Axios.post("http://localhost:80/approute/end" + params).then(response => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in setAppRouteEnd(): ", error);
-            });
-        },
-
-        createSubRoute(routeId, callback) {
-            let params = "?routeId=" + routeId;
-            Axios.post("http://localhost:80/approute/subroute" + params).then(response => {
+        createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, resourceId, callback) {
+            let params = "?routeId=" + routeId + "&startId=" + startId + "&startCoordinateX=" + startCoordinateX +
+                "&startCoordinateY=" + startCoordinateY + "&endId=" + endId + "&endCoordinateX=" + endCoordinateX +
+                "&endCoordinateY=" + endCoordinateY + "&resourceId=" + resourceId;
+            Axios.post("http://localhost:80/approute/step" + params).then(response => {
                 callback(response.data);
             }).catch(error => {
                 console.log("Error in createSubRoute(): ", error);
