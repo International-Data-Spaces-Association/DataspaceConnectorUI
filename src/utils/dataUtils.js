@@ -124,6 +124,24 @@
             });
         },
 
+        deleteResource(id, callback) {
+            Axios.delete("http://localhost:80/resource?resourceId=" + id).then(() => {
+                callback();
+            }).catch(error => {
+                console.log(error);
+                callback();
+            });
+        },
+
+        deleteRoute(id, callback) {
+            Axios.delete("http://localhost:80/approute?routeId=" + id).then(() => {
+                callback();
+            }).catch(error => {
+                console.log(error);
+                callback();
+            });
+        },
+
         deleteBackendConnection(id, callback) {
             Axios.delete("http://localhost:80/backend/connection?id=" + id).then(() => {
                 callback();
@@ -195,6 +213,15 @@
                 }
             }
             return node;
+        },
+
+        getRoutes(callback) {
+            Axios.get("http://localhost:80/approutes").then(response => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in getRoutes(): ", error);
+                callback([]);
+            });
         },
 
         createNewRoute(callback) {

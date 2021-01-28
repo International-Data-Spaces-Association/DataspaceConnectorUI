@@ -1,7 +1,7 @@
 import Axios from "axios";
-import ResourceMetaDataPage from "@/pages/dataoffering/addresource/metadata/ResourceMetaDataPage.vue";
-import ResourcePolicyPage from "@/pages/dataoffering/addresource/policy/ResourcePolicyPage.vue";
-import ResourceRepresentationPage from "@/pages/dataoffering/addresource/representation/ResourceRepresentationPage.vue";
+import ResourceMetaDataPage from "./metadata/ResourceMetaDataPage.vue";
+import ResourcePolicyPage from "./policy/ResourcePolicyPage.vue";
+import ResourceRepresentationPage from "./representation/ResourceRepresentationPage.vue";
 
 export default {
     components: {

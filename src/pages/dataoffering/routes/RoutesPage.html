@@ -1,49 +1,27 @@
-<div>
-    <v-row no-gutters>
-        <v-col cols="12" md="12">
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
-                @click="showAddBackendDialog">Add
-                Backend
-            </v-btn>
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="showAddAppDialog">Add
-                App
-            </v-btn>
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
-                @click="showAddEndpointDialog">Add
-                IDS Endpoint
-            </v-btn>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="12">
-            <flowchart class="routespagechart" :nodes="nodes" :connections="connections" :render="render"
-                @editnode="handleEditNode" @editconnection="editConnection" @connectionAdded="connectionAdded"
-                @save="handleChartSave" ref="chart">
-            </flowchart>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="6">
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="saveRoute">Save
-            </v-btn>
-        </v-col>
-        <v-col cols="12" md="6" class="reset-route-col">
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton reset-route-button"
-                @click="resetRoute">Reset
-            </v-btn>
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton cancel-route-button"
-                @click="cancelRoute">Cancel
-            </v-btn>
-        </v-col>
-    </v-row>
-    <edit-node-dialog ref="editNodeDialog">
-    </edit-node-dialog>
-    <edit-connection-dialog ref="editConnectionDialog">
-    </edit-connection-dialog>
-    <add-node-dialog ref="addBackendDialog" @addClicked="addBackend">
-    </add-node-dialog>
-    <add-node-dialog ref="addAppDialog" @addClicked="addApp">
-    </add-node-dialog>
-    <add-node-dialog ref="addEndpointDialog" @addClicked="addEndpoint">
-    </add-node-dialog>
+<div class="content">
+    <div>
+        <v-btn elevation="1" color="primary" class="buttontext--text addroutebutton" to="/addroute">Add Route
+        </v-btn>
+        <v-row no-gutters>
+            <v-col cols="12" md="6" sm="6">
+                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details>
+                </v-text-field>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="11" sm="12">
+                <v-data-table :headers="headers" :items="routes" :items-per-page="5" :search="search">
+                    <template v-slot:item.actions="{ item }">
+                        <v-icon class="mr-2" @click="editItem(item)">
+                            mdi-pencil
+                        </v-icon>
+                        <v-icon @click="deleteItem(item)">
+                            mdi-delete
+                        </v-icon>
+                    </template>
+                </v-data-table>
+            </v-col>
+        </v-row>
+    </div>
+    <confirmation-dialog ref="confirmationDialog"></confirmation-dialog>
 </div>

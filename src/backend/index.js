@@ -67,7 +67,7 @@ app.post('/resource', (req, res) => {
     var params = "?routeId=" + req.query.routeId + "&title=" + req.query.title + "&description=" + req.query.description +
         "&language=" + req.query.language + "&keyword=" + req.query.keyword + "&version=" + req.query.version + "&standardlicense=" +
         req.query.standardlicense + "&publisher=" + req.query.publisher + "&brokerList=";
-    console.log(">>> http://localhost:" + configModelPort + "/api/ui/resource" + params);
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/resource" + params);
     axios.post("http://localhost:" + configModelPort + "/api/ui/resource" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -100,7 +100,7 @@ app.delete('/resource', (req, res) => {
 
 app.put('/contract', (req, res) => {
     var params = "?resourceId=" + req.query.resourceId;
-    console.log(">>> http://localhost:" + configModelPort + "/api/ui/resource/contract" + params);
+    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/resource/contract" + params);
     axios.put("http://localhost:" + configModelPort + "/api/ui/resource/contract" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -113,7 +113,7 @@ app.post('/representation', (req, res) => {
     // TODO filename extension and byte size should not be set in UI.
     var params = "?resourceId=" + req.query.resourceId + "&language=" + req.query.language + "&filenameExtension=json" +
         "&bytesize=1234&sourceType=" + req.query.sourceType;
-    console.log(">>> http://localhost:" + configModelPort + "/api/ui/resource/representation" + params);
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/resource/representation" + params);
     axios.post("http://localhost:" + configModelPort + "/api/ui/resource/representation" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -141,7 +141,7 @@ app.get('/backend/connections', (req, res) => {
 });
 
 app.post('/backend/connection', (req, res) => {
-    console.log(">>> http://localhost:" + configModelPort + "/api/ui/backend/connection?accessURL=" + req.query.accessUrl + "&username=" +
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/backend/connection?accessURL=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password);
     axios.post("http://localhost:" + configModelPort + "/api/ui/backend/connection?accessURL=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password).then(response => {
@@ -153,7 +153,7 @@ app.post('/backend/connection', (req, res) => {
 });
 
 app.put('/backend/connection', (req, res) => {
-    console.log(">>> http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
+    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password);
     axios.put("http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password).then(response => {
@@ -165,7 +165,7 @@ app.put('/backend/connection', (req, res) => {
 });
 
 app.delete('/backend/connection', (req, res) => {
-    console.log(">>> http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id);
+    console.log(">>> DELETE http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id);
     axios.delete("http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -196,16 +196,9 @@ app.put('/approute', (req, res) => {
 });
 
 app.delete('/approute', (req, res) => {
-    axios.delete("http://localhost:" + configModelPort + "/api/ui/approute/endpoint?routeId=" + req.query.routeId + "&appRouteStartId=" +
-        req.query.endpointId + "&appRouteEndId=" +
-        req.query.appRouteEndId + "&appRouteOutputId=" +
-        req.query.appRouteOutputId).then(() => {
-        axios.delete("http://localhost:" + configModelPort + "/api/ui/approute/?routeId=" + req.query.routeId).then(response => {
-            res.send(response.data);
-        }).catch(error => {
-            console.log("Error on DELETE /approute", error.response.status);
-            res.send(error);
-        });
+    console.log(">>> DELETE http://localhost:" + configModelPort + "/api/ui/approute?routeId=" + req.query.routeId);
+    axios.delete("http://localhost:" + configModelPort + "/api/ui/approute?routeId=" + req.query.routeId).then(response => {
+        res.send(response.data);
     }).catch(error => {
         console.log("Error on DELETE /approute", error.response.status);
         res.send(error);

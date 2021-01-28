@@ -1,7 +1,8 @@
 import DashboardPage from "@/pages/dashboard/DashboardPage.vue";
-import IDSResourcesPage from "@/pages/dataoffering/IDSResourcesPage.vue";
-import RoutesPage from "@/pages/dataoffering/routes/RoutesPage.vue"
-import AddResourcePage from "@/pages/dataoffering/addresource/AddResourcePage.vue";
+import IDSResourcesPage from "@/pages/dataoffering/resources/IDSResourcesPage.vue";
+import AddResourcePage from "@/pages/dataoffering/resources/addresource/AddResourcePage.vue";
+import RoutesPage from "@/pages/dataoffering/routes/RoutesPage.vue";
+import AddRoutePage from "@/pages/dataoffering/routes/addroute/AddRoutePage.vue";
 import BrokersPage from "@/pages/brokers/BrokersPage.vue";
 import AppsPage from "@/pages/apps/AppsPage.vue";
 import SettingsPage from "@/pages/settings/SettingsPage.vue";
@@ -49,7 +50,18 @@ export default {
                 }, {
                     path: "routesoffering",
                     name: "Routes (Offering)",
-                    component: RoutesPage
+                    component: RoutesPage,
+                    subpages: [{
+                        path: "addroute",
+                        name: "Add Route",
+                        component: AddRoutePage,
+                        subpages: []
+                    }, {
+                        path: "editroute",
+                        name: "Edit Route",
+                        component: AddRoutePage,
+                        subpages: []
+                    }]
                 }]
             }, {
                 path: null,

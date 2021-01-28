@@ -1,0 +1,58 @@
+.routespagebutton {
+    margin-right: 10px;
+}
+
+.routespagechart {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    height: 600px !important;
+}
+
+.backendnode {
+    rx: 0px;
+    fill: var(--v-primary-base);
+}
+
+.appnode {
+    rx: 0px;
+    fill: var(--v-primary3-base);
+}
+
+.resourcenode {
+    rx: 30px;
+    fill: white;
+}
+
+.selectedNode {
+    stroke: var(--v-accent-base);
+    stroke-width: 3px;
+}
+
+.resourceline {
+    stroke: var(--v-text1-base);
+    stroke-width: 1px;
+}
+
+.connection path {
+    stroke: var(--v-text1-base);
+}
+
+.transparent-connection {
+    stroke: transparent !important;
+}
+
+.connection.selected path {
+    stroke: var(--v-accent-base);
+}
+
+.backendnode-text {
+    fill: white;
+}
+
+.cancel-route-button {
+    margin-right: 0px;
+}
+
+.reset-route-col {
+    text-align: right;
+}

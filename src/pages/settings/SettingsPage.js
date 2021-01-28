@@ -1,4 +1,4 @@
-import dataUtils from "../../utils/dataUtils";
+import dataUtils from "@/utils/dataUtils";
 
 export default {
     components: {},

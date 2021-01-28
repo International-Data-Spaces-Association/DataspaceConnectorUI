@@ -1,6 +1,6 @@
 import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/dialog/AddBackendConnectionDialog.vue";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
-import dataUtils from "../../../utils/dataUtils";
+import dataUtils from "@/utils/dataUtils";
 
 
 export default {

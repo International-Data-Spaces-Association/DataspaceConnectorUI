@@ -1,5 +1,5 @@
-import AddResourceFilePage from "@/pages/dataoffering/addresource/file/AddResourceFilePage.vue";
-import AddResourceDatabasePage from "@/pages/dataoffering/addresource/database/AddResourceDatabasePage.vue";
+import AddResourceFilePage from "@/pages/dataoffering/resources/addresource/file/AddResourceFilePage.vue";
+import AddResourceDatabasePage from "@/pages/dataoffering/resources/addresource/database/AddResourceDatabasePage.vue";
 import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/dialog/AddBackendConnectionDialog.vue";
 import dataUtils from "@/utils/dataUtils";
 

@@ -1,6 +1,7 @@
 import Axios from "axios";
 import DataUtils from "@/utils/dataUtils";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
+import dataUtils from "../../../utils/dataUtils";
 
 
 export default {
@@ -86,18 +87,11 @@ export default {
         deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                this.deleteResource(callbackData.item.id);
+                dataUtils.deleteResource(callbackData.item.id, () => {
+                    this.getResources();
+                    this.$root.$emit('showBusyIndicator', false);
+                });
             }
-        },
-        deleteResource(id) {
-            Axios.delete("http://localhost:80/resource?resourceId=" + id).then(() => {
-                this.getResources();
-                this.$root.$emit('showBusyIndicator', false);
-            }).catch(error => {
-                console.log(error);
-                this.$root.$emit('showBusyIndicator', false);
-            });
-
         },
         editItem(item) {
             this.$router.push('editresource?id=' + item.id);
