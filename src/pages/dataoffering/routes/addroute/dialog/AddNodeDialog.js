@@ -35,7 +35,7 @@ export default {
             this.$data.dialog = true;
         },
         add() {
-            this.$emit('addClicked', this.$data.selected[0]);
+            this.$emit('addClicked', this.$data.selected[0].id);
             this.dialog = false;
         }
     }

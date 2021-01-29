@@ -131,6 +131,17 @@ app.get('/approutes', (req, res) => {
     });
 });
 
+app.get('/approute', (req, res) => {
+    var params = "?routeId=" + req.query.routeId;
+    console.log(">>> http://localhost:" + configModelPort + "/api/ui/approute" + params);
+    axios.get("http://localhost:" + configModelPort + "/api/ui/approute" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on GET /approute", error.response.status);
+        res.send(error);
+    });
+});
+
 app.get('/backend/connections', (req, res) => {
     axios.get("http://localhost:" + configModelPort + "/api/ui/backend/connections").then(response => {
         res.send(response.data);

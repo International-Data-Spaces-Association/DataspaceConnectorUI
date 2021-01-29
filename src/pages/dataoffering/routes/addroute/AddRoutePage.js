@@ -18,23 +18,60 @@ export default {
             connections: [],
             backendConnections: [],
             apps: [],
-            endpoints: []
+            endpoints: [],
+            currentRoute: null
         };
     },
     mounted: function () {
-        console.log(">>> MOUNT ADD ROUTE");
-        this.getBackendConnections();
-        this.getApps();
+        console.log(">>> ADD/EDIT ROUTE: ", this.$route.query.id);
+        this.getBackendConnections(() => {
+            this.getApps(() => {
+                if (this.$route.query.id === undefined) {
+                    this.$data.currentRoute = null;
+                } else {
+                    this.loadRoute(this.$route.query.id);
+                }
+            });
+        });
+
     },
     methods: {
-        getBackendConnections() {
-            dataUtils.getBackendConnections(backendConnections => {
-                this.$data.backendConnections = backendConnections;
+        loadRoute(id) {
+            this.$root.$emit('showBusyIndicator', true);
+
+            dataUtils.getRoute(id, route => {
+                this.$data.currentRoute = route;
+                console.log("LOAD ROUTE: ", route);
+                for (let subRoute of route["ids:hasSubRoute"]) {
+                    let start = subRoute["ids:appRouteStart"][0];
+                    let end = subRoute["ids:appRouteEnd"][0];
+                    this.addNode(start);
+                    this.addNode(end);
+                    // TODO add connection and set input/output of connection.
+                }
+                this.$root.$emit('showBusyIndicator', false);
+                this.$forceUpdate();
             });
         },
-        getApps() {
+        addNode(endpoint) {
+            console.log(">>> addNode: ", endpoint);
+            if (endpoint["@type"] == "ids:GenericEndpoint") {
+                this.addBackend(endpoint["@id"]);
+            } else if (endpoint["@type"] == "ids:AppEndpoint") {
+                var appId = dataUtils.getAppIdOfEndpointId(endpoint["@id"]);
+                this.addApp(appId);
+            }
+        },
+        getBackendConnections(callback) {
+            dataUtils.getBackendConnections(backendConnections => {
+                this.$data.backendConnections = backendConnections;
+                callback();
+            });
+        },
+        getApps(callback) {
             dataUtils.getApps(apps => {
                 this.$data.apps = apps;
+                callback();
             });
         },
         handleEditNode(node) {
@@ -61,9 +98,8 @@ export default {
         showAddEndpointDialog() {
             this.$refs.addEndpointDialog.show(this.$data.endpoints, "IDS Endpoint", "", "");
         },
-        addBackend(item) {
-
-            var backend = dataUtils.getBackendConnection(item.id);
+        addBackend(id) {
+            var backend = dataUtils.getBackendConnection(id);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: 20,
@@ -71,11 +107,11 @@ export default {
                 name: 'Backend',
                 type: 'backendnode',
                 text: backend.url,
-                objectId: item.id,
+                objectId: id,
             });
         },
-        addApp(item) {
-            var app = dataUtils.getApp(item.id);
+        addApp(id) {
+            var app = dataUtils.getApp(id);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: 300,
@@ -83,11 +119,11 @@ export default {
                 name: 'App',
                 type: 'appnode',
                 text: app.title,
-                objectId: item.id,
+                objectId: id,
             });
         },
-        addEndpoint(item) {
-            console.log(">>> addEndpoint: ", item);
+        addEndpoint(id) {
+            console.log(">>> addEndpoint: ", id);
         },
         saveRoute() {
             this.$refs.chart.save();

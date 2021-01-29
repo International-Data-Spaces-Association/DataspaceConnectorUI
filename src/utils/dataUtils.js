@@ -133,6 +133,15 @@
             });
         },
 
+        getRoute(id, callback) {
+            Axios.get("http://localhost:80/approute?routeId=" + id).then(response => {
+                callback(response.data)
+            }).catch(error => {
+                console.log("Error in getRoute(): ", error);
+                callback();
+            });
+        },
+
         deleteRoute(id, callback) {
             Axios.delete("http://localhost:80/approute?routeId=" + id).then(() => {
                 callback();
@@ -185,6 +194,7 @@
         getBackendConnection(id) {
             var result = null;
             for (var backendConnection of backendConnections) {
+                console.log(id, " <> ", backendConnection.id);
                 if (id == backendConnection.id) {
                     result = backendConnection;
                     break;
@@ -199,6 +209,19 @@
                 if (id == app.id) {
                     result = app;
                     break;
+                }
+            }
+            return result;
+        },
+
+        getAppIdOfEndpointId(endpointId) {
+            var result = null;
+            for (var app of apps) {
+                for (let appEndpoint of app.appEndpointList[1]) {
+                    if (endpointId == appEndpoint[1].endpoint["@id"]) {
+                        result = app.id;
+                        break;
+                    }
                 }
             }
             return result;
