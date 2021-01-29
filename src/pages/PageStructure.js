@@ -13,20 +13,14 @@ export default {
         return [{
                 path: "dashboard",
                 name: "Dashboard",
-                icon: require('@/assets/images/dashboard_icon.png'),
+                icon: "icon-dashboard",
                 component: DashboardPage,
                 subpages: []
             },
             {
-                path: "wizzard",
-                name: "Wizzard",
-                icon: require('@/assets/images/wizzard_icon.png'),
-                component: null,
-                subpages: []
-            }, {
                 path: null,
                 name: "Data Offering",
-                icon: require('@/assets/images/offering_icon.png'),
+                icon: "icon-dataoffering",
                 component: null,
                 subpages: [{
                     path: "idresourcesoffering",
@@ -66,7 +60,7 @@ export default {
             }, {
                 path: null,
                 name: "Data Consumation",
-                icon: require('@/assets/images/consumation_icon.png'),
+                icon: "icon-dataconsumation",
                 component: null,
                 subpages: [{
                     path: "idsresourcesconsumation",
@@ -84,19 +78,19 @@ export default {
             }, {
                 path: "brokers",
                 name: "Brokers",
-                icon: require('@/assets/images/broker_icon.png'),
+                icon: "icon-brokers",
                 component: BrokersPage,
                 subpages: []
             }, {
                 path: "apps",
                 name: "Apps",
-                icon: require('@/assets/images/apps_icon.png'),
+                icon: "icon-apps",
                 component: AppsPage,
                 subpages: []
             }, {
                 path: "settings",
                 name: "Settings",
-                icon: require('@/assets/images/settings_icon.png'),
+                icon: "icon-settings",
                 component: SettingsPage,
                 subpages: []
             }

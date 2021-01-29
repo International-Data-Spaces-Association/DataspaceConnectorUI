@@ -17,6 +17,30 @@ export default {
   src: local("Frutiger"),
     url(./assets/fonts/FrutigerLTCom-Roman.ttf) format("truetype");
 }
+@font-face {
+  font-family: "icons";
+  src: local("icons"), url(./assets/fonts/icons.ttf) format("truetype");
+}
+
+.icon-dashboard:before {
+  content: "\e900";
+}
+.icon-dataoffering:before {
+  content: "\e901";
+}
+.icon-dataconsumation:before {
+  content: "\e902";
+}
+.icon-brokers:before {
+  content: "\e903";
+}
+.icon-apps:before {
+  content: "\e904";
+}
+.icon-settings:before {
+  content: "\e905";
+}
+
 .v-application {
   font-family: Frutiger !important;
   color: var(--v-text1-base) !important;

@@ -33,6 +33,16 @@
   color: white !important;
 }
 
+.v-list-item__icon {
+  font-family: 'icons';
+  font-size: 30px;
+  color: white;
+}
+
+.navigation-menu .activeitem .v-list-item__icon {
+  color: var(--v-accent-base) !important;
+}
+
 .navigation-menu .v-list-group__items {
   margin-left: 7px;
 }
