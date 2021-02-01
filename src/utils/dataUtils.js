@@ -181,7 +181,6 @@
                 endpointList.push(endpoint);
             } else if (node.type == "appnode") {
                 let appEndpoints = this.getApp(node.objectId).appEndpointList[1];
-                console.log(">>> appEndpoints: ", appEndpoints);
                 for (let appEndpoint of appEndpoints) {
                     if (appEndpoint[1].endpoint["ids:appEndpointType"]["@id"] == endpointType) {
                         endpointList.push(appEndpoint[1].endpoint);
@@ -236,6 +235,27 @@
                 }
             }
             return node;
+        },
+
+        getNodeIdByObjectId(endpointId, nodes) {
+            let nodeId = null;
+            for (let n of nodes) {
+                if (n.objectId == endpointId) {
+                    nodeId = n.id;
+                    break;
+                }
+            }
+            return nodeId;
+        },
+
+        getEndpointInfo(routeId, endpointId, callback) {
+            var params = "?routeId=" + routeId + "&endpointId=" + endpointId;
+            Axios.get("http://localhost:80/approute/step/endpoint/info" + params).then(response => {
+                callback(response.data)
+            }).catch(error => {
+                console.log("Error in getEndpointInfo(): ", error);
+                callback();
+            });
         },
 
         getRoutes(callback) {

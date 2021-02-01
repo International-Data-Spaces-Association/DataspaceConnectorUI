@@ -133,11 +133,22 @@ app.get('/approutes', (req, res) => {
 
 app.get('/approute', (req, res) => {
     var params = "?routeId=" + req.query.routeId;
-    console.log(">>> http://localhost:" + configModelPort + "/api/ui/approute" + params);
+    console.log(">>> GET http://localhost:" + configModelPort + "/api/ui/approute" + params);
     axios.get("http://localhost:" + configModelPort + "/api/ui/approute" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /approute", error.response.status);
+        res.send(error);
+    });
+});
+
+app.get('/approute/step/endpoint/info', (req, res) => {
+    var params = "?routeId=" + req.query.routeId + "&endpointId=" + req.query.endpointId;
+    console.log(">>> GET http://localhost:" + configModelPort + "/api/ui/approute/step/endpoint/info" + params);
+    axios.get("http://localhost:" + configModelPort + "/api/ui/approute/step/endpoint/info" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on GET /approute/step/endpoint/info", error.response.status);
         res.send(error);
     });
 });

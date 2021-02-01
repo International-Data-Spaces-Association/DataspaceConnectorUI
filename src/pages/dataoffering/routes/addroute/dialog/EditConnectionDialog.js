@@ -18,6 +18,7 @@ export default {
     mounted: function () {},
     methods: {
         setConnection(connection, nodes) {
+            console.log(">>> EDIT CONN: ", connection);
             this.$data.connection = connection;
             var source = dataUtils.getNode(connection.source.id, nodes);
             var destination = dataUtils.getNode(connection.destination.id, nodes);
@@ -30,6 +31,17 @@ export default {
             this.$data.inputs = [];
             for (let endpoint of destEndpoints) {
                 this.$data.inputs.push(this.getItem(endpoint));
+            }
+
+            if (connection.sourceEndpointId !== undefined) {
+                this.$data.outputId = connection.sourceEndpointId;
+            }
+            if (connection.destinationEndpointId !== undefined) {
+                this.$data.inputId = connection.destinationEndpointId;
+                console.log(">>> SET INPUT: ", connection.destinationEndpointId);
+                for (let input of this.$data.inputs) {
+                    console.log(">>> ID: ", input.id);
+                }
             }
         },
         save() {

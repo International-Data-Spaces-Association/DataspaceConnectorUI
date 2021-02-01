@@ -23,7 +23,6 @@ export default {
         };
     },
     mounted: function () {
-        console.log(">>> ADD/EDIT ROUTE: ", this.$route.query.id);
         this.getBackendConnections(() => {
             this.getApps(() => {
                 if (this.$route.query.id === undefined) {
@@ -45,22 +44,72 @@ export default {
                 for (let subRoute of route["ids:hasSubRoute"]) {
                     let start = subRoute["ids:appRouteStart"][0];
                     let end = subRoute["ids:appRouteEnd"][0];
-                    this.addNode(start);
-                    this.addNode(end);
-                    // TODO add connection and set input/output of connection.
+                    this.addNode(id, start, () => {
+                        this.addNode(id, end, () => {
+                            let startNodeObjectId = start["@id"];
+                            if (start["@type"] == "ids:AppEndpoint") {
+                                startNodeObjectId = dataUtils.getAppIdOfEndpointId(start["@id"]);
+                            }
+                            let endNodeObjectId = end["@id"];
+                            if (end["@type"] == "ids:AppEndpoint") {
+                                endNodeObjectId = dataUtils.getAppIdOfEndpointId(end["@id"]);
+                            }
+                            let startNodeId = dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
+                            let endNodeId = dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
+                            this.loadConnection(startNodeId, start["@id"], endNodeId, end["@id"]);
+                        });
+                    });
+
+
                 }
                 this.$root.$emit('showBusyIndicator', false);
                 this.$forceUpdate();
             });
         },
-        addNode(endpoint) {
-            console.log(">>> addNode: ", endpoint);
-            if (endpoint["@type"] == "ids:GenericEndpoint") {
-                this.addBackend(endpoint["@id"]);
-            } else if (endpoint["@type"] == "ids:AppEndpoint") {
-                var appId = dataUtils.getAppIdOfEndpointId(endpoint["@id"]);
-                this.addApp(appId);
+        addNode(routeId, endpoint, callback) {
+            dataUtils.getEndpointInfo(routeId, endpoint["@id"], endpointInfo => {
+                if (endpoint["@type"] == "ids:GenericEndpoint") {
+                    if (!this.nodeExists(endpoint["@id"])) {
+                        this.addBackend(endpoint["@id"], endpointInfo.xCoordinate, endpointInfo.yCoordinate);
+                    }
+                } else if (endpoint["@type"] == "ids:AppEndpoint") {
+                    let appId = dataUtils.getAppIdOfEndpointId(endpoint["@id"]);
+                    if (!this.nodeExists(appId)) {
+                        this.addApp(appId, endpointInfo.xCoordinate, endpointInfo.yCoordinate);
+                    }
+                }
+                callback();
+            });
+        },
+        loadConnection(startNodeId, startEndpointId, endNodeId, endEndpointId) {
+            // TODO Load connector position from backend (currently not saved).
+            let connectorId = +new Date();
+            let connection = {
+                source: {
+                    id: startNodeId,
+                    position: "right",
+                },
+                sourceEndpointId: startEndpointId,
+                destination: {
+                    id: endNodeId,
+                    position: "left",
+                },
+                destinationEndpointId: endEndpointId,
+                id: connectorId,
+                type: "pass",
+                name: "Pass",
+            };
+            this.$refs.chart.internalConnections.push(connection);
+        },
+        nodeExists(id) {
+            let result = false;
+            for (let node of this.$refs.chart.internalNodes) {
+                if (node.objectId == id) {
+                    result = true;
+                    break;
+                }
             }
+            return result;
         },
         getBackendConnections(callback) {
             dataUtils.getBackendConnections(backendConnections => {
@@ -79,6 +128,8 @@ export default {
             this.$refs.editNodeDialog.dialog = true;
         },
         addConnection(connection) {
+            // Connection added in chart by mouse click.
+            // Show edit connection dialog to configure input/output.
             this.$refs.editConnectionDialog.title = "Edit Connection";
             this.$refs.editConnectionDialog.setConnection(connection, this.$refs.chart.internalNodes);
             this.$refs.chart.internalConnections.push(connection);
@@ -98,24 +149,45 @@ export default {
         showAddEndpointDialog() {
             this.$refs.addEndpointDialog.show(this.$data.endpoints, "IDS Endpoint", "", "");
         },
-        addBackend(id) {
+        addBackend(id, x, y) {
+            if (x === undefined) {
+                x = this.getXForNewNode();
+            }
+            if (y === undefined) {
+                y = 150;
+            }
             var backend = dataUtils.getBackendConnection(id);
             this.$refs.chart.add({
                 id: +new Date(),
-                x: 20,
-                y: 150,
+                x: x,
+                y: y,
                 name: 'Backend',
                 type: 'backendnode',
                 text: backend.url,
                 objectId: id,
             });
         },
-        addApp(id) {
+        getXForNewNode() {
+            let x = 20;
+            for (let node of this.$refs.chart.internalNodes) {
+                if (node.x >= x) {
+                    x = node.x + 200;
+                }
+            }
+            return x;
+        },
+        addApp(id, x, y) {
+            if (x === undefined) {
+                x = this.getXForNewNode();
+            }
+            if (y === undefined) {
+                y = 150;
+            }
             var app = dataUtils.getApp(id);
             this.$refs.chart.add({
                 id: +new Date(),
-                x: 300,
-                y: 150,
+                x: x,
+                y: y,
                 name: 'App',
                 type: 'appnode',
                 text: app.title,
@@ -136,6 +208,7 @@ export default {
             this.$router.go(-1);
         },
         connectionAdded(connection) {
+            // Connection added in chart by mouse click.
             this.addConnection(connection);
         },
         handleChartSave(nodes, connections) {
@@ -145,7 +218,6 @@ export default {
             }
             dataUtils.createNewRoute(routeId => {
                 for (var connection of connections) {
-                    console.log(">>> createSubRoute: ", routeId, connection.sourceEndpointId, connection.destinationEndpointId);
                     var sourceNode = dataUtils.getNode(connection.source.id, nodes);
                     var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
                     dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x, sourceNode.y,
