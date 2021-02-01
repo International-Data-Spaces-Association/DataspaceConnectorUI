@@ -9,16 +9,27 @@ export default {
             dialog: false,
             title: "",
             connection: null,
+            isNewConnection: true,
             outputId: null,
             outputs: [],
             inputId: null,
-            inputs: []
+            inputs: [],
+            valid: false,
+            defaultRule: [
+                v => !!v || 'This data is required'
+            ],
         };
+    },
+    watch: {
+        valid: function () {
+            console.log("IN/OUT VALID: ", this.$data.valid);
+        }
     },
     mounted: function () {},
     methods: {
-        setConnection(connection, nodes) {
-            console.log(">>> EDIT CONN: ", connection);
+        setConnection(connection, nodes, isNewConnection) {
+            console.log(">>> EDIT CONN: ", connection, nodes, isNewConnection);
+            this.$data.isNewConnection = isNewConnection;
             this.$data.connection = connection;
             var source = dataUtils.getNode(connection.source.id, nodes);
             var destination = dataUtils.getNode(connection.destination.id, nodes);
@@ -33,20 +44,24 @@ export default {
                 this.$data.inputs.push(this.getItem(endpoint));
             }
 
-            if (connection.sourceEndpointId !== undefined) {
+            if (connection.sourceEndpointId === undefined) {
+                this.$data.outputId = null;
+            } else {
                 this.$data.outputId = connection.sourceEndpointId;
             }
-            if (connection.destinationEndpointId !== undefined) {
+            if (connection.destinationEndpointId === undefined) {
+                this.$data.inputId = null;
+            } else {
                 this.$data.inputId = connection.destinationEndpointId;
-                console.log(">>> SET INPUT: ", connection.destinationEndpointId);
-                for (let input of this.$data.inputs) {
-                    console.log(">>> ID: ", input.id);
-                }
             }
         },
         save() {
             this.$data.connection.sourceEndpointId = this.$data.outputId;
             this.$data.connection.destinationEndpointId = this.$data.inputId;
+
+            if (this.$data.isNewConnection) {
+                this.$emit('newConnectionSaved', this.$data.connection);
+            }
             this.dialog = false;
         },
         getItem(endpoint) {

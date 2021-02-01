@@ -38,7 +38,7 @@
     </v-row>
     <edit-node-dialog ref="editNodeDialog">
     </edit-node-dialog>
-    <edit-connection-dialog ref="editConnectionDialog">
+    <edit-connection-dialog ref="editConnectionDialog" @newConnectionSaved="newConnectionSaved">
     </edit-connection-dialog>
     <add-node-dialog ref="addBackendDialog" @addClicked="addBackend">
     </add-node-dialog>

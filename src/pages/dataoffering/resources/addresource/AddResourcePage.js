@@ -50,7 +50,8 @@ export default {
         },
         save() {
             this.$root.$emit('showBusyIndicator', true);
-            var routeId = this.$refs.representationPage.selected[0].routeId;
+            console.log(">>> SAVE: ", this.$refs.representationPage.selected[0]);
+            var endpointId = this.$refs.representationPage.selected[0].id;
             var title = this.$refs.metaDataPage.title;
             var description = this.$refs.metaDataPage.description;
             var language = this.$refs.metaDataPage.language;
@@ -72,7 +73,7 @@ export default {
                 for (let broker of brokers) {
                     brokerList.push(broker[1]["brokerUri"]);
                 }
-                this.saveResource(routeId, title, description, language, keyword, version, standardlicense, publisher, contractJson, sourceType, brokerList);
+                this.saveResource(title, description, language, keyword, version, standardlicense, publisher, contractJson, sourceType, brokerList, endpointId);
             }).catch(error => {
                 console.log("Error in save(): ", error);
             });
@@ -80,17 +81,17 @@ export default {
 
 
         },
-        saveResource(routeId, title, description, language, keyword, version, standardlicense, publisher, contractJson, sourceType, brokerList) {
+        saveResource(title, description, language, keyword, version, standardlicense, publisher, contractJson, sourceType, brokerList, endpointId) {
 
             if (this.$data.currentResource == null) {
-                let params = "?routeId=" + routeId + "&title=" + title + "&description=" + description + "&language=" +
+                let params = "?title=" + title + "&description=" + description + "&language=" +
                     language + "&keyword=" + keyword + "&version=" + version + "&standardlicense=" + standardlicense +
                     "&publisher=" + publisher + "&brokerList=" + brokerList;
                 Axios.post("http://localhost:80/resource" + params).then((response) => {
                     let resourceId = response.data.resourceID;
                     params = "?resourceId=" + resourceId;
                     Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
-                        params = "?resourceId=" + resourceId + "&language=" + language + "&sourceType=" + sourceType;
+                        params = "?resourceId=" + resourceId + "&endpointId=" + endpointId + "&language=" + language + "&sourceType=" + sourceType;
                         Axios.post("http://localhost:80/representation" + params).then(() => {
                             this.$router.push('idresourcesoffering');
                             this.$root.$emit('showBusyIndicator', false);
@@ -108,7 +109,7 @@ export default {
                     this.$root.$emit('showBusyIndicator', false);
                 });
             } else {
-                let params = "?routeId=" + routeId + "&resourceId=" + this.$data.currentResource["@id"] + "&title=" + title +
+                let params = "?resourceId=" + this.$data.currentResource["@id"] + "&title=" + title +
                     "&description=" + description + "&language=" + language + "&keyword=" + keyword + "&version=" + version +
                     "&standardlicense=" + standardlicense + "&publisher=" + publisher;
                 Axios.put("http://localhost:80/resource" + params, contractJson).then(() => {

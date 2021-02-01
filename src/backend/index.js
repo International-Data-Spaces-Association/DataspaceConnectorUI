@@ -41,30 +41,16 @@ app.get('/resources', (req, res) => {
 });
 
 app.get('/resource', (req, res) => {
-    // CURRENTLY NOT WORKING, USING WORKAROUND ...
-    // axios.get("http://localhost:" + configModelPort + "/api/ui/resource?resourceId=" + req.query.resourceId).then(response => {
-    //     res.send(response.data);
-    // }).catch(error => {
-    //     console.log("Error on GET /resource", error.response.status);
-    //     res.send(error);
-    // });
-
-    // TODO WORKAROUND!!! REMOVE !!!
-    axios.get("http://localhost:" + configModelPort + "/api/ui/connector").then(response => {
-        for (var resource of response.data["ids:resourceCatalog"][0]["ids:offeredResource"]) {
-            if (resource["@id"] == req.query.resourceId) {
-                res.send(resource);
-            }
-        }
-
+    axios.get("http://localhost:" + configModelPort + "/api/ui/resource?resourceId=" + req.query.resourceId).then(response => {
+        res.send(response.data);
     }).catch(error => {
-        console.log("Error on GET /resources", error.response.status);
+        console.log("Error on GET /resource", error.response.status);
         res.send(error);
     });
 });
 
 app.post('/resource', (req, res) => {
-    var params = "?routeId=" + req.query.routeId + "&title=" + req.query.title + "&description=" + req.query.description +
+    var params = "?title=" + req.query.title + "&description=" + req.query.description +
         "&language=" + req.query.language + "&keyword=" + req.query.keyword + "&version=" + req.query.version + "&standardlicense=" +
         req.query.standardlicense + "&publisher=" + req.query.publisher + "&brokerList=";
     console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/resource" + params);
@@ -77,7 +63,7 @@ app.post('/resource', (req, res) => {
 });
 
 app.put('/resource', (req, res) => {
-    var params = "?routeId=" + req.query.routeId + "&resourceId=" + req.query.resourceId + "&title=" + req.query.title +
+    var params = "?resourceId=" + req.query.resourceId + "&title=" + req.query.title +
         "&description=" + req.query.description + "&language=" + req.query.language + "&keyword=" + req.query.keyword +
         "&version=" + req.query.version + "&standardlicense=" + req.query.standardlicense + "&publisher=" +
         req.query.publisher;
@@ -101,6 +87,7 @@ app.delete('/resource', (req, res) => {
 app.put('/contract', (req, res) => {
     var params = "?resourceId=" + req.query.resourceId;
     console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/resource/contract" + params);
+    console.log(req.body);
     axios.put("http://localhost:" + configModelPort + "/api/ui/resource/contract" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -111,7 +98,7 @@ app.put('/contract', (req, res) => {
 
 app.post('/representation', (req, res) => {
     // TODO filename extension and byte size should not be set in UI.
-    var params = "?resourceId=" + req.query.resourceId + "&language=" + req.query.language + "&filenameExtension=json" +
+    var params = "?resourceId=" + req.query.resourceId + "&endpointId=" + req.query.endpointId + "&language=" + req.query.language + "&filenameExtension=json" +
         "&bytesize=1234&sourceType=" + req.query.sourceType;
     console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/resource/representation" + params);
     axios.post("http://localhost:" + configModelPort + "/api/ui/resource/representation" + params, req.body).then(response => {

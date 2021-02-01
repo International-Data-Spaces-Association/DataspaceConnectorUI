@@ -37,7 +37,7 @@ export default {
     methods: {
         loadRoute(id) {
             this.$root.$emit('showBusyIndicator', true);
-
+            this.$refs.chart.clear();
             dataUtils.getRoute(id, route => {
                 this.$data.currentRoute = route;
                 console.log("LOAD ROUTE: ", route);
@@ -131,14 +131,17 @@ export default {
             // Connection added in chart by mouse click.
             // Show edit connection dialog to configure input/output.
             this.$refs.editConnectionDialog.title = "Edit Connection";
-            this.$refs.editConnectionDialog.setConnection(connection, this.$refs.chart.internalNodes);
-            this.$refs.chart.internalConnections.push(connection);
+            this.$refs.editConnectionDialog.setConnection(connection, this.$refs.chart.internalNodes, true);
             this.$refs.editConnectionDialog.dialog = true;
         },
         editConnection(connection) {
             this.$refs.editConnectionDialog.title = "Edit Connection";
-            this.$refs.editConnectionDialog.setConnection(connection, this.$refs.chart.internalNodes);
+            this.$refs.editConnectionDialog.setConnection(connection, this.$refs.chart.internalNodes, false);
             this.$refs.editConnectionDialog.dialog = true;
+        },
+        newConnectionSaved(connection) {
+            // New connection saved for the first time.
+            this.$refs.chart.internalConnections.push(connection);
         },
         showAddBackendDialog() {
             this.$refs.addBackendDialog.show(this.$data.backendConnections, "Backend Connection", "URL", "url");
@@ -201,7 +204,7 @@ export default {
             this.$refs.chart.save();
         },
         resetRoute() {
-            // TODO reset chart.
+            this.loadRoute(this.$data.currentRoute["@id"]);
         },
         cancelRoute() {
             this.resetRoute();

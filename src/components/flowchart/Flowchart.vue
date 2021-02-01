@@ -595,6 +595,10 @@ export default {
       }
       this.$emit("save", this.internalNodes, this.internalConnections);
     },
+    clear() {
+      this.internalNodes = [];
+      this.internalConnections = [];
+    },
     async remove() {
       if (this.readonly) {
         return;
