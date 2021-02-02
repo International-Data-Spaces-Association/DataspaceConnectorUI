@@ -18,6 +18,11 @@
     fill: var(--v-primary3-base);
 }
 
+.idsendpointnode {
+    rx: 0px;
+    fill: var(--v-accent-base);
+}
+
 .resourcenode {
     rx: 30px;
     fill: white;

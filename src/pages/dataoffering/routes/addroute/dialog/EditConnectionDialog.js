@@ -16,8 +16,10 @@ export default {
             inputs: [],
             valid: false,
             defaultRule: [
-                v => !!v || 'This data is required'
+                v => (!!v) || 'This data is required'
             ],
+            sourceNode: null,
+            destinationNode: null
         };
     },
     watch: {
@@ -31,14 +33,14 @@ export default {
             console.log(">>> EDIT CONN: ", connection, nodes, isNewConnection);
             this.$data.isNewConnection = isNewConnection;
             this.$data.connection = connection;
-            var source = dataUtils.getNode(connection.source.id, nodes);
-            var destination = dataUtils.getNode(connection.destination.id, nodes);
-            let sourceEndpoints = dataUtils.getEndpointList(source, "idsc:OUTPUT_ENDPOINT");
+            this.$data.sourceNode = dataUtils.getNode(connection.source.id, nodes);
+            this.$data.destinationNode = dataUtils.getNode(connection.destination.id, nodes);
+            let sourceEndpoints = dataUtils.getEndpointList(this.$data.sourceNode, "idsc:OUTPUT_ENDPOINT");
             this.$data.outputs = [];
             for (let endpoint of sourceEndpoints) {
                 this.$data.outputs.push(this.getItem(endpoint));
             }
-            let destEndpoints = dataUtils.getEndpointList(destination, "idsc:INPUT_ENDPOINT");
+            let destEndpoints = dataUtils.getEndpointList(this.$data.destinationNode, "idsc:INPUT_ENDPOINT");
             this.$data.inputs = [];
             for (let endpoint of destEndpoints) {
                 this.$data.inputs.push(this.getItem(endpoint));

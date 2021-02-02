@@ -149,9 +149,6 @@ export default {
         showAddAppDialog() {
             this.$refs.addAppDialog.show(this.$data.apps, "App", "App title", "title");
         },
-        showAddEndpointDialog() {
-            this.$refs.addEndpointDialog.show(this.$data.endpoints, "IDS Endpoint", "", "");
-        },
         addBackend(id, x, y) {
             if (x === undefined) {
                 x = this.getXForNewNode();
@@ -197,8 +194,24 @@ export default {
                 objectId: id,
             });
         },
-        addEndpoint(id) {
-            console.log(">>> addEndpoint: ", id);
+        addEndpoint(event, x, y) {
+            console.log(">>> addEndpoint: ", x, y);
+            if (x === undefined) {
+                x = this.getXForNewNode();
+            }
+            if (y === undefined) {
+                y = 150;
+            }
+            console.log("X Y: ", x, y);
+            this.$refs.chart.add({
+                id: +new Date(),
+                x: x,
+                y: y,
+                name: 'IDS Endpoint',
+                type: 'idsendpointnode',
+                text: "IDS Endpoint",
+                objectId: null,
+            });
         },
         saveRoute() {
             this.$refs.chart.save();

@@ -8,8 +8,7 @@
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="showAddAppDialog">Add
                 App
             </v-btn>
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
-                @click="showAddEndpointDialog">Add
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addEndpoint">Add
                 IDS Endpoint
             </v-btn>
         </v-col>
@@ -43,7 +42,5 @@
     <add-node-dialog ref="addBackendDialog" @addClicked="addBackend">
     </add-node-dialog>
     <add-node-dialog ref="addAppDialog" @addClicked="addApp">
-    </add-node-dialog>
-    <add-node-dialog ref="addEndpointDialog" @addClicked="addEndpoint">
     </add-node-dialog>
 </div>

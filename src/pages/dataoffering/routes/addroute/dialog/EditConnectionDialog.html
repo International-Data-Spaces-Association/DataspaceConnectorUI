@@ -7,18 +7,19 @@
         <v-card-text>
             <v-form v-model="valid">
                 <v-row no-gutters>
-                    <v-col cols="12" md="5">
+                    <v-col cols="12" md="5" class="selectcol">
                         <v-select label="Output" v-model="outputId" :items="outputs" item-text="text" item-value="id"
-                            :rules="defaultRule" required>
+                            :rules="defaultRule">
                         </v-select>
                     </v-col>
                     <v-col cols="12" md="2" class="inoutarrowcol">
                         <div class="inoutarrow">➞</div>
                     </v-col>
-                    <v-col cols="12" md="5">
-                        <v-select label="Input" v-model="inputId" :items="inputs" item-text="text" item-value="id"
-                            :rules="defaultRule" required>
+                    <v-col cols="12" md="5" class="selectcol">
+                        <v-select v-if="inputs.length > 0" label="Input" v-model="inputId" :items="inputs"
+                            item-text="text" item-value="id" :rules="defaultRule">
                         </v-select>
+                        <div v-if="inputs.length == 0" class="noselectdiv">{{ destinationNode.text }}</div>
                     </v-col>
                 </v-row>
             </v-form>
