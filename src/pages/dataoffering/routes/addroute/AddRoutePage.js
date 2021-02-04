@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import EditNodeDialog from "./dialog/EditNodeDialog.vue";
+import EditIdsEndpointDialog from "./dialog/editidsendpointdialog/EditIdsEndpointDialog.vue";
 import EditConnectionDialog from "./dialog/EditConnectionDialog.vue";
 import AddNodeDialog from "./dialog/AddNodeDialog.vue";
 import Flowchart from "@/components/flowchart/Flowchart.vue";
@@ -8,6 +9,7 @@ import dataUtils from "@/utils/dataUtils";
 export default {
     components: {
         EditNodeDialog,
+        EditIdsEndpointDialog,
         EditConnectionDialog,
         AddNodeDialog,
         Flowchart
@@ -124,8 +126,12 @@ export default {
             });
         },
         handleEditNode(node) {
-            this.$refs.editNodeDialog.title = "Edit " + node.name;
-            this.$refs.editNodeDialog.dialog = true;
+            if (node.type == "idsendpointnode") {
+                this.$refs.editIDSEndpointDialog.dialog = true;
+            } else {
+                this.$refs.editNodeDialog.title = "Edit " + node.name;
+                this.$refs.editNodeDialog.dialog = true;
+            }
         },
         addConnection(connection) {
             // Connection added in chart by mouse click.
