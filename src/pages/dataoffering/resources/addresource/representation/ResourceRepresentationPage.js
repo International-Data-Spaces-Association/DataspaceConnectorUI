@@ -9,6 +9,7 @@ export default {
         AddResourceDatabasePage,
         AddBackendConnectionDialog
     },
+    props: ['fromRoutePage'],
     data() {
         return {
             search: '',
@@ -29,10 +30,10 @@ export default {
     },
     watch: {
         valid: function () {
-            this.$data.allValid = this.$data.valid && this.$data.selected.length > 0;
+            this.$data.allValid = this.$data.valid && (this.fromRoutePage == 'true' || this.$data.selected.length > 0);
         },
         selected: function () {
-            this.$data.allValid = this.$data.valid && this.$data.selected.length > 0;
+            this.$data.allValid = this.$data.valid && (this.fromRoutePage == 'true' || this.$data.selected.length > 0);
         }
     },
     mounted: function () {
@@ -40,6 +41,9 @@ export default {
         this.loadSourceTypes();
     },
     methods: {
+        gotVisible() {
+            this.getBackendConnections();
+        },
         async loadSourceTypes() {
             dataUtils.getSourceTypes(sourceTypes => {
                 this.$data.sourceTypeItems = sourceTypes;
@@ -56,11 +60,14 @@ export default {
         },
         getBackendConnections() {
             dataUtils.getBackendConnections(backendConnections => {
-                console.log(">>> bc: ", backendConnections);
                 this.$data.backendConnections = backendConnections;
 
                 if (this.$parent.$parent.$parent.$parent.currentResource != null) {
                     this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
+                }
+
+                if (this.$parent.$parent.$parent.$parent.currentNode != null) {
+                    this.set(this.$parent.$parent.$parent.$parent.currentNode);
                 }
 
                 this.$forceUpdate();
@@ -79,6 +86,14 @@ export default {
                     }
                 }
             }
+        },
+        set(node) {
+            if (node.sourceType === undefined) {
+                this.$refs.form.reset();
+            } else {
+                this.$data.sourceType = node.sourceType;
+            }
+            // TODO this.$data.brokerList = brokerList;
         }
     }
 };

@@ -9,9 +9,13 @@ export default {
         ResourcePolicyPage,
         ResourceRepresentationPage
     },
+    props: ['fromRoutePage', 'title', 'description', 'language', 'keyword', 'version', 'standardlicense',
+        'publisher', 'contractJson', 'sourceType', 'brokerList'
+    ],
     data() {
         return {
             currentResource: null,
+            currentNode: null,
             active_tab: 0,
             resourceAttributes: null,
             resourceRequiredAttributes: null,
@@ -27,14 +31,29 @@ export default {
         } else {
             this.loadResource(this.$route.query.id);
         }
+        this.$data.currentNode = null;
     },
     methods: {
         previousPage() {
             this.$data.active_tab--;
+            this.tabChanged();
         },
 
         nextPage() {
             this.$data.active_tab++;
+            this.tabChanged();
+        },
+        tabChanged() {
+            console.log(this.$refs.pagestab, this.$data.active_tab);
+            if (this.$data.active_tab == 1) {
+                if (this.$refs.policyPage !== undefined) {
+                    this.$refs.policyPage.gotVisible();
+                }
+            } else if (this.$data.active_tab == 2) {
+                if (this.$refs.representationPage !== undefined) {
+                    this.$refs.representationPage.gotVisible();
+                }
+            }
         },
         loadResource(id) {
             this.$root.$emit('showBusyIndicator', true);
@@ -48,14 +67,20 @@ export default {
                 this.$root.$emit('showBusyIndicator', false);
             });
         },
+        set(node) {
+            this.$data.currentNode = node;
+            this.$refs.metaDataPage.set(node);
+            this.$data.active_tab = 0;
+        },
         save() {
-            this.$root.$emit('showBusyIndicator', true);
-            console.log(">>> SAVE: ", this.$refs.representationPage.selected[0]);
-            var endpointId = this.$refs.representationPage.selected[0].id;
+            var endpointId = null;
+            if (this.$refs.representationPage.selected.length > 0) {
+                endpointId = this.$refs.representationPage.selected[0].id;
+            }
             var title = this.$refs.metaDataPage.title;
             var description = this.$refs.metaDataPage.description;
             var language = this.$refs.metaDataPage.language;
-            var keyword = this.$refs.metaDataPage.keywords;
+            var keywords = this.$refs.metaDataPage.keywords;
             var version = this.$refs.metaDataPage.version;
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
@@ -68,18 +93,22 @@ export default {
             var sourceType = this.$refs.representationPage.sourceType;
             // TODO user should select brokers
             var brokerList = [];
-            Axios.get("http://localhost:80/brokers").then(response => {
-                let brokers = response.data;
-                for (let broker of brokers) {
-                    brokerList.push(broker[1]["brokerUri"]);
-                }
-                this.saveResource(title, description, language, keyword, version, standardlicense, publisher, contractJson, sourceType, brokerList, endpointId);
-            }).catch(error => {
-                console.log("Error in save(): ", error);
-            });
 
-
-
+            if (this.fromRoutePage == 'true') {
+                // On route page this data is initially stored only in the node and will be saved with the route.
+                this.$emit("saved", title, description, language, keywords, version, standardlicense, publisher, contractJson, sourceType, brokerList);
+            } else {
+                this.$root.$emit('showBusyIndicator', true);
+                Axios.get("http://localhost:80/brokers").then(response => {
+                    let brokers = response.data;
+                    for (let broker of brokers) {
+                        brokerList.push(broker[1]["brokerUri"]);
+                    }
+                    this.saveResource(title, description, language, keywords, version, standardlicense, publisher, contractJson, sourceType, brokerList, endpointId);
+                }).catch(error => {
+                    console.log("Error in save(): ", error);
+                });
+            }
         },
         saveResource(title, description, language, keyword, version, standardlicense, publisher, contractJson, sourceType, brokerList, endpointId) {
 

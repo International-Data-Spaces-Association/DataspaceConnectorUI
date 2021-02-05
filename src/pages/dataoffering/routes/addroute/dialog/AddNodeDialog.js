@@ -16,7 +16,6 @@ export default {
     },
     watch: {
         selected: function () {
-            console.log(">>> SEL: ", this.$data.selected);
             this.$data.valid = this.$data.selected.length > 0;
         }
     },

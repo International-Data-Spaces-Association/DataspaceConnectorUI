@@ -30,7 +30,6 @@ export default {
     mounted: function () {},
     methods: {
         setConnection(connection, nodes, isNewConnection) {
-            console.log(">>> EDIT CONN: ", connection, nodes, isNewConnection);
             this.$data.isNewConnection = isNewConnection;
             this.$data.connection = connection;
             this.$data.sourceNode = dataUtils.getNode(connection.source.id, nodes);

@@ -29,8 +29,16 @@ export default {
         if (this.$parent.$parent.$parent.$parent.currentResource != null) {
             this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
         }
+        if (this.$parent.$parent.$parent.$parent.currentNode != null) {
+            this.set(this.$parent.$parent.$parent.$parent.currentNode);
+        }
     },
     methods: {
+        gotVisible() {
+            if (this.$parent.$parent.$parent.$parent.currentNode != null) {
+                this.set(this.$parent.$parent.$parent.$parent.currentNode);
+            }
+        },
         policyTypeChanged() {
             if (this.$data.policyType == DataUtils.POLICY_N_TIMES_USAGE) {
                 this.$data.active_tab_types = 0;
@@ -41,16 +49,27 @@ export default {
             }
         },
         loadResource(resource) {
-            this.$data.policyType = DataUtils.convertTypeToPolicyName(resource["ids:contractOffer"][0]["@type"]);
+            this.setPolicy(resource["ids:contractOffer"]);
+        },
+        set(node) {
+            if (node.contractJson === undefined) {
+                this.$data.policyType = "N Times Usage";
+                this.$refs.form.reset();
+            } else {
+                this.setPolicy(node.contractJson);
+            }
+        },
+        setPolicy(contract) {
+            this.$data.policyType = DataUtils.convertTypeToPolicyName(contract["@type"]);
             this.policyTypeChanged();
             if (this.$data.policyType == DataUtils.POLICY_N_TIMES_USAGE) {
-                this.$data.nTimesUsageOperator = DataUtils.convertOperatorTypeToSymbol(resource["ids:contractOffer"][0]["ids:permission"][0]["ids:constraint"][0]["ids:operator"]["@id"]);
-                this.$data.nTimesUsageValue = resource["ids:contractOffer"][0]["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
+                this.$data.nTimesUsageOperator = DataUtils.convertOperatorTypeToSymbol(contract["ids:permission"][0]["ids:constraint"][0]["ids:operator"]["@id"]);
+                this.$data.nTimesUsageValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
             } else if (this.$data.policyType == DataUtils.POLICY_DURATION_USAGE) {
-                this.$data.durationUsageValue = resource["ids:contractOffer"][0]["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("PT", "").replace("H", "");
+                this.$data.durationUsageValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("PT", "").replace("H", "");
             } else if (this.$data.policyType == DataUtils.POLICY_USAGE_DURING_INTERVAL) {
-                this.$data.usageDuringIntervalFromValue = resource["ids:contractOffer"][0]["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
-                this.$data.usageDuringIntervalToValue = resource["ids:contractOffer"][0]["ids:permission"][0]["ids:constraint"][1]["ids:rightOperand"]["@value"];
+                this.$data.usageDuringIntervalFromValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
+                this.$data.usageDuringIntervalToValue = contract["ids:permission"][0]["ids:constraint"][1]["ids:rightOperand"]["@value"];
             }
         },
         previousPage() {

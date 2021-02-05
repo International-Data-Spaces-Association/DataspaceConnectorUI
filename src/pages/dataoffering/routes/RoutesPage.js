@@ -24,7 +24,6 @@ export default {
         };
     },
     mounted: function () {
-        console.log(">>> MOUNT ROUTES PAGE");
         this.getRoutes();
     },
     methods: {
@@ -32,7 +31,6 @@ export default {
             this.$root.$emit('showBusyIndicator', true);
 
             dataUtils.getRoutes(routes => {
-                console.log(">>> ROUTES PAGE: ", routes);
                 this.$data.routes = [];
                 for (let route of routes) {
                     this.$data.routes.push({

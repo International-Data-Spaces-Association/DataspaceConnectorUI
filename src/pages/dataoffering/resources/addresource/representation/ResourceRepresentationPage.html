@@ -1,7 +1,7 @@
 <div>
   <v-row no-gutters>
     <v-col cols="12" md="11">
-      <v-form v-model="valid">
+      <v-form v-model="valid" ref="form">
         <v-select label="Source Type" v-model="sourceType" :items="sourceTypeItems" :rules="defaultRule" required>
         </v-select>
       </v-form>
@@ -9,14 +9,14 @@
     </v-col>
   </v-row>
 
-  <v-row no-gutters>
+  <v-row v-if="fromRoutePage === undefined" no-gutters>
     <v-col cols="12" md="6" sm="12">
       <add-backend-connection-dialog ref="addBackendConnectionDialog" @backendConnectionSaved="backendConnectionSaved">
       </add-backend-connection-dialog>
       <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
     </v-col>
   </v-row>
-  <v-row no-gutters>
+  <v-row v-if="fromRoutePage === undefined" no-gutters>
     <v-col cols="12" md="11" sm="12">
       <v-data-table v-model="selected" :headers="headers" :items="backendConnections" :items-per-page="5"
         :search="search" show-select :single-select=true item-key="url">

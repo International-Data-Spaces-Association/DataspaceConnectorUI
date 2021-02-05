@@ -14,31 +14,33 @@ export default {
             itemKey: "id",
             headers: [],
             selected: [],
-            items: []
+            items: [],
+            node: null
         };
     },
     watch: {
         selected: function () {
-            console.log(">>> SEL: ", this.$data.selected);
             this.$data.valid = this.$data.selected.length > 0;
         }
     },
     mounted: function () {},
     methods: {
-        show(items, nodeType, columnTitle, valueName) {
-            this.$data.itemKey = valueName;
-            this.$data.nodeType = nodeType;
-            this.$data.headers = [{
-                text: columnTitle,
-                value: valueName
-            }];
-
-            this.$data.selected = [];
-            this.$data.items = items;
+        show(node) {
+            this.$data.node = node;
+            this.$refs.addResourcePage.set(node);
             this.$data.dialog = true;
         },
-        add() {
-            this.$emit('addClicked', this.$data.selected[0].id);
+        saved(title, description, language, keywords, version, standardlicense, publisher, contractJson, sourceType, brokerList) {
+            this.$data.node.title = title;
+            this.$data.node.description = description;
+            this.$data.node.language = language;
+            this.$data.node.keywords = keywords;
+            this.$data.node.version = version;
+            this.$data.node.standardlicense = standardlicense;
+            this.$data.node.publisher = publisher;
+            this.$data.node.contractJson = contractJson;
+            this.$data.node.sourceType = sourceType;
+            this.$data.node.brokerList = brokerList;
             this.dialog = false;
         }
     }

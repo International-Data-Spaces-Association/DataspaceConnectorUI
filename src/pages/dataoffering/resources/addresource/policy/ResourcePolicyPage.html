@@ -8,7 +8,7 @@
             <v-tab>Duration Usage</v-tab>
             <v-tab>Usage During Interval</v-tab>
             <v-tab-item>
-                <v-form v-model="nTimesUsageValid">
+                <v-form v-model="nTimesUsageValid" ref="form">
                     <v-row no-gutters>
                         <v-col cols="12" md="3">
                             <v-select label="Operator" v-model="nTimesUsageOperator" :items="['=', '<=', '<']"

@@ -32,7 +32,6 @@ export default {
     methods: {
         getBackendConnections() {
             dataUtils.getBackendConnections(backendConnections => {
-                console.log(">>> bc: ", backendConnections);
                 this.$data.backendConnections = backendConnections;
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);

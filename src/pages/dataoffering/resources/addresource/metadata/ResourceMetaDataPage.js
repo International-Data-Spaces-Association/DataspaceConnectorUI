@@ -45,6 +45,19 @@ export default {
             this.$data.standardlicense = resource["ids:standardLicense"]["@id"];
             this.$data.version = resource["ids:version"];
             this.$data.language = resource["ids:language"][0]["@id"].replace("idsc:", "");
+        },
+        set(node) {
+            if (node.title === undefined) {
+                this.$refs.form.reset();
+            } else {
+                this.$data.title = node.title;
+                this.$data.description = node.description;
+                this.$data.language = node.language;
+                this.$data.keywords = node.keywords;
+                this.$data.version = node.version;
+                this.$data.standardlicense = node.standardlicense;
+                this.$data.publisher = node.publisher;
+            }
         }
     }
 };

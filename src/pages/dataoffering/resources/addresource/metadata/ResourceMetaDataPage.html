@@ -1,6 +1,6 @@
 <v-row no-gutters>
     <v-col cols="12" md="12">
-        <v-form v-model="valid">
+        <v-form v-model="valid" ref="form">
             <v-text-field label="Title" v-model="title" :rules="defaultRule" required> </v-text-field>
             <v-text-field label="Description" v-model="description" :rules="defaultRule" required>
             </v-text-field>

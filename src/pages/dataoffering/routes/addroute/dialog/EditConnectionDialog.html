@@ -19,7 +19,8 @@
                         <v-select v-if="inputs.length > 0" label="Input" v-model="inputId" :items="inputs"
                             item-text="text" item-value="id" :rules="defaultRule">
                         </v-select>
-                        <div v-if="inputs.length == 0" class="noselectdiv">{{ destinationNode.text }}</div>
+                        <div v-if="inputs.length == 0 && destinationNode != null" class="noselectdiv">
+                            {{ destinationNode.text }}</div>
                     </v-col>
                 </v-row>
             </v-form>

@@ -127,7 +127,7 @@ export default {
         },
         handleEditNode(node) {
             if (node.type == "idsendpointnode") {
-                this.$refs.editIDSEndpointDialog.dialog = true;
+                this.$refs.editIDSEndpointDialog.show(node);
             } else {
                 this.$refs.editNodeDialog.title = "Edit " + node.name;
                 this.$refs.editNodeDialog.dialog = true;
@@ -201,7 +201,6 @@ export default {
             });
         },
         addEndpoint(event, x, y) {
-            console.log(">>> addEndpoint: ", x, y);
             if (x === undefined) {
                 x = this.getXForNewNode();
             }
