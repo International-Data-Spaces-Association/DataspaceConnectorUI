@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import moment from 'moment';
 import EditNodeDialog from "./dialog/EditNodeDialog.vue";
 import EditIdsEndpointDialog from "./dialog/editidsendpointdialog/EditIdsEndpointDialog.vue";
 import EditConnectionDialog from "./dialog/EditConnectionDialog.vue";
@@ -21,14 +22,20 @@ export default {
             backendConnections: [],
             apps: [],
             endpoints: [],
-            currentRoute: null
+            currentRoute: null,
+            description: "",
+            receivedResults: [],
+            numberOfResultsToWaitFor: 0,
+            saveMessage: ""
         };
     },
     mounted: function () {
         this.getBackendConnections(() => {
             this.getApps(() => {
+                this.$data.saveMessage = "";
                 if (this.$route.query.id === undefined) {
                     this.$data.currentRoute = null;
+                    this.description = moment().format("YYYY-MM-DD") + " - Unnamed";
                 } else {
                     this.loadRoute(this.$route.query.id);
                 }
@@ -43,6 +50,7 @@ export default {
             dataUtils.getRoute(id, route => {
                 this.$data.currentRoute = route;
                 console.log("LOAD ROUTE: ", route);
+                this.$data.description = route["ids:routeDescription"];
                 for (let subRoute of route["ids:hasSubRoute"]) {
                     let start = subRoute["ids:appRouteStart"][0];
                     let end = subRoute["ids:appRouteEnd"][0];
@@ -137,13 +145,11 @@ export default {
             // Connection added in chart by mouse click.
             // Show edit connection dialog to configure input/output.
             this.$refs.editConnectionDialog.title = "Edit Connection";
-            this.$refs.editConnectionDialog.setConnection(connection, this.$refs.chart.internalNodes, true);
-            this.$refs.editConnectionDialog.dialog = true;
+            this.$refs.editConnectionDialog.show(connection, this.$refs.chart.internalNodes, true);
         },
         editConnection(connection) {
             this.$refs.editConnectionDialog.title = "Edit Connection";
-            this.$refs.editConnectionDialog.setConnection(connection, this.$refs.chart.internalNodes, false);
-            this.$refs.editConnectionDialog.dialog = true;
+            this.$refs.editConnectionDialog.show(connection, this.$refs.chart.internalNodes, false);
         },
         newConnectionSaved(connection) {
             // New connection saved for the first time.
@@ -219,6 +225,8 @@ export default {
             });
         },
         saveRoute() {
+            this.$data.saveMessage = "";
+            this.$root.$emit('showBusyIndicator', true);
             this.$refs.chart.save();
         },
         resetRoute() {
@@ -237,16 +245,29 @@ export default {
             for (var connection of connections) {
                 connectionsCopy.push(connection);
             }
-            dataUtils.createNewRoute(routeId => {
+            this.$data.numberOfResultsToWaitFor = connections.length + 1;
+            dataUtils.createNewRoute(this.$data.description, routeId => {
+                this.resultReceived(routeId);
                 for (var connection of connections) {
                     var sourceNode = dataUtils.getNode(connection.source.id, nodes);
                     var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
                     dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x, sourceNode.y,
                         connection.destinationEndpointId, destinationNode.x, destinationNode.y, null, () => {
-
+                            this.resultReceived("");
                         });
                 }
             });
+        },
+        resultReceived(result) {
+            this.$data.receivedResults.push(result);
+            if (this.$data.receivedResults.length == this.$data.numberOfResultsToWaitFor) {
+                this.allResultsReceived();
+            }
+        },
+        allResultsReceived() {
+            this.$root.$emit('showBusyIndicator', false);
+            this.$data.receivedResults = [];
+            this.$data.saveMessage = "Successfully saved."
         },
         render: function (g, node, isSelected) {
             node.width = node.width || 120;

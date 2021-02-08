@@ -29,7 +29,7 @@ export default {
     },
     mounted: function () {},
     methods: {
-        setConnection(connection, nodes, isNewConnection) {
+        show(connection, nodes, isNewConnection) {
             this.$data.isNewConnection = isNewConnection;
             this.$data.connection = connection;
             this.$data.sourceNode = dataUtils.getNode(connection.source.id, nodes);
@@ -55,6 +55,8 @@ export default {
             } else {
                 this.$data.inputId = connection.destinationEndpointId;
             }
+            this.dialog = true;
+            this.$refs.form.resetValidation();
         },
         save() {
             this.$data.connection.sourceEndpointId = this.$data.outputId;

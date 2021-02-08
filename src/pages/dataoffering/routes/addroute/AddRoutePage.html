@@ -1,6 +1,11 @@
 <div>
     <v-row no-gutters>
         <v-col cols="12" md="12">
+            <v-text-field label="Route description" v-model="description"></v-text-field>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="12">
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
                 @click="showAddBackendDialog">Add
                 Backend
@@ -22,9 +27,10 @@
         </v-col>
     </v-row>
     <v-row no-gutters>
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="6" class="save-route-col">
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="saveRoute">Save
             </v-btn>
+            <div class="save-message">{{ saveMessage }}</div>
         </v-col>
         <v-col cols="12" md="6" class="reset-route-col">
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton reset-route-button"

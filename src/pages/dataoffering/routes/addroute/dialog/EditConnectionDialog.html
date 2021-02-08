@@ -1,11 +1,11 @@
-<v-dialog v-model="dialog" width="800">
+<v-dialog v-model="dialog" width="800" eager>
     <v-card>
         <v-card-title class="headline grey lighten-2">
             {{title}}
         </v-card-title>
 
         <v-card-text>
-            <v-form v-model="valid">
+            <v-form v-model="valid" ref="form">
                 <v-row no-gutters>
                     <v-col cols="12" md="5" class="selectcol">
                         <v-select label="Output" v-model="outputId" :items="outputs" item-text="text" item-value="id"

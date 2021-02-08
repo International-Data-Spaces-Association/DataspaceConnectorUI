@@ -267,8 +267,9 @@
             });
         },
 
-        createNewRoute(callback) {
-            Axios.post("http://localhost:80/createnewroute").then(response => {
+        createNewRoute(description, callback) {
+            let params = "?description=" + description;
+            Axios.post("http://localhost:80/approute" + params).then(response => {
                 callback(response.data);
             }).catch(error => {
                 console.log("Error in createNewRoute(): ", error);

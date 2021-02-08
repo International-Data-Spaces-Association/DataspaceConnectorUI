@@ -183,16 +183,6 @@ app.delete('/backend/connection', (req, res) => {
     });
 });
 
-app.post('/approute', (req, res) => {
-    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/endpoint?accessUrl=" + req.query.accessUrl + "&username=" +
-        req.query.username + "&password=" + req.query.password).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on POST /resource", error.response.status);
-        res.send(error);
-    });
-});
-
 app.put('/approute', (req, res) => {
     axios.put("http://localhost:" + configModelPort + "/api/ui/approute/endpoint?routeId=" + req.query.routeId + "&endpointId=" +
         req.query.endpointId + "&accessUrl=" + req.query.accessUrl + "&username=" +
@@ -425,13 +415,14 @@ app.get('/enum', (req, res) => {
     });
 });
 
-app.post('/createnewroute', (req, res) => {
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute?routeDeployMethod=custom");
-    axios.post("http://localhost:" + configModelPort + "/api/ui/approute?routeDeployMethod=custom").then(response => {
+app.post('/approute', (req, res) => {
+    let params = "?description=" + req.query.description;
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute" + params);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/approute" + params).then(response => {
         console.log(">>> new route response: ", response.data);
         res.send(response.data.id);
     }).catch(error => {
-        console.log("Error on POST /createnewroute", error.response.status);
+        console.log("Error on POST /approute", error.response.status);
         res.send(error);
     });
 });

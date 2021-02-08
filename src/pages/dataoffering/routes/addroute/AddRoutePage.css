@@ -61,3 +61,12 @@
 .reset-route-col {
     text-align: right;
 }
+
+.save-route-col {
+    display: flex;
+    align-items: center;
+}
+
+.save-message {
+    color: var(--v-success-base)
+}

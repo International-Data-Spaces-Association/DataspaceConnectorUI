@@ -12,8 +12,8 @@ export default {
         return {
             search: '',
             headers: [{
-                text: 'Title',
-                value: 'title'
+                text: 'Description',
+                value: 'description'
             }, {
                 text: '',
                 value: 'actions',
@@ -35,7 +35,7 @@ export default {
                 for (let route of routes) {
                     this.$data.routes.push({
                         id: route["@id"],
-                        title: route["@id"]
+                        description: route["ids:routeDescription"]
                     });
                 }
                 this.$root.$emit('showBusyIndicator', false);
@@ -43,7 +43,7 @@ export default {
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Route";
-            this.$refs.confirmationDialog.text = "Are you sure you want to delete the route '" + item.title + "'?";
+            this.$refs.confirmationDialog.text = "Are you sure you want to delete the route '" + item.description + "'?";
             this.$refs.confirmationDialog.callbackData = {
                 item: item
             };
