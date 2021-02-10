@@ -10,7 +10,12 @@ export default {
             url: null,
             username: null,
             password: null,
-            showPassword: false
+            showPassword: false,
+            valid: false,
+            urlRule: [
+                v => !!v || 'This data is required',
+                v => /^[a-z]+[:][/][/][a-z.]+$/.test(v) || 'Only URLs (xyz://xyz) allowed',
+            ]
         };
     },
     mounted: function () {},
