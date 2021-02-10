@@ -4,8 +4,9 @@
              <v-tab disabled>Meta data</v-tab>
              <v-tab disabled>Policy</v-tab>
              <v-tab disabled>Representation</v-tab>
+             <v-tab disabled>Brokers</v-tab>
              <v-tab-item>
-                 <resource-meta-data-page ref="metaDataPage" @nextPage="nextPage" :title="title">
+                 <resource-meta-data-page ref="metaDataPage" @nextPage="nextPage">
                  </resource-meta-data-page>
              </v-tab-item>
              <v-tab-item>
@@ -14,8 +15,13 @@
              </v-tab-item>
              <v-tab-item>
                  <resource-representation-page ref="representationPage" :fromRoutePage="fromRoutePage"
-                     @previousPage="previousPage" @save="save">
+                     @previousPage="previousPage" @nextPage="nextPage">
                  </resource-representation-page>
+             </v-tab-item>
+             <v-tab-item>
+                 <resource-brokers-page ref="brokersPage" :fromRoutePage="fromRoutePage" @previousPage="previousPage"
+                     @save="save">
+                 </resource-brokers-page>
              </v-tab-item>
          </v-tabs>
      </div>

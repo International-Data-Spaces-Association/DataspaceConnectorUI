@@ -1,17 +1,18 @@
 import Axios from "axios";
+import dataUtils from "../../../../utils/dataUtils";
 import ResourceMetaDataPage from "./metadata/ResourceMetaDataPage.vue";
 import ResourcePolicyPage from "./policy/ResourcePolicyPage.vue";
 import ResourceRepresentationPage from "./representation/ResourceRepresentationPage.vue";
+import ResourceBrokersPage from "./brokers/ResourceBrokersPage.vue";
 
 export default {
     components: {
         ResourceMetaDataPage,
         ResourcePolicyPage,
-        ResourceRepresentationPage
+        ResourceRepresentationPage,
+        ResourceBrokersPage
     },
-    props: ['fromRoutePage', 'title', 'description', 'language', 'keyword', 'version', 'standardlicense',
-        'publisher', 'contractJson', 'sourceType', 'brokerList'
-    ],
+    props: ['fromRoutePage'],
     data() {
         return {
             currentResource: null,
@@ -26,7 +27,7 @@ export default {
         };
     },
     mounted: function () {
-        if (this.$route.query.id === undefined) {
+        if (this.fromRoutePage || this.$route.query.id === undefined) {
             this.$data.currentResource = null;
         } else {
             this.loadResource(this.$route.query.id);
@@ -91,63 +92,36 @@ export default {
                 contractJson = this.$data.currentResource["ids:contractOffer"][0];
             }
             var sourceType = this.$refs.representationPage.sourceType;
-            // TODO user should select brokers
             var brokerList = [];
+            for (let brokerItem of this.$refs.brokersPage.selected) {
+                brokerList.push(brokerItem.url);
+            }
+
+            console.log(">>> brokerList: ", brokerList);
 
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
                 this.$emit("saved", title, description, language, keywords, version, standardlicense, publisher, contractJson, sourceType, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
-                Axios.get("http://localhost:80/brokers").then(response => {
-                    let brokers = response.data;
-                    for (let broker of brokers) {
-                        brokerList.push(broker[1]["brokerUri"]);
-                    }
-                    this.saveResource(title, description, language, keywords, version, standardlicense, publisher, contractJson, sourceType, brokerList, endpointId);
-                }).catch(error => {
-                    console.log("Error in save(): ", error);
-                });
-            }
-        },
-        saveResource(title, description, language, keyword, version, standardlicense, publisher, contractJson, sourceType, brokerList, endpointId) {
-
-            if (this.$data.currentResource == null) {
-                let params = "?title=" + title + "&description=" + description + "&language=" +
-                    language + "&keyword=" + keyword + "&version=" + version + "&standardlicense=" + standardlicense +
-                    "&publisher=" + publisher + "&brokerList=" + brokerList;
-                Axios.post("http://localhost:80/resource" + params).then((response) => {
-                    let resourceId = response.data.resourceID;
-                    params = "?resourceId=" + resourceId;
-                    Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
-                        params = "?resourceId=" + resourceId + "&endpointId=" + endpointId + "&language=" + language + "&sourceType=" + sourceType;
-                        Axios.post("http://localhost:80/representation" + params).then(() => {
-                            this.$router.push('idresourcesoffering');
-                            this.$root.$emit('showBusyIndicator', false);
-                        }).catch(error => {
-                            console.log("Error in saveResource(): ", error);
-                            this.$root.$emit('showBusyIndicator', false);
-                        });
-                    }).catch(error => {
-                        console.log("Error in saveResource(): ", error);
+                if (this.$data.currentResource == null) {
+                    dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher, contractJson, sourceType, brokerList, endpointId, () => {
+                        this.$router.push('idresourcesoffering');
                         this.$root.$emit('showBusyIndicator', false);
                     });
-
-                }).catch(error => {
-                    console.log("Error in saveResource(): ", error);
-                    this.$root.$emit('showBusyIndicator', false);
-                });
-            } else {
-                let params = "?resourceId=" + this.$data.currentResource["@id"] + "&title=" + title +
-                    "&description=" + description + "&language=" + language + "&keyword=" + keyword + "&version=" + version +
-                    "&standardlicense=" + standardlicense + "&publisher=" + publisher;
-                Axios.put("http://localhost:80/resource" + params, contractJson).then(() => {
-                    this.$router.push('idresourcesoffering');
-                    this.$root.$emit('showBusyIndicator', false);
-                }).catch(error => {
-                    console.log("Error in saveResource(): ", error);
-                    this.$root.$emit('showBusyIndicator', false);
-                });
+                } else {
+                    // TODO EDIT RESOURCE
+                    // let params = "?resourceId=" + this.$data.currentResource["@id"] + "&title=" + title +
+                    //     "&description=" + description + "&language=" + language + "&keyword=" + keyword + "&version=" + version +
+                    //     "&standardlicense=" + standardlicense + "&publisher=" + publisher;
+                    // Axios.put("http://localhost:80/resource" + params, contractJson).then(() => {
+                    //     this.$router.push('idresourcesoffering');
+                    //     this.$root.$emit('showBusyIndicator', false);
+                    // }).catch(error => {
+                    //     console.log("Error in saveResource(): ", error);
+                    //     this.$root.$emit('showBusyIndicator', false);
+                    // });
+                }
             }
         },
         async getResourceAttributes() {

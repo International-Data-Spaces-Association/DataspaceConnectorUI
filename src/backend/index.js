@@ -31,6 +31,17 @@ app.get('/attributes', (req, res) => {
     });
 });
 
+app.post('/connector/endpoint', (req, res) => {
+    var params = "?accessUrl=" + req.query.accessUrl;
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/connector/endpoint" + params);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/connector/endpoint" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on POST /connector/endpoint", error.response.status);
+        res.send(error);
+    });
+});
+
 app.get('/resources', (req, res) => {
     axios.get("http://localhost:" + configModelPort + "/api/ui/resources").then(response => {
         res.send(response.data);
@@ -41,6 +52,7 @@ app.get('/resources', (req, res) => {
 });
 
 app.get('/resource', (req, res) => {
+    console.log(">>> GET http://localhost:" + configModelPort + "/api/ui/resource?resourceId=" + req.query.resourceId);
     axios.get("http://localhost:" + configModelPort + "/api/ui/resource?resourceId=" + req.query.resourceId).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -52,7 +64,7 @@ app.get('/resource', (req, res) => {
 app.post('/resource', (req, res) => {
     var params = "?title=" + req.query.title + "&description=" + req.query.description +
         "&language=" + req.query.language + "&keyword=" + req.query.keyword + "&version=" + req.query.version + "&standardlicense=" +
-        req.query.standardlicense + "&publisher=" + req.query.publisher + "&brokerList=";
+        req.query.standardlicense + "&publisher=" + req.query.publisher;
     console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/resource" + params);
     axios.post("http://localhost:" + configModelPort + "/api/ui/resource" + params).then(response => {
         res.send(response.data);

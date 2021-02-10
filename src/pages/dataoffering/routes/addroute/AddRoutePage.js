@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-import moment from 'moment';
 import EditNodeDialog from "./dialog/EditNodeDialog.vue";
 import EditIdsEndpointDialog from "./dialog/editidsendpointdialog/EditIdsEndpointDialog.vue";
 import EditConnectionDialog from "./dialog/EditConnectionDialog.vue";
@@ -35,7 +34,7 @@ export default {
                 this.$data.saveMessage = "";
                 if (this.$route.query.id === undefined) {
                     this.$data.currentRoute = null;
-                    this.description = moment().format("YYYY-MM-DD") + " - Unnamed";
+                    this.description = dataUtils.getCurrentDate() + " - Unnamed";
                 } else {
                     this.loadRoute(this.$route.query.id);
                 }

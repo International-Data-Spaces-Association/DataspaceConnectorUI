@@ -1,6 +1,7 @@
 import Axios from "axios";
 import AddBrokerDialog from "@/pages/brokers/dialog/AddBrokerDialog.vue";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
+import dataUtils from "../../utils/dataUtils";
 
 
 export default {
@@ -34,8 +35,7 @@ export default {
     },
     methods: {
         getBrokers() {
-            Axios.get("http://localhost:80/brokers").then(response => {
-                var brokers = response.data;
+            dataUtils.getBrokers(brokers => {
                 this.$data.brokers = [];
                 for (var broker of brokers) {
                     this.$data.brokers.push({
@@ -46,9 +46,6 @@ export default {
                 }
 
                 this.$forceUpdate();
-                this.$root.$emit('showBusyIndicator', false);
-            }).catch(error => {
-                console.log("Error in getBrokers(): ", error);
                 this.$root.$emit('showBusyIndicator', false);
             });
         },

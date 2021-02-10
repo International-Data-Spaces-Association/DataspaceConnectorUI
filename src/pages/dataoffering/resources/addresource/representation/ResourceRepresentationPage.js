@@ -52,8 +52,8 @@ export default {
         previousPage() {
             this.$emit('previousPage')
         },
-        save() {
-            this.$emit('save')
+        nextPage() {
+            this.$emit('nextPage');
         },
         backendConnectionSaved() {
             this.getBackendConnections();
@@ -93,7 +93,6 @@ export default {
             } else {
                 this.$data.sourceType = node.sourceType;
             }
-            // TODO this.$data.brokerList = brokerList;
         }
     }
 };
