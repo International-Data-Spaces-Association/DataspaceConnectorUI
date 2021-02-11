@@ -14,7 +14,8 @@ export default {
                 v => !!v || 'This data is required',
                 v => /^[0-9.]+$/.test(v) || 'Only numbers and "." allowed',
             ],
-            nTimesUsageValid: false
+            nTimesUsageValid: false,
+            visibleclass: ""
         };
     },
     mounted: function () {
@@ -34,19 +35,17 @@ export default {
         nTimesUsageTfChange() {
             this.$data.contractJson = {
                 "@context": {
-                    "ids": "https://w3id.org/idsa/core/"
+                    "ids": "https://w3id.org/idsa/core/",
+                    "idsc": "https://w3id.org/idsa/code/"
                 },
                 "@type": "ids:NotMoreThanNOffer",
-                "@id": "https://w3id.org/idsa/autogen/notMoreThanNOffer/ebabc07d-b1c4-4a0a-9b90-20691ef84561",
+                "@id": "https://w3id.org/idsa/autogen/contractOffer/90e2bb48-c2eb-4723-ac8e-f404258173e7",
                 "ids:permission": [{
                     "@type": "ids:Permission",
-                    "@id": "https://w3id.org/idsa/autogen/permission/69114862-8d4e-4c91-8ff8-c76215154a94",
+                    "@id": "https://w3id.org/idsa/autogen/permission/f0760bec-e888-4c03-88c7-0b509e147a52",
                     "ids:description": [{
                         "@value": "n-times-usage",
                         "@type": "http://www.w3.org/2001/XMLSchema#string"
-                    }],
-                    "ids:action": [{
-                        "@id": "idsc:USE"
                     }],
                     "ids:title": [{
                         "@value": "Example Usage Policy",
@@ -54,20 +53,22 @@ export default {
                     }],
                     "ids:constraint": [{
                         "@type": "ids:Constraint",
-                        "@id": "https://w3id.org/idsa/autogen/constraint/d97dd711-2997-4308-8082-075be10b4374",
+                        "@id": "https://w3id.org/idsa/autogen/constraint/59000467-dc39-4e8c-a69e-2939a171df23",
                         "ids:operator": {
                             "@id": DataUtils.convertOperatorSymbolToType(this.$data.nTimesUsageOperator)
+                        },
+                        "ids:pipEndpoint": {
+                            "@id": "https://localhost:8080/admin/api/resources/"
                         },
                         "ids:leftOperand": {
                             "@id": "idsc:COUNT"
                         },
                         "ids:rightOperand": {
-                            "@value": this.$data.nTimesUsageValue,
-                            "@type": "xsd:double"
-                        },
-                        "ids:pipEndpoint": {
-                            "@id": "https://localhost:8080/admin/api/resources/"
+                            "@value": this.$data.nTimesUsageValue
                         }
+                    }],
+                    "ids:action": [{
+                        "@id": "idsc:READ"
                     }]
                 }]
             };

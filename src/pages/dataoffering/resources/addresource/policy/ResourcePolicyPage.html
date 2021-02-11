@@ -4,14 +4,12 @@
             :items="['N Times Usage', 'Duration Usage', 'Usage During Interval']">
         </v-select>
         <div>
-            <n-times-usage v-if="policyType == 'N Times Usage'" @previousPage="previousPage" @nextPage="nextPage"
-                ref="N Times Usage">
+            <n-times-usage @previousPage="previousPage" @nextPage="nextPage" ref="N Times Usage">
             </n-times-usage>
-            <duration-usage v-if="policyType == 'Duration Usage'" @previousPage="previousPage" @nextPage="nextPage"
-                ref="Duration Usage">
+            <duration-usage @previousPage="previousPage" @nextPage="nextPage" ref="Duration Usage">
             </duration-usage>
-            <usage-during-interval v-if="policyType == 'Usage During Interval'" @previousPage="previousPage"
-                @nextPage="nextPage" ref="Usage During Interval"></usage-during-interval>
+            <usage-during-interval @previousPage="previousPage" @nextPage="nextPage" ref="Usage During Interval">
+            </usage-during-interval>
         </div>
     </v-col>
 </v-row>

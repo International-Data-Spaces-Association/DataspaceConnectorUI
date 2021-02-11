@@ -1,4 +1,4 @@
-import DataUtils from "@/utils/dataUtils";
+import dataUtils from "@/utils/dataUtils";
 import NTimesUsage from "./patterns/ntimesusage/NTimesUsage.vue";
 import DurationUsage from "./patterns/durationusage/DurationUsage.vue";
 import UsageDuringInterval from "./patterns/usageduringinterval/UsageDuringInterval.vue";
@@ -16,12 +16,24 @@ export default {
         };
     },
     mounted: function () {
-        this.$data.policyType = DataUtils.POLICY_N_TIMES_USAGE;
+        this.$data.policyType = dataUtils.POLICY_N_TIMES_USAGE;
         if (this.$parent.$parent.$parent.$parent.currentResource != null) {
             this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
         }
         if (this.$parent.$parent.$parent.$parent.currentNode != null) {
             this.set(this.$parent.$parent.$parent.$parent.currentNode);
+        }
+    },
+    watch: {
+        policyType: function () {
+            for (let name of dataUtils.getPolicyNames()) {
+                if (name == this.$data.policyType) {
+                    this.$refs[name].visibleclass = "";
+                } else {
+                    this.$refs[name].visibleclass = "invisible-policy";
+                }
+                console.log(">>> ref: ", this.$refs[name]);
+            }
         }
     },
     methods: {
@@ -31,7 +43,8 @@ export default {
             }
         },
         loadResource(resource) {
-            this.setPolicy(resource["ids:contractOffer"]);
+            console.log(">>> policy page loadResource: ", resource);
+            this.setPolicy(resource["ids:contractOffer"][0]);
         },
         set(node) {
             if (node.contractJson === undefined) {
@@ -42,8 +55,10 @@ export default {
             }
         },
         setPolicy(contract) {
-            this.$data.policyType = DataUtils.convertTypeToPolicyName(contract["@type"]);
-            this.$data.policies[this.$data.policyType].setPolicy(contract);
+            console.log(">>> policy page setPolicy: ", contract);
+            this.$data.policyType = dataUtils.convertTypeToPolicyName(contract["@type"]);
+            console.log(">>> ", this.$refs[this.$data.policyType]);
+            this.$refs[this.$data.policyType].setPolicy(contract);
         },
         previousPage() {
             this.$emit('previousPage')

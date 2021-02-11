@@ -99,7 +99,6 @@ app.delete('/resource', (req, res) => {
 app.put('/contract', (req, res) => {
     var params = "?resourceId=" + req.query.resourceId;
     console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/resource/contract" + params);
-    console.log(req.body);
     axios.put("http://localhost:" + configModelPort + "/api/ui/resource/contract" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -152,45 +151,46 @@ app.get('/approute/step/endpoint/info', (req, res) => {
     });
 });
 
-app.get('/backend/connections', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/backend/connections").then(response => {
+app.get('/generic/endpoints', (req, res) => {
+    console.log(">>> GET http: //localhost:" + configModelPort + "/api/ui/generic/endpoints");
+    axios.get("http://localhost:" + configModelPort + "/api/ui/generic/endpoints").then(response => {
         res.send(response.data);
     }).catch(error => {
-        console.log("Error on GET /backend/connections", error.response.status);
+        console.log("Error on GET /generic/endpoints", error.response.status);
         res.send(error);
     });
 });
 
-app.post('/backend/connection', (req, res) => {
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/backend/connection?accessURL=" + req.query.accessUrl + "&username=" +
+app.post('/generic/endpoint', (req, res) => {
+    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/generic/endpoint?accessURL=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/backend/connection?accessURL=" + req.query.accessUrl + "&username=" +
+    axios.post("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?accessURL=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password).then(response => {
         res.send(response.data);
     }).catch(error => {
-        console.log("Error on POST /backend/connection", error.response.status);
+        console.log("Error on POST /generic/endpoint", error.response.status);
         res.send(error);
     });
 });
 
-app.put('/backend/connection', (req, res) => {
-    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
+app.put('/generic/endpoint', (req, res) => {
+    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password);
-    axios.put("http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
+    axios.put("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password).then(response => {
         res.send(response.data);
     }).catch(error => {
-        console.log("Error on PUT /backend/connection", error.response.status);
+        console.log("Error on PUT /generic/endpoint", error.response.status);
         res.send(error);
     });
 });
 
-app.delete('/backend/connection', (req, res) => {
-    console.log(">>> DELETE http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id);
-    axios.delete("http://localhost:" + configModelPort + "/api/ui/backend/connection?id=" + req.query.id).then(response => {
+app.delete('/generic/endpoint', (req, res) => {
+    console.log(">>> DELETE http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + req.query.id);
+    axios.delete("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + req.query.id).then(response => {
         res.send(response.data);
     }).catch(error => {
-        console.log("Error on DELETE /backend/connection", error.response.status);
+        console.log("Error on DELETE /generic/endpoint", error.response.status);
         res.send(error);
     });
 });

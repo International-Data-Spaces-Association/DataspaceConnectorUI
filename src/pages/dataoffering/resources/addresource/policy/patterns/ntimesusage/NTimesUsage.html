@@ -1,4 +1,4 @@
-<v-form v-model="nTimesUsageValid" ref="form">
+<v-form v-model="nTimesUsageValid" ref="form" :class="visibleclass">
     <v-row no-gutters>
         <v-col cols="12" md="3">
             <v-select label="Operator" v-model="nTimesUsageOperator" :items="['=', '<=', '<']" :rules="defaultRule"

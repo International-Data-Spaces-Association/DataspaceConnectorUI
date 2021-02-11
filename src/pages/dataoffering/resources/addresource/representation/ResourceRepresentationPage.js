@@ -79,13 +79,19 @@ export default {
                 this.$data.sourceType = resource["ids:representation"][0]["ids:sourceType"];
             }
             this.$data.selected = [];
-            for (var backendConnection of this.$data.backendConnections) {
-                for (var res of backendConnection.appRouteOutput) {
-                    if (res["@id"] == resource["@id"]) {
-                        this.$data.selected.push(backendConnection);
+            dataUtils.getRoutes(routes => {
+                for (let route of routes) {
+                    if (route["ids:hasSubRoute"] !== undefined) {
+                        for (let step of route["ids:hasSubRoute"]) {
+                            if (step["ids:appRouteOutput"] !== undefined) {
+                                if (step["ids:appRouteOutput"][0]["@id"] == resource["@id"]) {
+                                    this.$data.selected.push(dataUtils.genericEndpointToBackendConnection(route["ids:appRouteStart"][0]));
+                                }
+                            }
+                        }
                     }
                 }
-            }
+            });
         },
         set(node) {
             if (node.sourceType === undefined) {

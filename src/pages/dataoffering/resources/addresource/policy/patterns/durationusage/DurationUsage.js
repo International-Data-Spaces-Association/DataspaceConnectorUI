@@ -8,7 +8,8 @@ export default {
                 v => !!v || 'This data is required',
                 v => /^[0-9.]+$/.test(v) || 'Only numbers and "." allowed',
             ],
-            durationValid: false
+            durationValid: false,
+            visibleclass: ""
         };
     },
     mounted: function () {

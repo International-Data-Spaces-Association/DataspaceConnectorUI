@@ -8,7 +8,8 @@ export default {
             defaultRule: [
                 v => !!v || 'This data is required'
             ],
-            usageDuringIntervalValid: false
+            usageDuringIntervalValid: false,
+            visibleclass: ""
         };
     },
     mounted: function () {
