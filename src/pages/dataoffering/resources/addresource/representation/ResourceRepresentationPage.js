@@ -9,7 +9,7 @@ export default {
         AddResourceDatabasePage,
         AddBackendConnectionDialog
     },
-    props: ['fromRoutePage'],
+    props: ['fromRoutePage', 'readonly'],
     data() {
         return {
             search: '',
@@ -65,18 +65,15 @@ export default {
                 if (this.$parent.$parent.$parent.$parent.currentResource != null) {
                     this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
                 }
-
-                if (this.$parent.$parent.$parent.$parent.currentNode != null) {
-                    this.set(this.$parent.$parent.$parent.$parent.currentNode);
-                }
-
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
             });
         },
         loadResource(resource) {
-            if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
-                this.$data.sourceType = resource["ids:representation"][0]["ids:sourceType"];
+            if (resource.sourceType === undefined) {
+                this.$refs.form.reset();
+            } else {
+                this.$data.sourceType = resource.sourceType;
             }
             this.$data.selected = [];
             dataUtils.getRoutes(routes => {
@@ -84,21 +81,16 @@ export default {
                     if (route["ids:hasSubRoute"] !== undefined) {
                         for (let step of route["ids:hasSubRoute"]) {
                             if (step["ids:appRouteOutput"] !== undefined) {
-                                if (step["ids:appRouteOutput"][0]["@id"] == resource["@id"]) {
+                                console.log(">>> ROUTE OUT: ", step["ids:appRouteOutput"][0]["@id"]);
+                                if (step["ids:appRouteOutput"][0]["@id"] == resource.id) {
                                     this.$data.selected.push(dataUtils.genericEndpointToBackendConnection(route["ids:appRouteStart"][0]));
                                 }
                             }
                         }
                     }
                 }
+                console.log("BC SELECTED: ", this.$data.selected);
             });
-        },
-        set(node) {
-            if (node.sourceType === undefined) {
-                this.$refs.form.reset();
-            } else {
-                this.$data.sourceType = node.sourceType;
-            }
         }
     }
 };

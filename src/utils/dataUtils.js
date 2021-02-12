@@ -1,5 +1,7 @@
     import Axios from "axios";
     import moment from 'moment';
+    import clientDataModel from "@/datamodel/clientDataModel";
+
 
     const POLICY_N_TIMES_USAGE = "N Times Usage";
     const POLICY_DURATION_USAGE = "Duration Usage";
@@ -62,6 +64,28 @@
                 }
             }
             return type;
+        },
+
+        getResources(callback) {
+            Axios.get("http://localhost:80/resources").then(response => {
+                let resources = [];
+                for (var idsResource of response.data) {
+                    resources.push(clientDataModel.convertIdsResource(idsResource));
+                }
+                callback(resources);
+            }).catch(error => {
+                console.log(error);
+                callback([]);
+            });
+        },
+
+        getResource(id, callback) {
+            Axios.get("http://localhost:80/resource?resourceId=" + id).then(response => {
+                callback(clientDataModel.convertIdsResource(response.data));
+            }).catch(error => {
+                console.log("Error in loadResource(): ", error);
+                callback();
+            });
         },
 
         getLanguages(callback) {

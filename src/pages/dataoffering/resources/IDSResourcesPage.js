@@ -1,12 +1,12 @@
-import Axios from "axios";
-import DataUtils from "@/utils/dataUtils";
+import dataUtils from "@/utils/dataUtils";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
-import dataUtils from "../../../utils/dataUtils";
+import ResourceDetailsDialog from "./resourcedetailsdialog/ResourceDetailsDialog.vue";
 
 
 export default {
     components: {
-        ConfirmationDialog
+        ConfirmationDialog,
+        ResourceDetailsDialog
     },
     data() {
         return {
@@ -24,7 +24,7 @@ export default {
                     value: 'type'
                 }, {
                     text: 'Policy',
-                    value: 'policy'
+                    value: 'policyName'
                 },
                 {
                     text: '',
@@ -44,22 +44,10 @@ export default {
     methods: {
         getResources() {
             this.$root.$emit('showBusyIndicator', true);
-            Axios.get("http://localhost:80/resources").then(response => {
-                this.$data.resources = [];
-                for (var resource of response.data) {
-                    this.$data.resources.push({
-                        id: resource["@id"],
-                        title: resource["ids:title"][0]["@value"],
-                        description: resource["ids:description"][0]["@value"],
-                        type: resource["ids:representation"][0]["ids:sourceType"],
-                        policy: DataUtils.convertTypeToPolicyName(resource["ids:contractOffer"][0]["@type"])
-                    });
-                }
+            dataUtils.getResources(resources => {
+                this.$data.resources = resources;
                 this.filterChanged();
                 this.$forceUpdate();
-                this.$root.$emit('showBusyIndicator', false);
-            }).catch(error => {
-                console.log(error);
                 this.$root.$emit('showBusyIndicator', false);
             });
         },
@@ -95,6 +83,10 @@ export default {
         },
         editItem(item) {
             this.$router.push('editresource?id=' + item.id);
+        },
+        showItem(item) {
+            console.log(">>> showItem: ", item);
+            this.$refs.resourceDetailsDialog.show(item);
         }
     },
 };

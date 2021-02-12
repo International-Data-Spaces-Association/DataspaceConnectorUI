@@ -1,14 +1,15 @@
 <v-row no-gutters>
     <v-col cols="12" md="11">
         <v-select label="Policy Pattern" v-model="policyType"
-            :items="['N Times Usage', 'Duration Usage', 'Usage During Interval']">
+            :items="['N Times Usage', 'Duration Usage', 'Usage During Interval']" readonly="readonly">
         </v-select>
         <div>
-            <n-times-usage @previousPage="previousPage" @nextPage="nextPage" ref="N Times Usage">
+            <n-times-usage @previousPage="previousPage" @nextPage="nextPage" ref="N Times Usage" readonly="readonly">
             </n-times-usage>
-            <duration-usage @previousPage="previousPage" @nextPage="nextPage" ref="Duration Usage">
+            <duration-usage @previousPage="previousPage" @nextPage="nextPage" ref="Duration Usage" readonly="readonly">
             </duration-usage>
-            <usage-during-interval @previousPage="previousPage" @nextPage="nextPage" ref="Usage During Interval">
+            <usage-during-interval @previousPage="previousPage" @nextPage="nextPage" ref="Usage During Interval"
+                readonly="readonly">
             </usage-during-interval>
         </div>
     </v-col>

@@ -1,5 +1,6 @@
 export default {
     components: {},
+    props: ['readonly'],
     data() {
         return {
             contractJson: "",

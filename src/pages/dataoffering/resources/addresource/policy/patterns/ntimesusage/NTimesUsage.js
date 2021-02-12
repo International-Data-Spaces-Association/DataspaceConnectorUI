@@ -2,6 +2,7 @@ import DataUtils from "@/utils/dataUtils";
 
 export default {
     components: {},
+    props: ['readonly'],
     data() {
         return {
             contractJson: "",
@@ -29,8 +30,13 @@ export default {
             this.$emit('nextPage')
         },
         setPolicy(contract) {
-            this.$data.nTimesUsageOperator = DataUtils.convertOperatorTypeToSymbol(contract["ids:permission"][0]["ids:constraint"][0]["ids:operator"]["@id"]);
-            this.$data.nTimesUsageValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
+            if (contract == "") {
+                this.$data.nTimesUsageOperator = null;
+                this.$data.nTimesUsageValue = null;
+            } else {
+                this.$data.nTimesUsageOperator = DataUtils.convertOperatorTypeToSymbol(contract["ids:permission"][0]["ids:constraint"][0]["ids:operator"]["@id"]);
+                this.$data.nTimesUsageValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
+            }
         },
         nTimesUsageTfChange() {
             this.$data.contractJson = {

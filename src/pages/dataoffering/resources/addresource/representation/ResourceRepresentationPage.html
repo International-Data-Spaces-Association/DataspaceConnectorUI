@@ -2,27 +2,36 @@
   <v-row no-gutters>
     <v-col cols="12" md="11">
       <v-form v-model="valid" ref="form">
-        <v-select label="Source Type" v-model="sourceType" :items="sourceTypeItems" :rules="defaultRule" required>
+        <v-select label="Source Type" v-model="sourceType" :items="sourceTypeItems" :rules="defaultRule" required
+          readonly="readonly">
         </v-select>
       </v-form>
 
     </v-col>
   </v-row>
 
-  <v-row v-if="fromRoutePage === undefined" no-gutters>
+  <v-row v-if="fromRoutePage === undefined && !readonly" no-gutters>
     <v-col cols="12" md="6" sm="12">
       <add-backend-connection-dialog ref="addBackendConnectionDialog" @backendConnectionSaved="backendConnectionSaved">
       </add-backend-connection-dialog>
       <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
     </v-col>
   </v-row>
-  <v-row v-if="fromRoutePage === undefined" no-gutters>
+  <v-row v-if="fromRoutePage === undefined &&!readonly" no-gutters>
     <v-col cols="12" md="11" sm="12">
       <v-data-table v-model="selected" :headers="headers" :items="backendConnections" :items-per-page="5"
         :search="search" show-select :single-select=true item-key="url">
       </v-data-table>
     </v-col>
   </v-row>
+  <v-row v-if="fromRoutePage === undefined &&readonly" no-gutters>
+    <v-col cols="12" md="11" sm="12">
+      <v-data-table :headers="headers" :items="selected" :items-per-page="5" :search="search" :single-select=true
+        item-key="url">
+      </v-data-table>
+    </v-col>
+  </v-row>
   <v-btn color="primary" @click.native="previousPage" class="prev-page-button">Back</v-btn>
-  <v-btn color="primary" @click.native="nextPage" class="prev-page-button" :disabled="!allValid">Next</v-btn>
+  <v-btn color="primary" @click.native="nextPage" class="prev-page-button" :disabled="!readonly && !allValid">Next
+  </v-btn>
 </div>

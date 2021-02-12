@@ -6,21 +6,22 @@
              <v-tab disabled>Representation</v-tab>
              <v-tab disabled>Brokers</v-tab>
              <v-tab-item>
-                 <resource-meta-data-page ref="metaDataPage" @nextPage="nextPage">
+                 <resource-meta-data-page ref="metaDataPage" @nextPage="nextPage" :readonly="readonly">
                  </resource-meta-data-page>
              </v-tab-item>
              <v-tab-item>
-                 <resource-policy-page ref="policyPage" @previousPage="previousPage" @nextPage="nextPage">
+                 <resource-policy-page ref="policyPage" @previousPage="previousPage" @nextPage="nextPage"
+                     :readonly="readonly">
                  </resource-policy-page>
              </v-tab-item>
              <v-tab-item>
                  <resource-representation-page ref="representationPage" :fromRoutePage="fromRoutePage"
-                     @previousPage="previousPage" @nextPage="nextPage">
+                     :readonly="readonly" @previousPage="previousPage" @nextPage="nextPage">
                  </resource-representation-page>
              </v-tab-item>
              <v-tab-item>
-                 <resource-brokers-page ref="brokersPage" :fromRoutePage="fromRoutePage" @previousPage="previousPage"
-                     @save="save">
+                 <resource-brokers-page ref="brokersPage" :fromRoutePage="fromRoutePage" :readonly="readonly"
+                     @previousPage="previousPage" @save="save">
                  </resource-brokers-page>
              </v-tab-item>
          </v-tabs>

@@ -1,18 +1,23 @@
 <v-row no-gutters>
     <v-col cols="12" md="12">
         <v-form v-model="valid" ref="form">
-            <v-text-field label="Title" v-model="title" :rules="defaultRule" required> </v-text-field>
-            <v-text-field label="Description" v-model="description" :rules="defaultRule" required>
+            <v-text-field label="Title" v-model="title" :rules="defaultRule" required readonly="readonly">
             </v-text-field>
-            <v-text-field label="Publisher" v-model="publisher" :rules="defaultRule" required>
+            <v-text-field label="Description" v-model="description" :rules="defaultRule" required readonly="readonly">
             </v-text-field>
-            <v-text-field label="Keywords" v-model="keywords" :rules="defaultRule" required> </v-text-field>
-            <v-text-field label="Standard License" v-model="standardlicense" :rules="defaultRule" required>
+            <v-text-field label="Publisher" v-model="publisher" :rules="defaultRule" required readonly="readonly">
             </v-text-field>
-            <v-text-field label="Version" v-model="version" :rules="numberRule" required> </v-text-field>
-            <v-select label="Language" v-model="language" :items="languageItems" :rules="defaultRule" required>
+            <v-text-field label="Keywords" v-model="keywords" :rules="defaultRule" required readonly="readonly">
+            </v-text-field>
+            <v-text-field label="Standard License" v-model="standardlicense" :rules="defaultRule" required
+                readonly="readonly">
+            </v-text-field>
+            <v-text-field label="Version" v-model="version" :rules="numberRule" required readonly="readonly">
+            </v-text-field>
+            <v-select label="Language" v-model="language" :items="languageItems" :rules="defaultRule" required
+                readonly="readonly">
             </v-select>
-            <v-btn color="primary" @click.native="nextPage" :disabled="!valid">Next</v-btn>
+            <v-btn color="primary" @click.native="nextPage" :disabled="(!readonly && !valid)">Next</v-btn>
         </v-form>
     </v-col>
 </v-row>

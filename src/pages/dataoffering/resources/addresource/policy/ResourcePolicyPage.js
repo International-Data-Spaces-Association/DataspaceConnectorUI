@@ -9,6 +9,7 @@ export default {
         DurationUsage,
         UsageDuringInterval
     },
+    props: ['readonly'],
     data() {
         return {
             policyType: null,
@@ -19,9 +20,6 @@ export default {
         this.$data.policyType = dataUtils.POLICY_N_TIMES_USAGE;
         if (this.$parent.$parent.$parent.$parent.currentResource != null) {
             this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
-        }
-        if (this.$parent.$parent.$parent.$parent.currentNode != null) {
-            this.set(this.$parent.$parent.$parent.$parent.currentNode);
         }
     },
     watch: {
@@ -38,26 +36,27 @@ export default {
     },
     methods: {
         gotVisible() {
-            if (this.$parent.$parent.$parent.$parent.currentNode != null) {
-                this.set(this.$parent.$parent.$parent.$parent.currentNode);
+            if (this.$parent.$parent.$parent.$parent.currentResource != null) {
+                this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
             }
         },
         loadResource(resource) {
-            console.log(">>> policy page loadResource: ", resource);
-            this.setPolicy(resource["ids:contractOffer"][0]);
-        },
-        set(node) {
-            if (node.contractJson === undefined) {
+            console.log(">>> LOAD: ", resource);
+            if (resource.contract === undefined) {
                 this.$data.policyType = "N Times Usage";
                 this.$refs.form.reset();
             } else {
-                this.setPolicy(node.contractJson);
+                this.setPolicy(resource.contract);
             }
         },
         setPolicy(contract) {
             console.log(">>> policy page setPolicy: ", contract);
-            this.$data.policyType = dataUtils.convertTypeToPolicyName(contract["@type"]);
-            console.log(">>> ", this.$refs[this.$data.policyType]);
+            if (contract == "") {
+                this.$data.policyType = dataUtils.POLICY_N_TIMES_USAGE;
+            } else {
+                this.$data.policyType = dataUtils.convertTypeToPolicyName(contract["@type"]);
+                console.log(">>> ", this.$refs[this.$data.policyType]);
+            }
             this.$refs[this.$data.policyType].setPolicy(contract);
         },
         previousPage() {

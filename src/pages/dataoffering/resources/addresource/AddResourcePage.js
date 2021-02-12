@@ -12,11 +12,10 @@ export default {
         ResourceRepresentationPage,
         ResourceBrokersPage
     },
-    props: ['fromRoutePage'],
+    props: ['fromRoutePage', 'readonly'],
     data() {
         return {
             currentResource: null,
-            currentNode: null,
             active_tab: 0,
             resourceAttributes: null,
             resourceRequiredAttributes: null,
@@ -27,12 +26,11 @@ export default {
         };
     },
     mounted: function () {
-        if (this.fromRoutePage || this.$route.query.id === undefined) {
+        if (this.$route.query.id === undefined) {
             this.$data.currentResource = null;
         } else {
             this.loadResource(this.$route.query.id);
         }
-        this.$data.currentNode = null;
     },
     methods: {
         previousPage() {
@@ -58,19 +56,17 @@ export default {
         },
         loadResource(id) {
             this.$root.$emit('showBusyIndicator', true);
-            Axios.get("http://localhost:80/resource?resourceId=" + id).then(response => {
-                this.$data.currentResource = response.data;
+            dataUtils.getResource(id, resource => {
+                this.$data.currentResource = resource;
                 this.$refs.metaDataPage.loadResource(this.$data.currentResource);
                 this.$root.$emit('showBusyIndicator', false);
                 this.$forceUpdate();
-            }).catch(error => {
-                console.log("Error in loadResource(): ", error);
-                this.$root.$emit('showBusyIndicator', false);
             });
         },
-        set(node) {
-            this.$data.currentNode = node;
-            this.$refs.metaDataPage.set(node);
+        set(resource) {
+            console.log(">>> ADD RES: ", resource);
+            this.$data.currentResource = resource;
+            this.$refs.metaDataPage.set(resource);
             this.$data.active_tab = 0;
         },
         save() {

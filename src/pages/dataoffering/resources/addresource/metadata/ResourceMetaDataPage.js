@@ -5,6 +5,7 @@ export default {
     components: {
         ComponentGroup
     },
+    props: ['readonly'],
     data() {
         return {
             title: "",
@@ -38,25 +39,25 @@ export default {
             this.$emit('nextPage');
         },
         loadResource(resource) {
-            this.$data.title = resource["ids:title"][0]["@value"];
-            this.$data.description = resource["ids:description"][0]["@value"];
-            this.$data.publisher = resource["ids:publisher"]["@id"];
-            this.$data.keywords = resource["ids:keyword"][0]["@value"];
-            this.$data.standardlicense = resource["ids:standardLicense"]["@id"];
-            this.$data.version = resource["ids:version"];
-            this.$data.language = resource["ids:language"][0]["@id"].replace("idsc:", "");
+            this.$data.title = resource.title;
+            this.$data.description = resource.description;
+            this.$data.publisher = resource.publisher;
+            this.$data.keywords = resource.keywords;
+            this.$data.standardlicense = resource.standardLicense;
+            this.$data.version = resource.version;
+            this.$data.language = resource.language.replace("idsc:", "");
         },
-        set(node) {
-            if (node.title === undefined) {
+        set(resource) {
+            if (resource.title == "") {
                 this.$refs.form.reset();
             } else {
-                this.$data.title = node.title;
-                this.$data.description = node.description;
-                this.$data.language = node.language;
-                this.$data.keywords = node.keywords;
-                this.$data.version = node.version;
-                this.$data.standardlicense = node.standardlicense;
-                this.$data.publisher = node.publisher;
+                this.$data.title = resource.title;
+                this.$data.description = resource.description;
+                this.$data.language = resource.language;
+                this.$data.keywords = resource.keywords;
+                this.$data.version = resource.version;
+                this.$data.standardlicense = resource.standardlicense;
+                this.$data.publisher = resource.publisher;
             }
         }
     }

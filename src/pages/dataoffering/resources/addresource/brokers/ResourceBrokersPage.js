@@ -2,7 +2,7 @@ import dataUtils from "@/utils/dataUtils";
 
 export default {
     components: {},
-    props: ['fromRoutePage'],
+    props: ['fromRoutePage', 'readonly'],
     data() {
         return {
             search: '',

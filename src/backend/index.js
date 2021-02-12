@@ -43,6 +43,7 @@ app.post('/connector/endpoint', (req, res) => {
 });
 
 app.get('/resources', (req, res) => {
+    console.log(">>> GET http://localhost:" + configModelPort + "/api/ui/resources");
     axios.get("http://localhost:" + configModelPort + "/api/ui/resources").then(response => {
         res.send(response.data);
     }).catch(error => {
