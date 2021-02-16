@@ -3,7 +3,7 @@
     <v-col cols="12" md="11">
       <v-form v-model="valid" ref="form">
         <v-select label="Source Type" v-model="sourceType" :items="sourceTypeItems" :rules="defaultRule" required
-          readonly="readonly">
+          :readonly="readonly">
         </v-select>
       </v-form>
 

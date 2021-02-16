@@ -1,6 +1,5 @@
 export default {
     components: {},
-    props: ['readonly'],
     data() {
         return {
             contractJson: "",
@@ -10,7 +9,8 @@ export default {
                 v => !!v || 'This data is required'
             ],
             usageDuringIntervalValid: false,
-            visibleclass: ""
+            visibleclass: "",
+            readonly: false
         };
     },
     mounted: function () {
@@ -26,6 +26,7 @@ export default {
         setPolicy(contract) {
             this.$data.usageDuringIntervalFromValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
             this.$data.usageDuringIntervalToValue = contract["ids:permission"][0]["ids:constraint"][1]["ids:rightOperand"]["@value"];
+            this.usageDuringIntervalTfChange();
         },
         usageDuringIntervalTfChange() {
             this.$data.contractJson = {

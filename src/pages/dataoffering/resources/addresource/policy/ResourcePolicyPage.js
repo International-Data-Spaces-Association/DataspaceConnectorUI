@@ -9,11 +9,11 @@ export default {
         DurationUsage,
         UsageDuringInterval
     },
-    props: ['readonly'],
     data() {
         return {
             policyType: null,
             contractJson: "",
+            readonly: false
         };
     },
     mounted: function () {
@@ -21,6 +21,7 @@ export default {
         if (this.$parent.$parent.$parent.$parent.currentResource != null) {
             this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
         }
+        this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
     },
     watch: {
         policyType: function () {
@@ -39,6 +40,7 @@ export default {
             if (this.$parent.$parent.$parent.$parent.currentResource != null) {
                 this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
             }
+            this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
         },
         loadResource(resource) {
             console.log(">>> LOAD: ", resource);
@@ -63,7 +65,7 @@ export default {
             this.$emit('previousPage')
         },
         nextPage() {
-            console.log(">>> REF", this.$refs[this.$data.policyType].contractJson);
+            console.log(">>> REF", this.$refs[this.$data.policyType]);
             this.$data.contractJson = this.$refs[this.$data.policyType].contractJson;
             this.$emit('nextPage')
         }

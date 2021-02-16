@@ -5,7 +5,6 @@ export default {
     components: {
         ComponentGroup
     },
-    props: ['readonly'],
     data() {
         return {
             title: "",
@@ -23,10 +22,21 @@ export default {
             numberRule: [
                 v => !!v || 'This data is required',
                 v => /^[0-9.]+$/.test(v) || 'Only numbers and "." allowed',
-            ]
+            ],
+            urlRule: [
+                v => !!v || 'This data is required',
+                v => /^[a-z]+[:][/][/][a-z.]+$/.test(v) || 'Only URLs (xyz://xyz) allowed',
+            ],
+            readonly: false
         };
     },
+    watch: {
+        readonly: function () {
+            console.log(">>> META READONLY: ", this.$data.readonly);
+        }
+    },
     mounted: function () {
+        console.log(">>> META READONLY: ", this.$data.readonly);
         this.loadLanguages();
     },
     methods: {

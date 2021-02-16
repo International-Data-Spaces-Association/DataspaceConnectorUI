@@ -21,7 +21,7 @@ export default {
                 },
                 {
                     text: 'Type',
-                    value: 'type'
+                    value: 'sourceType'
                 }, {
                     text: 'Policy',
                     value: 'policyName'

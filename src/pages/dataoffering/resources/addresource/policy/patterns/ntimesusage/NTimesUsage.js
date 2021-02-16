@@ -2,7 +2,6 @@ import DataUtils from "@/utils/dataUtils";
 
 export default {
     components: {},
-    props: ['readonly'],
     data() {
         return {
             contractJson: "",
@@ -16,7 +15,8 @@ export default {
                 v => /^[0-9.]+$/.test(v) || 'Only numbers and "." allowed',
             ],
             nTimesUsageValid: false,
-            visibleclass: ""
+            visibleclass: "",
+            readonly: false
         };
     },
     mounted: function () {
@@ -37,6 +37,7 @@ export default {
                 this.$data.nTimesUsageOperator = DataUtils.convertOperatorTypeToSymbol(contract["ids:permission"][0]["ids:constraint"][0]["ids:operator"]["@id"]);
                 this.$data.nTimesUsageValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
             }
+            this.nTimesUsageTfChange();
         },
         nTimesUsageTfChange() {
             this.$data.contractJson = {

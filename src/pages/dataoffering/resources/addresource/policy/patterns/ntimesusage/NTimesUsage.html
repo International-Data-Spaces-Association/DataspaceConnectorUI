@@ -2,12 +2,12 @@
     <v-row no-gutters>
         <v-col cols="12" md="3">
             <v-select label="Operator" v-model="nTimesUsageOperator" :items="['=', '<=', '<']" :rules="defaultRule"
-                required readonly="readonly">
+                required :readonly="readonly">
             </v-select>
         </v-col>
         <v-col cols="12" md="3">
             <v-text-field label="Number" v-model="nTimesUsageValue" @change="nTimesUsageTfChange" :rules="numberRule"
-                required readonly="readonly">
+                required :readonly="readonly">
             </v-text-field>
         </v-col>
     </v-row>

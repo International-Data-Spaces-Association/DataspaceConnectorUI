@@ -2,7 +2,7 @@ import dataUtils from "@/utils/dataUtils";
 
 export default {
     components: {},
-    props: ['fromRoutePage', 'readonly'],
+    props: ['fromRoutePage'],
     data() {
         return {
             search: '',
@@ -16,16 +16,19 @@ export default {
             brokers: [],
             sourceType: "",
             sourceTypeItems: [],
-            selected: []
+            selected: [],
+            readonly: false
         };
     },
     mounted: function () {
         this.getBrokers();
         this.loadSourceTypes();
+        this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
     },
     methods: {
         gotVisible() {
             this.getBrokers();
+            this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
         },
         async loadSourceTypes() {
             dataUtils.getSourceTypes(sourceTypes => {
@@ -51,6 +54,8 @@ export default {
                         url: broker[1]["brokerUri"]
                     });
                 }
+
+                // SELECT brokers where the resource is currently registered (API needed).
 
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);

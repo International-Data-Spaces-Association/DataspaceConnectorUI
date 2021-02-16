@@ -306,7 +306,7 @@
         },
 
         createResource(title, description, language, keyword, version, standardlicense, publisher, contractJson,
-            sourceType, brokerIds, genericEndpointId, callback) {
+            sourceType, brokerUris, genericEndpointId, callback) {
             let params = "?title=" + title + "&description=" + description + "&language=" +
                 language + "&keyword=" + keyword + "&version=" + version + "&standardlicense=" + standardlicense +
                 "&publisher=" + publisher;
@@ -321,7 +321,7 @@
                             this.createNewRoute(this.getCurrentDate() + " - " + title, routeId => {
                                 this.createSubRoute(routeId, genericEndpointId, 0, 0,
                                     endpointId, 0, 0, resourceId, () => {
-                                        this.registerResourceAtBrokers(resourceId, brokerIds, () => {
+                                        this.registerResourceAtBrokers(resourceId, brokerUris, () => {
                                             callback();
                                         })
                                     });
@@ -340,6 +340,46 @@
                 console.log("Error in createResource(): ", error);
                 callback();
             });
+        },
+
+        editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, contractJson,
+            sourceType, brokerUris, genericEndpointId, callback) {
+            console.log(">>> editResource POLICY: ", contractJson);
+            let params = "?resourceId=" + resourceId + "&title=" + title + "&description=" + description + "&language=" +
+                language + "&keyword=" + keyword + "&version=" + version + "&standardlicense=" + standardlicense +
+                "&publisher=" + publisher;
+            Axios.put("http://localhost:80/resource" + params).then(() => {
+                params = "?resourceId=" + resourceId;
+                console.log(">>> PUT /contract" + params);
+                Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
+                    params = "?resourceId=" + resourceId + "&representationId =" + representationId + "&endpointId=" + genericEndpointId + "&language=" + language + "&sourceType=" + sourceType;
+                    Axios.put("http://localhost:80/representation" + params).then(() => {
+                        // TODO Edit route/subroute on backend conneciton change.
+                        callback();
+                    }).catch(error => {
+                        console.log("Error in editResource(): ", error);
+                        callback();
+                    });
+                }).catch(error => {
+                    console.log("Error in editResource(): ", error);
+                    callback();
+                });
+            }).catch(error => {
+                console.log("Error in editResource(): ", error);
+                callback();
+            });
+
+            // TODO EDIT RESOURCE
+            // let params = "?resourceId=" + this.$data.currentResource["@id"] + "&title=" + title +
+            //     "&description=" + description + "&language=" + language + "&keyword=" + keyword + "&version=" + version +
+            //     "&standardlicense=" + standardlicense + "&publisher=" + publisher;
+            // Axios.put("http://localhost:80/resource" + params, contractJson).then(() => {
+            //     this.$router.push('idresourcesoffering');
+            //     this.$root.$emit('showBusyIndicator', false);
+            // }).catch(error => {
+            //     console.log("Error in saveResource(): ", error);
+            //     this.$root.$emit('showBusyIndicator', false);
+            // });
         },
 
         registerResourceAtBrokers(resourceId, brokerIds, callback) {

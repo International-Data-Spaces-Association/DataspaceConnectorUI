@@ -12,7 +12,7 @@ export default {
         ResourceRepresentationPage,
         ResourceBrokersPage
     },
-    props: ['fromRoutePage', 'readonly'],
+    props: ['fromRoutePage'],
     data() {
         return {
             currentResource: null,
@@ -22,7 +22,8 @@ export default {
             representationAttributes: null,
             representationRequiredAttributes: null,
             fileAttributes: null,
-            fileRequiredAttributes: null
+            fileRequiredAttributes: null,
+            readonly: false
         };
     },
     mounted: function () {
@@ -69,7 +70,12 @@ export default {
             this.$refs.metaDataPage.set(resource);
             this.$data.active_tab = 0;
         },
+        setReadOnly(readonly) {
+            this.$data.readonly = readonly;
+            this.$refs.metaDataPage.readonly = readonly;
+        },
         save() {
+            console.log(">>> SAVE: ", this.$data.currentResource, this.fromRoutePage);
             var endpointId = null;
             if (this.$refs.representationPage.selected.length > 0) {
                 endpointId = this.$refs.representationPage.selected[0].id;
@@ -97,26 +103,23 @@ export default {
 
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
-                this.$emit("saved", title, description, language, keywords, version, standardlicense, publisher, contractJson, sourceType, brokerList);
+                this.$emit("saved", title, description, language, keywords, version, standardlicense, publisher,
+                    contractJson, sourceType, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
-                    dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher, contractJson, sourceType, brokerList, endpointId, () => {
-                        this.$router.push('idresourcesoffering');
-                        this.$root.$emit('showBusyIndicator', false);
-                    });
+                    dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher,
+                        contractJson, sourceType, brokerList, endpointId, () => {
+                            this.$router.push('idresourcesoffering');
+                            this.$root.$emit('showBusyIndicator', false);
+                        });
                 } else {
-                    // TODO EDIT RESOURCE
-                    // let params = "?resourceId=" + this.$data.currentResource["@id"] + "&title=" + title +
-                    //     "&description=" + description + "&language=" + language + "&keyword=" + keyword + "&version=" + version +
-                    //     "&standardlicense=" + standardlicense + "&publisher=" + publisher;
-                    // Axios.put("http://localhost:80/resource" + params, contractJson).then(() => {
-                    //     this.$router.push('idresourcesoffering');
-                    //     this.$root.$emit('showBusyIndicator', false);
-                    // }).catch(error => {
-                    //     console.log("Error in saveResource(): ", error);
-                    //     this.$root.$emit('showBusyIndicator', false);
-                    // });
+                    dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
+                        title, description, language, keywords, version, standardlicense, publisher, contractJson,
+                        sourceType, brokerList, endpointId, () => {
+                            this.$router.push('idresourcesoffering');
+                            this.$root.$emit('showBusyIndicator', false);
+                        });
                 }
             }
         },

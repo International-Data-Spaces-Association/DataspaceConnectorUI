@@ -28,6 +28,7 @@ export default {
             this.$refs.addResourcePage.set(clientDataModel.createResource(resource.id, resource.title, resource.description,
                 resource.language, resource.keywords, resource.version, resource.standardlicense, resource.publisher,
                 resource.contract, resource.sourceType));
+            this.$refs.addResourcePage.setReadOnly(true);
             this.$data.dialog = true;
         }
     }

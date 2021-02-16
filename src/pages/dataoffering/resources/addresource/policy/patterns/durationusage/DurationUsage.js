@@ -1,6 +1,5 @@
 export default {
     components: {},
-    props: ['readonly'],
     data() {
         return {
             contractJson: "",
@@ -10,7 +9,8 @@ export default {
                 v => /^[0-9.]+$/.test(v) || 'Only numbers and "." allowed',
             ],
             durationValid: false,
-            visibleclass: ""
+            visibleclass: "",
+            readonly: false
         };
     },
     mounted: function () {
@@ -25,17 +25,18 @@ export default {
         },
         setPolicy(contract) {
             this.$data.durationUsageValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("PT", "").replace("H", "");
+            this.durationUsageTfChange();
         },
         durationUsageTfChange() {
             this.$data.contractJson = {
                 "@context": {
                     "ids": "https://w3id.org/idsa/core/"
                 },
-                "@type": "ids:DurationOffer",
-                "@id": "https://w3id.org/idsa/autogen/contractOffer/71cda710-673f-4535-95bd-a04bb2ec2a10",
+                "@type": "ids:ContractOffer",
+                "@id": "https://w3id.org/idsa/autogen/contractOffer/a2f9fa88-7753-4227-8170-9365d20b189f",
                 "ids:permission": [{
                     "@type": "ids:Permission",
-                    "@id": "https://w3id.org/idsa/autogen/permission/c9ed9830-26b1-4a16-ad88-ceca0b3701b4",
+                    "@id": "https://w3id.org/idsa/autogen/permission/6b8abe49-6a31-4df4-80c6-764ad16d4c29",
                     "ids:description": [{
                         "@value": "duration-usage",
                         "@type": "http://www.w3.org/2001/XMLSchema#string"
@@ -49,16 +50,16 @@ export default {
                     }],
                     "ids:constraint": [{
                         "@type": "ids:Constraint",
-                        "@id": "https://w3id.org/idsa/autogen/constraint/f8eb5fae-e2ae-416c-8de3-8e462f93ec4f",
+                        "@id": "https://w3id.org/idsa/autogen/constraint/a5aa4243-432f-4360-aff4-c95da99eb266",
+                        "ids:rightOperand": {
+                            "@value": "PT" + this.$data.durationUsageValue + "H",
+                            "@type": "xsd:duration"
+                        },
                         "ids:operator": {
                             "@id": "idsc:SHORTER_EQ"
                         },
                         "ids:leftOperand": {
                             "@id": "idsc:ELAPSED_TIME"
-                        },
-                        "ids:rightOperand": {
-                            "@value": "PT" + this.$data.durationUsageValue + "H",
-                            "@type": "xsd:duration"
                         }
                     }]
                 }]

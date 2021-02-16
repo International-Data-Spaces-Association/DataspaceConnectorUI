@@ -1,7 +1,7 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, title, description, language, keywords, version, standardlicense, publisher, contract, sourceType) {
+    createResource(id, title, description, language, keywords, version, standardLicense, publisher, contract, sourceType, representationId) {
         let resource = {};
         if (id === undefined) {
             resource.id = "";
@@ -33,10 +33,10 @@ export default {
         } else {
             resource.version = version;
         }
-        if (standardlicense === undefined) {
-            resource.standardlicense = "";
+        if (standardLicense === undefined) {
+            resource.standardLicense = "";
         } else {
-            resource.standardlicense = standardlicense;
+            resource.standardLicense = standardLicense;
         }
         if (publisher === undefined) {
             resource.publisher = "";
@@ -55,6 +55,11 @@ export default {
         } else {
             resource.sourceType = sourceType;
         }
+        if (representationId === undefined) {
+            resource.representationId = null;
+        } else {
+            resource.representationId = representationId;
+        }
         return resource;
     },
 
@@ -68,10 +73,15 @@ export default {
         if (idsResource["ids:publisher"] !== undefined) {
             publisher = idsResource["ids:publisher"]["@id"];
         }
+        let contract = undefined;
+        if (idsResource["ids:contractOffer"] !== undefined) {
+            contract = idsResource["ids:contractOffer"][0];
+        }
 
         return this.createResource(idsResource["@id"], idsResource["ids:title"][0]["@value"], idsResource["ids:description"][0]["@value"],
             idsResource["ids:language"][0]["@id"].replace("idsc:", ""), idsResource["ids:keyword"][0]["@value"],
             idsResource["ids:version"], standardLicense, publisher,
-            idsResource["ids:contractOffer"][0], idsResource["ids:representation"][0]["ids:sourceType"]);
+            contract, idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"],
+            idsResource["ids:representation"][0]["@id"]);
     }
 }
