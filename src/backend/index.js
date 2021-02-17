@@ -282,10 +282,22 @@ app.post('/broker', (req, res) => {
 
 app.post('/broker/register', (req, res) => {
     let params = "?brokerUri=" + req.query.brokerUri;
+    console.log(">>> POST /api/ui/broker/register" + params);
     axios.post("http://localhost:" + configModelPort + "/api/ui/broker/register" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /broker/register", error.response.status);
+        res.send(error);
+    });
+});
+
+app.post('/broker/unregister', (req, res) => {
+    let params = "?brokerUri=" + req.query.brokerUri;
+    console.log(">>> POST /api/ui/broker/unregister" + params);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/broker/unregister" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on POST /broker/unregister", error.response.status);
         res.send(error);
     });
 });

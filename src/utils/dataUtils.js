@@ -126,6 +126,30 @@
             }
         },
 
+        registerConnectorAtBroker(brokerUri) {
+            let params = "?brokerUri=" + brokerUri;
+            return new Promise(function (resolve, reject) {
+                Axios.post("http://localhost:80/broker/register" + params).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    console.log("Error in registerConnectorAtBroker(): ", error);
+                    reject();
+                });
+            });
+        },
+
+        unregisterConnectorAtBroker(brokerUri) {
+            let params = "?brokerUri=" + brokerUri;
+            return new Promise(function (resolve, reject) {
+                Axios.post("http://localhost:80/broker/unregister" + params).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    console.log("Error in unregisterConnectorAtBroker(): ", error);
+                    reject();
+                });
+            });
+        },
+
         getResourceRegistrationStatus(resourceId) {
             let params = "?resourceId=" + resourceId;
             return new Promise(function (resolve, reject) {

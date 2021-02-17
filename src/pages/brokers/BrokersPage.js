@@ -41,13 +41,21 @@ export default {
                     this.$data.brokers.push({
                         broker: broker,
                         title: broker[1]["title"],
-                        url: broker[1]["brokerUri"]
+                        url: broker[1]["brokerUri"],
+                        registerStatus: this.toRegisterStatusClass(broker[1]["brokerStatus"])
                     });
                 }
 
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
             });
+        },
+        toRegisterStatusClass(brokerStatus) {
+            let statusClass = "notRegisteredAtBroker";
+            if (brokerStatus == "REGISTERED") {
+                statusClass = "registeredAtBroker";
+            }
+            return statusClass;
         },
         brokerSaved() {
             this.getBrokers();
@@ -80,6 +88,24 @@ export default {
         },
         editItem(item) {
             this.$refs.addBrokerDialog.edit(item.broker);
+        },
+        registerUnregister(item) {
+            this.$root.$emit('showBusyIndicator', true);
+            if (item.registerStatus == "notRegisteredAtBroker") {
+                dataUtils.registerConnectorAtBroker(item.url).then(() => {
+                    this.getBrokers();
+                }).catch(error => {
+                    console.log("Error on registerConnectorAtBroker: ", error);
+                    this.getBrokers();
+                });
+            } else {
+                dataUtils.unregisterConnectorAtBroker(item.url).then(() => {
+                    this.getBrokers();
+                }).catch(error => {
+                    console.log("Error on unregisterConnectorAtBroker: ", error);
+                    this.getBrokers();
+                });
+            }
         }
     }
 };

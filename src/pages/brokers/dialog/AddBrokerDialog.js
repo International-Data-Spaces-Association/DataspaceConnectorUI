@@ -1,4 +1,5 @@
 import Axios from "axios";
+import dataUtils from "../../../utils/dataUtils";
 
 export default {
     components: {},
@@ -32,10 +33,8 @@ export default {
                 this.$data.dialog = false;
                 Axios.post("http://localhost:80/broker?brokerUri=" + this.$data.url + "&title=" +
                     this.$data.brokerTitle).then(() => {
-                    Axios.post("http://localhost:80/broker/register?brokerUri=" + this.$data.url).then(() => {
+                    dataUtils.registerConnectorAtBroker(this.$data.url).then(() => {
                         this.$emit('brokerSaved');
-                    }).catch(error => {
-                        console.log("Error in saveBroker(): ", error);
                     });
                 }).catch(error => {
                     console.log("Error in saveBroker(): ", error);

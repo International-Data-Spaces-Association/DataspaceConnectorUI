@@ -2,3 +2,18 @@
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
+.registeredAtBroker {
+    width: 130px;
+    background-color: var(--v-primary-base) !important;
+    margin-left: 20px;
+}
+
+.registeredAtBroker span {
+    color: white !important;
+}
+
+.notRegisteredAtBroker {
+    width: 130px;
+    margin-left: 20px;
+}

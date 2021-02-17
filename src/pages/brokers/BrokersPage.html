@@ -18,6 +18,10 @@
                     <v-icon @click="deleteItem(item)">
                         mdi-delete
                     </v-icon>
+                    <v-btn :class="item.registerStatus" @click="registerUnregister(item)">
+                        <span v-if="item.registerStatus == 'registeredAtBroker'">Unregister</span>
+                        <span v-else>Register</span>
+                    </v-btn>
                 </template>
             </v-data-table>
         </v-col>
