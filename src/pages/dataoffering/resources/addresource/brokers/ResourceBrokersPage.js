@@ -17,6 +17,7 @@ export default {
             sourceType: "",
             sourceTypeItems: [],
             selected: [],
+            lastSelected: [],
             readonly: false
         };
     },
@@ -55,29 +56,60 @@ export default {
                     });
                 }
 
-                // SELECT brokers where the resource is currently registered (API needed).
+                if (this.$parent.$parent.$parent.$parent.currentResource != null) {
+                    this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
+                }
 
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
             });
         },
         loadResource(resource) {
-            console.log(">>> loadResource: ", resource);
-            // if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
-            //     this.$data.sourceType = resource["ids:representation"][0]["ids:sourceType"];
-            // }
-            // this.$data.selected = [];
-            // for (var backendConnection of this.$data.brokers) {
-            //     for (var res of backendConnection.appRouteOutput) {
-            //         if (res["@id"] == resource["@id"]) {
-            //             this.$data.selected.push(backendConnection);
-            //         }
-            //     }
-            // }
+            this.$data.selected = [];
+            dataUtils.getResourceRegistrationStatus(resource.id).then(data => {
+                for (let status of data) {
+                    this.$data.selected.push({
+                        url: status.brokerId
+                    });
+                    this.$data.lastSelected.push({
+                        url: status.brokerId
+                    });
+                }
+            });
         },
-        set(node) {
-            console.log(">>> set: ", node);
-            // TODO this.$data.brokerList = brokerList;
+        getBrokerNewList() {
+            let brokerNewList = [];
+            for (let sel of this.$data.selected) {
+                let newSelected = true;
+                for (let lastSel of this.$data.lastSelected) {
+                    if (sel.url == lastSel.url) {
+                        newSelected = false;
+                        break;
+                    }
+                }
+                if (newSelected) {
+                    brokerNewList.push(sel.url);
+                }
+            }
+
+
+            return brokerNewList;
+        },
+        getBrokerDeleteList() {
+            let brokerDeleteList = [];
+            for (let lastSel of this.$data.lastSelected) {
+                let stillSelected = false;
+                for (let sel of this.$data.selected) {
+                    if (sel.url == lastSel.url) {
+                        stillSelected = true;
+                        break;
+                    }
+                }
+                if (!stillSelected) {
+                    brokerDeleteList.push(lastSel.url);
+                }
+            }
+            return brokerDeleteList;
         }
     }
 };

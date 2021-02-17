@@ -85,7 +85,6 @@ export default {
             this.$router.push('editresource?id=' + item.id);
         },
         showItem(item) {
-            console.log(">>> showItem: ", item);
             this.$refs.resourceDetailsDialog.show(item);
         }
     },

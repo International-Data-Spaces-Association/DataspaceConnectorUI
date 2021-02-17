@@ -18,10 +18,10 @@ export default {
     },
     methods: {
         previousPage() {
-            this.$emit('previousPage')
+            this.$emit('previousPage');
         },
         nextPage() {
-            this.$emit('nextPage')
+            this.$emit('nextPage');
         },
         setPolicy(contract) {
             this.$data.durationUsageValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("PT", "").replace("H", "");
@@ -30,7 +30,8 @@ export default {
         durationUsageTfChange() {
             this.$data.contractJson = {
                 "@context": {
-                    "ids": "https://w3id.org/idsa/core/"
+                    "ids": "https://w3id.org/idsa/core/",
+                    "idsc": "https://w3id.org/idsa/code/"
                 },
                 "@type": "ids:ContractOffer",
                 "@id": "https://w3id.org/idsa/autogen/contractOffer/a2f9fa88-7753-4227-8170-9365d20b189f",
@@ -52,8 +53,7 @@ export default {
                         "@type": "ids:Constraint",
                         "@id": "https://w3id.org/idsa/autogen/constraint/a5aa4243-432f-4360-aff4-c95da99eb266",
                         "ids:rightOperand": {
-                            "@value": "PT" + this.$data.durationUsageValue + "H",
-                            "@type": "xsd:duration"
+                            "@value": "PT" + this.$data.durationUsageValue + "H"
                         },
                         "ids:operator": {
                             "@id": "idsc:SHORTER_EQ"

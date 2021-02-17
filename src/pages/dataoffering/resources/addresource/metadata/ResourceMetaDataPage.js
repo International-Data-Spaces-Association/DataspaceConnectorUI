@@ -30,13 +30,7 @@ export default {
             readonly: false
         };
     },
-    watch: {
-        readonly: function () {
-            console.log(">>> META READONLY: ", this.$data.readonly);
-        }
-    },
     mounted: function () {
-        console.log(">>> META READONLY: ", this.$data.readonly);
         this.loadLanguages();
     },
     methods: {
@@ -66,7 +60,7 @@ export default {
                 this.$data.language = resource.language;
                 this.$data.keywords = resource.keywords;
                 this.$data.version = resource.version;
-                this.$data.standardlicense = resource.standardlicense;
+                this.$data.standardlicense = resource.standardLicense;
                 this.$data.publisher = resource.publisher;
             }
         }

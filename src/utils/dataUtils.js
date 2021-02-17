@@ -7,6 +7,12 @@
     const POLICY_DURATION_USAGE = "Duration Usage";
     const POLICY_USAGE_DURING_INTERVAL = "Usage During Interval";
 
+    const POLICY_DESCRIPTION_TO_NAME = {
+        "n-times-usage": POLICY_N_TIMES_USAGE,
+        "duration-usage": POLICY_DURATION_USAGE,
+        "usage-during-interval": POLICY_USAGE_DURING_INTERVAL
+    };
+
     const POLICY_TYPE_TO_NAME = {
         "ids:NotMoreThanNOffer": POLICY_N_TIMES_USAGE,
         "ids:DurationOffer": POLICY_DURATION_USAGE,
@@ -49,6 +55,10 @@
 
         convertTypeToPolicyName(type) {
             return POLICY_TYPE_TO_NAME[type];
+        },
+
+        convertDescriptionToPolicyName(type) {
+            return POLICY_DESCRIPTION_TO_NAME[type];
         },
 
         convertOperatorTypeToSymbol(type) {
@@ -114,6 +124,42 @@
             } else {
                 callback(sourcTypes);
             }
+        },
+
+        getResourceRegistrationStatus(resourceId) {
+            let params = "?resourceId=" + resourceId;
+            return new Promise(function (resolve, reject) {
+                Axios.get("http://localhost:80/broker/resource/information" + params).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    console.log("Error in getResourceRegistrationStatus(): ", error);
+                    reject();
+                });
+            });
+        },
+
+        updateResourceAtBroker(brokerUri, resourceId) {
+            let params = "?brokerUri=" + brokerUri + "&resourceId=" + resourceId;
+            return new Promise(function (resolve, reject) {
+                Axios.post("http://localhost:80/broker/update/resource" + params).then(() => {
+                    resolve();
+                }).catch(error => {
+                    console.log("Error in updateResourceAtBroker(): ", error);
+                    reject();
+                });
+            });
+        },
+
+        deleteResourceAtBroker(brokerUri, resourceId) {
+            let params = "?brokerUri=" + brokerUri + "&resourceId=" + resourceId;
+            return new Promise(function (resolve, reject) {
+                Axios.post("http://localhost:80/broker/delete/resource" + params).then(() => {
+                    resolve();
+                }).catch(error => {
+                    console.log("Error in deleteResourceAtBroker(): ", error);
+                    reject();
+                });
+            });
         },
 
         getBrokers(callback) {
@@ -313,7 +359,6 @@
             Axios.post("http://localhost:80/resource" + params).then((response) => {
                 let resourceId = response.data.resourceID;
                 params = "?resourceId=" + resourceId;
-                console.log(">>> PUT /contract" + params);
                 Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
                     params = "?resourceId=" + resourceId + "&endpointId=" + genericEndpointId + "&language=" + language + "&sourceType=" + sourceType;
                     Axios.post("http://localhost:80/representation" + params).then(() => {
@@ -321,9 +366,13 @@
                             this.createNewRoute(this.getCurrentDate() + " - " + title, routeId => {
                                 this.createSubRoute(routeId, genericEndpointId, 0, 0,
                                     endpointId, 0, 0, resourceId, () => {
-                                        this.registerResourceAtBrokers(resourceId, brokerUris, () => {
+                                        let updatePromises = [];
+                                        for (let brokerUri of brokerUris) {
+                                            updatePromises.push(this.updateResourceAtBroker(brokerUri, resourceId));
+                                        }
+                                        Promise.all(updatePromises).then(() => {
                                             callback();
-                                        })
+                                        });
                                     });
                             });
                         });
@@ -343,19 +392,26 @@
         },
 
         editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, contractJson,
-            sourceType, brokerUris, genericEndpointId, callback) {
-            console.log(">>> editResource POLICY: ", contractJson);
+            sourceType, brokerUris, brokerDeleteUris, genericEndpointId, callback) {
             let params = "?resourceId=" + resourceId + "&title=" + title + "&description=" + description + "&language=" +
                 language + "&keyword=" + keyword + "&version=" + version + "&standardlicense=" + standardlicense +
                 "&publisher=" + publisher;
             Axios.put("http://localhost:80/resource" + params).then(() => {
                 params = "?resourceId=" + resourceId;
-                console.log(">>> PUT /contract" + params);
                 Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
                     params = "?resourceId=" + resourceId + "&representationId =" + representationId + "&endpointId=" + genericEndpointId + "&language=" + language + "&sourceType=" + sourceType;
                     Axios.put("http://localhost:80/representation" + params).then(() => {
                         // TODO Edit route/subroute on backend conneciton change.
-                        callback();
+                        let updateDeletePromises = [];
+                        for (let brokerUri of brokerUris) {
+                            updateDeletePromises.push(this.updateResourceAtBroker(brokerUri, resourceId));
+                        }
+                        for (let brokerUri of brokerDeleteUris) {
+                            updateDeletePromises.push(this.deleteResourceAtBroker(brokerUri, resourceId));
+                        }
+                        Promise.all(updateDeletePromises).then(() => {
+                            callback();
+                        });
                     }).catch(error => {
                         console.log("Error in editResource(): ", error);
                         callback();
@@ -368,24 +424,6 @@
                 console.log("Error in editResource(): ", error);
                 callback();
             });
-
-            // TODO EDIT RESOURCE
-            // let params = "?resourceId=" + this.$data.currentResource["@id"] + "&title=" + title +
-            //     "&description=" + description + "&language=" + language + "&keyword=" + keyword + "&version=" + version +
-            //     "&standardlicense=" + standardlicense + "&publisher=" + publisher;
-            // Axios.put("http://localhost:80/resource" + params, contractJson).then(() => {
-            //     this.$router.push('idresourcesoffering');
-            //     this.$root.$emit('showBusyIndicator', false);
-            // }).catch(error => {
-            //     console.log("Error in saveResource(): ", error);
-            //     this.$root.$emit('showBusyIndicator', false);
-            // });
-        },
-
-        registerResourceAtBrokers(resourceId, brokerIds, callback) {
-            // TODO implement when new API ready.
-            console.log(">>> registerResourceAtBrokers: ", resourceId, brokerIds);
-            callback();
         },
 
         getEndpointInfo(routeId, endpointId, callback) {

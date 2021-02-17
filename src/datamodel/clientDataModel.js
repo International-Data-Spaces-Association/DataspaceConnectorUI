@@ -48,7 +48,7 @@ export default {
             resource.policyName = "";
         } else {
             resource.contract = contract;
-            resource.policyName = dataUtils.convertTypeToPolicyName(contract["@type"]);
+            resource.policyName = dataUtils.convertDescriptionToPolicyName(contract["ids:permission"][0]["ids:description"][0]["@value"]);
         }
         if (sourceType === undefined) {
             resource.sourceType = "";
@@ -64,7 +64,6 @@ export default {
     },
 
     convertIdsResource(idsResource) {
-        console.log(">>> CONVERT: ", idsResource);
         let standardLicense = undefined;
         if (idsResource["ids:standardLicense"] !== undefined) {
             standardLicense = idsResource["ids:standardLicense"]["@id"];
@@ -77,11 +76,17 @@ export default {
         if (idsResource["ids:contractOffer"] !== undefined) {
             contract = idsResource["ids:contractOffer"][0];
         }
+        let sourceType = undefined;
+        let representationId = null;
+        if (idsResource["ids:representation"] !== undefined) {
+            sourceType = idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"];
+            representationId = idsResource["ids:representation"][0]["@id"];
+        }
 
         return this.createResource(idsResource["@id"], idsResource["ids:title"][0]["@value"], idsResource["ids:description"][0]["@value"],
             idsResource["ids:language"][0]["@id"].replace("idsc:", ""), idsResource["ids:keyword"][0]["@value"],
             idsResource["ids:version"], standardLicense, publisher,
-            contract, idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"],
-            idsResource["ids:representation"][0]["@id"]);
+            contract, sourceType,
+            representationId);
     }
 }

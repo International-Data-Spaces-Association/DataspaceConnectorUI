@@ -83,7 +83,6 @@ export default {
                     if (route["ids:hasSubRoute"] !== undefined) {
                         for (let step of route["ids:hasSubRoute"]) {
                             if (step["ids:appRouteOutput"] !== undefined) {
-                                console.log(">>> ROUTE OUT: ", step["ids:appRouteOutput"][0]["@id"]);
                                 if (step["ids:appRouteOutput"][0]["@id"] == resource.id) {
                                     this.$data.selected.push(dataUtils.genericEndpointToBackendConnection(route["ids:appRouteStart"][0]));
                                 }
@@ -91,7 +90,6 @@ export default {
                         }
                     }
                 }
-                console.log("BC SELECTED: ", this.$data.selected);
             });
         }
     }

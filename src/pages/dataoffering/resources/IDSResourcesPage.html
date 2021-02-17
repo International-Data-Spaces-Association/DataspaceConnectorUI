@@ -17,9 +17,11 @@
     </v-row>
     <v-row no-gutters>
       <v-col cols="12" md="11" sm="12">
-        <v-data-table :headers="headers" :items="filteredResources" :items-per-page="5" :search="search"
-          @click:row="showItem">
+        <v-data-table :headers="headers" :items="filteredResources" :items-per-page="5" :search="search">
           <template v-slot:item.actions="{ item }">
+            <v-icon class="mr-2" @click="showItem(item)">
+              mdi-eye
+            </v-icon>
             <v-icon class="mr-2" @click="editItem(item)">
               mdi-pencil
             </v-icon>

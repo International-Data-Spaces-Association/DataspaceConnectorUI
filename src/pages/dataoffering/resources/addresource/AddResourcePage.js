@@ -53,6 +53,10 @@ export default {
                 if (this.$refs.representationPage !== undefined) {
                     this.$refs.representationPage.gotVisible();
                 }
+            } else if (this.$data.active_tab == 3) {
+                if (this.$refs.brokersPage !== undefined) {
+                    this.$refs.brokersPage.gotVisible();
+                }
             }
         },
         loadResource(id) {
@@ -65,7 +69,6 @@ export default {
             });
         },
         set(resource) {
-            console.log(">>> ADD RES: ", resource);
             this.$data.currentResource = resource;
             this.$refs.metaDataPage.set(resource);
             this.$data.active_tab = 0;
@@ -75,7 +78,6 @@ export default {
             this.$refs.metaDataPage.readonly = readonly;
         },
         save() {
-            console.log(">>> SAVE: ", this.$data.currentResource, this.fromRoutePage);
             var endpointId = null;
             if (this.$refs.representationPage.selected.length > 0) {
                 endpointId = this.$refs.representationPage.selected[0].id;
@@ -94,12 +96,8 @@ export default {
                 contractJson = this.$data.currentResource["ids:contractOffer"][0];
             }
             var sourceType = this.$refs.representationPage.sourceType;
-            var brokerList = [];
-            for (let brokerItem of this.$refs.brokersPage.selected) {
-                brokerList.push(brokerItem.url);
-            }
-
-            console.log(">>> brokerList: ", brokerList);
+            var brokerList = this.$refs.brokersPage.getBrokerNewList()
+            let brokerDeleteList = this.$refs.brokersPage.getBrokerDeleteList();
 
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
@@ -116,7 +114,7 @@ export default {
                 } else {
                     dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
                         title, description, language, keywords, version, standardlicense, publisher, contractJson,
-                        sourceType, brokerList, endpointId, () => {
+                        sourceType, brokerList, brokerDeleteList, endpointId, () => {
                             this.$router.push('idresourcesoffering');
                             this.$root.$emit('showBusyIndicator', false);
                         });

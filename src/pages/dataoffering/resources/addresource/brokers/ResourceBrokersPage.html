@@ -9,7 +9,7 @@
   <v-row no-gutters v-if="!readonly">
     <v-col cols="12" md="11" sm="12">
       <v-data-table v-model="selected" :headers="headers" :items="brokers" :items-per-page="5" :search="search"
-        show-select :single-select=true item-key="url">
+        show-select item-key="url">
       </v-data-table>
     </v-col>
   </v-row>

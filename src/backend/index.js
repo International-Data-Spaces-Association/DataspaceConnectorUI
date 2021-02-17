@@ -290,6 +290,39 @@ app.post('/broker/register', (req, res) => {
     });
 });
 
+app.post('/broker/update/resource', (req, res) => {
+    let params = "?brokerUri=" + req.query.brokerUri + "&resourceId=" + req.query.resourceId;
+    console.log(">>> POST /api/ui/broker/update/resource" + params);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/broker/update/resource" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on POST /broker/update/resource", error.response.status);
+        res.send(error);
+    });
+});
+
+app.get('/broker/resource/information', (req, res) => {
+    let params = "?resourceId=" + req.query.resourceId;
+    console.log(">>> GET /api/ui/broker/resource/information" + params);
+    axios.get("http://localhost:" + configModelPort + "/api/ui/broker/resource/information" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on GET /broker/resource/information", error.response.status);
+        res.send(error);
+    });
+});
+
+app.post('/broker/delete/resource', (req, res) => {
+    let params = "?brokerUri=" + req.query.brokerUri + "&resourceId=" + req.query.resourceId;
+    console.log(">>> POST /api/ui/broker/delete/resource" + params);
+    axios.post("http://localhost:" + configModelPort + "/api/ui/broker/delete/resource" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on POST /broker/delete/resource", error.response.status);
+        res.send(error);
+    });
+});
+
 app.put('/broker', (req, res) => {
     let params = "?brokerUri=" + req.query.brokerUri + "&title=" + req.query.title;
     axios.put("http://localhost:" + configModelPort + "/api/ui/broker" + params).then(response => {

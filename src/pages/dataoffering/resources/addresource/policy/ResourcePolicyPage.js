@@ -31,7 +31,6 @@ export default {
                 } else {
                     this.$refs[name].visibleclass = "invisible-policy";
                 }
-                console.log(">>> ref: ", this.$refs[name]);
             }
         }
     },
@@ -43,21 +42,18 @@ export default {
             this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
         },
         loadResource(resource) {
-            console.log(">>> LOAD: ", resource);
             if (resource.contract === undefined) {
                 this.$data.policyType = "N Times Usage";
                 this.$refs.form.reset();
             } else {
-                this.setPolicy(resource.contract);
+                this.setPolicy(resource.contract, resource.policyName);
             }
         },
-        setPolicy(contract) {
-            console.log(">>> policy page setPolicy: ", contract);
+        setPolicy(contract, policyName) {
             if (contract == "") {
                 this.$data.policyType = dataUtils.POLICY_N_TIMES_USAGE;
             } else {
-                this.$data.policyType = dataUtils.convertTypeToPolicyName(contract["@type"]);
-                console.log(">>> ", this.$refs[this.$data.policyType]);
+                this.$data.policyType = policyName;
             }
             this.$refs[this.$data.policyType].setPolicy(contract);
         },
@@ -65,7 +61,6 @@ export default {
             this.$emit('previousPage')
         },
         nextPage() {
-            console.log(">>> REF", this.$refs[this.$data.policyType]);
             this.$data.contractJson = this.$refs[this.$data.policyType].contractJson;
             this.$emit('nextPage')
         }
