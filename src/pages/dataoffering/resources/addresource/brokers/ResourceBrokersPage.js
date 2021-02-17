@@ -59,7 +59,7 @@ export default {
                 if (this.$parent.$parent.$parent.$parent.currentResource != null) {
                     this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
                 }
-
+                this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
             });
@@ -68,14 +68,23 @@ export default {
             this.$data.selected = [];
             dataUtils.getResourceRegistrationStatus(resource.id).then(data => {
                 for (let status of data) {
-                    this.$data.selected.push({
-                        url: status.brokerId
-                    });
+                    let broker = this.getBroker(status.brokerId);
+                    this.$data.selected.push(broker);
                     this.$data.lastSelected.push({
                         url: status.brokerId
                     });
                 }
             });
+        },
+        getBroker(brokerUri) {
+            let broker = null;
+            for (let br of this.$data.brokers) {
+                if (br.url == brokerUri) {
+                    broker = br;
+                    break;
+                }
+            }
+            return broker;
         },
         getBrokerNewList() {
             let brokerNewList = [];
