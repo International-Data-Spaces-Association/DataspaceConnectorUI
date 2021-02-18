@@ -59,7 +59,7 @@ export default {
             }
         },
         editItem(item) {
-            this.$router.push('editroute?id=' + item.id);
+            this.$router.push('editroute?routeId=' + item.id);
         }
     }
 };

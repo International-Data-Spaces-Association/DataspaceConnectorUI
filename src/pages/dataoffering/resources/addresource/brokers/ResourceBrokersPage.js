@@ -66,15 +66,27 @@ export default {
         },
         loadResource(resource) {
             this.$data.selected = [];
-            dataUtils.getResourceRegistrationStatus(resource.id).then(data => {
-                for (let status of data) {
-                    let broker = this.getBroker(status.brokerId);
-                    this.$data.selected.push(broker);
-                    this.$data.lastSelected.push({
-                        url: status.brokerId
-                    });
+            if (resource.id == -1) {
+                if (resource.brokerList !== undefined) {
+                    for (let brokerUri of resource.brokerList) {
+                        let broker = this.getBroker(brokerUri);
+                        this.$data.selected.push(broker);
+                        this.$data.lastSelected.push({
+                            url: brokerUri
+                        });
+                    }
                 }
-            });
+            } else {
+                dataUtils.getResourceRegistrationStatus(resource.id).then(data => {
+                    for (let status of data) {
+                        let broker = this.getBroker(status.brokerId);
+                        this.$data.selected.push(broker);
+                        this.$data.lastSelected.push({
+                            url: status.brokerId
+                        });
+                    }
+                });
+            }
         },
         getBroker(brokerUri) {
             let broker = null;

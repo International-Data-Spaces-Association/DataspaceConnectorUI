@@ -25,7 +25,7 @@ export default {
             ],
             urlRule: [
                 v => !!v || 'This data is required',
-                v => /^[a-z]+[:][/][/][a-z.]+$/.test(v) || 'Only URLs (xyz://xyz) allowed',
+                v => /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed',
             ],
             readonly: false
         };

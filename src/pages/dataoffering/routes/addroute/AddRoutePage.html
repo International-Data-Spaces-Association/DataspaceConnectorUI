@@ -13,7 +13,8 @@
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="showAddAppDialog">Add
                 App
             </v-btn>
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addEndpoint">Add
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
+                @click="showAddIdsEndpointDialog">Add
                 IDS Endpoint
             </v-btn>
         </v-col>
@@ -43,7 +44,8 @@
     </v-row>
     <edit-node-dialog ref="editNodeDialog">
     </edit-node-dialog>
-    <edit-ids-endpoint-dialog ref="editIDSEndpointDialog"></edit-ids-endpoint-dialog>
+    <edit-ids-endpoint-dialog ref="editIDSEndpointDialog" @newIdsEndpointNodeSaved="newIdsEndpointNodeSaved">
+    </edit-ids-endpoint-dialog>
     <edit-connection-dialog ref="editConnectionDialog" @newConnectionSaved="newConnectionSaved">
     </edit-connection-dialog>
     <add-node-dialog ref="addBackendDialog" @addClicked="addBackend">

@@ -78,9 +78,9 @@ export default {
             this.$refs.metaDataPage.readonly = readonly;
         },
         save() {
-            var endpointId = null;
+            var genericEndpointId = null;
             if (this.$refs.representationPage.selected.length > 0) {
-                endpointId = this.$refs.representationPage.selected[0].id;
+                genericEndpointId = this.$refs.representationPage.selected[0].id;
             }
             var title = this.$refs.metaDataPage.title;
             var description = this.$refs.metaDataPage.description;
@@ -107,14 +107,14 @@ export default {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
                     dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher,
-                        contractJson, sourceType, brokerList, endpointId, () => {
+                        contractJson, sourceType, brokerList, genericEndpointId, () => {
                             this.$router.push('idresourcesoffering');
                             this.$root.$emit('showBusyIndicator', false);
                         });
                 } else {
                     dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
                         title, description, language, keywords, version, standardlicense, publisher, contractJson,
-                        sourceType, brokerList, brokerDeleteList, endpointId, () => {
+                        sourceType, brokerList, brokerDeleteList, genericEndpointId, () => {
                             this.$router.push('idresourcesoffering');
                             this.$root.$emit('showBusyIndicator', false);
                         });

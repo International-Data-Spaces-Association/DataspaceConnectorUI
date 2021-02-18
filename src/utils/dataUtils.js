@@ -90,6 +90,7 @@
         },
 
         getResource(id, callback) {
+            console.trace();
             Axios.get("http://localhost:80/resource?resourceId=" + id).then(response => {
                 callback(clientDataModel.convertIdsResource(response.data));
             }).catch(error => {
@@ -265,7 +266,7 @@
         },
 
         deleteBackendConnection(id, callback) {
-            Axios.delete("http://localhost:80/generic/endpoint?id=" + id).then(() => {
+            Axios.delete("http://localhost:80/generic/endpoint?endpointId=" + id).then(() => {
                 callback();
             }).catch(error => {
                 console.log("Error in saveBackendConnection(): ", error);
@@ -387,17 +388,17 @@
                     params = "?resourceId=" + resourceId + "&endpointId=" + genericEndpointId + "&language=" + language + "&sourceType=" + sourceType;
                     Axios.post("http://localhost:80/representation" + params).then(() => {
                         this.createConnectorEndpoint("http://data_" + Date.now(), endpointId => {
-                            this.createNewRoute(this.getCurrentDate() + " - " + title, routeId => {
+                            this.createNewRoute(this.getCurrentDate() + " - " + title).then(routeId => {
                                 this.createSubRoute(routeId, genericEndpointId, 0, 0,
-                                    endpointId, 0, 0, resourceId, () => {
-                                        let updatePromises = [];
-                                        for (let brokerUri of brokerUris) {
-                                            updatePromises.push(this.updateResourceAtBroker(brokerUri, resourceId));
-                                        }
-                                        Promise.all(updatePromises).then(() => {
-                                            callback();
-                                        });
+                                    endpointId, 0, 0, resourceId).then(() => {
+                                    let updatePromises = [];
+                                    for (let brokerUri of brokerUris) {
+                                        updatePromises.push(this.updateResourceAtBroker(brokerUri, resourceId));
+                                    }
+                                    Promise.all(updatePromises).then(() => {
+                                        callback();
                                     });
+                                });
                             });
                         });
                     }).catch(error => {
@@ -450,6 +451,49 @@
             });
         },
 
+        createResourceIdsEndpointAndAddSubRoute(title, description, language, keyword, version, standardlicense,
+            publisher, contractJson, sourceType, brokerUris, genericEndpointId, routeId, startId, startCoordinateX,
+            startCoordinateY, endCoordinateX, endCoordinateY) {
+            let dataUtils = this;
+            let params = "?title=" + title + "&description=" + description + "&language=" +
+                language + "&keyword=" + keyword + "&version=" + version + "&standardlicense=" + standardlicense +
+                "&publisher=" + publisher;
+            return new Promise(function (resolve, reject) {
+                Axios.post("http://localhost:80/resource" + params).then((response) => {
+                    let resourceId = response.data.resourceID;
+                    params = "?resourceId=" + resourceId;
+                    Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
+                        params = "?resourceId=" + resourceId + "&endpointId=" + genericEndpointId + "&language=" + language +
+                            "&sourceType=" + sourceType;
+                        Axios.post("http://localhost:80/representation" + params).then(() => {
+                            dataUtils.createConnectorEndpoint("http://data_" + Date.now(), endpointId => {
+                                dataUtils.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
+                                    endpointId, endCoordinateX, endCoordinateY, resourceId).then(() => {
+                                    let updatePromises = [];
+                                    for (let brokerUri of brokerUris) {
+                                        updatePromises.push(dataUtils.updateResourceAtBroker(brokerUri, resourceId));
+                                    }
+                                    Promise.all(updatePromises).then(() => {
+                                        resolve();
+                                    });
+                                });
+                            });
+                        }).catch(error => {
+                            console.log("Error in createResourceIdsEndpointAndAddSubRoute(): ", error);
+                            reject();
+                        });
+                    }).catch(error => {
+                        console.log("Error in createResourceIdsEndpointAndAddSubRoute(): ", error);
+                        reject();
+                    });
+
+                }).catch(error => {
+                    console.log("Error in createResource(): ", error);
+                    reject();
+                });
+            });
+        },
+
         getEndpointInfo(routeId, endpointId, callback) {
             var params = "?routeId=" + routeId + "&endpointId=" + endpointId;
             Axios.get("http://localhost:80/approute/step/endpoint/info" + params).then(response => {
@@ -469,24 +513,31 @@
             });
         },
 
-        createNewRoute(description, callback) {
+        createNewRoute(description) {
             let params = "?description=" + description;
-            Axios.post("http://localhost:80/approute" + params).then(response => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in createNewRoute(): ", error);
+            return new Promise(function (resolve, reject) {
+                Axios.post("http://localhost:80/approute" + params).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    console.log("Error in createNewRoute(): ", error);
+                    reject();
+                });
             });
         },
 
-        createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, resourceId, callback) {
+        createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, resourceId) {
             let params = "?routeId=" + routeId + "&startId=" + startId + "&startCoordinateX=" + startCoordinateX +
                 "&startCoordinateY=" + startCoordinateY + "&endId=" + endId + "&endCoordinateX=" + endCoordinateX +
                 "&endCoordinateY=" + endCoordinateY + "&resourceId=" + resourceId;
-            Axios.post("http://localhost:80/approute/step" + params).then(response => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in createSubRoute(): ", error);
+            return new Promise(function (resolve, reject) {
+                Axios.post("http://localhost:80/approute/step" + params).then(response => {
+                    resolve(response.data);
+                }).catch(error => {
+                    console.log("Error in createSubRoute(): ", error);
+                    reject();
+                });
             });
+
         },
 
         setSubRouteEnd(routeId, subRouteId, accessUrl, callback) {

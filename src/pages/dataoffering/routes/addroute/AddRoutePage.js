@@ -5,6 +5,7 @@ import EditConnectionDialog from "./dialog/EditConnectionDialog.vue";
 import AddNodeDialog from "./dialog/AddNodeDialog.vue";
 import Flowchart from "@/components/flowchart/Flowchart.vue";
 import dataUtils from "@/utils/dataUtils";
+import clientDataModel from "../../../../datamodel/clientDataModel";
 
 export default {
     components: {
@@ -23,8 +24,6 @@ export default {
             endpoints: [],
             currentRoute: null,
             description: "",
-            receivedResults: [],
-            numberOfResultsToWaitFor: 0,
             saveMessage: ""
         };
     },
@@ -32,11 +31,11 @@ export default {
         this.getBackendConnections(() => {
             this.getApps(() => {
                 this.$data.saveMessage = "";
-                if (this.$route.query.id === undefined) {
+                if (this.$route.query.routeId === undefined) {
                     this.$data.currentRoute = null;
                     this.description = dataUtils.getCurrentDate() + " - Unnamed";
                 } else {
-                    this.loadRoute(this.$route.query.id);
+                    this.loadRoute(this.$route.query.routeId);
                 }
             });
         });
@@ -53,8 +52,12 @@ export default {
                 for (let subRoute of route["ids:hasSubRoute"]) {
                     let start = subRoute["ids:appRouteStart"][0];
                     let end = subRoute["ids:appRouteEnd"][0];
-                    this.addNode(id, start, () => {
-                        this.addNode(id, end, () => {
+                    let output = undefined;
+                    if (subRoute["ids:appRouteOutput"] !== undefined) {
+                        output = subRoute["ids:appRouteOutput"][0];
+                    }
+                    this.addNode(id, start, output, () => {
+                        this.addNode(id, end, output, () => {
                             let startNodeObjectId = start["@id"];
                             if (start["@type"] == "ids:AppEndpoint") {
                                 startNodeObjectId = dataUtils.getAppIdOfEndpointId(start["@id"]);
@@ -75,7 +78,7 @@ export default {
                 this.$forceUpdate();
             });
         },
-        addNode(routeId, endpoint, callback) {
+        addNode(routeId, endpoint, output, callback) {
             dataUtils.getEndpointInfo(routeId, endpoint["@id"], endpointInfo => {
                 if (endpoint["@type"] == "ids:GenericEndpoint") {
                     if (!this.nodeExists(endpoint["@id"])) {
@@ -85,6 +88,10 @@ export default {
                     let appId = dataUtils.getAppIdOfEndpointId(endpoint["@id"]);
                     if (!this.nodeExists(appId)) {
                         this.addApp(appId, endpointInfo.xCoordinate, endpointInfo.yCoordinate);
+                    }
+                } else if (endpoint["@type"] == "ids:ConnectorEndpoint") {
+                    if (!this.nodeExists(endpoint["@id"])) {
+                        this.addIdsEndpoint(endpoint["@id"], endpointInfo.xCoordinate, endpointInfo.yCoordinate, output);
                     }
                 }
                 callback();
@@ -154,6 +161,14 @@ export default {
             // New connection saved for the first time.
             this.$refs.chart.internalConnections.push(connection);
         },
+        newIdsEndpointNodeSaved(node) {
+            let x = this.getXForNewNode();
+            let y = 150;
+            console.log("X Y: ", x, y);
+            node.x = x;
+            node.y = y;
+            this.$refs.chart.add(node);
+        },
         showAddBackendDialog() {
             this.$refs.addBackendDialog.show(this.$data.backendConnections, "Backend Connection", "URL", "url");
         },
@@ -205,7 +220,10 @@ export default {
                 objectId: id,
             });
         },
-        addEndpoint(event, x, y) {
+        showAddIdsEndpointDialog() {
+            this.$refs.editIDSEndpointDialog.show(null);
+        },
+        addIdsEndpoint(id, x, y, output) {
             if (x === undefined) {
                 x = this.getXForNewNode();
             }
@@ -213,6 +231,8 @@ export default {
                 y = 150;
             }
             console.log("X Y: ", x, y);
+            let resource = clientDataModel.convertIdsResource(output);
+            console.log(">>> ADD IDS END: ", resource);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: x,
@@ -220,7 +240,17 @@ export default {
                 name: 'IDS Endpoint',
                 type: 'idsendpointnode',
                 text: "IDS Endpoint",
-                objectId: null,
+                objectId: id,
+                title: resource.title,
+                description: resource.description,
+                language: resource.language,
+                keywords: resource.keywords,
+                version: resource.version,
+                standardlicense: resource.standardLicense,
+                publisher: resource.publisher,
+                contractJson: resource.contract,
+                sourceType: resource.sourceType,
+                brokerList: resource.brokerList
             });
         },
         saveRoute() {
@@ -244,29 +274,35 @@ export default {
             for (var connection of connections) {
                 connectionsCopy.push(connection);
             }
-            this.$data.numberOfResultsToWaitFor = connections.length + 1;
-            dataUtils.createNewRoute(this.$data.description, routeId => {
-                this.resultReceived(routeId);
+            dataUtils.createNewRoute(this.$data.description).then(routeId => {
+                let subRoutePromises = [];
+                let genericEndpointId = null;
                 for (var connection of connections) {
                     var sourceNode = dataUtils.getNode(connection.source.id, nodes);
                     var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
-                    dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x, sourceNode.y,
-                        connection.destinationEndpointId, destinationNode.x, destinationNode.y, null, () => {
-                            this.resultReceived("");
-                        });
+                    console.log(sourceNode, connection.sourceEndpointId + " => " + connection.destinationEndpointId, destinationNode);
+                    if (sourceNode.type == "backendnode") {
+                        genericEndpointId = sourceNode.objectId;
+                    }
+                    if (destinationNode.type == "idsendpointnode") {
+                        subRoutePromises.push(dataUtils.createResourceIdsEndpointAndAddSubRoute(destinationNode.title,
+                            destinationNode.description, destinationNode.language, destinationNode.keywords,
+                            destinationNode.version, destinationNode.standardlicense,
+                            destinationNode.publisher, destinationNode.contractJson, destinationNode.sourceType,
+                            destinationNode.brokerList, genericEndpointId, routeId, connection.sourceEndpointId, sourceNode.x,
+                            sourceNode.y, destinationNode.x, destinationNode.y));
+                    } else {
+                        subRoutePromises.push(dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x,
+                            sourceNode.y, connection.destinationEndpointId, destinationNode.x, destinationNode.y, null));
+                    }
+
                 }
+                Promise.all(subRoutePromises).then(() => {
+                    this.$root.$emit('showBusyIndicator', false);
+                    this.$data.receivedResults = [];
+                    this.$data.saveMessage = "Successfully saved."
+                });
             });
-        },
-        resultReceived(result) {
-            this.$data.receivedResults.push(result);
-            if (this.$data.receivedResults.length == this.$data.numberOfResultsToWaitFor) {
-                this.allResultsReceived();
-            }
-        },
-        allResultsReceived() {
-            this.$root.$emit('showBusyIndicator', false);
-            this.$data.receivedResults = [];
-            this.$data.saveMessage = "Successfully saved."
         },
         render: function (g, node, isSelected) {
             node.width = node.width || 120;

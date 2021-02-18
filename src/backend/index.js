@@ -202,8 +202,8 @@ app.put('/generic/endpoint', (req, res) => {
 });
 
 app.delete('/generic/endpoint', (req, res) => {
-    console.log(">>> DELETE http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + req.query.id);
-    axios.delete("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + req.query.id).then(response => {
+    console.log(">>> DELETE http://localhost:" + configModelPort + "/api/ui/generic/endpoint?endpointId=" + req.query.endpointId);
+    axios.delete("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?endpointId=" + req.query.endpointId).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on DELETE /generic/endpoint", error.response.status);
