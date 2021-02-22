@@ -24,7 +24,8 @@ export default {
             endpoints: [],
             currentRoute: null,
             description: "",
-            saveMessage: ""
+            saveMessage: "",
+            isNewRoute: false
         };
     },
     mounted: function () {
@@ -32,6 +33,7 @@ export default {
             this.getApps(() => {
                 this.$data.saveMessage = "";
                 if (this.$route.query.routeId === undefined) {
+                    this.$data.isNewRoute = true;
                     this.$data.currentRoute = null;
                     this.description = dataUtils.getCurrentDate() + " - Unnamed";
                 } else {

@@ -27,7 +27,7 @@
             </flowchart>
         </v-col>
     </v-row>
-    <v-row no-gutters>
+    <v-row no-gutters v-if="isNewRoute">
         <v-col cols="12" md="6" class="save-route-col">
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="saveRoute">Save
             </v-btn>

@@ -90,7 +90,6 @@
         },
 
         getResource(id, callback) {
-            console.trace();
             Axios.get("http://localhost:80/resource?resourceId=" + id).then(response => {
                 callback(clientDataModel.convertIdsResource(response.data));
             }).catch(error => {
