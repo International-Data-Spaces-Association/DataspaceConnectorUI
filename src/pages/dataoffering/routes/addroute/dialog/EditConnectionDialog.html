@@ -1,0 +1,38 @@
+<v-dialog v-model="dialog" width="800" eager>
+    <v-card>
+        <v-card-title class="headline grey lighten-2">
+            {{title}}
+        </v-card-title>
+
+        <v-card-text>
+            <v-form v-model="valid" ref="form">
+                <v-row no-gutters>
+                    <v-col cols="12" md="5" class="selectcol">
+                        <v-select label="Output" v-model="outputId" :items="outputs" item-text="text" item-value="id"
+                            :rules="defaultRule">
+                        </v-select>
+                    </v-col>
+                    <v-col cols="12" md="2" class="inoutarrowcol">
+                        <div class="inoutarrow">➞</div>
+                    </v-col>
+                    <v-col cols="12" md="5" class="selectcol">
+                        <v-select v-if="inputs.length > 0" label="Input" v-model="inputId" :items="inputs"
+                            item-text="text" item-value="id" :rules="defaultRule">
+                        </v-select>
+                        <div v-if="inputs.length == 0 && destinationNode != null" class="noselectdiv">
+                            {{ destinationNode.text }}</div>
+                    </v-col>
+                </v-row>
+            </v-form>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" @click="save" :disabled="!valid">
+                Save
+            </v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>

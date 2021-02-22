@@ -1,91 +1,65 @@
-import * as d3 from "d3";
-import NodeDialog from "@/pages/dataoffering/routes/dialog/NodeDialog.vue";
+// import dataUtils from "@/utils/dataUtils";
+import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
+import dataUtils from "../../../utils/dataUtils";
+
 
 
 export default {
     components: {
-        NodeDialog
+        ConfirmationDialog
     },
     data() {
         return {
-            nodes: [],
-            connections: []
+            search: '',
+            headers: [{
+                text: 'Description',
+                value: 'description'
+            }, {
+                text: '',
+                value: 'actions',
+                sortable: false,
+                align: 'right'
+            }],
+            routes: []
         };
     },
-    mounted: function () {},
+    mounted: function () {
+        this.getRoutes();
+    },
     methods: {
-        handleEditNode(node) {
-            console.log(">>> handleEditNode: ", node);
-            this.$refs.nodeDialog.title = "Edit " + node.name;
-            this.$refs.nodeDialog.dialog = true;
-        },
-        handleEditConnection(connection) {
-            console.log(">>> handleEditConnection: ", connection);
-        },
-        addBackend() {
-            this.$refs.chart.add({
-                id: +new Date(),
-                x: 20,
-                y: 20,
-                name: 'Backend',
-                type: 'backendnode',
-                approvers: [],
-            });
-        },
-        addApp() {
-            this.$refs.chart.add({
-                id: +new Date(),
-                x: 300,
-                y: 20,
-                name: 'App',
-                type: 'appnode',
-                approvers: [],
-            });
-        },
-        addResource() {
-            this.$refs.chart.add({
-                id: +new Date(),
-                x: 600,
-                y: 20,
-                name: 'Resource',
-                type: 'resourcenode',
-                approvers: [],
-            });
-        },
-        render: function (g, node, isSelected) {
-            node.width = node.width || 120;
-            node.height = node.height || 60;
-            let borderColor = isSelected ? "#666666" : "#bbbbbb";
-            let body = g.append("rect").attr("class", "body");
-            body
-                .style("width", node.width + "px")
-            body
-                .attr("x", node.x)
-                .attr("y", node.y)
-                .classed(node.type, true)
-                .attr("rx", 30);
-            body.style("height", node.height + "px");
-            body.attr("stroke", borderColor);
-            if (isSelected) {
-                body.classed("selectedNode", true);
-            }
+        getRoutes() {
+            this.$root.$emit('showBusyIndicator', true);
 
-            g.append("text")
-                .attr("x", node.x + node.width / 2)
-                .attr("y", node.y + 20)
-                .attr("text-anchor", "middle")
-                .attr("class", "unselectable")
-                .text(() => node.name)
-                .each(function wrap() {
-                    let self = d3.select(this),
-                        textLength = self.node().getComputedTextLength(),
-                        text = self.text();
-                    while (textLength > node.width - 2 * 4 && text.length > 0) {
-                        text = text.slice(0, -1);
-                        self.text(text + "...");
-                        textLength = self.node().getComputedTextLength();
-                    }
-                });
+            dataUtils.getRoutes(routes => {
+                this.$data.routes = [];
+                for (let route of routes) {
+                    this.$data.routes.push({
+                        id: route["@id"],
+                        description: route["ids:routeDescription"]
+                    });
+                }
+                this.$root.$emit('showBusyIndicator', false);
+            });
+        },
+        deleteItem(item) {
+            this.$refs.confirmationDialog.title = "Delete Route";
+            this.$refs.confirmationDialog.text = "Are you sure you want to delete the route '" + item.description + "'?";
+            this.$refs.confirmationDialog.callbackData = {
+                item: item
+            };
+            this.$refs.confirmationDialog.callback = this.deleteCallback;
+            this.$refs.confirmationDialog.dialog = true;
+        },
+        deleteCallback(choice, callbackData) {
+            if (choice == "yes") {
+                this.$root.$emit('showBusyIndicator', true);
+                dataUtils.deleteRoute(callbackData.item.id, () => {
+                    this.getRoutes();
+                })
+            }
+        },
+        editItem(item) {
+            this.$router.push('editroute?routeId=' + item.id);
         }
     }
 };

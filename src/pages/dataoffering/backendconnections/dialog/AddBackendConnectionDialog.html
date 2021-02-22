@@ -12,18 +12,21 @@
         </v-card-title>
 
         <v-card-text>
-            <v-text-field label="URL" v-model="url"> </v-text-field>
-            <v-text-field label="Username" v-model="username"> </v-text-field>
-            <v-text-field label="Password" v-model="password" :type="showPassword ? 'text' : 'password'"
-                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" @click:append="showPassword = !showPassword">
-            </v-text-field>
+            <v-form v-model="valid" ref="form">
+                <v-text-field ref="tfURL" label="URL" v-model="url" :rules="urlRule"> </v-text-field>
+                <v-text-field label="Username" v-model="username"> </v-text-field>
+                <v-text-field label="Password" v-model="password" :type="showPassword ? 'text' : 'password'"
+                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="showPassword = !showPassword">
+                </v-text-field>
+            </v-form>
         </v-card-text>
 
         <v-divider></v-divider>
 
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="saveBackendConnection">
+            <v-btn color="primary" @click="saveBackendConnection" :disabled="!valid">
                 Save
             </v-btn>
         </v-card-actions>
