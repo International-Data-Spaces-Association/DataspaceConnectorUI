@@ -1,77 +1,82 @@
 <div>
-    <v-row no-gutters>
-        <v-col cols="12" md="2">
-            Proxy
-        </v-col>
-        <v-col cols="12" md="9">
-            <v-text-field label="Proxy URL" v-model="proxyUrl"> </v-text-field>
-            <v-checkbox v-model="proxyAuthenticationNeeded" label="Use authentication"></v-checkbox>
-            <div class="proxy-authentication"
-                v-bind:class="{ visible: proxyAuthenticationNeeded, invisible: !proxyAuthenticationNeeded }">
-                <v-text-field label="Username" v-model="proxyUsername"> </v-text-field>
-                <v-text-field label="Password" v-model="proxyPassword" :type="showPassword ? 'text' : 'password'"
-                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    @click:append="showPassword = !showPassword">
-                </v-text-field>
-            </div>
-            <v-textarea label="Do not use the proxy settings for these hosts and domains" v-model="proxyNoProxy">
-            </v-textarea>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="2">
-            Deploy
-        </v-col>
-        <v-col cols="12" md="9">
-            <v-select label="Deploy Method" v-model="deployMethod" :items="deployMethods">
-            </v-select>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="2">
-            LogLevel
-        </v-col>
-        <v-col cols="12" md="9">
-            <v-select label="Log Level" v-model="logLevel" :items="logLevels">
-            </v-select>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="2">
-            ConnectorStatus
-        </v-col>
-        <v-col cols="12" md="9">
-            <v-select label="Connector Status" v-model="connectorStatus" :items="connectorStatuses">
-            </v-select>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="2">
-            ConnectorDeployMode
-        </v-col>
-        <v-col cols="12" md="9">
-            <v-select label="Connector Deploy Mode" v-model="connectorDeployMode" :items="connectorDeployModes">
-            </v-select>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="2">
-            TrustStore
-        </v-col>
-        <v-col cols="12" md="9">
-            <v-text-field label="TrustStore URL" v-model="TrustStoreSettings"> </v-text-field>
-       </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="2">
-                 KeyStore
-        </v-col>
-        <v-col cols="12" md="9">
-            <v-text-field label="KeyStore URL" v-model="KeyStoreSettings"> </v-text-field>
-        </v-col>
-    </v-row>
-        
-
-    
-    <v-btn color="primary" @click.native="saveSettings">Save</v-btn>
+    <v-form v-model="valid" ref="form">
+        <v-row no-gutters>
+            <v-col cols="12" md="2">
+                Proxy
+            </v-col>
+            <v-col cols="12" md="9">
+                <v-text-field label="Proxy URL" v-model="proxyUrl" :rules="urlRule"> </v-text-field>
+                <v-checkbox v-model="proxyAuthenticationNeeded" label="Use authentication"></v-checkbox>
+                <div class="proxy-authentication"
+                    v-bind:class="{ visible: proxyAuthenticationNeeded, invisible: !proxyAuthenticationNeeded }">
+                    <v-text-field label="Username" v-model="proxyUsername"> </v-text-field>
+                    <v-text-field label="Password" v-model="proxyPassword" :type="showPassword ? 'text' : 'password'"
+                        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                        @click:append="showPassword = !showPassword">
+                    </v-text-field>
+                </div>
+                <v-textarea label="Do not use the proxy settings for these hosts and domains" v-model="proxyNoProxy">
+                </v-textarea>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="2">
+                Deploy
+            </v-col>
+            <v-col cols="12" md="9">
+                <v-select label="Deploy Method" v-model="deployMethod" :items="deployMethods">
+                </v-select>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="2">
+                LogLevel
+            </v-col>
+            <v-col cols="12" md="9">
+                <v-select label="Log Level" v-model="logLevel" :items="logLevels">
+                </v-select>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="2">
+                ConnectorDeployMode
+            </v-col>
+            <v-col cols="12" md="9">
+                <v-select label="Connector Deploy Mode" v-model="connectorDeployMode" :items="connectorDeployModes">
+                </v-select>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="2">
+                TrustStore
+            </v-col>
+            <v-col cols="12" md="9">
+                <v-text-field label="TrustStore URL" v-model="trustStoreUrl"> </v-text-field>
+                <v-text-field label="TrustStore Password" v-model="trustStorePassword"
+                    :type="showPasswordTrustStore ? 'text' : 'password'" :append-icon="showPasswordTrustStore ?
+                    'mdi-eye' :
+                    'mdi-eye-off'" @click:append="showPasswordTrustStore = !showPasswordTrustStore"> </v-text-field>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="2">
+                KeyStore
+            </v-col>
+            <v-col cols="12" md="9">
+                <v-text-field label="KeyStore URL" v-model="keyStoreUrl"> </v-text-field>
+                <v-text-field label="KeyStore Password" v-model="keyStorePassword"
+                    :type="showPasswordKeyStore ? 'text' : 'password'" :append-icon="showPasswordKeyStore ? 'mdi-eye' :
+                    'mdi-eye-off'" @click:append="showPasswordKeyStore = !showPasswordKeyStore"> </v-text-field>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="2">
+                ConnectorStatus
+            </v-col>
+            <v-col cols="12" md="9">
+                {{connectorStatus}}
+            </v-col>
+        </v-row>
+    </v-form>
+    <v-btn color="primary" @click.native="saveSettings" :disabled="!valid" class="save-settings-button">Save</v-btn>
 </div>

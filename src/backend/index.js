@@ -469,8 +469,11 @@ app.get('/configmodel', (req, res) => {
     });
 });
 
-app.put('/logLevel', (req, res) => {
-    let params = "?loglevel" + req.query.loglevel;
+app.put('/configmodel', (req, res) => {
+    let params = "?loglevel=" + req.query.logLevel + "&connectorDeployMode=" + req.query.connectorDeployMode + "&trustStore=" +
+        req.query.trustStoreUrl + "&trustStorePassword=" + req.query.trustStorePassword + "&keyStore=" + req.query.keyStoreUrl +
+        "&keyStorePassword=" + req.query.keyStorePassword;
+    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/configmodel" + params);
     axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -479,32 +482,12 @@ app.put('/logLevel', (req, res) => {
     });
 });
 
-app.put('/connectorDeployMode', (req, res) => {
-    let params = "?connectorDeployMode" + req.query.connectorDeployMode;
-    axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel" + params).then(response => {
+app.get('/configmodel', (req, res) => {
+    console.log("GET http://localhost:" + configModelPort + "/api/ui/configmodel");
+    axios.get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
         res.send(response.data);
     }).catch(error => {
-        console.log("Error on PUT /configmodel", error.response.status);
-        res.send(error);
-    });
-});
-
-app.put('/trustStore', (req, res) => {
-    let params = "?trustStore" + req.query.trustStore;
-    axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel" + params).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on PUT /configmodel", error.response.status);
-        res.send(error);
-    });
-});
-
-app.put('/keyStore', (req, res) => {
-    let params = "?keyStore" + req.query.keyStore;
-    axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel" + params).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on PUT /configmodel", error.response.status);
+        console.log("Error on GET /configmodel", error.response.status);
         res.send(error);
     });
 });
@@ -520,6 +503,7 @@ app.get('/route/deploymethod', (req, res) => {
 
 app.post('/route/deploymethod', (req, res) => {
     let params = "?deployMethod=" + req.query.deployMethod;
+    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/route/deploymethod" + params);
     axios.put("http://localhost:" + configModelPort + "/api/ui/route/deploymethod" + params).then(response => {
         res.send(response.data);
     }).catch(error => {

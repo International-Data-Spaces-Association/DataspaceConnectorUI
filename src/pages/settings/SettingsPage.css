@@ -1,3 +1,7 @@
 .proxy-authentication.invisible {
     display: none;
 }
+
+.save-settings-button {
+    margin-top: 25px;
+}

@@ -63,6 +63,68 @@ export default {
         return resource;
     },
 
+    createConfigModel(proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode,
+        trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword) {
+        let configModel = {};
+        if (proxyUrl === undefined) {
+            configModel.proxyUrl = "";
+        } else {
+            configModel.proxyUrl = proxyUrl;
+        }
+        if (username === undefined || username == "null") {
+            configModel.username = "";
+        } else {
+            configModel.username = username;
+        }
+        if (password === undefined || password == "null") {
+            configModel.password = "";
+        } else {
+            configModel.password = password;
+        }
+        if (noProxyArray === undefined) {
+            configModel.noProxyArray = [];
+        } else {
+            configModel.noProxyArray = noProxyArray;
+        }
+        if (logLevel === undefined) {
+            configModel.logLevel = "";
+        } else {
+            configModel.logLevel = logLevel;
+        }
+        if (connectorStatus === undefined) {
+            configModel.connectorStatus = "";
+        } else {
+            configModel.connectorStatus = connectorStatus;
+        }
+        if (connectorDeployMode === undefined) {
+            configModel.connectorDeployMode = "";
+        } else {
+            configModel.connectorDeployMode = connectorDeployMode;
+        }
+        if (trustStoreUrl === undefined) {
+            configModel.trustStoreUrl = "";
+        } else {
+            configModel.trustStoreUrl = trustStoreUrl;
+        }
+        if (trustStorePassword === undefined) {
+            configModel.trustStorePassword = "";
+        } else {
+            configModel.trustStorePassword = trustStorePassword;
+        }
+        if (keyStoreUrl === undefined) {
+            configModel.keyStoreUrl = "";
+        } else {
+            configModel.keyStoreUrl = keyStoreUrl;
+        }
+        if (keyStorePassword === undefined) {
+            configModel.keyStorePassword = "";
+        } else {
+            configModel.keyStorePassword = keyStorePassword;
+        }
+
+        return configModel;
+    },
+
     convertIdsResource(idsResource) {
         let standardLicense = undefined;
         if (idsResource["ids:standardLicense"] !== undefined) {
@@ -88,5 +150,24 @@ export default {
             idsResource["ids:version"], standardLicense, publisher,
             contract, sourceType,
             representationId);
+    },
+
+
+    convertIdsConfigModel(idsConfigModel) {
+        console.log(">>> CONVER: ", idsConfigModel);
+        let proxyUrl = idsConfigModel["ids:connectorProxy"][0]["ids:proxyURI"]["@id"];
+        let username = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authUsername"];
+        let password = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authPassword"];
+        let noProxyArray = idsConfigModel["ids:connectorProxy"][0]["ids:noProxy"];
+        let logLevel = idsConfigModel["ids:configurationModelLogLevel"]["@id"].replace("idsc:", "");
+        let connectorStatus = idsConfigModel["ids:connectorStatus"]["@id"].replace("idsc:CONNECTOR_", "");
+        let connectorDeployMode = idsConfigModel["ids:connectorDeployMode"]["@id"].replace("idsc:", "");
+        let trustStoreUrl = idsConfigModel["ids:trustStore"]["@id"];
+        let trustStorePassword = idsConfigModel["ids:trustStorePassword"];
+        let keyStoreUrl = idsConfigModel["ids:keyStore"]["@id"];
+        let keyStorePassword = idsConfigModel["ids:keyStorePassword"];
+
+        return this.createConfigModel(proxyUrl, username, password, noProxyArray, logLevel, connectorStatus,
+            connectorDeployMode, trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword);
     }
 }

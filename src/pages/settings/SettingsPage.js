@@ -19,7 +19,18 @@ export default {
             connectorDeployModes: [],
             connectorDeployMode: "",
             trustStoreUrl: "",
-            keyStoreUrl: ""
+            trustStorePassword: "",
+            keyStoreUrl: "",
+            keyStorePassword: "",
+            showPasswordTrustStore: false,
+            showPasswordKeyStore: false,
+            valid: false,
+            urlRule: [
+                v => {
+                    if (v) return /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed'
+                    else return true;
+                }
+            ]
         };
     },
     mounted: function () {
@@ -28,41 +39,6 @@ export default {
     methods: {
         getSettings() {
             this.$root.$emit('showBusyIndicator', true);
-            dataUtils.getProxySettings(response => {
-                console.log(">>> PROXY RESPONSE: ", response);
-                if (response != null && response != "") {
-                    let proxy = response.data;
-                    if (proxy.length > 0) {
-                        this.$data.proxyUrl = proxy[0]["ids:proxyURI"]["@id"];
-                    }
-                    let username = proxy[0]["ids:proxyAuthentication"]["ids:authUsername"];
-                    if (username == "null") {
-                        username = "";
-                    }
-                    let password = proxy[0]["ids:proxyAuthentication"]["ids:authPassword"];
-                    if (password == "null") {
-                        password = "";
-                    }
-                    let noProxyArray = proxy[0]["ids:noProxy"];
-                    this.$data.proxyAuthenticationNeeded = username != "" || password != "";
-                    this.$data.proxyUsername = username;
-                    this.$data.proxyPassword = password;
-                    let noProxy = "";
-                    let count = 0;
-                    for (let el of noProxyArray) {
-                        if (count > 0) {
-                            noProxy += ", ";
-                        }
-                        noProxy += el["@id"];
-                        count++;
-                    }
-                    this.$data.proxyNoProxy = noProxy;
-                    this.$root.$emit('showBusyIndicator', false);
-                } else {
-                    this.$root.$emit('showBusyIndicator', false);
-                }
-            });
-
             dataUtils.getDeployMethods(response => {
                 console.log(">>> getDeployMethods: ", response);
                 this.$data.deployMethods = response;
@@ -75,53 +51,57 @@ export default {
                 }
             });
 
+            dataUtils.getConfigModel().then(configModel => {
+                console.log(">>> getConfigModel: ", configModel);
+                this.$data.proxyUrl = configModel.proxyUrl;
+                let username = configModel.username;
+                let password = configModel.password;
+                let noProxyArray = configModel.noProxyArray;
+                this.$data.proxyAuthenticationNeeded = username != "" || password != "";
+                this.$data.proxyUsername = username;
+                this.$data.proxyPassword = password;
+                let noProxy = "";
+                let count = 0;
+                for (let el of noProxyArray) {
+                    if (count > 0) {
+                        noProxy += ", ";
+                    }
+                    noProxy += el["@id"];
+                    count++;
+                }
+                this.$data.proxyNoProxy = noProxy;
+                this.$data.logLevel = configModel.logLevel;
+                this.$data.connectorStatus = configModel.connectorStatus;
+                this.$data.connectorDeployMode = configModel.connectorDeployMode;
+                this.$data.trustStoreUrl = configModel.trustStoreUrl;
+                this.$data.trustStorePassword = configModel.trustStorePassword;
+                this.$data.keyStoreUrl = configModel.keyStoreUrl;
+                this.$data.keyStorePassword = configModel.keyStorePassword;
+                this.$root.$emit('showBusyIndicator', false);
+            });
+
             dataUtils.getLogLevels(response => {
                 console.log(">>> getLogLevels: ", response);
                 this.$data.logLevels = response;
             });
 
-            dataUtils.getLogLevel(response => {
-                console.log(">>> getLogLevel: ", response);
-                if (response != null && response != "") {
-                    this.$data.logLevel = response[0][1].logLevel;
-                }
-            });
-
-            dataUtils.getConnectorStatuses(response =>{
+            dataUtils.getConnectorStatuses(response => {
                 console.log(">>> getConnectorStatuses: ", response);
                 this.$data.connectorStatuses = response;
-            })
-
-            dataUtils.getConnectorStatus(response => {
-                console.log(">>> getConnectorStatus: ", response);
-                if (response != null && response != "") {
-                    this.$data.connectorStatus = response[0][1].connectorStatus;
-                }
             });
 
-            dataUtils.getConnectorDeployMode(response =>{
-                console.log(">>> getConnectorDeployMode: ", response);
-                if (response != null && response != "") {
-                    this.$data.connectorDeployMode = response[0][1].ConnectorDeployMode;
-                }
-            });
-
-            dataUtils.getConnectorDeployModes(response =>{
+            dataUtils.getConnectorDeployModes(response => {
                 console.log(">>> getConnectorDeployModes: ", response);
                 this.$data.connectorDeployModes = response;
             });
-            dataUtils.getTrustStoreSettings(response =>{
-                console.log(">>> getTrustStoreSettings: ", response);
-                this.$data.trustStoreUrl = response;
-            });
-            dataUtils.getKeyStoreSettings(response =>{
-                console.log(">>> getKeyStoreSettings: ", response);
-                this.$data.keyStoreUrl = response;
-            })
-
         },
         saveSettings() {
+            let savePromises = [];
             this.$root.$emit('showBusyIndicator', true);
+            let proxyUrl = null;
+            if (this.$data.proxyUrl != "") {
+                proxyUrl = this.$data.proxyUrl;
+            }
             let username = null;
             let password = null;
             if (this.$data.proxyAuthenticationNeeded) {
@@ -132,13 +112,13 @@ export default {
                     password = this.$data.proxyPassword;
                 }
             }
-            dataUtils.changeProxySettings(this.$data.proxyUrl, this.$data.proxyNoProxy, username, password, () => {
-                dataUtils.changeDeployMethod(this.$data.deployMethod, () => {
-                    dataUtils.changeLogLevel(this.$data.logLevel, () => {
-                      this.$root.$emit('showBusyIndicator', false);
-                    });
-                });
+            savePromises.push(dataUtils.changeProxySettings(proxyUrl, this.$data.proxyNoProxy, username, password));
+            savePromises.push(dataUtils.changeDeployMethod(this.$data.deployMethod));
+            savePromises.push(dataUtils.changeConfigModel(this.$data.logLevel, this.$data.connectorDeployMode,
+                this.$data.trustStoreUrl, this.$data.trustStorePassword, this.$data.keyStoreUrl, this.$data.keyStorePassword));
+            Promise.all(savePromises).then(() => {
+                this.$root.$emit('showBusyIndicator', false);
             });
-        }   
+        }
     }
 };

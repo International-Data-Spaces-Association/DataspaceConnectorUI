@@ -548,27 +548,18 @@
             });
         },
 
-        getProxySettings(callback) {
-            Axios.get("http://localhost:80/proxy").then((response) => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in getProxySettings(): ", error);
-                callback(null);
-            });
-        },
-
-        changeProxySettings(proxyUrl, proxyNoProxy, username, password, callback) {
+        changeProxySettings(proxyUrl, proxyNoProxy, username, password) {
             let params = "?proxyUri=" + proxyUrl + "&noProxyUri=" + proxyNoProxy + "&username=" +
                 username + "&password=" + password;
-            Axios.put("http://localhost:80/proxy" + params).then(() => {
-                callback();
-            }).catch(error => {
-                console.log("Error in changeProxySettings(): ", error);
-                callback();
+            return new Promise(function (resolve, reject) {
+                Axios.put("http://localhost:80/proxy" + params).then(() => {
+                    resolve();
+                }).catch(error => {
+                    console.log("Error in changeProxySettings(): ", error);
+                    reject();
+                });
             });
         },
-
- 
 
         getDeployMethods(callback) {
             Axios.get("http://localhost:80/enum?enumName=deployMethod").then((response) => {
@@ -588,13 +579,15 @@
             });
         },
 
-        changeDeployMethod(deployMethod, callback) {
+        changeDeployMethod(deployMethod) {
             let params = "?deployMethod=" + deployMethod;
-            Axios.post("http://localhost:80/route/deploymethod" + params).then(() => {
-                callback();
-            }).catch(error => {
-                console.log("Error in changeDeployMethod(): ", error);
-                callback();
+            return new Promise(function (resolve, reject) {
+                Axios.post("http://localhost:80/route/deploymethod" + params).then(() => {
+                    resolve();
+                }).catch(error => {
+                    console.log("Error in changeDeployMethod(): ", error);
+                    reject();
+                });
             });
         },
 
@@ -607,87 +600,63 @@
             });
         },
 
-        getLogLevel(callback) {
-            Axios.get("http://localhost:80/logLevel").then((response) => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in getLogLevel(): ", error);
-                callback(null);
+        getConfigModel() {
+            return new Promise(function (resolve, reject) {
+                Axios.get("http://localhost:80/configmodel").then((response) => {
+                    resolve(clientDataModel.convertIdsConfigModel(response.data));
+                }).catch(error => {
+                    console.log("Error in getConfigModel(): ", error);
+                    reject();
+                });
             });
         },
 
-        changeLogLevel(logLevel, callback) {
-            let params = "?loglevel=" + logLevel;
-            Axios.put("http://localhost:80/loglevel" + params).then(() => {
-                callback();
-            }).catch(error => {
-                console.log("Error in changeLogLevel(): ", error);
-                callback();
+        changeConfigModel(logLevel, connectorDeployMode,
+            trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword) {
+            let params = "?logLevel=" + logLevel + "&connectorDeployMode=" + connectorDeployMode + "&trustStoreUrl=" +
+                trustStoreUrl + "&trustStorePassword=" + trustStorePassword + "&keyStoreUrl=" + keyStoreUrl +
+                "&keyStorePassword=" + keyStorePassword;
+            return new Promise(function (resolve, reject) {
+                Axios.put("http://localhost:80/configmodel" + params).then(() => {
+                    resolve();
+                }).catch(error => {
+                    console.log("Error in changeLogLevel(): ", error);
+                    reject();
+                });
             });
         },
-        
-        getConnectorStatuses(callback){
-            Axios.get("http://localhost:80/enum?enumName=connectorStatus").then((response) =>{
+
+        getConnectorStatuses(callback) {
+            Axios.get("http://localhost:80/enum?enumName=connectorStatus").then((response) => {
                 callback(response.data);
-            }).catch(error =>{
+            }).catch(error => {
                 console.log("Error in getConnectorStatuses(): " + error);
                 callback();
             })
         },
-        getConnectorStatus(callback) {
-            Axios.get("http://localhost:80/connectorStatus").then((response) => {
-                callback(response.data["ids:connectorStatus"]["@id"]);
-            }).catch(error => {
-                console.log("Error in getConnectorStatus(): ", error);
-                callback(null);
-            });
-        },
-        getConnectorDeployModes(callback){
-            Axios.get("http://localhost:80/enum?enumName=connectorDeployMode").then((response) =>{
+
+        getConnectorDeployModes(callback) {
+            Axios.get("http://localhost:80/enum?enumName=connectorDeployMode").then((response) => {
                 callback(response.data);
-            }).catch(error =>{
+            }).catch(error => {
                 console.log("Error in getConnectorDeployModes(): " + error);
                 callback();
             })
         },
-        getConnectorDeployMode(callback){
-            Axios.get("http://localhost:80/connectorDeployMode").then((response) => {
-                callback(response.data["ids:connectorDeployMode"]["@id"]);
-            }).catch(error => {
-                console.log("Error in getConnectorDeployMode(): ", error);
-                callback(null);
-            });
-        },
-        getTrustStoreSettings(callback) {
-            Axios.get("http://localhost:80/trustStore").then((response) => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in getTrustStoreSettings(): ", error);
-                callback(null);
-            });
-        },
 
         changeTrustStoreSettings(trustStoreURL, callback) {
             let params = "?trustStoreUrl=" + trustStoreURL;
-            Axios.put("http://localhost:80/trustStore" + params).then(() => {
+            Axios.put("http://localhost:80/configmodel" + params).then(() => {
                 callback();
             }).catch(error => {
                 console.log("Error in changeTrustStoreSettings(): ", error);
                 callback();
             });
         },
-        getKeyStoreSettings(callback) {
-            Axios.get("http://localhost:80/keyStore").then((response) => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in getKeyStoreSettings(): ", error);
-                callback(null);
-            });
-        },
 
         changeKeyStoreSettings(keyStoreURL, callback) {
             let params = "?keyStoreUrl=" + keyStoreURL;
-            Axios.put("http://localhost:80/keyStore" + params).then(() => {
+            Axios.put("http://localhost:80/configmodel" + params).then(() => {
                 callback();
             }).catch(error => {
                 console.log("Error in changeKeyStoreSettings(): ", error);
