@@ -27,5 +27,51 @@
             </v-select>
         </v-col>
     </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="2">
+            LogLevel
+        </v-col>
+        <v-col cols="12" md="9">
+            <v-select label="Log Level" v-model="logLevel" :items="logLevels">
+            </v-select>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="2">
+            ConnectorStatus
+        </v-col>
+        <v-col cols="12" md="9">
+            <v-select label="Connector Status" v-model="connectorStatus" :items="connectorStatuses">
+            </v-select>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="2">
+            ConnectorDeployMode
+        </v-col>
+        <v-col cols="12" md="9">
+            <v-select label="Connector Deploy Mode" v-model="connectorDeployMode" :items="connectorDeployModes">
+            </v-select>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="2">
+            TrustStore
+        </v-col>
+        <v-col cols="12" md="9">
+            <v-text-field label="TrustStore URL" v-model="TrustStoreSettings"> </v-text-field>
+       </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="2">
+                 KeyStore
+        </v-col>
+        <v-col cols="12" md="9">
+            <v-text-field label="KeyStore URL" v-model="KeyStoreSettings"> </v-text-field>
+        </v-col>
+    </v-row>
+        
+
+    
     <v-btn color="primary" @click.native="saveSettings">Save</v-btn>
 </div>

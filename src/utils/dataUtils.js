@@ -568,6 +568,8 @@
             });
         },
 
+ 
+
         getDeployMethods(callback) {
             Axios.get("http://localhost:80/enum?enumName=deployMethod").then((response) => {
                 callback(response.data);
@@ -592,6 +594,103 @@
                 callback();
             }).catch(error => {
                 console.log("Error in changeDeployMethod(): ", error);
+                callback();
+            });
+        },
+
+        getLogLevels(callback) {
+            Axios.get("http://localhost:80/enum?enumName=logLevel").then((response) => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in getLogLevels(): ", error);
+                callback(null);
+            });
+        },
+
+        getLogLevel(callback) {
+            Axios.get("http://localhost:80/logLevel").then((response) => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in getLogLevel(): ", error);
+                callback(null);
+            });
+        },
+
+        changeLogLevel(logLevel, callback) {
+            let params = "?loglevel=" + logLevel;
+            Axios.put("http://localhost:80/loglevel" + params).then(() => {
+                callback();
+            }).catch(error => {
+                console.log("Error in changeLogLevel(): ", error);
+                callback();
+            });
+        },
+        
+        getConnectorStatuses(callback){
+            Axios.get("http://localhost:80/enum?enumName=connectorStatus").then((response) =>{
+                callback(response.data);
+            }).catch(error =>{
+                console.log("Error in getConnectorStatuses(): " + error);
+                callback();
+            })
+        },
+        getConnectorStatus(callback) {
+            Axios.get("http://localhost:80/connectorStatus").then((response) => {
+                callback(response.data["ids:connectorStatus"]["@id"]);
+            }).catch(error => {
+                console.log("Error in getConnectorStatus(): ", error);
+                callback(null);
+            });
+        },
+        getConnectorDeployModes(callback){
+            Axios.get("http://localhost:80/enum?enumName=connectorDeployMode").then((response) =>{
+                callback(response.data);
+            }).catch(error =>{
+                console.log("Error in getConnectorDeployModes(): " + error);
+                callback();
+            })
+        },
+        getConnectorDeployMode(callback){
+            Axios.get("http://localhost:80/connectorDeployMode").then((response) => {
+                callback(response.data["ids:connectorDeployMode"]["@id"]);
+            }).catch(error => {
+                console.log("Error in getConnectorDeployMode(): ", error);
+                callback(null);
+            });
+        },
+        getTrustStoreSettings(callback) {
+            Axios.get("http://localhost:80/trustStore").then((response) => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in getTrustStoreSettings(): ", error);
+                callback(null);
+            });
+        },
+
+        changeTrustStoreSettings(trustStoreURL, callback) {
+            let params = "?trustStoreUrl=" + trustStoreURL;
+            Axios.put("http://localhost:80/trustStore" + params).then(() => {
+                callback();
+            }).catch(error => {
+                console.log("Error in changeTrustStoreSettings(): ", error);
+                callback();
+            });
+        },
+        getKeyStoreSettings(callback) {
+            Axios.get("http://localhost:80/keyStore").then((response) => {
+                callback(response.data);
+            }).catch(error => {
+                console.log("Error in getKeyStoreSettings(): ", error);
+                callback(null);
+            });
+        },
+
+        changeKeyStoreSettings(keyStoreURL, callback) {
+            let params = "?keyStoreUrl=" + keyStoreURL;
+            Axios.put("http://localhost:80/keyStore" + params).then(() => {
+                callback();
+            }).catch(error => {
+                console.log("Error in changeKeyStoreSettings(): ", error);
                 callback();
             });
         },

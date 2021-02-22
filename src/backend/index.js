@@ -460,6 +460,55 @@ app.put('/proxy', (req, res) => {
     });
 });
 
+app.get('/configmodel', (req, res) => {
+    axios.get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on GET /configmodel", error.response.status);
+        res.send(error);
+    });
+});
+
+app.put('/logLevel', (req, res) => {
+    let params = "?loglevel" + req.query.loglevel;
+    axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on PUT /configmodel", error.response.status);
+        res.send(error);
+    });
+});
+
+app.put('/connectorDeployMode', (req, res) => {
+    let params = "?connectorDeployMode" + req.query.connectorDeployMode;
+    axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on PUT /configmodel", error.response.status);
+        res.send(error);
+    });
+});
+
+app.put('/trustStore', (req, res) => {
+    let params = "?trustStore" + req.query.trustStore;
+    axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on PUT /configmodel", error.response.status);
+        res.send(error);
+    });
+});
+
+app.put('/keyStore', (req, res) => {
+    let params = "?keyStore" + req.query.keyStore;
+    axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on PUT /configmodel", error.response.status);
+        res.send(error);
+    });
+});
+
 app.get('/route/deploymethod', (req, res) => {
     axios.get("http://localhost:" + configModelPort + "/api/ui/route/deploymethod").then(response => {
         res.send(response.data);

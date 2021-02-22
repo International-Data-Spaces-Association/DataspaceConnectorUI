@@ -11,7 +11,15 @@ export default {
             proxyNoProxy: "",
             showPassword: false,
             deployMethod: "",
-            deployMethods: []
+            deployMethods: [],
+            logLevels: [],
+            logLevel: "",
+            connectorStatuses: [],
+            connectorStatus: "",
+            connectorDeployModes: [],
+            connectorDeployMode: "",
+            trustStoreUrl: "",
+            keyStoreUrl: ""
         };
     },
     mounted: function () {
@@ -66,6 +74,51 @@ export default {
                     this.$data.deployMethod = response[0][1].deployMethod;
                 }
             });
+
+            dataUtils.getLogLevels(response => {
+                console.log(">>> getLogLevels: ", response);
+                this.$data.logLevels = response;
+            });
+
+            dataUtils.getLogLevel(response => {
+                console.log(">>> getLogLevel: ", response);
+                if (response != null && response != "") {
+                    this.$data.logLevel = response[0][1].logLevel;
+                }
+            });
+
+            dataUtils.getConnectorStatuses(response =>{
+                console.log(">>> getConnectorStatuses: ", response);
+                this.$data.connectorStatuses = response;
+            })
+
+            dataUtils.getConnectorStatus(response => {
+                console.log(">>> getConnectorStatus: ", response);
+                if (response != null && response != "") {
+                    this.$data.connectorStatus = response[0][1].connectorStatus;
+                }
+            });
+
+            dataUtils.getConnectorDeployMode(response =>{
+                console.log(">>> getConnectorDeployMode: ", response);
+                if (response != null && response != "") {
+                    this.$data.connectorDeployMode = response[0][1].ConnectorDeployMode;
+                }
+            });
+
+            dataUtils.getConnectorDeployModes(response =>{
+                console.log(">>> getConnectorDeployModes: ", response);
+                this.$data.connectorDeployModes = response;
+            });
+            dataUtils.getTrustStoreSettings(response =>{
+                console.log(">>> getTrustStoreSettings: ", response);
+                this.$data.trustStoreUrl = response;
+            });
+            dataUtils.getKeyStoreSettings(response =>{
+                console.log(">>> getKeyStoreSettings: ", response);
+                this.$data.keyStoreUrl = response;
+            })
+
         },
         saveSettings() {
             this.$root.$emit('showBusyIndicator', true);
@@ -81,10 +134,11 @@ export default {
             }
             dataUtils.changeProxySettings(this.$data.proxyUrl, this.$data.proxyNoProxy, username, password, () => {
                 dataUtils.changeDeployMethod(this.$data.deployMethod, () => {
-                    this.$root.$emit('showBusyIndicator', false);
+                    dataUtils.changeLogLevel(this.$data.logLevel, () => {
+                      this.$root.$emit('showBusyIndicator', false);
+                    });
                 });
             });
-
-        }
+        }   
     }
 };
