@@ -390,13 +390,7 @@
                             this.createNewRoute(this.getCurrentDate() + " - " + title).then(routeId => {
                                 this.createSubRoute(routeId, genericEndpointId, 0, 0,
                                     endpointId, 0, 0, resourceId).then(() => {
-                                    let updatePromises = [];
-                                    for (let brokerUri of brokerUris) {
-                                        updatePromises.push(this.updateResourceAtBroker(brokerUri, resourceId));
-                                    }
-                                    Promise.all(updatePromises).then(() => {
-                                        callback();
-                                    });
+                                    this.updateResourceAtBrokers(brokerUris, resourceId, callback);
                                 });
                             });
                         });
@@ -468,13 +462,7 @@
                             dataUtils.createConnectorEndpoint("http://data_" + Date.now(), endpointId => {
                                 dataUtils.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
                                     endpointId, endCoordinateX, endCoordinateY, resourceId).then(() => {
-                                    let updatePromises = [];
-                                    for (let brokerUri of brokerUris) {
-                                        updatePromises.push(dataUtils.updateResourceAtBroker(brokerUri, resourceId));
-                                    }
-                                    Promise.all(updatePromises).then(() => {
-                                        resolve();
-                                    });
+                                    dataUtils.updateResourceAtBrokers(brokerUris, resourceId, resolve);
                                 });
                             });
                         }).catch(error => {
@@ -490,6 +478,16 @@
                     console.log("Error in createResource(): ", error);
                     reject();
                 });
+            });
+        },
+
+        async updateResourceAtBrokers(brokerUris, resourceId, resolve) {
+            let updatePromises = [];
+            for (let brokerUri of brokerUris) {
+                updatePromises.push(await this.updateResourceAtBroker(brokerUri, resourceId));
+            }
+            Promise.all(updatePromises).then(() => {
+                resolve();
             });
         },
 

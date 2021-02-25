@@ -271,39 +271,42 @@ export default {
             // Connection added in chart by mouse click.
             this.addConnection(connection);
         },
-        handleChartSave(nodes, connections) {
+        async handleChartSave(nodes, connections) {
             var connectionsCopy = [];
             for (var connection of connections) {
                 connectionsCopy.push(connection);
             }
             dataUtils.createNewRoute(this.$data.description).then(routeId => {
-                let subRoutePromises = [];
-                let genericEndpointId = null;
-                for (var connection of connections) {
-                    var sourceNode = dataUtils.getNode(connection.source.id, nodes);
-                    var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
-                    console.log(sourceNode, connection.sourceEndpointId + " => " + connection.destinationEndpointId, destinationNode);
-                    if (sourceNode.type == "backendnode") {
-                        genericEndpointId = sourceNode.objectId;
-                    }
-                    if (destinationNode.type == "idsendpointnode") {
-                        subRoutePromises.push(dataUtils.createResourceIdsEndpointAndAddSubRoute(destinationNode.title,
-                            destinationNode.description, destinationNode.language, destinationNode.keywords,
-                            destinationNode.version, destinationNode.standardlicense,
-                            destinationNode.publisher, destinationNode.contractJson, destinationNode.sourceType,
-                            destinationNode.brokerList, genericEndpointId, routeId, connection.sourceEndpointId, sourceNode.x,
-                            sourceNode.y, destinationNode.x, destinationNode.y));
-                    } else {
-                        subRoutePromises.push(dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x,
-                            sourceNode.y, connection.destinationEndpointId, destinationNode.x, destinationNode.y, null));
-                    }
-
+                this.saveRouteSteps(routeId, connections, nodes);
+            });
+        },
+        async saveRouteSteps(routeId, connections, nodes) {
+            let subRoutePromises = [];
+            let genericEndpointId = null;
+            for (var connection of connections) {
+                var sourceNode = dataUtils.getNode(connection.source.id, nodes);
+                var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
+                console.log(sourceNode, connection.sourceEndpointId + " => " + connection.destinationEndpointId, destinationNode);
+                if (sourceNode.type == "backendnode") {
+                    genericEndpointId = sourceNode.objectId;
                 }
-                Promise.all(subRoutePromises).then(() => {
-                    this.$root.$emit('showBusyIndicator', false);
-                    this.$data.receivedResults = [];
-                    this.$data.saveMessage = "Successfully saved."
-                });
+                if (destinationNode.type == "idsendpointnode") {
+                    subRoutePromises.push(await dataUtils.createResourceIdsEndpointAndAddSubRoute(destinationNode.title,
+                        destinationNode.description, destinationNode.language, destinationNode.keywords,
+                        destinationNode.version, destinationNode.standardlicense,
+                        destinationNode.publisher, destinationNode.contractJson, destinationNode.sourceType,
+                        destinationNode.brokerList, genericEndpointId, routeId, connection.sourceEndpointId, sourceNode.x,
+                        sourceNode.y, destinationNode.x, destinationNode.y));
+                } else {
+                    subRoutePromises.push(await dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x,
+                        sourceNode.y, connection.destinationEndpointId, destinationNode.x, destinationNode.y, null));
+                }
+
+            }
+            Promise.all(subRoutePromises).then(() => {
+                this.$root.$emit('showBusyIndicator', false);
+                this.$data.receivedResults = [];
+                this.$data.saveMessage = "Successfully saved."
             });
         },
         render: function (g, node, isSelected) {

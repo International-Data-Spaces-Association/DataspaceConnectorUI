@@ -30,7 +30,8 @@ export default {
                     if (v) return /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed'
                     else return true;
                 }
-            ]
+            ],
+            saveMessage: ""
         };
     },
     mounted: function () {
@@ -95,8 +96,9 @@ export default {
                 this.$data.connectorDeployModes = response;
             });
         },
-        saveSettings() {
+        async saveSettings() {
             let savePromises = [];
+            this.$data.saveMessage = "";
             this.$root.$emit('showBusyIndicator', true);
             let proxyUrl = null;
             if (this.$data.proxyUrl != "") {
@@ -112,12 +114,13 @@ export default {
                     password = this.$data.proxyPassword;
                 }
             }
-            savePromises.push(dataUtils.changeProxySettings(proxyUrl, this.$data.proxyNoProxy, username, password));
-            savePromises.push(dataUtils.changeDeployMethod(this.$data.deployMethod));
-            savePromises.push(dataUtils.changeConfigModel(this.$data.logLevel, this.$data.connectorDeployMode,
+            savePromises.push(await dataUtils.changeProxySettings(proxyUrl, this.$data.proxyNoProxy, username, password));
+            savePromises.push(await dataUtils.changeDeployMethod(this.$data.deployMethod));
+            savePromises.push(await dataUtils.changeConfigModel(this.$data.logLevel, this.$data.connectorDeployMode,
                 this.$data.trustStoreUrl, this.$data.trustStorePassword, this.$data.keyStoreUrl, this.$data.keyStorePassword));
             Promise.all(savePromises).then(() => {
                 this.$root.$emit('showBusyIndicator', false);
+                this.$data.saveMessage = "Successfully saved.";
             });
         }
     }

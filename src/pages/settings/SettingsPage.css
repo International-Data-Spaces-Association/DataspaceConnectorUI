@@ -3,5 +3,15 @@
 }
 
 .save-settings-button {
+    margin-right: 10px;
+}
+
+.save-settings-col {
+    display: flex;
+    align-items: center;
     margin-top: 25px;
+}
+
+.save-message {
+    color: var(--v-success-base)
 }

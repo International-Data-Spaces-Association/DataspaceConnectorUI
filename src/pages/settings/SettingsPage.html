@@ -78,5 +78,11 @@
             </v-col>
         </v-row>
     </v-form>
-    <v-btn color="primary" @click.native="saveSettings" :disabled="!valid" class="save-settings-button">Save</v-btn>
+    <v-row no-gutters>
+        <v-col cols="12" md="12" class="save-settings-col">
+            <v-btn color="primary" @click.native="saveSettings" :disabled="!valid" class="save-settings-button">Save
+            </v-btn>
+            <div class="save-message">{{ saveMessage }}</div>
+        </v-col>
+    </v-row>
 </div>
