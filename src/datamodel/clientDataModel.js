@@ -48,7 +48,13 @@ export default {
             resource.policyName = "";
         } else {
             resource.contract = contract;
-            resource.policyName = dataUtils.convertDescriptionToPolicyName(contract["ids:permission"][0]["ids:description"][0]["@value"]);
+            let type;
+            if (contract["ids:permission"] !== undefined) {
+                type = contract["ids:permission"][0]["ids:description"][0]["@value"];
+            } else if (contract["ids:prohibition"] !== undefined) {
+                type = contract["ids:prohibition"][0]["ids:description"][0]["@value"];
+            }
+            resource.policyName = dataUtils.convertDescriptionToPolicyName(type);
         }
         if (sourceType === undefined) {
             resource.sourceType = "";

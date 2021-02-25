@@ -2,12 +2,17 @@ import dataUtils from "@/utils/dataUtils";
 import NTimesUsage from "./patterns/ntimesusage/NTimesUsage.vue";
 import DurationUsage from "./patterns/durationusage/DurationUsage.vue";
 import UsageDuringInterval from "./patterns/usageduringinterval/UsageDuringInterval.vue";
+import ProvideAccess from "./patterns/provideaccess/ProvideAccess.vue";
+import ProhibitAccess from "./patterns/prohibitaccess/ProhibitAccess.vue";
+
 
 export default {
     components: {
         NTimesUsage,
         DurationUsage,
-        UsageDuringInterval
+        UsageDuringInterval,
+        ProvideAccess,
+        ProhibitAccess
     },
     data() {
         return {
@@ -17,7 +22,7 @@ export default {
         };
     },
     mounted: function () {
-        this.$data.policyType = dataUtils.POLICY_N_TIMES_USAGE;
+        this.$data.policyType = dataUtils.POLICY_PROVIDE_ACCESS;
         if (this.$parent.$parent.$parent.$parent.currentResource != null) {
             this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
         }
@@ -28,6 +33,7 @@ export default {
             for (let name of dataUtils.getPolicyNames()) {
                 if (name == this.$data.policyType) {
                     this.$refs[name].visibleclass = "";
+                    this.$refs[name].readonly = this.$data.readonly;
                 } else {
                     this.$refs[name].visibleclass = "invisible-policy";
                 }
@@ -43,7 +49,7 @@ export default {
         },
         loadResource(resource) {
             if (resource.contract === undefined) {
-                this.$data.policyType = "N Times Usage";
+                this.$data.policyType = dataUtils.POLICY_PROVIDE_ACCESS;
                 this.$refs.form.reset();
             } else {
                 this.setPolicy(resource.contract, resource.policyName);
@@ -51,7 +57,7 @@ export default {
         },
         setPolicy(contract, policyName) {
             if (contract == "") {
-                this.$data.policyType = dataUtils.POLICY_N_TIMES_USAGE;
+                this.$data.policyType = dataUtils.POLICY_PROVIDE_ACCESS;
             } else {
                 this.$data.policyType = policyName;
             }

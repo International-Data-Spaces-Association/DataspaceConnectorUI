@@ -6,17 +6,15 @@
     const POLICY_N_TIMES_USAGE = "N Times Usage";
     const POLICY_DURATION_USAGE = "Duration Usage";
     const POLICY_USAGE_DURING_INTERVAL = "Usage During Interval";
+    const POLICY_PROVIDE_ACCESS = "Provide Access";
+    const POLICY_PROHIBIT_ACCESS = "Prohibit Access";
 
     const POLICY_DESCRIPTION_TO_NAME = {
         "n-times-usage": POLICY_N_TIMES_USAGE,
         "duration-usage": POLICY_DURATION_USAGE,
-        "usage-during-interval": POLICY_USAGE_DURING_INTERVAL
-    };
-
-    const POLICY_TYPE_TO_NAME = {
-        "ids:NotMoreThanNOffer": POLICY_N_TIMES_USAGE,
-        "ids:DurationOffer": POLICY_DURATION_USAGE,
-        "ids:IntervalUsageOffer": POLICY_USAGE_DURING_INTERVAL
+        "usage-during-interval": POLICY_USAGE_DURING_INTERVAL,
+        "provide-access": POLICY_PROVIDE_ACCESS,
+        "prohibit-access": POLICY_PROHIBIT_ACCESS
     };
 
     const OPERATOR_TYPE_TO_SYMBOL = {
@@ -33,12 +31,14 @@
     var backendConnections = null;
 
     export default {
+        POLICY_PROVIDE_ACCESS,
+        POLICY_PROHIBIT_ACCESS,
         POLICY_N_TIMES_USAGE,
         POLICY_DURATION_USAGE,
         POLICY_USAGE_DURING_INTERVAL,
 
         getPolicyNames() {
-            return Object.values(POLICY_TYPE_TO_NAME);
+            return Object.values(POLICY_DESCRIPTION_TO_NAME);
         },
 
         getValue(data, name) {
@@ -51,10 +51,6 @@
                 }
             }
             return value;
-        },
-
-        convertTypeToPolicyName(type) {
-            return POLICY_TYPE_TO_NAME[type];
         },
 
         convertDescriptionToPolicyName(type) {

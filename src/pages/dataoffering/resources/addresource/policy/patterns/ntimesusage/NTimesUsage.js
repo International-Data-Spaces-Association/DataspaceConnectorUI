@@ -7,12 +7,17 @@ export default {
             contractJson: "",
             nTimesUsageOperator: null,
             nTimesUsageValue: null,
+            pipEndpoint: "",
             defaultRule: [
                 v => !!v || 'This data is required'
             ],
             numberRule: [
                 v => !!v || 'This data is required',
                 v => /^[0-9.]+$/.test(v) || 'Only numbers and "." allowed',
+            ],
+            urlRule: [
+                v => !!v || 'This data is required',
+                v => /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed',
             ],
             nTimesUsageValid: false,
             visibleclass: "",
@@ -27,15 +32,18 @@ export default {
             this.$emit('previousPage')
         },
         nextPage() {
+            console.log(">>>");
             this.$emit('nextPage')
         },
         setPolicy(contract) {
             if (contract == "") {
                 this.$data.nTimesUsageOperator = null;
                 this.$data.nTimesUsageValue = null;
+                this.$data.pipEndpoint = "";
             } else {
                 this.$data.nTimesUsageOperator = DataUtils.convertOperatorTypeToSymbol(contract["ids:permission"][0]["ids:constraint"][0]["ids:operator"]["@id"]);
                 this.$data.nTimesUsageValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
+                this.$data.pipEndpoint = contract["ids:permission"][0]["ids:constraint"][0]["ids:pipEndpoint"]["@id"];
             }
             this.nTimesUsageTfChange();
         },
@@ -65,7 +73,7 @@ export default {
                             "@id": DataUtils.convertOperatorSymbolToType(this.$data.nTimesUsageOperator)
                         },
                         "ids:pipEndpoint": {
-                            "@id": "https://localhost:8080/admin/api/resources/"
+                            "@id": this.$data.pipEndpoint
                         },
                         "ids:leftOperand": {
                             "@id": "idsc:COUNT"
