@@ -1,9 +1,12 @@
 export default {
+    // TODO ui components to select time
     components: {},
     data() {
         return {
             contractJson: "",
+            usageDuringIntervalFromMenu: false,
             usageDuringIntervalFromValue: null,
+            usageDuringIntervalToMenu: false,
             usageDuringIntervalToValue: null,
             defaultRule: [
                 v => !!v || 'This data is required'
@@ -21,14 +24,17 @@ export default {
             this.$emit('previousPage')
         },
         nextPage() {
+            this.createContractJson();
             this.$emit('nextPage')
         },
         setPolicy(contract) {
-            this.$data.usageDuringIntervalFromValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
-            this.$data.usageDuringIntervalToValue = contract["ids:permission"][0]["ids:constraint"][1]["ids:rightOperand"]["@value"];
-            this.usageDuringIntervalTfChange();
+            // TODO correct timezone conversion
+            this.$data.usageDuringIntervalFromValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
+            this.$data.usageDuringIntervalToValue = contract["ids:permission"][0]["ids:constraint"][1]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
+            this.createContractJson();
         },
-        usageDuringIntervalTfChange() {
+        createContractJson() {
+            console.log(">>> CHANGE");
             this.$data.contractJson = {
                 "@context": {
                     "ids": "https://w3id.org/idsa/core/",
@@ -54,7 +60,7 @@ export default {
                         "@type": "ids:Constraint",
                         "@id": "https://w3id.org/idsa/autogen/constraint/0b7c4ca7-1f9e-4e30-8fa1-7551700c1980",
                         "ids:rightOperand": {
-                            "@value": this.$data.usageDuringIntervalFromValue
+                            "@value": this.$data.usageDuringIntervalFromValue + "T00:00:00Z"
                         },
                         "ids:operator": {
                             "@id": "idsc:AFTER"
@@ -66,7 +72,7 @@ export default {
                         "@type": "ids:Constraint",
                         "@id": "https://w3id.org/idsa/autogen/constraint/9f2e0197-2ad9-442b-806b-5bb4951a2943",
                         "ids:rightOperand": {
-                            "@value": this.$data.usageDuringIntervalToValue
+                            "@value": this.$data.usageDuringIntervalToValue + "T00:00:00Z"
                         },
                         "ids:operator": {
                             "@id": "idsc:BEFORE"

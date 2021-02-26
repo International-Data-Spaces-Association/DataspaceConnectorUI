@@ -73,6 +73,10 @@ export default {
   color: var(--v-text1-base) !important;
 }
 
+.v-picker .v-btn__content {
+  color: var(--v-text1-base) !important;
+}
+
 .v-btn__content {
   color: var(--v-lighttext-base) !important;
 }

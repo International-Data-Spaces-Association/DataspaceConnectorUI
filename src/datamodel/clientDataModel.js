@@ -161,10 +161,16 @@ export default {
 
     convertIdsConfigModel(idsConfigModel) {
         console.log(">>> CONVER: ", idsConfigModel);
-        let proxyUrl = idsConfigModel["ids:connectorProxy"][0]["ids:proxyURI"]["@id"];
-        let username = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authUsername"];
-        let password = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authPassword"];
-        let noProxyArray = idsConfigModel["ids:connectorProxy"][0]["ids:noProxy"];
+        let proxyUrl = "";
+        let username = "";
+        let password = "";
+        let noProxyArray = "";
+        if (idsConfigModel["ids:connectorProxy"] !== undefined) {
+            proxyUrl = idsConfigModel["ids:connectorProxy"][0]["ids:proxyURI"]["@id"];
+            username = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authUsername"];
+            password = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authPassword"];
+            noProxyArray = idsConfigModel["ids:connectorProxy"][0]["ids:noProxy"];
+        }
         let logLevel = idsConfigModel["ids:configurationModelLogLevel"]["@id"].replace("idsc:", "");
         let connectorStatus = idsConfigModel["ids:connectorStatus"]["@id"].replace("idsc:CONNECTOR_", "");
         let connectorDeployMode = idsConfigModel["ids:connectorDeployMode"]["@id"].replace("idsc:", "");

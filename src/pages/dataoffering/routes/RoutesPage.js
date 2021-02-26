@@ -20,6 +20,8 @@ export default {
                 sortable: false,
                 align: 'right'
             }],
+            sortBy: 'description',
+            sortDesc: true,
             routes: []
         };
     },
