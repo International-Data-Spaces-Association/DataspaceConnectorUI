@@ -16,6 +16,7 @@ export default {
     data() {
         return {
             currentResource: null,
+            isNewResource: false,
             active_tab: 0,
             resourceAttributes: null,
             resourceRequiredAttributes: null,
@@ -29,6 +30,7 @@ export default {
     mounted: function () {
         if (this.$route.query.id === undefined) {
             this.$data.currentResource = null;
+            this.$data.isNewResource = true;
         } else {
             this.loadResource(this.$route.query.id);
         }
@@ -63,6 +65,7 @@ export default {
             this.$root.$emit('showBusyIndicator', true);
             dataUtils.getResource(id, resource => {
                 this.$data.currentResource = resource;
+                this.$data.isNewResource = false;
                 this.$refs.metaDataPage.loadResource(this.$data.currentResource);
                 this.$root.$emit('showBusyIndicator', false);
                 this.$forceUpdate();
@@ -70,6 +73,7 @@ export default {
         },
         set(resource) {
             this.$data.currentResource = resource;
+            this.$data.isNewResource = false;
             this.$refs.metaDataPage.set(resource);
             this.$data.active_tab = 0;
         },

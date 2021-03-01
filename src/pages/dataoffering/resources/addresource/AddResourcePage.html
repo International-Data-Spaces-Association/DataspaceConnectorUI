@@ -1,10 +1,10 @@
  <div class="content add-resource-page">
      <div>
          <v-tabs class="pagestab" v-model="active_tab" ref="pagestab">
-             <v-tab disabled>Meta data</v-tab>
-             <v-tab disabled>Policy</v-tab>
-             <v-tab disabled>Representation</v-tab>
-             <v-tab disabled>Brokers</v-tab>
+             <v-tab :disabled="isNewResource">Meta data</v-tab>
+             <v-tab :disabled="isNewResource">Policy</v-tab>
+             <v-tab :disabled="isNewResource">Representation</v-tab>
+             <v-tab :disabled="isNewResource">Brokers</v-tab>
              <v-tab-item>
                  <resource-meta-data-page ref="metaDataPage" @nextPage="nextPage" :readonly="readonly">
                  </resource-meta-data-page>

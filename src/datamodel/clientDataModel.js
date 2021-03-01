@@ -23,10 +23,16 @@ export default {
         } else {
             resource.language = language;
         }
-        if (keywords === undefined) {
-            resource.keywords = [];
-        } else {
-            resource.keywords = keywords;
+        resource.keywords = "";
+        if (keywords !== undefined) {
+            let count = 0;
+            for (let keyword of keywords) {
+                if (count > 0) {
+                    resource.keywords += ", ";
+                }
+                resource.keywords += keyword["@value"];
+                count++;
+            }
         }
         if (version === undefined) {
             resource.version = "";
@@ -152,7 +158,7 @@ export default {
         }
 
         return this.createResource(idsResource["@id"], idsResource["ids:title"][0]["@value"], idsResource["ids:description"][0]["@value"],
-            idsResource["ids:language"][0]["@id"].replace("idsc:", ""), idsResource["ids:keyword"][0]["@value"],
+            idsResource["ids:language"][0]["@id"].replace("idsc:", ""), idsResource["ids:keyword"],
             idsResource["ids:version"], standardLicense, publisher,
             contract, sourceType,
             representationId);
