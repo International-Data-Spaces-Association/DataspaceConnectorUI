@@ -1,4 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
+import validationUtils from "../../../../../utils/validationUtils";
 
 export default {
     components: {
@@ -15,9 +16,7 @@ export default {
             inputId: null,
             inputs: [],
             valid: false,
-            defaultRule: [
-                v => (!!v) || 'This data is required'
-            ],
+            defaultRule: validationUtils.getRequiredRule(),
             sourceNode: null,
             destinationNode: null
         };

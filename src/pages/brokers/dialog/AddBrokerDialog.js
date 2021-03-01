@@ -1,5 +1,6 @@
 import Axios from "axios";
 import dataUtils from "../../../utils/dataUtils";
+import validationUtils from "../../../utils/validationUtils";
 
 export default {
     components: {},
@@ -11,13 +12,8 @@ export default {
             brokerTitle: null,
             url: null,
             valid: false,
-            defaultRule: [
-                v => !!v || 'This data is required'
-            ],
-            urlRule: [
-                v => !!v || 'This data is required',
-                v => /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed',
-            ]
+            defaultRule: validationUtils.getRequiredRule(),
+            urlRule: validationUtils.getUrlRequiredRule()
         };
     },
     mounted: function () {},

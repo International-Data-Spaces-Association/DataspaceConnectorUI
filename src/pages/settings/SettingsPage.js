@@ -1,4 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
+import validationUtils from "../../utils/validationUtils";
 
 export default {
     components: {},
@@ -25,25 +26,8 @@ export default {
             showPasswordTrustStore: false,
             showPasswordKeyStore: false,
             valid: false,
-            urlRule: [
-                v => {
-                    if (v) return /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed'
-                    else return true;
-                }
-            ],
-            urlListRule: [
-                v => {
-                    let valid = true;
-                    let split = v.split(',');
-                    for (let url of split) {
-                        if (!(/^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(url.trim()))) {
-                            valid = /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(url.trim()) || 'Only URIs (http://... or https://...) allowed';
-                            break;
-                        }
-                    }
-                    return valid;
-                }
-            ],
+            urlRule: validationUtils.getUrlNotRequiredRule(),
+            urlListRule: validationUtils.getUrlListRule(),
             saveMessage: ""
         };
     },

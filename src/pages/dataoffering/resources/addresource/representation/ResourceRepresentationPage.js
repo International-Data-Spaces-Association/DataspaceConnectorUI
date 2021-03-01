@@ -2,6 +2,7 @@ import AddResourceFilePage from "@/pages/dataoffering/resources/addresource/file
 import AddResourceDatabasePage from "@/pages/dataoffering/resources/addresource/database/AddResourceDatabasePage.vue";
 import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/dialog/AddBackendConnectionDialog.vue";
 import dataUtils from "@/utils/dataUtils";
+import validationUtils from "../../../../../utils/validationUtils";
 
 export default {
     components: {
@@ -22,9 +23,7 @@ export default {
             sourceTypeItems: [],
             selected: [],
             valid: false,
-            defaultRule: [
-                v => !!v || 'This data is required'
-            ],
+            defaultRule: validationUtils.getRequiredRule(),
             allValid: false,
             readonly: false
         };

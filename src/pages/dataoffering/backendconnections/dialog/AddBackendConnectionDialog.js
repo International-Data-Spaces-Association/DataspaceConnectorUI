@@ -1,4 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
+import validationUtils from "../../../../utils/validationUtils";
 
 export default {
     components: {},
@@ -12,10 +13,7 @@ export default {
             password: null,
             showPassword: false,
             valid: false,
-            urlRule: [
-                v => !!v || 'This data is required',
-                v => /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed',
-            ]
+            urlRule: validationUtils.getUrlRequiredRule()
         };
     },
     mounted: function () {},

@@ -1,5 +1,6 @@
 import ComponentGroup from "@/components/componentgroup/ComponentGroup.vue";
 import DataUtils from "@/utils/dataUtils";
+import validationUtils from "../../../../../utils/validationUtils";
 
 export default {
     components: {
@@ -16,17 +17,9 @@ export default {
             language: "",
             languageItems: [],
             valid: false,
-            defaultRule: [
-                v => !!v || 'This data is required'
-            ],
-            numberRule: [
-                v => !!v || 'This data is required',
-                v => /^[0-9.]+$/.test(v) || 'Only numbers and "." allowed',
-            ],
-            urlRule: [
-                v => !!v || 'This data is required',
-                v => /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed',
-            ],
+            defaultRule: validationUtils.getRequiredRule(),
+            versionRule: validationUtils.getVersionRequiredRule(),
+            urlRule: validationUtils.getUrlRequiredRule(),
             readonly: false
         };
     },

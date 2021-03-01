@@ -1,3 +1,5 @@
+import validationUtils from "../../../../../../../utils/validationUtils";
+
 export default {
     // TODO ui components to select time
     components: {},
@@ -8,9 +10,7 @@ export default {
             usageDuringIntervalFromValue: null,
             usageDuringIntervalToMenu: false,
             usageDuringIntervalToValue: null,
-            defaultRule: [
-                v => !!v || 'This data is required'
-            ],
+            defaultRule: validationUtils.getRequiredRule(),
             usageDuringIntervalValid: false,
             visibleclass: "",
             readonly: false

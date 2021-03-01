@@ -1,13 +1,12 @@
+import validationUtils from "../../../../../../../utils/validationUtils";
+
 export default {
     components: {},
     data() {
         return {
             contractJson: "",
             durationUsageValue: null,
-            numberRule: [
-                v => !!v || 'This data is required',
-                v => /^[0-9.]+$/.test(v) || 'Only numbers and "." allowed',
-            ],
+            numberRule: validationUtils.getNumberRequiredRule(),
             durationValid: false,
             visibleclass: "",
             readonly: false

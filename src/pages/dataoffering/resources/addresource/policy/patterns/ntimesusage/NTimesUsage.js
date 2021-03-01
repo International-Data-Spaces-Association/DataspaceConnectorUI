@@ -1,4 +1,5 @@
 import DataUtils from "@/utils/dataUtils";
+import validationUtils from "../../../../../../../utils/validationUtils";
 
 export default {
     components: {},
@@ -8,17 +9,9 @@ export default {
             nTimesUsageOperator: null,
             nTimesUsageValue: null,
             pipEndpoint: "",
-            defaultRule: [
-                v => !!v || 'This data is required'
-            ],
-            numberRule: [
-                v => !!v || 'This data is required',
-                v => /^[0-9.]+$/.test(v) || 'Only numbers and "." allowed',
-            ],
-            urlRule: [
-                v => !!v || 'This data is required',
-                v => /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed',
-            ],
+            defaultRule: validationUtils.getRequiredRule(),
+            numberRule: validationUtils.getNumberRequiredRule(),
+            urlRule: validationUtils.getUrlRequiredRule(),
             nTimesUsageValid: false,
             visibleclass: "",
             readonly: false
