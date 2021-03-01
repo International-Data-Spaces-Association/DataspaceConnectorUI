@@ -421,7 +421,7 @@
             Axios.put("http://localhost:80/resource" + params).then(() => {
                 params = "?resourceId=" + resourceId;
                 Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
-                    params = "?resourceId=" + resourceId + "&representationId =" + representationId + "&endpointId=" + genericEndpointId + "&language=" + language + "&sourceType=" + sourceType;
+                    params = "?resourceId=" + resourceId + "&representationId=" + representationId + "&endpointId=" + genericEndpointId + "&language=" + language + "&sourceType=" + sourceType;
                     Axios.put("http://localhost:80/representation" + params).then(() => {
                         // TODO Edit route/subroute on backend conneciton change.
                         let updateDeletePromises = [];

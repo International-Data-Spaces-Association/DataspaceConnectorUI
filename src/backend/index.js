@@ -124,7 +124,7 @@ app.post('/representation', (req, res) => {
 
 app.put('/representation', (req, res) => {
     // TODO filename extension and byte size should not be set in UI.
-    var params = "?resourceId=" + req.query.resourceId + "&representationId =" + req.query.representationId +
+    var params = "?resourceId=" + req.query.resourceId + "&representationId=" + req.query.representationId +
         "&endpointId=" + req.query.endpointId + "&language=" + req.query.language + "&filenameExtension=json" +
         "&bytesize=1234&sourceType=" + req.query.sourceType;
     console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/resource/representation" + params);
