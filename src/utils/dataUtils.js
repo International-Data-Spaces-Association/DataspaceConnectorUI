@@ -563,21 +563,26 @@
             });
         },
 
-        getDeployMethods(callback) {
-            Axios.get("http://localhost:80/enum?enumName=deployMethod").then((response) => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in getDeployMethod(): ", error);
-                callback(null);
+        getDeployMethods() {
+            return new Promise(function (resolve, reject) {
+                Axios.get("http://localhost:80/enum?enumName=deployMethod").then((response) => {
+                    resolve(response.data);
+                }).catch(error => {
+                    console.log("Error in getDeployMethods(): ", error);
+                    reject(null);
+                });
             });
+
         },
 
-        getDeployMethod(callback) {
-            Axios.get("http://localhost:80/route/deploymethod").then((response) => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in getDeployMethod(): ", error);
-                callback(null);
+        getDeployMethod() {
+            return new Promise(function (resolve, reject) {
+                Axios.get("http://localhost:80/route/deploymethod").then((response) => {
+                    resolve(response.data);
+                }).catch(error => {
+                    console.log("Error in getDeployMethod(): ", error);
+                    reject(null);
+                });
             });
         },
 
@@ -593,12 +598,14 @@
             });
         },
 
-        getLogLevels(callback) {
-            Axios.get("http://localhost:80/enum?enumName=logLevel").then((response) => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in getLogLevels(): ", error);
-                callback(null);
+        getLogLevels() {
+            return new Promise(function (resolve, reject) {
+                Axios.get("http://localhost:80/enum?enumName=logLevel").then((response) => {
+                    resolve(response.data);
+                }).catch(error => {
+                    console.log("Error in getLogLevels(): ", error);
+                    reject(null);
+                });
             });
         },
 
@@ -628,22 +635,54 @@
             });
         },
 
-        getConnectorStatuses(callback) {
-            Axios.get("http://localhost:80/enum?enumName=connectorStatus").then((response) => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in getConnectorStatuses(): " + error);
-                callback();
-            })
+        getConnectorSettings() {
+            return new Promise(function (resolve, reject) {
+                Axios.get("http://localhost:80/connector").then((response) => {
+                    resolve(clientDataModel.convertIdsConnector(response.data));
+                }).catch(error => {
+                    console.log("Error in getConnectorSettings(): ", error);
+                    reject();
+                });
+            });
         },
 
-        getConnectorDeployModes(callback) {
-            Axios.get("http://localhost:80/enum?enumName=connectorDeployMode").then((response) => {
-                callback(response.data);
-            }).catch(error => {
-                console.log("Error in getConnectorDeployModes(): " + error);
-                callback();
-            })
+        changeConnectorSettings(connectorTitle, connectorDescription,
+            connectorEndpoint, connectorVersion, connectorCurator,
+            connectorMaintainer, connectorInboundModelVersion, connectorOutboundModelVersion) {
+            let params = "?connectorTitle=" + connectorTitle + "&connectorDescription=" + connectorDescription +
+                "&connectorEndpoint=" + connectorEndpoint + "&connectorVersion=" + connectorVersion +
+                "&connectorCurator=" + connectorCurator + "&connectorMaintainer=" + connectorMaintainer +
+                "&connectorInboundModelVersion=" + connectorInboundModelVersion + "&connectorOutboundModelVersion=" + connectorOutboundModelVersion;
+            return new Promise(function (resolve, reject) {
+                Axios.put("http://localhost:80/connector" + params).then(() => {
+                    resolve();
+                }).catch(error => {
+                    console.log("Error in changeConnectorSettings(): ", error);
+                    reject();
+                });
+            });
+        },
+
+        getConnectorStatuses() {
+            return new Promise(function (resolve, reject) {
+                Axios.get("http://localhost:80/enum?enumName=connectorStatus").then((response) => {
+                    resolve(response.data);
+                }).catch(error => {
+                    console.log("Error in getConnectorStatuses(): " + error);
+                    reject();
+                });
+            });
+        },
+
+        getConnectorDeployModes() {
+            return new Promise(function (resolve, reject) {
+                Axios.get("http://localhost:80/enum?enumName=connectorDeployMode").then((response) => {
+                    resolve(response.data);
+                }).catch(error => {
+                    console.log("Error in getConnectorDeployModes(): " + error);
+                    reject();
+                });
+            });
         },
 
         changeTrustStoreSettings(trustStoreURL, callback) {

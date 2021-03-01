@@ -482,6 +482,30 @@ app.put('/configmodel', (req, res) => {
     });
 });
 
+app.get('/connector', (req, res) => {
+    axios.get("http://localhost:" + configModelPort + "/api/ui/connector").then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on GET /connector", error.response.status);
+        res.send(error);
+    });
+});
+
+app.put('/connector', (req, res) => {
+    let params = "?title=" + req.query.connectorTitle + "&description=" + req.query.connectorDescription +
+        "&endpoint=" + req.query.connectorEndpoint + "&version=" + req.query.connectorVersion +
+        "&curator=" + req.query.connectorCurator + "&maintainer=" + req.query.connectorMaintainer +
+        "&inboundModelVersion=" + req.query.connectorInboundModelVersion + "&outboundModelVersion=" +
+        req.query.connectorOutboundModelVersion;
+    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/connector" + params);
+    axios.put("http://localhost:" + configModelPort + "/api/ui/connector" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on PUT /connector", error.response.status);
+        res.send(error);
+    });
+});
+
 app.get('/configmodel', (req, res) => {
     console.log("GET http://localhost:" + configModelPort + "/api/ui/configmodel");
     axios.get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {

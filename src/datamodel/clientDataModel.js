@@ -137,6 +137,53 @@ export default {
         return configModel;
     },
 
+    createConnector(title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion) {
+        let connector = {};
+        if (title === undefined) {
+            connector.title = "";
+        } else {
+            connector.title = title;
+        }
+        if (description === undefined) {
+            connector.description = "";
+        } else {
+            connector.description = description;
+        }
+        if (endpoint === undefined) {
+            connector.endpoint = "";
+        } else {
+            connector.endpoint = endpoint;
+        }
+        if (version === undefined) {
+            connector.version = "";
+        } else {
+            connector.version = version;
+        }
+        if (curator === undefined) {
+            connector.curator = "";
+        } else {
+            connector.curator = curator;
+        }
+        if (maintainer === undefined) {
+            connector.maintainer = "";
+        } else {
+            connector.maintainer = maintainer;
+        }
+        if (inboundModelVersion === undefined) {
+            connector.inboundModelVersion = "";
+        } else {
+            connector.inboundModelVersion = inboundModelVersion;
+        }
+        if (outboundModelVersion === undefined) {
+            connector.outboundModelVersion = "";
+        } else {
+            connector.outboundModelVersion = outboundModelVersion;
+        }
+
+
+        return connector;
+    },
+
     convertIdsResource(idsResource) {
         let standardLicense = undefined;
         if (idsResource["ids:standardLicense"] !== undefined) {
@@ -166,7 +213,6 @@ export default {
 
 
     convertIdsConfigModel(idsConfigModel) {
-        console.log(">>> CONVER: ", idsConfigModel);
         let proxyUrl = "";
         let username = "";
         let password = "";
@@ -187,5 +233,44 @@ export default {
 
         return this.createConfigModel(proxyUrl, username, password, noProxyArray, logLevel, connectorStatus,
             connectorDeployMode, trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword);
+    },
+
+    convertIdsConnector(idsConnector) {
+        let title = "";
+        if (idsConnector["ids:title"] !== undefined) {
+            title = idsConnector["ids:title"][0]["@value"];
+        }
+        let description = "";
+        if (idsConnector["ids:description"] !== undefined) {
+            description = idsConnector["ids:description"][0]["@value"];
+        }
+        let endpoint = "";
+        if (idsConnector["ids:hasEndpoint"] !== undefined && idsConnector["ids:hasEndpoint"].length > 0) {
+            endpoint = idsConnector["ids:hasEndpoint"][0]["ids:accessURL"]["@id"];
+        } else if (idsConnector["ids:hasDefaultEndpoint"] !== undefined) {
+            endpoint = idsConnector["ids:hasDefaultEndpoint"]["@id"];
+        }
+        let version = "";
+        if (idsConnector["ids:version"] !== undefined) {
+            version = idsConnector["ids:version"].replace("v", "");
+        }
+        let curator = "";
+        if (idsConnector["ids:curator"] !== undefined) {
+            curator = idsConnector["ids:curator"]["@id"];
+        }
+        let maintainer = "";
+        if (idsConnector["ids:maintainer"] !== undefined) {
+            maintainer = idsConnector["ids:maintainer"]["@id"];
+        }
+        let inboundModelVersion = "";
+        if (idsConnector["ids:inboundModelVersion"] !== undefined) {
+            inboundModelVersion = idsConnector["ids:inboundModelVersion"][0];
+        }
+        let outboundModelVersion = "";
+        if (idsConnector["ids:outboundModelVersion"] !== undefined) {
+            outboundModelVersion = idsConnector["ids:outboundModelVersion"];
+        }
+
+        return this.createConnector(title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion);
     }
 }

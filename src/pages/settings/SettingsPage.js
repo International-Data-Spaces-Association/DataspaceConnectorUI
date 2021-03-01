@@ -25,9 +25,18 @@ export default {
             keyStorePassword: "",
             showPasswordTrustStore: false,
             showPasswordKeyStore: false,
+            connectorTitle: "",
+            connectorDescription: "",
+            connectorEndpoint: "",
+            connectorVersion: "",
+            connectorCurator: "",
+            connectorMaintainer: "",
+            connectorInboundModelVersion: "",
+            connectorOutboundModelVersion: "",
             valid: false,
             urlRule: validationUtils.getUrlNotRequiredRule(),
             urlListRule: validationUtils.getUrlListRule(),
+            versionRule: validationUtils.getVersionRule(),
             saveMessage: ""
         };
     },
@@ -35,21 +44,35 @@ export default {
         this.getSettings();
     },
     methods: {
-        getSettings() {
+        async getSettings() {
             this.$root.$emit('showBusyIndicator', true);
-            dataUtils.getDeployMethods(response => {
-                console.log(">>> getDeployMethods: ", response);
+            let promises = [];
+            promises.push(await dataUtils.getDeployMethods().then(response => {
                 this.$data.deployMethods = response;
-            });
+            }));
 
-            dataUtils.getDeployMethod(response => {
-                console.log(">>> getDeployMethod: ", response);
+            promises.push(await dataUtils.getLogLevels().then(response => {
+                console.log(">>> getLogLevels: ", response);
+                this.$data.logLevels = response;
+            }));
+
+            promises.push(await dataUtils.getConnectorStatuses().then(response => {
+                console.log(">>> getConnectorStatuses: ", response);
+                this.$data.connectorStatuses = response;
+            }));
+
+            promises.push(await dataUtils.getConnectorDeployModes().then(response => {
+                console.log(">>> getConnectorDeployModes: ", response);
+                this.$data.connectorDeployModes = response;
+            }));
+
+            promises.push(await dataUtils.getDeployMethod().then(response => {
                 if (response != null && response != "") {
                     this.$data.deployMethod = response[0][1].deployMethod;
                 }
-            });
+            }));
 
-            dataUtils.getConfigModel().then(configModel => {
+            promises.push(await dataUtils.getConfigModel().then(configModel => {
                 console.log(">>> getConfigModel: ", configModel);
                 this.$data.proxyUrl = configModel.proxyUrl;
                 let username = configModel.username;
@@ -75,22 +98,22 @@ export default {
                 this.$data.trustStorePassword = configModel.trustStorePassword;
                 this.$data.keyStoreUrl = configModel.keyStoreUrl;
                 this.$data.keyStorePassword = configModel.keyStorePassword;
+            }));
+
+            promises.push(await dataUtils.getConnectorSettings().then(connector => {
+                console.log(">>> getConnectorSettings: ", connector);
+                this.$data.connectorTitle = connector.title;
+                this.$data.connectorDescription = connector.description;
+                this.$data.connectorEndpoint = connector.endpoint;
+                this.$data.connectorVersion = connector.version;
+                this.$data.connectorCurator = connector.curator;
+                this.$data.connectorMaintainer = connector.maintainer;
+                this.$data.connectorInboundModelVersion = connector.inboundModelVersion;
+                this.$data.connectorOutboundModelVersion = connector.outboundModelVersion;
+            }));
+
+            Promise.all(promises).then(() => {
                 this.$root.$emit('showBusyIndicator', false);
-            });
-
-            dataUtils.getLogLevels(response => {
-                console.log(">>> getLogLevels: ", response);
-                this.$data.logLevels = response;
-            });
-
-            dataUtils.getConnectorStatuses(response => {
-                console.log(">>> getConnectorStatuses: ", response);
-                this.$data.connectorStatuses = response;
-            });
-
-            dataUtils.getConnectorDeployModes(response => {
-                console.log(">>> getConnectorDeployModes: ", response);
-                this.$data.connectorDeployModes = response;
             });
         },
         async saveSettings() {
@@ -115,6 +138,9 @@ export default {
             savePromises.push(await dataUtils.changeDeployMethod(this.$data.deployMethod));
             savePromises.push(await dataUtils.changeConfigModel(this.$data.logLevel, this.$data.connectorDeployMode,
                 this.$data.trustStoreUrl, this.$data.trustStorePassword, this.$data.keyStoreUrl, this.$data.keyStorePassword));
+            savePromises.push(await dataUtils.changeConnectorSettings(this.$data.connectorTitle, this.$data.connectorDescription,
+                this.$data.connectorEndpoint, "v" + this.$data.connectorVersion, this.$data.connectorCurator,
+                this.$data.connectorMaintainer, this.$data.connectorInboundModelVersion, this.$data.connectorOutboundModelVersion));
             Promise.all(savePromises).then(() => {
                 this.$root.$emit('showBusyIndicator', false);
                 this.$data.saveMessage = "Successfully saved.";

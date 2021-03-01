@@ -12,6 +12,12 @@
             ];
         },
 
+        getVersionRule() {
+            return [
+                v => /^[0-9.]+$/.test(v) || 'Only numbers and "." allowed',
+            ];
+        },
+
         getVersionRequiredRule() {
             return [
                 v => !!v || 'This data is required',
