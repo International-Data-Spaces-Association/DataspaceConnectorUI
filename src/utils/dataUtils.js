@@ -387,8 +387,8 @@
                     Axios.post("http://localhost:80/representation" + params).then(() => {
                         this.createConnectorEndpoint("http://data_" + Date.now(), endpointId => {
                             this.createNewRoute(this.getCurrentDate() + " - " + title).then(routeId => {
-                                this.createSubRoute(routeId, genericEndpointId, 0, 0,
-                                    endpointId, 0, 0, resourceId).then(() => {
+                                this.createSubRoute(routeId, genericEndpointId, 20, 150,
+                                    endpointId, 220, 150, resourceId).then(() => {
                                     this.updateResourceAtBrokers(brokerUris, resourceId, callback);
                                 });
                             });
