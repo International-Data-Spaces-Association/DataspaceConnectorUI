@@ -9,6 +9,8 @@
     const POLICY_PROVIDE_ACCESS = "Provide Access";
     const POLICY_PROHIBIT_ACCESS = "Prohibit Access";
     const POLICY_USAGE_UNTIL_DELETION = "Usage Until Deletion";
+    const POLICY_USAGE_LOGGING = "Usage Logging";
+    const POLICY_USAGE_NOTIFICATION = "Usage Notification";
 
     const POLICY_DESCRIPTION_TO_NAME = {
         "n-times-usage": POLICY_N_TIMES_USAGE,
@@ -16,7 +18,9 @@
         "usage-during-interval": POLICY_USAGE_DURING_INTERVAL,
         "provide-access": POLICY_PROVIDE_ACCESS,
         "prohibit-access": POLICY_PROHIBIT_ACCESS,
-        "usage-until-deletion": POLICY_USAGE_UNTIL_DELETION
+        "usage-until-deletion": POLICY_USAGE_UNTIL_DELETION,
+        "usage-logging": POLICY_USAGE_LOGGING,
+        "usage-notification": POLICY_USAGE_NOTIFICATION
     };
 
     const OPERATOR_TYPE_TO_SYMBOL = {
@@ -39,6 +43,7 @@
         POLICY_DURATION_USAGE,
         POLICY_USAGE_DURING_INTERVAL,
         POLICY_USAGE_UNTIL_DELETION,
+        POLICY_USAGE_LOGGING,
 
         getPolicyNames() {
             return Object.values(POLICY_DESCRIPTION_TO_NAME);
