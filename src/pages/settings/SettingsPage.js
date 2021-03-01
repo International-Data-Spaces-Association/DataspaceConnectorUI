@@ -31,6 +31,19 @@ export default {
                     else return true;
                 }
             ],
+            urlListRule: [
+                v => {
+                    let valid = true;
+                    let split = v.split(',');
+                    for (let url of split) {
+                        if (!(/^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(url.trim()))) {
+                            valid = /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(url.trim()) || 'Only URIs (http://... or https://...) allowed';
+                            break;
+                        }
+                    }
+                    return valid;
+                }
+            ],
             saveMessage: ""
         };
     },

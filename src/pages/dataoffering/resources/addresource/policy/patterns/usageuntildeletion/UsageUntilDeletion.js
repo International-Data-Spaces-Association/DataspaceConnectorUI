@@ -4,10 +4,12 @@ export default {
     data() {
         return {
             contractJson: "",
-            usageDuringIntervalFromMenu: false,
-            usageDuringIntervalFromValue: null,
-            usageDuringIntervalToMenu: false,
-            usageDuringIntervalToValue: null,
+            startMenu: false,
+            startValue: null,
+            endMenu: false,
+            endValue: null,
+            deleteAtMenu: false,
+            deleteAtValue: null,
             defaultRule: [
                 v => !!v || 'This data is required'
             ],
@@ -29,8 +31,9 @@ export default {
         },
         setPolicy(contract) {
             // TODO correct timezone conversion
-            this.$data.usageDuringIntervalFromValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
-            this.$data.usageDuringIntervalToValue = contract["ids:permission"][0]["ids:constraint"][1]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
+            this.$data.startValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
+            this.$data.endValue = contract["ids:permission"][0]["ids:constraint"][1]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
+            this.$data.deleteAtValue = contract["ids:permission"][0]["ids:postDuty"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
             this.createContractJson();
         },
         createContractJson() {
@@ -40,12 +43,12 @@ export default {
                     "idsc": "https://w3id.org/idsa/code/"
                 },
                 "@type": "ids:ContractOffer",
-                "@id": "https://w3id.org/idsa/autogen/contractOffer/4cc74797-d45c-4a14-ba9d-f9c7ccb00007",
+                "@id": "https://w3id.org/idsa/autogen/contractOffer/cbb9fbd1-ce14-4513-9cc1-7b98a0355653",
                 "ids:permission": [{
                     "@type": "ids:Permission",
-                    "@id": "https://w3id.org/idsa/autogen/permission/ed3103a8-1cd9-44f6-9baa-8dddbcb1c6a5",
+                    "@id": "https://w3id.org/idsa/autogen/permission/03d35035-b293-43d9-8194-93776c402031",
                     "ids:description": [{
-                        "@value": "usage-during-interval",
+                        "@value": "usage-until-deletion",
                         "@type": "http://www.w3.org/2001/XMLSchema#string"
                     }],
                     "ids:action": [{
@@ -57,9 +60,9 @@ export default {
                     }],
                     "ids:constraint": [{
                         "@type": "ids:Constraint",
-                        "@id": "https://w3id.org/idsa/autogen/constraint/0b7c4ca7-1f9e-4e30-8fa1-7551700c1980",
+                        "@id": "https://w3id.org/idsa/autogen/constraint/a53b746d-f838-4db0-b5bc-414edec7cee1",
                         "ids:rightOperand": {
-                            "@value": this.$data.usageDuringIntervalFromValue + "T00:00:00Z"
+                            "@value": this.$data.startValue + "T00:00:00Z"
                         },
                         "ids:operator": {
                             "@id": "idsc:AFTER"
@@ -69,9 +72,9 @@ export default {
                         }
                     }, {
                         "@type": "ids:Constraint",
-                        "@id": "https://w3id.org/idsa/autogen/constraint/9f2e0197-2ad9-442b-806b-5bb4951a2943",
+                        "@id": "https://w3id.org/idsa/autogen/constraint/7db8bb0b-06d0-4af0-86c7-f23c334c4a7e",
                         "ids:rightOperand": {
-                            "@value": this.$data.usageDuringIntervalToValue + "T00:00:00Z"
+                            "@value": this.$data.endValue + "T00:00:00Z"
                         },
                         "ids:operator": {
                             "@id": "idsc:BEFORE"
@@ -79,6 +82,26 @@ export default {
                         "ids:leftOperand": {
                             "@id": "idsc:POLICY_EVALUATION_TIME"
                         }
+                    }],
+                    "ids:postDuty": [{
+                        "@type": "ids:Duty",
+                        "@id": "https://w3id.org/idsa/autogen/duty/770e6abb-dbe5-4ea3-bff5-aa4c29d29fb5",
+                        "ids:action": [{
+                            "@id": "idsc:DELETE"
+                        }],
+                        "ids:constraint": [{
+                            "@type": "ids:Constraint",
+                            "@id": "https://w3id.org/idsa/autogen/constraint/f2acf67f-bc4c-4e64-87fc-499eec24bc57",
+                            "ids:rightOperand": {
+                                "@value": this.$data.deleteAtValue + "T00:00:00Z"
+                            },
+                            "ids:operator": {
+                                "@id": "idsc:TEMPORAL_EQUALS"
+                            },
+                            "ids:leftOperand": {
+                                "@id": "idsc:POLICY_EVALUATION_TIME"
+                            }
+                        }]
                     }]
                 }]
             };

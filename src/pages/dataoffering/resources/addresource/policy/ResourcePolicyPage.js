@@ -4,6 +4,7 @@ import DurationUsage from "./patterns/durationusage/DurationUsage.vue";
 import UsageDuringInterval from "./patterns/usageduringinterval/UsageDuringInterval.vue";
 import ProvideAccess from "./patterns/provideaccess/ProvideAccess.vue";
 import ProhibitAccess from "./patterns/prohibitaccess/ProhibitAccess.vue";
+import UsageUntilDeletion from "./patterns/usageuntildeletion/UsageUntilDeletion.vue";
 
 
 export default {
@@ -12,7 +13,8 @@ export default {
         DurationUsage,
         UsageDuringInterval,
         ProvideAccess,
-        ProhibitAccess
+        ProhibitAccess,
+        UsageUntilDeletion
     },
     data() {
         return {

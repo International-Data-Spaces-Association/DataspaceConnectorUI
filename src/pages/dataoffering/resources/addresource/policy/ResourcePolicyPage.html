@@ -1,8 +1,7 @@
 <v-row no-gutters>
     <v-col cols="12" md="11">
-        <v-select label="Policy Pattern" v-model="policyType"
-            :items="['Provide Access', 'Prohibit Access', 'N Times Usage', 'Duration Usage', 'Usage During Interval']"
-            :readonly="readonly">
+        <v-select label="Policy Pattern" v-model="policyType" :items="['Provide Access', 'Prohibit Access', 'N Times Usage', 'Duration Usage', 'Usage During Interval',
+            'Usage Until Deletion']" :readonly="readonly">
         </v-select>
         <div>
             <n-times-usage @previousPage="previousPage" @nextPage="nextPage" ref="N Times Usage" :readonly="readonly">
@@ -17,6 +16,9 @@
             <prohibit-access @previousPage="previousPage" @nextPage="nextPage" ref="Prohibit Access"
                 :readonly="readonly">
             </prohibit-access>
+            <usage-until-deletion @previousPage="previousPage" @nextPage="nextPage" ref="Usage Until Deletion"
+                :readonly="readonly">
+            </usage-until-deletion>
         </div>
     </v-col>
 </v-row>

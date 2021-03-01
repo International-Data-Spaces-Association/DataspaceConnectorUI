@@ -15,7 +15,8 @@
                         @click:append="showPassword = !showPassword">
                     </v-text-field>
                 </div>
-                <v-textarea label="Do not use the proxy settings for these hosts and domains" v-model="proxyNoProxy">
+                <v-textarea label="Do not use the proxy settings for these hosts and domains" v-model="proxyNoProxy"
+                    :rules="urlListRule">
                 </v-textarea>
             </v-col>
         </v-row>
