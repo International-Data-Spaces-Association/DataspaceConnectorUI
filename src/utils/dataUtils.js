@@ -413,7 +413,7 @@
             });
         },
 
-        editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, contractJson,
+        async editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, contractJson,
             sourceType, brokerUris, brokerDeleteUris, genericEndpointId, callback) {
             let params = "?resourceId=" + resourceId + "&title=" + title + "&description=" + description + "&language=" +
                 language + "&keyword=" + keyword + "&version=" + version + "&standardlicense=" + standardlicense +
@@ -423,17 +423,7 @@
                 Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
                     params = "?resourceId=" + resourceId + "&representationId=" + representationId + "&endpointId=" + genericEndpointId + "&language=" + language + "&sourceType=" + sourceType;
                     Axios.put("http://localhost:80/representation" + params).then(() => {
-                        // TODO Edit route/subroute on backend conneciton change.
-                        let updateDeletePromises = [];
-                        for (let brokerUri of brokerUris) {
-                            updateDeletePromises.push(this.updateResourceAtBroker(brokerUri, resourceId));
-                        }
-                        for (let brokerUri of brokerDeleteUris) {
-                            updateDeletePromises.push(this.deleteResourceAtBroker(brokerUri, resourceId));
-                        }
-                        Promise.all(updateDeletePromises).then(() => {
-                            callback();
-                        });
+                        this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId, callback);
                     }).catch(error => {
                         console.log("Error in editResource(): ", error);
                         callback();
@@ -444,6 +434,19 @@
                 });
             }).catch(error => {
                 console.log("Error in editResource(): ", error);
+                callback();
+            });
+        },
+
+        async updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId, callback) {
+            let updateDeletePromises = [];
+            for (let brokerUri of brokerUris) {
+                updateDeletePromises.push(await this.updateResourceAtBroker(brokerUri, resourceId));
+            }
+            for (let brokerUri of brokerDeleteUris) {
+                updateDeletePromises.push(await this.deleteResourceAtBroker(brokerUri, resourceId));
+            }
+            Promise.all(updateDeletePromises).then(() => {
                 callback();
             });
         },
@@ -493,6 +496,7 @@
             Promise.all(updatePromises).then(() => {
                 resolve();
             });
+            return updatePromises;
         },
 
         getEndpointInfo(routeId, endpointId, callback) {
