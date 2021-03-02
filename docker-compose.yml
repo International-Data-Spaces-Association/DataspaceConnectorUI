@@ -1,0 +1,7 @@
+version: '3.5'
+
+services:
+    configmanager-ui:
+        image: configmanager-ui
+        ports:
+            - "8082:8082"
