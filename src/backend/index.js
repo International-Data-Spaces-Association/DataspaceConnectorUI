@@ -128,7 +128,7 @@ app.put('/representation', (req, res) => {
         "&endpointId=" + req.query.endpointId + "&language=" + req.query.language + "&filenameExtension=json" +
         "&bytesize=1234&sourceType=" + req.query.sourceType;
     console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/resource/representation" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/resource/representation" + params, req.body).then(response => {
+    axios.put("http://localhost:" + configModelPort + "/api/ui/resource/representation" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on PUT /representation", error.response.status);
