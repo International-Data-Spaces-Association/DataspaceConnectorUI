@@ -23,16 +23,10 @@ export default {
         } else {
             resource.language = language;
         }
-        resource.keywords = "";
-        if (keywords !== undefined) {
-            let count = 0;
-            for (let keyword of keywords) {
-                if (count > 0) {
-                    resource.keywords += ", ";
-                }
-                resource.keywords += keyword["@value"];
-                count++;
-            }
+        if (keywords === undefined) {
+            resource.keywords = "";
+        } else {
+            resource.keywords = keywords;
         }
         if (version === undefined) {
             resource.version = "";
@@ -203,9 +197,20 @@ export default {
             sourceType = idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"];
             representationId = idsResource["ids:representation"][0]["@id"];
         }
+        let keywords = "";
+        if (idsResource["ids:keyword"] !== undefined) {
+            let count = 0;
+            for (let keyword of idsResource["ids:keyword"]) {
+                if (count > 0) {
+                    keywords += ", ";
+                }
+                keywords += keyword["@value"];
+                count++;
+            }
+        }
 
         return this.createResource(idsResource["@id"], idsResource["ids:title"][0]["@value"], idsResource["ids:description"][0]["@value"],
-            idsResource["ids:language"][0]["@id"].replace("idsc:", ""), idsResource["ids:keyword"],
+            idsResource["ids:language"][0]["@id"].replace("idsc:", ""), keywords,
             idsResource["ids:version"], standardLicense, publisher,
             contract, sourceType,
             representationId);
