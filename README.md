@@ -34,26 +34,26 @@ Change `package.json` in root directory:
 "serve": "vue-cli-service serve --open --port [PORT]"
 ```
 
-### Start with Docker
-
-Build docker image:
-```bash
-./buildDockerImage.sh 
-```
-Run docker image:
-```bash
-sudo docker-compose up 
-```
-
 ### Change theme
 
 You can change the main colors of the user interface in `src/theme/default.js`
 
-### Contributing
+## Start with Docker
+
+Build docker image:
+```bash
+./buildDockerImage.sh
+```
+Run docker image:
+```bash
+sudo docker-compose up
+```
+
+## Contributing
 
 Please read through our [contributing guidelines](https://github.com/fkie/ids-configmanager-ui/blob/master/CONTRIBUTING.md).
 
-### Versioning
+## Versioning
 
 [IDS Configurationmanager](https://github.com/FraunhoferISST/IDS-Configurationmanager) and the UI versioning skipped major version 1, 2 and 3 to match versioning of [IDS DataSpaceConnector](https://github.com/FraunhoferISST/DataspaceConnector).
 This way the major version of DSC, CM and UI indicates compatibility.
