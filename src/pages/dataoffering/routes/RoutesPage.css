@@ -1,27 +1,24 @@
-.routespagebutton {
-    margin-right: 10px;
+.div-under-construction {
+    border: 1px solid var(--v-accent-base);
+    color: var(--v-accent-base);
+    height: 75px;
+    padding: 30px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-direction: column;
 }
 
-.routespagechart {
-    margin-top: 25px;
+.div-under-construction-title {
+    font-weight: bold;
+    font-size: 26px;
+    display: flex;
+    justify-content: center;
 }
 
-.backendnode {
-    rx: 0px;
-    fill: var(--v-primary-base);
-}
-
-.appnode {
-    rx: 0px;
-    fill: var(--v-primary3-base);
-}
-
-.resourcenode {
-    rx: 30px;
-    fill: white;
-}
-
-.selectedNode {
-    stroke: var(--v-accent-base);
-    stroke-width: 3px;
+.div-under-construction-text {
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
 }

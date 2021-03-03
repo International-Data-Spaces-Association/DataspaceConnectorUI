@@ -29,6 +29,26 @@
              <br>
              <br>
              <b>Representation: </b>How is the data accessed?
+             <br>
+             <br>
+             <b>Brokers: </b>To which brokers should the resource be registered?
+         </v-card-text>
+     </v-card-text>
+     <v-card-text v-if="currentRoute  == 'editresource'">
+         <v-card-text>
+             Editing an IDS resource is separated into three types:
+             <br>
+             <br>
+             <b>Meta data: </b>General information about the resource data.
+             <br>
+             <br>
+             <b>Policy: </b>Information about how often or how long the resource data can be used.
+             <br>
+             <br>
+             <b>Representation: </b>How is the data accessed?
+             <br>
+             <br>
+             <b>Brokers: </b>To which brokers should the resource be registered?
          </v-card-text>
      </v-card-text>
      <v-card-text v-if="currentRoute  == 'backendconnectionsoffering'">
@@ -36,6 +56,25 @@
              Overview of all currently defined backend connections.<br>
              A backend connection defines how the data of an IDS resource can be accessed. For example a database URL
              with credentials.
+         </v-card-text>
+     </v-card-text>
+     <v-card-text v-if="currentRoute  == 'routesoffering'">
+         <v-card-text>
+             Overview of all currently defined routes of offered data.<br>
+         </v-card-text>
+     </v-card-text>
+     <v-card-text v-if="currentRoute  == 'addroute'">
+         <v-card-text>
+             Creation of a route. Nodes of the types "Backend", "App" and "IDS Endpoint" can be created and connected by
+             edges. For each edge, the inputs and outputs to be connected can be selected by double-clicking. The
+             resource data can be entered by double-clicking on the "IDS Endpoint" node.<br>
+         </v-card-text>
+     </v-card-text>
+     <v-card-text v-if="currentRoute  == 'editroute'">
+         <v-card-text>
+             Editing of a route. Nodes of the types "Backend", "App" and "IDS Endpoint" can be created and connected by
+             edges. For each edge, the inputs and outputs to be connected can be selected by double-clicking. The
+             resource data can be entered by double-clicking on the "IDS Endpoint" node.<br>
          </v-card-text>
      </v-card-text>
      <v-card-text v-if="currentRoute  == 'settings'">

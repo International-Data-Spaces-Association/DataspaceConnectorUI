@@ -1,23 +1,35 @@
-<div>
-    <v-row no-gutters>
-        <v-col cols="12" md="12">
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addBackend">Add
-                Backend
-            </v-btn>
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addApp">Add App
-            </v-btn>
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="addResource">Add IDS
-                Offer
-            </v-btn>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="12">
-            <flowchart class="routespagechart" :nodes="nodes" :connections="connections" :render="render"
-                @editnode="handleEditNode" @editconnection="handleEditConnection" ref="chart">
-            </flowchart>
-        </v-col>
-    </v-row>
-    <node-dialog ref="nodeDialog">
-    </node-dialog>
+<div class="content">
+    <div>
+        <v-row no-gutters>
+            <v-col class="div-under-construction" cols="12" md="11" sm="12">
+                <div class="div-under-construction-title">UNDER CONSTRUCTION</div>
+                <div class="div-under-construction-text">Route processing is still in progress. Routes can be added and
+                    existing routes can be loaded, but this has no effect in the connector yet.</div>
+            </v-col>
+        </v-row>
+        <v-btn elevation="1" color="primary" class="buttontext--text addroutebutton" to="/addroute">Add Route
+        </v-btn>
+        <v-row no-gutters>
+            <v-col cols="12" md="6" sm="6">
+                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details>
+                </v-text-field>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="11" sm="12">
+                <v-data-table :headers="headers" :items="routes" :items-per-page="5" :search="search"
+                    :sort-by.sync="sortBy" :sort-desc.sync="sortDesc">
+                    <template v-slot:item.actions="{ item }">
+                        <v-icon class="mr-2" @click="editItem(item)">
+                            mdi-eye
+                        </v-icon>
+                        <v-icon @click="deleteItem(item)">
+                            mdi-delete
+                        </v-icon>
+                    </template>
+                </v-data-table>
+            </v-col>
+        </v-row>
+    </div>
+    <confirmation-dialog ref="confirmationDialog"></confirmation-dialog>
 </div>

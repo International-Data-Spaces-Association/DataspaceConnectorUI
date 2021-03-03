@@ -1,6 +1,6 @@
 {
   "name": "ids-configmanager-ui",
-  "version": "0.1.0",
+  "version": "4.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --open --port 8082",
@@ -20,7 +20,8 @@
     "axios": "0.19.0",
     "apexcharts": "3.11.1",
     "vue-apexcharts": "1.6.0",
-    "flowchart-vue": "0.15.4"
+    "d3": "5.15.0",
+    "moment": "2.29.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

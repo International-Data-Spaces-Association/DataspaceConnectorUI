@@ -1,0 +1,55 @@
+<div>
+    <v-row no-gutters>
+        <v-col cols="12" md="12">
+            <v-text-field label="Route description" v-model="description"></v-text-field>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="12">
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
+                @click="showAddBackendDialog">Add
+                Backend
+            </v-btn>
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="showAddAppDialog">Add
+                App
+            </v-btn>
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
+                @click="showAddIdsEndpointDialog">Add
+                IDS Endpoint
+            </v-btn>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="12">
+            <flowchart class="routespagechart" :nodes="nodes" :connections="connections" :render="render"
+                @editnode="handleEditNode" @editconnection="editConnection" @connectionAdded="connectionAdded"
+                @save="handleChartSave" ref="chart">
+            </flowchart>
+        </v-col>
+    </v-row>
+    <v-row no-gutters v-if="isNewRoute">
+        <v-col cols="12" md="6" class="save-route-col">
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="saveRoute">Save
+            </v-btn>
+            <div class="save-message">{{ saveMessage }}</div>
+        </v-col>
+        <v-col cols="12" md="6" class="reset-route-col">
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton reset-route-button"
+                @click="resetRoute">Reset
+            </v-btn>
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton cancel-route-button"
+                @click="cancelRoute">Cancel
+            </v-btn>
+        </v-col>
+    </v-row>
+    <edit-node-dialog ref="editNodeDialog">
+    </edit-node-dialog>
+    <edit-ids-endpoint-dialog ref="editIDSEndpointDialog" @newIdsEndpointNodeSaved="newIdsEndpointNodeSaved">
+    </edit-ids-endpoint-dialog>
+    <edit-connection-dialog ref="editConnectionDialog" @newConnectionSaved="newConnectionSaved">
+    </edit-connection-dialog>
+    <add-node-dialog ref="addBackendDialog" @addClicked="addBackend">
+    </add-node-dialog>
+    <add-node-dialog ref="addAppDialog" @addClicked="addApp">
+    </add-node-dialog>
+</div>

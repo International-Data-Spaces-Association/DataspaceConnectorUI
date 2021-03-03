@@ -1,0 +1,29 @@
+<v-row no-gutters>
+    <v-col cols="12" md="11">
+        <v-select label="Policy Pattern" v-model="policyType" :items="['Provide Access', 'Prohibit Access', 'N Times Usage', 'Duration Usage', 'Usage During Interval',
+            'Usage Until Deletion', 'Usage Logging', 'Usage Notification']" :readonly="readonly">
+        </v-select>
+        <div>
+            <n-times-usage @previousPage="previousPage" @nextPage="nextPage" ref="N Times Usage" :readonly="readonly">
+            </n-times-usage>
+            <duration-usage @previousPage="previousPage" @nextPage="nextPage" ref="Duration Usage" :readonly="readonly">
+            </duration-usage>
+            <usage-during-interval @previousPage="previousPage" @nextPage="nextPage" ref="Usage During Interval"
+                :readonly="readonly">
+            </usage-during-interval>
+            <provide-access @previousPage="previousPage" @nextPage="nextPage" ref="Provide Access" :readonly="readonly">
+            </provide-access>
+            <prohibit-access @previousPage="previousPage" @nextPage="nextPage" ref="Prohibit Access"
+                :readonly="readonly">
+            </prohibit-access>
+            <usage-until-deletion @previousPage="previousPage" @nextPage="nextPage" ref="Usage Until Deletion"
+                :readonly="readonly">
+            </usage-until-deletion>
+            <usage-logging @previousPage="previousPage" @nextPage="nextPage" ref="Usage Logging" :readonly="readonly">
+            </usage-logging>
+            <usage-notification @previousPage="previousPage" @nextPage="nextPage" ref="Usage Notification"
+                :readonly="readonly">
+            </usage-notification>
+        </div>
+    </v-col>
+</v-row>

@@ -1,4 +1,6 @@
 import Axios from "axios";
+import dataUtils from "../../../utils/dataUtils";
+import validationUtils from "../../../utils/validationUtils";
 
 export default {
     components: {},
@@ -10,13 +12,8 @@ export default {
             brokerTitle: null,
             url: null,
             valid: false,
-            defaultRule: [
-                v => !!v || 'This data is required'
-            ],
-            urlRule: [
-                v => !!v || 'This data is required',
-                v => /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed',
-            ]
+            defaultRule: validationUtils.getRequiredRule(),
+            urlRule: validationUtils.getUrlRequiredRule()
         };
     },
     mounted: function () {},
@@ -32,10 +29,8 @@ export default {
                 this.$data.dialog = false;
                 Axios.post("http://localhost:80/broker?brokerUri=" + this.$data.url + "&title=" +
                     this.$data.brokerTitle).then(() => {
-                    Axios.post("http://localhost:80/broker/register?brokerUri=" + this.$data.url).then(() => {
+                    dataUtils.registerConnectorAtBroker(this.$data.url).then(() => {
                         this.$emit('brokerSaved');
-                    }).catch(error => {
-                        console.log("Error in saveBroker(): ", error);
                     });
                 }).catch(error => {
                     console.log("Error in saveBroker(): ", error);

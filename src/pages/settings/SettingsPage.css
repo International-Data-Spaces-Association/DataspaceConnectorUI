@@ -1,3 +1,18 @@
 .proxy-authentication.invisible {
     display: none;
 }
+
+.save-settings-button {
+    margin-right: 10px;
+    margin-bottom: 50px;
+}
+
+.save-settings-col {
+    display: flex;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.save-message {
+    color: var(--v-success-base)
+}
