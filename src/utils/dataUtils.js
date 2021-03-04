@@ -1,6 +1,6 @@
-    import Axios from "axios";
     import moment from 'moment';
     import clientDataModel from "@/datamodel/clientDataModel";
+    import restUtils from "./restUtils";
 
 
     const POLICY_N_TIMES_USAGE = "N Times Usage";
@@ -81,7 +81,7 @@
         },
 
         getResources(callback) {
-            Axios.get("http://localhost:80/resources").then(response => {
+            restUtils.get("http://localhost:80/resources").then(response => {
                 let resources = [];
                 for (var idsResource of response.data) {
                     resources.push(clientDataModel.convertIdsResource(idsResource));
@@ -94,7 +94,7 @@
         },
 
         getResource(id, callback) {
-            Axios.get("http://localhost:80/resource?resourceId=" + id).then(response => {
+            restUtils.get("http://localhost:80/resource?resourceId=" + id).then(response => {
                 callback(clientDataModel.convertIdsResource(response.data));
             }).catch(error => {
                 console.log("Error in loadResource(): ", error);
@@ -104,7 +104,7 @@
 
         getLanguages(callback) {
             if (languages == null) {
-                Axios.get("http://localhost:80/enum?enumName=Language").then(response => {
+                restUtils.get("http://localhost:80/enum?enumName=Language").then(response => {
                     languages = response.data;
                     callback(languages);
                 }).catch(error => {
@@ -118,7 +118,7 @@
 
         getSourceTypes(callback) {
             if (sourcTypes == null) {
-                Axios.get("http://localhost:80/enum?enumName=SourceType").then(response => {
+                restUtils.get("http://localhost:80/enum?enumName=SourceType").then(response => {
                     sourcTypes = response.data;
                     callback(sourcTypes);
                 }).catch(error => {
@@ -133,8 +133,8 @@
         registerConnectorAtBroker(brokerUri) {
             let params = "?brokerUri=" + brokerUri;
             return new Promise(function (resolve, reject) {
-                Axios.post("http://localhost:80/broker/register" + params).then(response => {
-                    resolve(response.data);
+                restUtils.post("http://localhost:80/broker/register" + params).then(response => {
+                    resolve(response.data); 
                 }).catch(error => {
                     console.log("Error in registerConnectorAtBroker(): ", error);
                     reject();
@@ -145,7 +145,7 @@
         unregisterConnectorAtBroker(brokerUri) {
             let params = "?brokerUri=" + brokerUri;
             return new Promise(function (resolve, reject) {
-                Axios.post("http://localhost:80/broker/unregister" + params).then(response => {
+                restUtils.post("http://localhost:80/broker/unregister" + params).then(response => {
                     resolve(response.data);
                 }).catch(error => {
                     console.log("Error in unregisterConnectorAtBroker(): ", error);
@@ -157,7 +157,7 @@
         getResourceRegistrationStatus(resourceId) {
             let params = "?resourceId=" + resourceId;
             return new Promise(function (resolve, reject) {
-                Axios.get("http://localhost:80/broker/resource/information" + params).then(response => {
+                restUtils.get("http://localhost:80/broker/resource/information" + params).then(response => {
                     resolve(response.data);
                 }).catch(error => {
                     console.log("Error in getResourceRegistrationStatus(): ", error);
@@ -169,7 +169,7 @@
         updateResourceAtBroker(brokerUri, resourceId) {
             let params = "?brokerUri=" + brokerUri + "&resourceId=" + resourceId;
             return new Promise(function (resolve, reject) {
-                Axios.post("http://localhost:80/broker/update/resource" + params).then(() => {
+                restUtils.post("http://localhost:80/broker/update/resource" + params).then(() => {
                     resolve();
                 }).catch(error => {
                     console.log("Error in updateResourceAtBroker(): ", error);
@@ -181,7 +181,7 @@
         deleteResourceAtBroker(brokerUri, resourceId) {
             let params = "?brokerUri=" + brokerUri + "&resourceId=" + resourceId;
             return new Promise(function (resolve, reject) {
-                Axios.post("http://localhost:80/broker/delete/resource" + params).then(() => {
+                restUtils.post("http://localhost:80/broker/delete/resource" + params).then(() => {
                     resolve();
                 }).catch(error => {
                     console.log("Error in deleteResourceAtBroker(): ", error);
@@ -192,7 +192,7 @@
 
         getBrokers(callback) {
             let brokers = [];
-            Axios.get("http://localhost:80/brokers").then(response => {
+            restUtils.get("http://localhost:80/brokers").then(response => {
                 brokers = response.data;
                 callback(brokers);
             }).catch(error => {
@@ -202,7 +202,7 @@
 
         getBackendConnections(callback) {
             backendConnections = [];
-            Axios.get("http://localhost:80/generic/endpoints").then(response => {
+            restUtils.get("http://localhost:80/generic/endpoints").then(response => {
                 var genericEndpoints = response.data;
 
                 for (var genericEndpoint of genericEndpoints) {
@@ -224,7 +224,8 @@
         },
 
         createBackendConnection(url, username, password, callback) {
-            Axios.post("http://localhost:80/generic/endpoint?accessUrl=" + url + "&username=" + username + "&password=" + password).then(() => {
+            restUtils.post("http://localhost:80/generic/endpoint?accessUrl=" + encodeURIComponent(url) + "&username=" + 
+            encodeURIComponent(username) + "&password=" + encodeURIComponent(password)).then(() => {
                 callback();
             }).catch(error => {
                 console.log("Error in saveBackendConnection(): ", error);
@@ -233,7 +234,9 @@
         },
 
         updateBackendConnection(id, url, username, password, callback) {
-            Axios.put("http://localhost:80/generic/endpoint?id=" + id + "&accessUrl=" + url + "&username=" + username + "&password=" + password).then(() => {
+            restUtils.put("http://localhost:80/generic/endpoint?id=" + encodeURIComponent(id) + "&accessUrl=" + 
+            encodeURIComponent(url) + "&username=" + encodeURIComponent(username) + "&password=" + 
+            encodeURIComponent(password)).then(() => {
                 callback();
             }).catch(error => {
                 console.log("Error in saveBackendConnection(): ", error);
@@ -242,7 +245,7 @@
         },
 
         deleteResource(id, callback) {
-            Axios.delete("http://localhost:80/resource?resourceId=" + id).then(() => {
+            restUtils.delete("http://localhost:80/resource?resourceId=" + encodeURIComponent(id)).then(() => {
                 callback();
             }).catch(error => {
                 console.log(error);
@@ -251,7 +254,7 @@
         },
 
         getRoute(id, callback) {
-            Axios.get("http://localhost:80/approute?routeId=" + id).then(response => {
+            restUtils.get("http://localhost:80/approute?routeId=" + id).then(response => {
                 callback(response.data)
             }).catch(error => {
                 console.log("Error in getRoute(): ", error);
@@ -260,7 +263,7 @@
         },
 
         deleteRoute(id, callback) {
-            Axios.delete("http://localhost:80/approute?routeId=" + id).then(() => {
+            restUtils.delete("http://localhost:80/approute?routeId=" + id).then(() => {
                 callback();
             }).catch(error => {
                 console.log(error);
@@ -269,7 +272,7 @@
         },
 
         deleteBackendConnection(id, callback) {
-            Axios.delete("http://localhost:80/generic/endpoint?endpointId=" + id).then(() => {
+            restUtils.delete("http://localhost:80/generic/endpoint?endpointId=" + id).then(() => {
                 callback();
             }).catch(error => {
                 console.log("Error in saveBackendConnection(): ", error);
@@ -279,7 +282,7 @@
 
         getApps(callback) {
             apps = [];
-            Axios.get("http://localhost:80/apps").then(response => {
+            restUtils.get("http://localhost:80/apps").then(response => {
                 let appsResponse = response.data;
                 for (var app of appsResponse) {
                     apps.push(app[1]);
@@ -371,7 +374,7 @@
 
         createConnectorEndpoint(accessUrl, callback) {
             let params = "?accessUrl=" + accessUrl;
-            Axios.post("http://localhost:80/connector/endpoint" + params).then((response) => {
+            restUtils.post("http://localhost:80/connector/endpoint" + params).then((response) => {
                 callback(response.data.connectorEndpointId);
             }).catch(error => {
                 console.log("Error in createConnectorEndpoint(): ", error);
@@ -384,12 +387,12 @@
             let params = "?title=" + title + "&description=" + description + "&language=" +
                 language + "&keyword=" + keyword + "&version=" + version + "&standardlicense=" + standardlicense +
                 "&publisher=" + publisher;
-            Axios.post("http://localhost:80/resource" + params).then((response) => {
+            restUtils.post("http://localhost:80/resource" + params).then((response) => {
                 let resourceId = response.data.resourceID;
                 params = "?resourceId=" + resourceId;
-                Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
+                restUtils.put("http://localhost:80/contract" + params, contractJson).then(() => {
                     params = "?resourceId=" + resourceId + "&endpointId=" + genericEndpointId + "&language=" + language + "&sourceType=" + sourceType;
-                    Axios.post("http://localhost:80/representation" + params).then(() => {
+                    restUtils.post("http://localhost:80/representation" + params).then(() => {
                         this.createConnectorEndpoint("http://data_" + Date.now(), endpointId => {
                             this.createNewRoute(this.getCurrentDate() + " - " + title).then(routeId => {
                                 this.createSubRoute(routeId, genericEndpointId, 20, 150,
@@ -418,11 +421,11 @@
             let params = "?resourceId=" + resourceId + "&title=" + title + "&description=" + description + "&language=" +
                 language + "&keyword=" + keyword + "&version=" + version + "&standardlicense=" + standardlicense +
                 "&publisher=" + publisher;
-            Axios.put("http://localhost:80/resource" + params).then(() => {
+            restUtils.put("http://localhost:80/resource" + params).then(() => {
                 params = "?resourceId=" + resourceId;
-                Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
+                restUtils.put("http://localhost:80/contract" + params, contractJson).then(() => {
                     params = "?resourceId=" + resourceId + "&representationId=" + representationId + "&endpointId=" + genericEndpointId + "&language=" + language + "&sourceType=" + sourceType;
-                    Axios.put("http://localhost:80/representation" + params).then(() => {
+                    restUtils.put("http://localhost:80/representation" + params).then(() => {
                         this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId, callback);
                     }).catch(error => {
                         console.log("Error in editResource(): ", error);
@@ -459,13 +462,13 @@
                 language + "&keyword=" + keyword + "&version=" + version + "&standardlicense=" + standardlicense +
                 "&publisher=" + publisher;
             return new Promise(function (resolve, reject) {
-                Axios.post("http://localhost:80/resource" + params).then((response) => {
+                restUtils.post("http://localhost:80/resource" + params).then((response) => {
                     let resourceId = response.data.resourceID;
                     params = "?resourceId=" + resourceId;
-                    Axios.put("http://localhost:80/contract" + params, contractJson).then(() => {
+                    restUtils.put("http://localhost:80/contract" + params, contractJson).then(() => {
                         params = "?resourceId=" + resourceId + "&endpointId=" + genericEndpointId + "&language=" + language +
                             "&sourceType=" + sourceType;
-                        Axios.post("http://localhost:80/representation" + params).then(() => {
+                        restUtils.post("http://localhost:80/representation" + params).then(() => {
                             dataUtils.createConnectorEndpoint("http://data_" + Date.now(), endpointId => {
                                 dataUtils.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
                                     endpointId, endCoordinateX, endCoordinateY, resourceId).then(() => {
@@ -501,7 +504,7 @@
 
         getEndpointInfo(routeId, endpointId, callback) {
             var params = "?routeId=" + routeId + "&endpointId=" + endpointId;
-            Axios.get("http://localhost:80/approute/step/endpoint/info" + params).then(response => {
+            restUtils.get("http://localhost:80/approute/step/endpoint/info" + params).then(response => {
                 callback(response.data)
             }).catch(error => {
                 console.log("Error in getEndpointInfo(): ", error);
@@ -510,7 +513,7 @@
         },
 
         getRoutes(callback) {
-            Axios.get("http://localhost:80/approutes").then(response => {
+            restUtils.get("http://localhost:80/approutes").then(response => {
                 callback(response.data);
             }).catch(error => {
                 console.log("Error in getRoutes(): ", error);
@@ -521,7 +524,7 @@
         createNewRoute(description) {
             let params = "?description=" + description;
             return new Promise(function (resolve, reject) {
-                Axios.post("http://localhost:80/approute" + params).then(response => {
+                restUtils.post("http://localhost:80/approute" + params).then(response => {
                     resolve(response.data);
                 }).catch(error => {
                     console.log("Error in createNewRoute(): ", error);
@@ -535,7 +538,7 @@
                 "&startCoordinateY=" + startCoordinateY + "&endId=" + endId + "&endCoordinateX=" + endCoordinateX +
                 "&endCoordinateY=" + endCoordinateY + "&resourceId=" + resourceId;
             return new Promise(function (resolve, reject) {
-                Axios.post("http://localhost:80/approute/step" + params).then(response => {
+                restUtils.post("http://localhost:80/approute/step" + params).then(response => {
                     resolve(response.data);
                 }).catch(error => {
                     console.log("Error in createSubRoute(): ", error);
@@ -547,7 +550,7 @@
 
         setSubRouteEnd(routeId, subRouteId, accessUrl, callback) {
             let params = "?routeId=" + routeId + "&routeStepId=" + subRouteId + "&accessUrl=" + accessUrl;
-            Axios.post("http://localhost:80/approute/subroute/end" + params).then(response => {
+            restUtils.post("http://localhost:80/approute/subroute/end" + params).then(response => {
                 callback(response.data);
             }).catch(error => {
                 console.log("Error in setSubRouteEnd(): ", error);
@@ -558,7 +561,7 @@
             let params = "?proxyUri=" + proxyUrl + "&noProxyUri=" + proxyNoProxy + "&username=" +
                 username + "&password=" + password;
             return new Promise(function (resolve, reject) {
-                Axios.put("http://localhost:80/proxy" + params).then(() => {
+                restUtils.put("http://localhost:80/proxy" + params).then(() => {
                     resolve();
                 }).catch(error => {
                     console.log("Error in changeProxySettings(): ", error);
@@ -569,7 +572,7 @@
 
         getDeployMethods() {
             return new Promise(function (resolve, reject) {
-                Axios.get("http://localhost:80/enum?enumName=deployMethod").then((response) => {
+                restUtils.get("http://localhost:80/enum?enumName=deployMethod").then((response) => {
                     resolve(response.data);
                 }).catch(error => {
                     console.log("Error in getDeployMethods(): ", error);
@@ -581,7 +584,7 @@
 
         getDeployMethod() {
             return new Promise(function (resolve, reject) {
-                Axios.get("http://localhost:80/route/deploymethod").then((response) => {
+                restUtils.get("http://localhost:80/route/deploymethod").then((response) => {
                     resolve(response.data);
                 }).catch(error => {
                     console.log("Error in getDeployMethod(): ", error);
@@ -593,7 +596,7 @@
         changeDeployMethod(deployMethod) {
             let params = "?deployMethod=" + deployMethod;
             return new Promise(function (resolve, reject) {
-                Axios.post("http://localhost:80/route/deploymethod" + params).then(() => {
+                restUtils.post("http://localhost:80/route/deploymethod" + params).then(() => {
                     resolve();
                 }).catch(error => {
                     console.log("Error in changeDeployMethod(): ", error);
@@ -604,7 +607,7 @@
 
         getLogLevels() {
             return new Promise(function (resolve, reject) {
-                Axios.get("http://localhost:80/enum?enumName=logLevel").then((response) => {
+                restUtils.get("http://localhost:80/enum?enumName=logLevel").then((response) => {
                     resolve(response.data);
                 }).catch(error => {
                     console.log("Error in getLogLevels(): ", error);
@@ -615,7 +618,7 @@
 
         getConfigModel() {
             return new Promise(function (resolve, reject) {
-                Axios.get("http://localhost:80/configmodel").then((response) => {
+                restUtils.get("http://localhost:80/configmodel").then((response) => {
                     resolve(clientDataModel.convertIdsConfigModel(response.data));
                 }).catch(error => {
                     console.log("Error in getConfigModel(): ", error);
@@ -630,7 +633,7 @@
                 trustStoreUrl + "&trustStorePassword=" + trustStorePassword + "&keyStoreUrl=" + keyStoreUrl +
                 "&keyStorePassword=" + keyStorePassword;
             return new Promise(function (resolve, reject) {
-                Axios.put("http://localhost:80/configmodel" + params).then(() => {
+                restUtils.put("http://localhost:80/configmodel" + params).then(() => {
                     resolve();
                 }).catch(error => {
                     console.log("Error in changeLogLevel(): ", error);
@@ -641,7 +644,7 @@
 
         getConnectorSettings() {
             return new Promise(function (resolve, reject) {
-                Axios.get("http://localhost:80/connector").then((response) => {
+                restUtils.get("http://localhost:80/connector").then((response) => {
                     resolve(clientDataModel.convertIdsConnector(response.data));
                 }).catch(error => {
                     console.log("Error in getConnectorSettings(): ", error);
@@ -658,7 +661,7 @@
                 "&connectorCurator=" + connectorCurator + "&connectorMaintainer=" + connectorMaintainer +
                 "&connectorInboundModelVersion=" + connectorInboundModelVersion + "&connectorOutboundModelVersion=" + connectorOutboundModelVersion;
             return new Promise(function (resolve, reject) {
-                Axios.put("http://localhost:80/connector" + params).then(() => {
+                restUtils.put("http://localhost:80/connector" + params).then(() => {
                     resolve();
                 }).catch(error => {
                     console.log("Error in changeConnectorSettings(): ", error);
@@ -669,7 +672,7 @@
 
         getConnectorStatuses() {
             return new Promise(function (resolve, reject) {
-                Axios.get("http://localhost:80/enum?enumName=connectorStatus").then((response) => {
+                restUtils.get("http://localhost:80/enum?enumName=connectorStatus").then((response) => {
                     resolve(response.data);
                 }).catch(error => {
                     console.log("Error in getConnectorStatuses(): " + error);
@@ -680,7 +683,7 @@
 
         getConnectorDeployModes() {
             return new Promise(function (resolve, reject) {
-                Axios.get("http://localhost:80/enum?enumName=connectorDeployMode").then((response) => {
+                restUtils.get("http://localhost:80/enum?enumName=connectorDeployMode").then((response) => {
                     resolve(response.data);
                 }).catch(error => {
                     console.log("Error in getConnectorDeployModes(): " + error);
@@ -691,7 +694,7 @@
 
         changeTrustStoreSettings(trustStoreURL, callback) {
             let params = "?trustStoreUrl=" + trustStoreURL;
-            Axios.put("http://localhost:80/configmodel" + params).then(() => {
+            restUtils.put("http://localhost:80/configmodel" + params).then(() => {
                 callback();
             }).catch(error => {
                 console.log("Error in changeTrustStoreSettings(): ", error);
@@ -701,7 +704,7 @@
 
         changeKeyStoreSettings(keyStoreURL, callback) {
             let params = "?keyStoreUrl=" + keyStoreURL;
-            Axios.put("http://localhost:80/configmodel" + params).then(() => {
+            restUtils.put("http://localhost:80/configmodel" + params).then(() => {
                 callback();
             }).catch(error => {
                 console.log("Error in changeKeyStoreSettings(): ", error);

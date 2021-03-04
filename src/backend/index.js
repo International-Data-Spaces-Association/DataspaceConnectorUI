@@ -13,8 +13,28 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+function post(url) {
+    console.log(">>> POST " + url);
+    return axios.post(url);
+}
+
+function put(url) {
+    console.log(">>> PUT " + url);
+    return axios.put(url);
+}
+
+function get(url) {
+    console.log(">>> GET " + url);
+    return axios.get(url);
+}
+
+function del(url) {
+    console.log(">>> DELETE " + url);
+    return axios.delete(url);
+}
+
 app.get('/connector', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/connector").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/connector").then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /connector", error.response.status);
@@ -23,7 +43,7 @@ app.get('/connector', (req, res) => {
 });
 
 app.get('/attributes', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/attributes/properties/" + req.query.type).then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/attributes/properties/" + req.query.type).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /attributes", error.response.status);
@@ -33,8 +53,7 @@ app.get('/attributes', (req, res) => {
 
 app.post('/connector/endpoint', (req, res) => {
     var params = "?accessUrl=" + req.query.accessUrl;
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/connector/endpoint" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/connector/endpoint" + params).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/connector/endpoint" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /connector/endpoint", error.response.status);
@@ -43,8 +62,7 @@ app.post('/connector/endpoint', (req, res) => {
 });
 
 app.get('/resources', (req, res) => {
-    console.log(">>> GET http://localhost:" + configModelPort + "/api/ui/resources");
-    axios.get("http://localhost:" + configModelPort + "/api/ui/resources").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/resources").then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /resources", error);
@@ -53,8 +71,7 @@ app.get('/resources', (req, res) => {
 });
 
 app.get('/resource', (req, res) => {
-    console.log(">>> GET http://localhost:" + configModelPort + "/api/ui/resource?resourceId=" + req.query.resourceId);
-    axios.get("http://localhost:" + configModelPort + "/api/ui/resource?resourceId=" + req.query.resourceId).then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/resource?resourceId=" + req.query.resourceId).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /resource", error.response.status);
@@ -66,8 +83,7 @@ app.post('/resource', (req, res) => {
     var params = "?title=" + req.query.title + "&description=" + req.query.description +
         "&language=" + req.query.language + "&keyword=" + req.query.keyword + "&version=" + req.query.version + "&standardlicense=" +
         req.query.standardlicense + "&publisher=" + req.query.publisher;
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/resource" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/resource" + params).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/resource" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /resource", error.response.status);
@@ -80,8 +96,7 @@ app.put('/resource', (req, res) => {
         "&description=" + req.query.description + "&language=" + req.query.language + "&keyword=" + req.query.keyword +
         "&version=" + req.query.version + "&standardlicense=" + req.query.standardlicense + "&publisher=" +
         req.query.publisher;
-    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/resource" + params);
-    axios.put("http://localhost:" + configModelPort + "/api/ui/resource" + params, req.body).then(response => {
+    put("http://localhost:" + configModelPort + "/api/ui/resource" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on PUT /resource", error.response.status);
@@ -90,7 +105,7 @@ app.put('/resource', (req, res) => {
 });
 
 app.delete('/resource', (req, res) => {
-    axios.delete("http://localhost:" + configModelPort + "/api/ui/resource?resourceId=" + req.query.resourceId).then(response => {
+    del("http://localhost:" + configModelPort + "/api/ui/resource?resourceId=" + req.query.resourceId).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on DELETE /resource", error.response.status);
@@ -100,8 +115,7 @@ app.delete('/resource', (req, res) => {
 
 app.put('/contract', (req, res) => {
     var params = "?resourceId=" + req.query.resourceId;
-    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/resource/contract" + params);
-    axios.put("http://localhost:" + configModelPort + "/api/ui/resource/contract" + params, req.body).then(response => {
+    put("http://localhost:" + configModelPort + "/api/ui/resource/contract" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on PUT /contract", error.response.status);
@@ -113,8 +127,7 @@ app.post('/representation', (req, res) => {
     // TODO filename extension and byte size should not be set in UI.
     var params = "?resourceId=" + req.query.resourceId + "&endpointId=" + req.query.endpointId + "&language=" + req.query.language + "&filenameExtension=json" +
         "&bytesize=1234&sourceType=" + req.query.sourceType;
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/resource/representation" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/resource/representation" + params, req.body).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/resource/representation" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /representation", error.response.status);
@@ -127,8 +140,7 @@ app.put('/representation', (req, res) => {
     var params = "?resourceId=" + req.query.resourceId + "&representationId=" + req.query.representationId +
         "&endpointId=" + req.query.endpointId + "&language=" + req.query.language + "&filenameExtension=json" +
         "&bytesize=1234&sourceType=" + req.query.sourceType;
-    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/resource/representation" + params);
-    axios.put("http://localhost:" + configModelPort + "/api/ui/resource/representation" + params, req.body).then(response => {
+    put("http://localhost:" + configModelPort + "/api/ui/resource/representation" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on PUT /representation", error.response.status);
@@ -137,7 +149,7 @@ app.put('/representation', (req, res) => {
 });
 
 app.get('/approutes', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
         res.send(response.data["ids:appRoute"]);
     }).catch(error => {
         console.log("Error on GET /approutes", error.response.status);
@@ -147,8 +159,7 @@ app.get('/approutes', (req, res) => {
 
 app.get('/approute', (req, res) => {
     var params = "?routeId=" + req.query.routeId;
-    console.log(">>> GET http://localhost:" + configModelPort + "/api/ui/approute" + params);
-    axios.get("http://localhost:" + configModelPort + "/api/ui/approute" + params).then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/approute" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /approute", error.response.status);
@@ -158,8 +169,7 @@ app.get('/approute', (req, res) => {
 
 app.get('/approute/step/endpoint/info', (req, res) => {
     var params = "?routeId=" + req.query.routeId + "&endpointId=" + req.query.endpointId;
-    console.log(">>> GET http://localhost:" + configModelPort + "/api/ui/approute/step/endpoint/info" + params);
-    axios.get("http://localhost:" + configModelPort + "/api/ui/approute/step/endpoint/info" + params).then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/approute/step/endpoint/info" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /approute/step/endpoint/info", error.response.status);
@@ -168,8 +178,7 @@ app.get('/approute/step/endpoint/info', (req, res) => {
 });
 
 app.get('/generic/endpoints', (req, res) => {
-    console.log(">>> GET http: //localhost:" + configModelPort + "/api/ui/generic/endpoints");
-    axios.get("http://localhost:" + configModelPort + "/api/ui/generic/endpoints").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/generic/endpoints").then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /generic/endpoints", error.response.status);
@@ -178,10 +187,8 @@ app.get('/generic/endpoints', (req, res) => {
 });
 
 app.post('/generic/endpoint', (req, res) => {
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/generic/endpoint?accessURL=" + req.query.accessUrl + "&username=" +
-        req.query.username + "&password=" + req.query.password);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?accessURL=" + req.query.accessUrl + "&username=" +
-        req.query.username + "&password=" + req.query.password).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?accessURL=" + encodeURIComponent(req.query.accessUrl) + "&username=" +
+    encodeURIComponent(req.query.username) + "&password=" + encodeURIComponent(req.query.password)).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /generic/endpoint", error.response.status);
@@ -190,10 +197,9 @@ app.post('/generic/endpoint', (req, res) => {
 });
 
 app.put('/generic/endpoint', (req, res) => {
-    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
-        req.query.username + "&password=" + req.query.password);
-    axios.put("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + req.query.id + "&accessURL=" + req.query.accessUrl + "&username=" +
-        req.query.username + "&password=" + req.query.password).then(response => {
+    put("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + encodeURIComponent(req.query.id) + "&accessURL=" + 
+    encodeURIComponent(req.query.accessUrl) + "&username=" + encodeURIComponent(req.query.username) + "&password=" + 
+    encodeURIComponent(req.query.password)).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on PUT /generic/endpoint", error.response.status);
@@ -202,8 +208,8 @@ app.put('/generic/endpoint', (req, res) => {
 });
 
 app.delete('/generic/endpoint', (req, res) => {
-    console.log(">>> DELETE http://localhost:" + configModelPort + "/api/ui/generic/endpoint?endpointId=" + req.query.endpointId);
-    axios.delete("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?endpointId=" + req.query.endpointId).then(response => {
+    del("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?endpointId=" + 
+    encodeURIComponent(req.query.endpointId)).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on DELETE /generic/endpoint", error.response.status);
@@ -212,7 +218,7 @@ app.delete('/generic/endpoint', (req, res) => {
 });
 
 app.put('/approute', (req, res) => {
-    axios.put("http://localhost:" + configModelPort + "/api/ui/approute/endpoint?routeId=" + req.query.routeId + "&endpointId=" +
+    put("http://localhost:" + configModelPort + "/api/ui/approute/endpoint?routeId=" + req.query.routeId + "&endpointId=" +
         req.query.endpointId + "&accessUrl=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password).then(response => {
         res.send(response.data);
@@ -223,8 +229,7 @@ app.put('/approute', (req, res) => {
 });
 
 app.delete('/approute', (req, res) => {
-    console.log(">>> DELETE http://localhost:" + configModelPort + "/api/ui/approute?routeId=" + req.query.routeId);
-    axios.delete("http://localhost:" + configModelPort + "/api/ui/approute?routeId=" + req.query.routeId).then(response => {
+    del("http://localhost:" + configModelPort + "/api/ui/approute?routeId=" + req.query.routeId).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on DELETE /approute", error.response.status);
@@ -233,7 +238,7 @@ app.delete('/approute', (req, res) => {
 });
 
 app.get('/apps', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/apps").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/apps").then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /apps", error.response.status);
@@ -242,7 +247,7 @@ app.get('/apps', (req, res) => {
 });
 
 app.get('/test', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
         let output = "";
         let configmodel = response.data;
         if (configmodel["ids:appRoute"] !== undefined) {
@@ -262,7 +267,7 @@ app.get('/test', (req, res) => {
 });
 
 app.get('/brokers', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/brokers").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/brokers").then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /brokers", error.response.status);
@@ -272,7 +277,7 @@ app.get('/brokers', (req, res) => {
 
 app.post('/broker', (req, res) => {
     let params = "?brokerUri=" + req.query.brokerUri + "&title=" + req.query.title;
-    axios.post("http://localhost:" + configModelPort + "/api/ui/broker" + params).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/broker" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /broker", error.response.status);
@@ -282,8 +287,7 @@ app.post('/broker', (req, res) => {
 
 app.post('/broker/register', (req, res) => {
     let params = "?brokerUri=" + req.query.brokerUri;
-    console.log(">>> POST /api/ui/broker/register" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/broker/register" + params).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/broker/register" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /broker/register", error.response.status);
@@ -293,8 +297,7 @@ app.post('/broker/register', (req, res) => {
 
 app.post('/broker/unregister', (req, res) => {
     let params = "?brokerUri=" + req.query.brokerUri;
-    console.log(">>> POST /api/ui/broker/unregister" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/broker/unregister" + params).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/broker/unregister" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /broker/unregister", error.response.status);
@@ -304,8 +307,7 @@ app.post('/broker/unregister', (req, res) => {
 
 app.post('/broker/update/resource', (req, res) => {
     let params = "?brokerUri=" + req.query.brokerUri + "&resourceId=" + req.query.resourceId;
-    console.log(">>> POST /api/ui/broker/update/resource" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/broker/update/resource" + params).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/broker/update/resource" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /broker/update/resource", error.response.status);
@@ -315,8 +317,7 @@ app.post('/broker/update/resource', (req, res) => {
 
 app.get('/broker/resource/information', (req, res) => {
     let params = "?resourceId=" + req.query.resourceId;
-    console.log(">>> GET /api/ui/broker/resource/information" + params);
-    axios.get("http://localhost:" + configModelPort + "/api/ui/broker/resource/information" + params).then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/broker/resource/information" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /broker/resource/information", error.response.status);
@@ -326,8 +327,7 @@ app.get('/broker/resource/information', (req, res) => {
 
 app.post('/broker/delete/resource', (req, res) => {
     let params = "?brokerUri=" + req.query.brokerUri + "&resourceId=" + req.query.resourceId;
-    console.log(">>> POST /api/ui/broker/delete/resource" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/broker/delete/resource" + params).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/broker/delete/resource" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /broker/delete/resource", error.response.status);
@@ -337,7 +337,7 @@ app.post('/broker/delete/resource', (req, res) => {
 
 app.put('/broker', (req, res) => {
     let params = "?brokerUri=" + req.query.brokerUri + "&title=" + req.query.title;
-    axios.put("http://localhost:" + configModelPort + "/api/ui/broker" + params).then(response => {
+    put("http://localhost:" + configModelPort + "/api/ui/broker" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on PUT /broker", error.response.status);
@@ -346,7 +346,7 @@ app.put('/broker', (req, res) => {
 });
 
 app.delete('/broker', (req, res) => {
-    axios.delete("http://localhost:" + configModelPort + "/api/ui/broker?brokerUri=" + req.query.brokerId).then(response => {
+    del("http://localhost:" + configModelPort + "/api/ui/broker?brokerUri=" + req.query.brokerId).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on DELETE /broker", error.response.status);
@@ -355,7 +355,7 @@ app.delete('/broker', (req, res) => {
 });
 
 app.get('/offeredresourcesstats', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/resources").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/resources").then(response => {
         let resources = response.data;
         let totalSize = 0;
         for (let resource of resources) {
@@ -376,7 +376,7 @@ app.get('/offeredresourcesstats', (req, res) => {
 });
 
 app.get('/sourcetypesstats', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/resources").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/resources").then(response => {
         let resources = response.data;
         let sourceTypes = [];
         for (let resource of resources) {
@@ -408,7 +408,7 @@ app.get('/sourcetypesstats', (req, res) => {
 });
 
 app.get('/filetypesstats', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/resources").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/resources").then(response => {
         let resources = response.data;
         let filetypes = [];
         for (let resource of resources) {
@@ -440,7 +440,7 @@ app.get('/filetypesstats', (req, res) => {
 });
 
 app.get('/proxy', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/configmodel/proxy").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/configmodel/proxy").then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /configmodel/proxy", error.response.status);
@@ -451,8 +451,7 @@ app.get('/proxy', (req, res) => {
 app.put('/proxy', (req, res) => {
     let params = "?proxyUri=" + req.query.proxyUri + "&noProxyUri=" + req.query.noProxyUri + "&username=" +
         req.query.username + "&password=" + req.query.password;
-    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/configmodel/proxy" + params);
-    axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel/proxy" + params).then(response => {
+    put("http://localhost:" + configModelPort + "/api/ui/configmodel/proxy" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on PUT /configmodel/proxy", error.response.status);
@@ -461,7 +460,7 @@ app.put('/proxy', (req, res) => {
 });
 
 app.get('/configmodel', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /configmodel", error.response.status);
@@ -473,8 +472,7 @@ app.put('/configmodel', (req, res) => {
     let params = "?loglevel=" + req.query.logLevel + "&connectorDeployMode=" + req.query.connectorDeployMode + "&trustStore=" +
         req.query.trustStoreUrl + "&trustStorePassword=" + req.query.trustStorePassword + "&keyStore=" + req.query.keyStoreUrl +
         "&keyStorePassword=" + req.query.keyStorePassword;
-    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/configmodel" + params);
-    axios.put("http://localhost:" + configModelPort + "/api/ui/configmodel" + params).then(response => {
+    put("http://localhost:" + configModelPort + "/api/ui/configmodel" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on PUT /configmodel", error.response.status);
@@ -483,7 +481,7 @@ app.put('/configmodel', (req, res) => {
 });
 
 app.get('/connector', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/connector").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/connector").then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /connector", error.response.status);
@@ -497,8 +495,7 @@ app.put('/connector', (req, res) => {
         "&curator=" + req.query.connectorCurator + "&maintainer=" + req.query.connectorMaintainer +
         "&inboundModelVersion=" + req.query.connectorInboundModelVersion + "&outboundModelVersion=" +
         req.query.connectorOutboundModelVersion;
-    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/connector" + params);
-    axios.put("http://localhost:" + configModelPort + "/api/ui/connector" + params).then(response => {
+    put("http://localhost:" + configModelPort + "/api/ui/connector" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on PUT /connector", error.response.status);
@@ -508,7 +505,7 @@ app.put('/connector', (req, res) => {
 
 app.get('/configmodel', (req, res) => {
     console.log("GET http://localhost:" + configModelPort + "/api/ui/configmodel");
-    axios.get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/configmodel").then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /configmodel", error.response.status);
@@ -517,7 +514,7 @@ app.get('/configmodel', (req, res) => {
 });
 
 app.get('/route/deploymethod', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/route/deploymethod").then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/route/deploymethod").then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /route/deploymethod", error.response.status);
@@ -527,8 +524,7 @@ app.get('/route/deploymethod', (req, res) => {
 
 app.post('/route/deploymethod', (req, res) => {
     let params = "?deployMethod=" + req.query.deployMethod;
-    console.log(">>> PUT http://localhost:" + configModelPort + "/api/ui/route/deploymethod" + params);
-    axios.put("http://localhost:" + configModelPort + "/api/ui/route/deploymethod" + params).then(response => {
+    put("http://localhost:" + configModelPort + "/api/ui/route/deploymethod" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /route/deploymethod", error.response.status);
@@ -537,7 +533,7 @@ app.post('/route/deploymethod', (req, res) => {
 });
 
 app.get('/enum', (req, res) => {
-    axios.get("http://localhost:" + configModelPort + "/api/ui/enum/" + req.query.enumName).then(response => {
+    get("http://localhost:" + configModelPort + "/api/ui/enum/" + req.query.enumName).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /enum", error.response.status);
@@ -547,8 +543,7 @@ app.get('/enum', (req, res) => {
 
 app.post('/approute', (req, res) => {
     let params = "?description=" + req.query.description;
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/approute" + params).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/approute" + params).then(response => {
         console.log(">>> new route response: ", response.data);
         res.send(response.data.id);
     }).catch(error => {
@@ -568,8 +563,7 @@ app.post('/approute/step', (req, res) => {
             "&startCoordinateY=" + req.query.startCoordinateY + "&endId=" + req.query.endId + "&endCoordinateX=" + req.query.endCoordinateX +
             "&endCoordinateY=" + req.query.endCoordinateY + "&resourceId=" + req.query.resourceId;
     }
-    console.log(">>> POST http://localhost:" + configModelPort + "/api/ui/approute/step" + params);
-    axios.post("http://localhost:" + configModelPort + "/api/ui/approute/step" + params).then(response => {
+    post("http://localhost:" + configModelPort + "/api/ui/approute/step" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on POST /approute/step", error.response.status);
