@@ -1,8 +1,7 @@
 .div-under-construction {
     border: 1px solid var(--v-accent-base);
     color: var(--v-accent-base);
-    height: 75px;
-    padding: 30px;
+    padding: 30px!important;
     display: flex;
     align-content: center;
     justify-content: center;
