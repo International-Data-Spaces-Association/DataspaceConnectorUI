@@ -1,4 +1,3 @@
-import Axios from "axios";
 import AddBrokerDialog from "@/pages/brokers/dialog/AddBrokerDialog.vue";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import dataUtils from "../../utils/dataUtils";
@@ -13,18 +12,18 @@ export default {
         return {
             search: '',
             headers: [{
-                    text: 'Title',
-                    value: 'title'
-                }, {
-                    text: 'URL',
-                    value: 'url'
-                },
-                {
-                    text: '',
-                    value: 'actions',
-                    sortable: false,
-                    align: 'right'
-                }
+                text: 'Title',
+                value: 'title'
+            }, {
+                text: 'URL',
+                value: 'url'
+            },
+            {
+                text: '',
+                value: 'actions',
+                sortable: false,
+                align: 'right'
+            }
             ],
             brokers: [],
             selected: []
@@ -78,13 +77,9 @@ export default {
             }
         },
         deleteBroker(brokerId) {
-            Axios.delete("http://localhost:80/broker?brokerId=" + brokerId).then(() => {
+            dataUtils.deleteBroker(brokerId).then(() => {
                 this.getBrokers();
-            }).catch(error => {
-                console.log(error);
-                this.$root.$emit('showBusyIndicator', false);
             });
-
         },
         editItem(item) {
             this.$refs.addBrokerDialog.edit(item.broker);

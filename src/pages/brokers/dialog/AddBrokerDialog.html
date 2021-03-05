@@ -13,7 +13,8 @@
 
             <v-card-text>
                 <v-text-field label="Title" v-model="brokerTitle" :rules="defaultRule"> </v-text-field>
-                <v-text-field label="URL" v-model="url" :rules="urlRule"> </v-text-field>
+                <v-text-field label="URL" v-model="url" :rules="urlRule" :readonly="urlReadOnly">
+                </v-text-field>
             </v-card-text>
 
             <v-divider></v-divider>

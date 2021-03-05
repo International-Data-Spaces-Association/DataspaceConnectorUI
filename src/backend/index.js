@@ -188,44 +188,44 @@ app.get('/generic/endpoints', (req, res) => {
 
 app.post('/generic/endpoint', (req, res) => {
     post("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?accessURL=" + encodeURIComponent(req.query.accessUrl) + "&username=" +
-    encodeURIComponent(req.query.username) + "&password=" + encodeURIComponent(req.query.password)).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on POST /generic/endpoint", error.response.status);
-        res.send(error);
-    });
+        encodeURIComponent(req.query.username) + "&password=" + encodeURIComponent(req.query.password)).then(response => {
+            res.send(response.data);
+        }).catch(error => {
+            console.log("Error on POST /generic/endpoint", error.response.status);
+            res.send(error);
+        });
 });
 
 app.put('/generic/endpoint', (req, res) => {
-    put("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + encodeURIComponent(req.query.id) + "&accessURL=" + 
-    encodeURIComponent(req.query.accessUrl) + "&username=" + encodeURIComponent(req.query.username) + "&password=" + 
-    encodeURIComponent(req.query.password)).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on PUT /generic/endpoint", error.response.status);
-        res.send(error);
-    });
+    put("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?id=" + encodeURIComponent(req.query.id) + "&accessURL=" +
+        encodeURIComponent(req.query.accessUrl) + "&username=" + encodeURIComponent(req.query.username) + "&password=" +
+        encodeURIComponent(req.query.password)).then(response => {
+            res.send(response.data);
+        }).catch(error => {
+            console.log("Error on PUT /generic/endpoint", error.response.status);
+            res.send(error);
+        });
 });
 
 app.delete('/generic/endpoint', (req, res) => {
-    del("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?endpointId=" + 
-    encodeURIComponent(req.query.endpointId)).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on DELETE /generic/endpoint", error.response.status);
-        res.send(error);
-    });
+    del("http://localhost:" + configModelPort + "/api/ui/generic/endpoint?endpointId=" +
+        encodeURIComponent(req.query.endpointId)).then(response => {
+            res.send(response.data);
+        }).catch(error => {
+            console.log("Error on DELETE /generic/endpoint", error.response.status);
+            res.send(error);
+        });
 });
 
 app.put('/approute', (req, res) => {
     put("http://localhost:" + configModelPort + "/api/ui/approute/endpoint?routeId=" + req.query.routeId + "&endpointId=" +
         req.query.endpointId + "&accessUrl=" + req.query.accessUrl + "&username=" +
         req.query.username + "&password=" + req.query.password).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on POST /resource", error.response.status);
-        res.send(error);
-    });
+            res.send(response.data);
+        }).catch(error => {
+            console.log("Error on POST /resource", error.response.status);
+            res.send(error);
+        });
 });
 
 app.delete('/approute', (req, res) => {
@@ -276,7 +276,7 @@ app.get('/brokers', (req, res) => {
 });
 
 app.post('/broker', (req, res) => {
-    let params = "?brokerUri=" + req.query.brokerUri + "&title=" + req.query.title;
+    let params = "?brokerUri=" + encodeURIComponent(req.query.brokerUri) + "&title=" + encodeURIComponent(req.query.title);
     post("http://localhost:" + configModelPort + "/api/ui/broker" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -286,7 +286,7 @@ app.post('/broker', (req, res) => {
 });
 
 app.post('/broker/register', (req, res) => {
-    let params = "?brokerUri=" + req.query.brokerUri;
+    let params = "?brokerUri=" + encodeURIComponent(req.query.brokerUri);
     post("http://localhost:" + configModelPort + "/api/ui/broker/register" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -296,7 +296,7 @@ app.post('/broker/register', (req, res) => {
 });
 
 app.post('/broker/unregister', (req, res) => {
-    let params = "?brokerUri=" + req.query.brokerUri;
+    let params = "?brokerUri=" + encodeURIComponent(req.query.brokerUri);
     post("http://localhost:" + configModelPort + "/api/ui/broker/unregister" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -326,7 +326,7 @@ app.get('/broker/resource/information', (req, res) => {
 });
 
 app.post('/broker/delete/resource', (req, res) => {
-    let params = "?brokerUri=" + req.query.brokerUri + "&resourceId=" + req.query.resourceId;
+    let params = "?brokerUri=" + encodeURIComponent(req.query.brokerUri) + "&resourceId=" + encodeURIComponent(req.query.resourceId);
     post("http://localhost:" + configModelPort + "/api/ui/broker/delete/resource" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -336,7 +336,7 @@ app.post('/broker/delete/resource', (req, res) => {
 });
 
 app.put('/broker', (req, res) => {
-    let params = "?brokerUri=" + req.query.brokerUri + "&title=" + req.query.title;
+    let params = "?brokerUri=" + encodeURIComponent(req.query.brokerUri) + "&title=" + encodeURIComponent(req.query.title);
     put("http://localhost:" + configModelPort + "/api/ui/broker" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -346,7 +346,7 @@ app.put('/broker', (req, res) => {
 });
 
 app.delete('/broker', (req, res) => {
-    del("http://localhost:" + configModelPort + "/api/ui/broker?brokerUri=" + req.query.brokerId).then(response => {
+    del("http://localhost:" + configModelPort + "/api/ui/broker?brokerUri=" + encodeURIComponent(req.query.brokerId)).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on DELETE /broker", error.response.status);
