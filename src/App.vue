@@ -13,9 +13,9 @@ export default {
 </script>
 <style>
 @font-face {
-  font-family: "Frutiger";
-  src: local("Frutiger"),
-    url(./assets/fonts/FrutigerLTCom-Roman.ttf) format("truetype");
+  font-family: "Roboto";
+  src: local("Roboto"),
+    url(./assets/fonts/Roboto-Regular.ttf) format("truetype");
 }
 @font-face {
   font-family: "icons";
@@ -42,7 +42,7 @@ export default {
 }
 
 .v-application {
-  font-family: Frutiger !important;
+  font-family: Roboto !important;
   color: var(--v-text1-base) !important;
 }
 
