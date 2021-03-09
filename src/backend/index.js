@@ -5,8 +5,17 @@ import bodyParser from "body-parser";
 
 const app = express();
 const port = 80;
-const configModelHost = "localhost";
-const configModelPort = 8081;
+let configModelHost = "localhost";
+let configModelPort = 8081;
+
+console.log("CONFIGMANAGER_HOST", process.env.CONFIGMANAGER_HOST);
+if(process.env.CONFIGMANAGER_HOST !== undefined) {
+    configModelHost = process.env.CONFIGMANAGER_HOST;
+}
+
+if(process.env.CONFIGMANAGER_PORT !== undefined) {
+    configModelPort = process.env.CONFIGMANAGER_PORT;
+}
 
 app.use(cors());
 app.use(bodyParser.urlencoded({
