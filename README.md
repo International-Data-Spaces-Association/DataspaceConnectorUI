@@ -57,6 +57,15 @@ Run docker image:
 sudo docker-compose up
 ```
 
+### Change IDS Configurationmanager host & port on docker start
+
+Change in `docker-compose.yml`:
+```bash
+environment:
+    - CONFIGMANAGER_HOST=localhost
+    - CONFIGMANAGER_PORT=8081
+```
+
 ## Contributing
 
 Please read through our [contributing guidelines](https://github.com/fkie/ids-configmanager-ui/blob/master/CONTRIBUTING.md).
