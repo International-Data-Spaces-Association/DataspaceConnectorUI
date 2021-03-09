@@ -27,11 +27,19 @@ npm start
 ```
 Access: [localhost:8082](http://localhost:8082) 
 
-### Change port
+### Change UI port
 
 Change `package.json` in root directory:
 ```bash
 "serve": "vue-cli-service serve --open --port [PORT]"
+```
+
+### Change IDS Configurationmanager host & port
+
+Change in `src/backend/index.js`:
+```bash
+const configModelHost = "localhost";
+const configModelPort = 8081;
 ```
 
 ### Change theme
