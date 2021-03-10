@@ -11,17 +11,17 @@
     "postinstall": "cd src/backend && npm install"
   },
   "dependencies": {
+    "apexcharts": "^3.25.0",
+    "axios": "^0.21.1",
+    "concurrently": "^5.3.0",
     "core-js": "^3.6.5",
-    "concurrently": "5.3.0",
-    "material-design-icons-iconfont": "^6.1.0",
-    "vue": "^2.6.11",
-    "vuetify": "2.3.12",
-    "vue-router": "3.1.6",
-    "axios": "0.19.0",
-    "apexcharts": "3.11.1",
-    "vue-apexcharts": "1.6.0",
     "d3": "5.15.0",
-    "moment": "2.29.1"
+    "material-design-icons-iconfont": "^6.1.0",
+    "moment": "2.29.1",
+    "vue": "^2.6.11",
+    "vue-apexcharts": "1.6.0",
+    "vue-router": "3.1.6",
+    "vuetify": "2.3.12"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
