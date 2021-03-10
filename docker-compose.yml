@@ -7,6 +7,7 @@ services:
         environment:
             - CONFIGMANAGER_HOST=localhost
             - CONFIGMANAGER_PORT=8081
+            - UI_BACKEND_URL=http://localhost:80
         ports:
             - "8080:8080"
             - "8081:8081"
