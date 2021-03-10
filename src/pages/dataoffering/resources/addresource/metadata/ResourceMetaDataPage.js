@@ -36,15 +36,6 @@ export default {
             this.$emit('nextPage');
         },
         loadResource(resource) {
-            this.$data.title = resource.title;
-            this.$data.description = resource.description;
-            this.$data.publisher = resource.publisher;
-            this.$data.keywords = resource.keywords;
-            this.$data.standardlicense = resource.standardLicense;
-            this.$data.version = resource.version;
-            this.$data.language = resource.language.replace("idsc:", "");
-        },
-        set(resource) {
             if (resource.title == "") {
                 this.$refs.form.reset();
             } else {

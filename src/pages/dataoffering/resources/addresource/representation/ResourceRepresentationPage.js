@@ -61,10 +61,6 @@ export default {
         getBackendConnections() {
             dataUtils.getBackendConnections(backendConnections => {
                 this.$data.backendConnections = backendConnections;
-
-                if (this.$parent.$parent.$parent.$parent.currentResource != null) {
-                    this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
-                }
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);

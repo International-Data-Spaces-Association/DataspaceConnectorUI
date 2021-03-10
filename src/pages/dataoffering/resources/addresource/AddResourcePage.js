@@ -67,6 +67,9 @@ export default {
                 this.$data.currentResource = resource;
                 this.$data.isNewResource = false;
                 this.$refs.metaDataPage.loadResource(this.$data.currentResource);
+                this.$refs.policyPage.loadResource(this.$data.currentResource);
+                this.$refs.representationPage.loadResource(this.$data.currentResource);
+                this.$refs.brokersPage.loadResource(this.$data.currentResource);
                 this.$root.$emit('showBusyIndicator', false);
                 this.$forceUpdate();
             });
@@ -74,7 +77,10 @@ export default {
         set(resource) {
             this.$data.currentResource = resource;
             this.$data.isNewResource = false;
-            this.$refs.metaDataPage.set(resource);
+            this.$refs.metaDataPage.loadResource(this.$data.currentResource);
+            this.$refs.policyPage.loadResource(this.$data.currentResource);
+            this.$refs.representationPage.loadResource(this.$data.currentResource);
+            this.$refs.brokersPage.loadResource(this.$data.currentResource);
             this.$data.active_tab = 0;
         },
         setReadOnly(readonly) {
@@ -93,12 +99,7 @@ export default {
             var version = this.$refs.metaDataPage.version;
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
-            var contractJson = "";
-            if (this.$refs.policyPage !== undefined) {
-                contractJson = this.$refs.policyPage.contractJson;
-            } else if (this.$data.currentResource != null) {
-                contractJson = this.$data.currentResource["ids:contractOffer"][0];
-            }
+            var contractJson = this.$refs.policyPage.getContractJson();
             var sourceType = this.$refs.representationPage.sourceType;
             var brokerList = this.$refs.brokersPage.getBrokerNewList()
             let brokerDeleteList = this.$refs.brokersPage.getBrokerDeleteList();

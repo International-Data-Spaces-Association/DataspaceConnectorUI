@@ -29,9 +29,6 @@ export default {
     },
     mounted: function () {
         this.$data.policyType = dataUtils.POLICY_PROVIDE_ACCESS;
-        if (this.$parent.$parent.$parent.$parent.currentResource != null) {
-            this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
-        }
         this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
     },
     watch: {
@@ -48,9 +45,6 @@ export default {
     },
     methods: {
         gotVisible() {
-            if (this.$parent.$parent.$parent.$parent.currentResource != null) {
-                this.loadResource(this.$parent.$parent.$parent.$parent.currentResource);
-            }
             this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
         },
         loadResource(resource) {
@@ -69,11 +63,13 @@ export default {
             }
             this.$refs[this.$data.policyType].setPolicy(contract);
         },
+        getContractJson() {
+            return this.$refs[this.$data.policyType].contractJson;
+        },
         previousPage() {
             this.$emit('previousPage')
         },
         nextPage() {
-            this.$data.contractJson = this.$refs[this.$data.policyType].contractJson;
             this.$emit('nextPage')
         }
     }
