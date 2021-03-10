@@ -9,11 +9,11 @@ let configModelHost = "localhost";
 let configModelPort = 8081;
 
 console.log("CONFIGMANAGER_HOST", process.env.CONFIGMANAGER_HOST);
-if(process.env.CONFIGMANAGER_HOST !== undefined) {
+if (process.env.CONFIGMANAGER_HOST !== undefined) {
     configModelHost = process.env.CONFIGMANAGER_HOST;
 }
 
-if(process.env.CONFIGMANAGER_PORT !== undefined) {
+if (process.env.CONFIGMANAGER_PORT !== undefined) {
     configModelPort = process.env.CONFIGMANAGER_PORT;
 }
 
@@ -23,14 +23,14 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-function post(url) {
+function post(url, data) {
     console.log(">>> POST " + url);
-    return axios.post(url);
+    return axios.post(url, data);
 }
 
-function put(url) {
+function put(url, data) {
     console.log(">>> PUT " + url);
-    return axios.put(url);
+    return axios.put(url, data);
 }
 
 function get(url) {

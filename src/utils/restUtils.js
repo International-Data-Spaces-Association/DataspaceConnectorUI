@@ -1,17 +1,16 @@
 import Axios from "axios";
- 
+
 export default {
-    get(url){
+    get(url) {
         return Axios.get(url);
     },
-    post(url){
-        return Axios.post(url);
+    post(url, data) {
+        return Axios.post(url, data);
     },
-    put(url){
-        return Axios.put(url);
+    put(url, data) {
+        return Axios.put(url, data);
     },
-    delete(url){
+    delete(url) {
         return Axios.delete(url);
     },
 }
- 
