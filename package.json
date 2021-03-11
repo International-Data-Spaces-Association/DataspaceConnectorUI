@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --open --port 8082",
+    "serveprod": "vue-cli-service serve --mode production --open --port 8082",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "backend": "cd src/backend && npm start",
     "start": "concurrently \"npm run serve\" \"npm run backend\"",
+    "startprod": "concurrently \"npm run serveprod\" \"npm run backend\"",
     "postinstall": "cd src/backend && npm install"
   },
   "dependencies": {

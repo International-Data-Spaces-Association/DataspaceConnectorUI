@@ -5,4 +5,4 @@ set -xe
 echo  "ENTRY ENV: $UI_BACKEND_URL"
 sed -i "s@#NOTSET#@$UI_BACKEND_URL@g" .env
 
-npm start
+npm run-script startprod
