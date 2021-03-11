@@ -37,8 +37,10 @@ var apps = null;
 var backendConnections = null;
 let backendUrl = "http://localhost:80";
 
-if (process.env.UI_BACKEND_URL !== undefined) {
-    backendUrl = process.env.UI_BACKEND_URL;
+console.log("VUE_APP_UI_BACKEND_URL: ", process.env.VUE_APP_UI_BACKEND_URL);
+
+if (process.env.VUE_APP_UI_BACKEND_URL !== undefined) {
+    backendUrl = process.env.VUE_APP_UI_BACKEND_URL;
 }
 
 export default {

@@ -5,4 +5,4 @@ COPY . .
 RUN npm install --no-audit --unsafe-perm
 EXPOSE 80
 EXPOSE 8082
-CMD ["npm", "start"]
+ENTRYPOINT ["./entryPoint.sh"]
