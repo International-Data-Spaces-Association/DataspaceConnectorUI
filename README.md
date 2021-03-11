@@ -57,13 +57,13 @@ Run docker image:
 sudo docker-compose up
 ```
 
-### Change IDS Configurationmanager host & port on docker start
+### Change host & port of IDS Configurationmanager & UI backend on docker start
 
 Change in `docker-compose.yml`:
 ```bash
 environment:
-    - CONFIGMANAGER_HOST=localhost
-    - CONFIGMANAGER_PORT=8081
+     - CONFIGMANAGER_URL=http://localhost:8081
+     - UI_BACKEND_URL=http://localhost:80
 ```
 
 ## Contributing
