@@ -10,7 +10,8 @@ export default {
     data: () => ({
         drawer: null,
         breadcrumbs: [],
-        showBusyIndicator: false
+        showBusyIndicator: false,
+        uiTitle: "IDS Configuration Manager"
     }),
     watch: {
         $route() {
@@ -18,6 +19,9 @@ export default {
         },
     },
     mounted: function () {
+        if (process.env.VUE_APP_UI_TITLE !== undefined && process.env.VUE_APP_UI_TITLE != "#UI_TITLE#") {
+            this.$data.uiTitle = process.env.VUE_APP_UI_TITLE;
+        }
         this.$data.breadcrumbs = this.$route.meta.breadcrumb;
         this.$root.$on('showBusyIndicator', (show) => {
             this.$data.showBusyIndicator = show;

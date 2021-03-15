@@ -7,6 +7,7 @@ services:
         environment:
             - CONFIGMANAGER_URL=http://localhost:8081
             - UI_BACKEND_URL=http://localhost:80
+            - UI_TITLE=IDS Configuration Manager
         ports:
             - "8080:8080"
             - "8081:8081"

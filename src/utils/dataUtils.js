@@ -39,7 +39,7 @@ let backendUrl = "http://localhost:80";
 
 console.log("VUE_APP_UI_BACKEND_URL: ", process.env.VUE_APP_UI_BACKEND_URL);
 
-if (process.env.VUE_APP_UI_BACKEND_URL !== undefined && process.env.VUE_APP_UI_BACKEND_URL != "#NOTSET#") {
+if (process.env.VUE_APP_UI_BACKEND_URL !== undefined && process.env.VUE_APP_UI_BACKEND_URL != "#UI_BACKEND_URL#") {
     backendUrl = process.env.VUE_APP_UI_BACKEND_URL;
 }
 
