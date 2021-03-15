@@ -2,6 +2,31 @@
     <v-form v-model="valid" ref="form">
         <v-row no-gutters>
             <v-col cols="12" md="2">
+                Connector
+            </v-col>
+            <v-col cols="12" md="9">
+                <v-text-field label="Title" v-model="connectorTitle"> </v-text-field>
+                <v-text-field label="Description" v-model="connectorDescription"> </v-text-field>
+                <v-text-field label="Endpoint" v-model="connectorEndpoint" :rules="urlRule"> </v-text-field>
+                <v-text-field label="Version" v-model="connectorVersion" :rules="versionRule"> </v-text-field>
+                <v-text-field label="Curator" v-model="connectorCurator" :rules="urlRule"> </v-text-field>
+                <v-text-field label="Maintainer" v-model="connectorMaintainer" :rules="urlRule"> </v-text-field>
+                <v-text-field label="Inbound model version" v-model="connectorInboundModelVersion" :rules="versionRule">
+                </v-text-field>
+                <v-text-field label="Outbound model version" v-model="connectorOutboundModelVersion"
+                    :rules="versionRule"> </v-text-field>
+            </v-col>
+        </v-row>
+        <v-row no-gutters class="settings-connector-status">
+            <v-col cols="12" md="2">
+                ConnectorStatus
+            </v-col>
+            <v-col cols="12" md="9">
+                {{connectorStatus}}
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="2">
                 Proxy
             </v-col>
             <v-col cols="12" md="9">
@@ -40,7 +65,7 @@
         </v-row>
         <v-row no-gutters>
             <v-col cols="12" md="2">
-                ConnectorDeployMode
+                Connector DeployMode
             </v-col>
             <v-col cols="12" md="9">
                 <v-select label="Connector Deploy Mode" v-model="connectorDeployMode" :items="connectorDeployModes">
@@ -68,31 +93,6 @@
                 <v-text-field label="KeyStore Password" v-model="keyStorePassword"
                     :type="showPasswordKeyStore ? 'text' : 'password'" :append-icon="showPasswordKeyStore ? 'mdi-eye' :
                     'mdi-eye-off'" @click:append="showPasswordKeyStore = !showPasswordKeyStore"> </v-text-field>
-            </v-col>
-        </v-row>
-        <v-row no-gutters>
-            <v-col cols="12" md="2">
-                Connector
-            </v-col>
-            <v-col cols="12" md="9">
-                <v-text-field label="Title" v-model="connectorTitle"> </v-text-field>
-                <v-text-field label="Description" v-model="connectorDescription"> </v-text-field>
-                <v-text-field label="Endpoint" v-model="connectorEndpoint" :rules="urlRule"> </v-text-field>
-                <v-text-field label="Version" v-model="connectorVersion" :rules="versionRule"> </v-text-field>
-                <v-text-field label="Curator" v-model="connectorCurator" :rules="urlRule"> </v-text-field>
-                <v-text-field label="Maintainer" v-model="connectorMaintainer" :rules="urlRule"> </v-text-field>
-                <v-text-field label="Inbound model version" v-model="connectorInboundModelVersion" :rules="versionRule">
-                </v-text-field>
-                <v-text-field label="Outbound model version" v-model="connectorOutboundModelVersion"
-                    :rules="versionRule"> </v-text-field>
-            </v-col>
-        </v-row>
-        <v-row no-gutters>
-            <v-col cols="12" md="2">
-                ConnectorStatus
-            </v-col>
-            <v-col cols="12" md="9">
-                {{connectorStatus}}
             </v-col>
         </v-row>
     </v-form>

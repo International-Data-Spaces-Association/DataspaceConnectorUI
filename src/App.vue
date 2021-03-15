@@ -28,7 +28,7 @@ export default {
 .icon-dataoffering:before {
   content: "\e901";
 }
-.icon-dataconsumation:before {
+.icon-dataconsumption:before {
   content: "\e902";
 }
 .icon-brokers:before {

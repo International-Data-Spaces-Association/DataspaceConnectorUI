@@ -11,89 +11,89 @@ import BackendConnectionsPage from "@/pages/dataoffering/backendconnections/Back
 export default {
     getPageStructure() {
         return [{
-                path: "dashboard",
-                name: "Dashboard",
-                icon: "icon-dashboard",
-                component: DashboardPage,
-                subpages: []
-            },
-            {
-                path: null,
-                name: "Data Offering",
-                icon: "icon-dataoffering",
-                component: null,
+            path: "dashboard",
+            name: "Dashboard",
+            icon: "icon-dashboard",
+            component: DashboardPage,
+            subpages: []
+        },
+        {
+            path: null,
+            name: "Data Offering",
+            icon: "icon-dataoffering",
+            component: null,
+            subpages: [{
+                path: "idresourcesoffering",
+                name: "IDS Resources (Offering)",
+                component: IDSResourcesPage,
                 subpages: [{
-                    path: "idresourcesoffering",
-                    name: "IDS Resources (Offering)",
-                    component: IDSResourcesPage,
-                    subpages: [{
-                        path: "addresource",
-                        name: "Add Resource",
-                        component: AddResourcePage,
-                        subpages: []
-                    }, {
-                        path: "editresource",
-                        name: "Edit Resource",
-                        component: AddResourcePage,
-                        subpages: []
-                    }]
+                    path: "addresource",
+                    name: "Add Resource",
+                    component: AddResourcePage,
+                    subpages: []
                 }, {
-                    path: "backendconnectionsoffering",
-                    name: "Backend Connections (Offering)",
-                    component: BackendConnectionsPage
-                }, {
-                    path: "routesoffering",
-                    name: "Routes (Offering)",
-                    component: RoutesPage,
-                    subpages: [{
-                        path: "addroute",
-                        name: "Add Route",
-                        component: AddRoutePage,
-                        subpages: []
-                    }, {
-                        path: "editroute",
-                        name: "Edit Route",
-                        component: AddRoutePage,
-                        subpages: []
-                    }]
+                    path: "editresource",
+                    name: "Edit Resource",
+                    component: AddResourcePage,
+                    subpages: []
                 }]
             }, {
-                path: null,
-                name: "Data Consumation",
-                icon: "icon-dataconsumation",
-                component: null,
+                path: "backendconnectionsoffering",
+                name: "Backend Connections (Offering)",
+                component: BackendConnectionsPage
+            }, {
+                path: "routesoffering",
+                name: "Routes (Offering)",
+                component: RoutesPage,
                 subpages: [{
-                    path: "idsresourcesconsumation",
-                    name: "IDS Resources (Consumation)",
-                    component: IDSResourcesPage
+                    path: "addroute",
+                    name: "Add Route",
+                    component: AddRoutePage,
+                    subpages: []
                 }, {
-                    path: "backendconnectionsconsumation",
-                    name: "Backend Connections (Consumation)",
-                    component: null
-                }, {
-                    path: "routesconsumation",
-                    name: "Routes (Consumation)",
-                    component: null
+                    path: "editroute",
+                    name: "Edit Route",
+                    component: AddRoutePage,
+                    subpages: []
                 }]
+            }]
+        }, {
+            path: null,
+            name: "Data Consumption",
+            icon: "icon-dataconsumption",
+            component: null,
+            subpages: [{
+                path: "idsresourcesconsumption",
+                name: "IDS Resources (Consumation)",
+                component: null
             }, {
-                path: "brokers",
-                name: "Brokers",
-                icon: "icon-brokers",
-                component: BrokersPage,
-                subpages: []
+                path: "backendconnectionsconsumption",
+                name: "Backend Connections (Consumation)",
+                component: null
             }, {
-                path: "apps",
-                name: "Apps",
-                icon: "icon-apps",
-                component: AppsPage,
-                subpages: []
-            }, {
-                path: "settings",
-                name: "Settings",
-                icon: "icon-settings",
-                component: SettingsPage,
-                subpages: []
-            }
+                path: "routesconsumption",
+                name: "Routes (Consumation)",
+                component: null
+            }]
+        }, {
+            path: "brokers",
+            name: "Brokers",
+            icon: "icon-brokers",
+            component: BrokersPage,
+            subpages: []
+        }, {
+            path: "apps",
+            name: "Apps",
+            icon: "icon-apps",
+            component: AppsPage,
+            subpages: []
+        }, {
+            path: "settings",
+            name: "Settings",
+            icon: "icon-settings",
+            component: SettingsPage,
+            subpages: []
+        }
         ];
     },
     getDisplayName(name) {

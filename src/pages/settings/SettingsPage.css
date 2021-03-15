@@ -2,6 +2,10 @@
     display: none;
 }
 
+.settings-connector-status {
+    margin-bottom: 30px;
+}
+
 .save-settings-button {
     margin-right: 10px;
     margin-bottom: 50px;
