@@ -25,7 +25,6 @@ export default {
             this.$emit('previousPage')
         },
         nextPage() {
-            console.log(">>>");
             this.$emit('nextPage')
         },
         setPolicy(contract) {

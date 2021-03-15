@@ -763,4 +763,21 @@ export default {
             callback();
         });
     },
+
+    receiveResources(recipientId) {
+        let params = "?recipientId=" + encodeURIComponent(recipientId);
+        return restUtils.post(backendUrl + "/request/description" + params);
+    },
+
+    receiveResource(recipientId, requestedResourceId) {
+        return new Promise(function (resolve, reject) {
+            let params = "?recipientId=" + encodeURIComponent(recipientId) + "&requestedResourceId=" + encodeURIComponent(requestedResourceId);
+            restUtils.post(backendUrl + "/request/description" + params).then(response => {
+                resolve(clientDataModel.convertIdsResource(response.data));
+            }).catch(error => {
+                console.log("Error in receiveResource(): ", error);
+                reject(error);
+            });
+        });
+    }
 }

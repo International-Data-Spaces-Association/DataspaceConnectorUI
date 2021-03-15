@@ -200,7 +200,9 @@ export default {
         let fileType = undefined;
         let representationId = null;
         if (idsResource["ids:representation"] !== undefined) {
-            sourceType = idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"];
+            if (idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"] !== undefined) {
+                sourceType = idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"];
+            }
             fileType = idsResource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
             representationId = idsResource["ids:representation"][0]["@id"];
         }

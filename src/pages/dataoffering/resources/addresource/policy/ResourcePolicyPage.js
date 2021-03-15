@@ -50,7 +50,6 @@ export default {
         loadResource(resource) {
             if (resource.contract === undefined) {
                 this.$data.policyType = dataUtils.POLICY_PROVIDE_ACCESS;
-                this.$refs.form.reset();
             } else {
                 this.setPolicy(resource.contract, resource.policyName);
             }

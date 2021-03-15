@@ -503,6 +503,18 @@ app.post('/approute/step', (req, res) => {
     });
 });
 
+app.post('/request/description', (req, res) => {
+    let params = "?recipientId=" + encodeURIComponent(req.query.recipientId);
+    if (req.query.requestedResourceId !== undefined) {
+        params += "&requestedResourceId=" + encodeURIComponent(req.query.requestedResourceId);
+    }
+    post(configModelUrl + "/api/ui/request/description" + params).then(response => {
+        res.send(response.data);
+    }).catch(error => {
+        console.log("Error on GET /request/description", error.response.status);
+        res.send(error);
+    });
+});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
