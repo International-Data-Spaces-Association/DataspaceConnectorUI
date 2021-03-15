@@ -47,15 +47,6 @@ app.get('/connector', (req, res) => {
     });
 });
 
-app.get('/attributes', (req, res) => {
-    get(configModelUrl + "/api/ui/attributes/properties/" + req.query.type).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on GET /attributes", error.response.status);
-        res.send(error);
-    });
-});
-
 app.post('/connector/endpoint', (req, res) => {
     var params = "?accessUrl=" + req.query.accessUrl;
     post(configModelUrl + "/api/ui/connector/endpoint" + params).then(response => {
@@ -373,70 +364,6 @@ app.get('/offeredresourcesstats', (req, res) => {
         res.send({
             totalNumber: resources.length,
             totalSize: totalSize
-        });
-    }).catch(error => {
-        console.log("Error on GET /offeredresourcesstats", error);
-        res.send(error);
-    });
-});
-
-app.get('/sourcetypesstats', (req, res) => {
-    get(configModelUrl + "/api/ui/resources").then(response => {
-        let resources = response.data;
-        let sourceTypes = [];
-        for (let resource of resources) {
-            if (resource["ids:representation"] !== undefined) {
-                if (resource["ids:representation"][0]["ids:sourceType"] !== undefined) {
-                    let type = resource["ids:representation"][0]["ids:sourceType"];
-                    if (sourceTypes[type] === undefined) {
-                        sourceTypes[type] = 1;
-                    } else {
-                        sourceTypes[type] = sourceTypes[type] + 1;
-                    }
-                }
-            }
-        }
-        let labels = [];
-        let series = [];
-        for (let sourceType in sourceTypes) {
-            labels.push(sourceType);
-            series.push(sourceTypes[sourceType]);
-        }
-        res.send({
-            labels: labels,
-            series: series
-        });
-    }).catch(error => {
-        console.log("Error on GET /offeredresourcesstats", error);
-        res.send(error);
-    });
-});
-
-app.get('/filetypesstats', (req, res) => {
-    get(configModelUrl + "/api/ui/resources").then(response => {
-        let resources = response.data;
-        let filetypes = [];
-        for (let resource of resources) {
-            if (resource["ids:representation"] !== undefined) {
-                if (resource["ids:representation"][0]["ids:sourceType"] !== undefined) {
-                    let type = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
-                    if (filetypes[type] === undefined) {
-                        filetypes[type] = 1;
-                    } else {
-                        filetypes[type] = filetypes[type] + 1;
-                    }
-                }
-            }
-        }
-        let labels = [];
-        let series = [];
-        for (let filetype in filetypes) {
-            labels.push(filetype);
-            series.push(filetypes[filetype]);
-        }
-        res.send({
-            labels: labels,
-            series: series
         });
     }).catch(error => {
         console.log("Error on GET /offeredresourcesstats", error);

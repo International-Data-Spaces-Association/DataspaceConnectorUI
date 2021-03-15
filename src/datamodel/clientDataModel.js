@@ -1,7 +1,7 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, title, description, language, keywords, version, standardLicense, publisher, contract, sourceType, representationId) {
+    createResource(id, title, description, language, keywords, version, standardLicense, publisher, contract, sourceType, fileType, representationId) {
         let resource = {};
         if (id === undefined) {
             resource.id = "";
@@ -60,6 +60,11 @@ export default {
             resource.sourceType = "";
         } else {
             resource.sourceType = sourceType;
+        }
+        if (fileType === undefined) {
+            resource.fileType = "";
+        } else {
+            resource.fileType = fileType;
         }
         if (representationId === undefined) {
             resource.representationId = null;
@@ -192,9 +197,11 @@ export default {
             contract = idsResource["ids:contractOffer"][0];
         }
         let sourceType = undefined;
+        let fileType = undefined;
         let representationId = null;
         if (idsResource["ids:representation"] !== undefined) {
             sourceType = idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"];
+            fileType = idsResource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
             representationId = idsResource["ids:representation"][0]["@id"];
         }
         let keywords = "";
@@ -212,8 +219,7 @@ export default {
         return this.createResource(idsResource["@id"], idsResource["ids:title"][0]["@value"], idsResource["ids:description"][0]["@value"],
             idsResource["ids:language"][0]["@id"].replace("idsc:", ""), keywords,
             idsResource["ids:version"], standardLicense, publisher,
-            contract, sourceType,
-            representationId);
+            contract, sourceType, fileType, representationId);
     },
 
 

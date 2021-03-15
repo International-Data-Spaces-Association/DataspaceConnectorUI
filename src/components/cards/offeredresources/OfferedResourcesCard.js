@@ -1,5 +1,5 @@
-import Axios from "axios";
 import DashboardCard from "@/components/cards/dashboardcard/DashboardCard.vue";
+import dataUtils from "../../../utils/dataUtils";
 
 
 export default {
@@ -20,7 +20,7 @@ export default {
     methods: {
         async getOfferedResourcesStats() {
             this.$data.numberOfAssignedData = 0;
-            const response = (await Axios.get("http://localhost:80/offeredresourcesstats")).data;
+            const response = (await dataUtils.getOfferedResourcesStats()).data;
             this.$data.totalNumber = response.totalNumber;
             if (response.totalNumber > 1) {
                 this.$data.totalNumberType = "resources"

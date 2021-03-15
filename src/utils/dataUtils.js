@@ -87,6 +87,10 @@ export default {
         return type;
     },
 
+    getOfferedResourcesStats() {
+        return restUtils.get(backendUrl + "/offeredresourcesstats");
+    },
+
     getResources(callback) {
         restUtils.get(backendUrl + "/resources").then(response => {
             let resources = [];

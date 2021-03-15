@@ -1,5 +1,5 @@
-import Axios from "axios";
 import DashboardCard from "@/components/cards/dashboardcard/DashboardCard.vue";
+import dataUtils from "@/utils/dataUtils";
 
 export default {
     components: {
@@ -19,18 +19,29 @@ export default {
     },
     methods: {
         async getFileTypes() {
-            Axios.get("http://localhost:80/filetypesstats").then(response => {
-                var stats = response.data;
+            dataUtils.getResources(resources => {
+                let filetypes = [];
+                for (let resource of resources) {
+                    let type = resource.fileType;
+                    if (filetypes[type] === undefined) {
+                        filetypes[type] = 1;
+                    } else {
+                        filetypes[type] = filetypes[type] + 1;
+                    }
+                }
+                let labels = [];
+                let series = [];
+                for (let filetype in filetypes) {
+                    labels.push(filetype);
+                    series.push(filetypes[filetype]);
+                }
                 this.$data.options = {
                     chart: {
                         type: "donut"
                     },
-                    labels: stats.labels
+                    labels: labels
                 }
-                this.$data.series = stats.series;
-                this.$forceUpdate();
-            }).catch(error => {
-                console.log("Error in getSourceTypes(): ", error);
+                this.$data.series = series;
             });
         }
     }

@@ -1,4 +1,3 @@
-import Axios from "axios";
 import dataUtils from "../../../../utils/dataUtils";
 import ResourceMetaDataPage from "./metadata/ResourceMetaDataPage.vue";
 import ResourcePolicyPage from "./policy/ResourcePolicyPage.vue";
@@ -125,61 +124,6 @@ export default {
                         });
                 }
             }
-        },
-        async getResourceAttributes() {
-            this.$data.resourceAttributes = (
-                await Axios.get("http://localhost:80/attributes?type=resource")
-            ).data;
-            for (let att of this.$data.resourceAttributes) {
-                if (att[2] == "true") {
-                    this.$data.resourceRequiredAttributes[
-                        this.$data.resourceRequiredAttributes.length
-                    ] = att;
-                }
-            }
-            this.attributesReceived();
-        },
-        async getRepresentationAttributes() {
-            this.$data.representationAttributes = (
-                await Axios.get("http://localhost:80/attributes?type=representation")
-            ).data;
-            for (let att of this.$data.representationAttributes) {
-                if (att[2]) {
-                    this.$data.representationRequiredAttributes[
-                        this.$data.representationRequiredAttributes.length
-                    ] = att;
-                }
-            }
-            this.attributesReceived();
-        },
-        async getFileAttributes() {
-            this.$data.fileAttributes = (
-                await Axios.get("http://localhost:80/attributes?type=file")
-            ).data;
-            for (let att of this.$data.fileAttributes) {
-                if (att[2]) {
-                    this.$data.fileRequiredAttributes[
-                        this.$data.fileRequiredAttributes.length
-                    ] = att;
-                }
-            }
-            this.attributesReceived();
-        },
-        attributesReceived() {
-            if (
-                this.$data.resourceAttributes != null &&
-                this.$data.representationAttributes != null &&
-                this.$data.fileAttributes != null
-            ) {
-                this.$forceUpdate();
-            }
-        },
-        async postResource(resource) {
-            this.$data.alldata = [];
-            const response = (
-                await Axios.post("http://localhost:80/resource", resource)
-            ).data;
-            console.log("RESPONSE: ", response);
-        },
+        }
     },
 };
