@@ -2,8 +2,8 @@
   <div class="content">
     <offered-resources-card></offered-resources-card>
     <source-types-card></source-types-card>
-    <file-types-card></file-types-card>
-    <data-accesses-card></data-accesses-card>
+    <!-- <file-types-card></file-types-card> -->
+    <!-- <data-accesses-card></data-accesses-card> -->
   </div>
 </template>
 

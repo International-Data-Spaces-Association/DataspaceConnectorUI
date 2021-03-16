@@ -11,7 +11,8 @@ export default {
             totalNumber: "",
             totalNumberType: "",
             totalSize: "",
-            totalSizeType: ""
+            totalSizeType: "",
+            offeredResourcesAvailable: false
         };
     },
     mounted: function () {
@@ -21,14 +22,19 @@ export default {
         async getOfferedResourcesStats() {
             this.$data.numberOfAssignedData = 0;
             const response = (await dataUtils.getOfferedResourcesStats()).data;
-            this.$data.totalNumber = response.totalNumber;
-            if (response.totalNumber > 1) {
-                this.$data.totalNumberType = "resources"
+            if (response.totalNumber === undefined) {
+                this.$data.offeredResourcesAvailable = false;
             } else {
-                this.$data.totalNumberType = "resource"
+                this.$data.offeredResourcesAvailable = true;
+                this.$data.totalNumber = response.totalNumber;
+                if (response.totalNumber > 1) {
+                    this.$data.totalNumberType = "resources"
+                } else {
+                    this.$data.totalNumberType = "resource"
+                }
+                this.$data.totalSize = this.getTotalSize(response.totalSize);
+                this.$data.totalSizeType = this.getTotalSizeType(response.totalSize);
             }
-            this.$data.totalSize = this.getTotalSize(response.totalSize);
-            this.$data.totalSizeType = this.getTotalSizeType(response.totalSize);
             this.$forceUpdate();
         },
         getTotalSize(totalSize) {

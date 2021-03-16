@@ -45,7 +45,6 @@ export default {
             this.tabChanged();
         },
         tabChanged() {
-            console.log(this.$refs.pagestab, this.$data.active_tab);
             if (this.$data.active_tab == 1) {
                 if (this.$refs.policyPage !== undefined) {
                     this.$refs.policyPage.gotVisible();
