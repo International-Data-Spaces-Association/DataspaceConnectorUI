@@ -10,15 +10,15 @@
 <script>
 import OfferedResourcesCard from "@/components/cards/offeredresources/OfferedResourcesCard.vue";
 import SourceTypesCard from "@/components/cards/sourcetypes/SourceTypesCard.vue";
-import FileTypesCard from "@/components/cards/filetypes/FileTypesCard.vue";
-import DataAccessesCard from "@/components/cards/dataaccesses/DataAccessesCard.vue";
+// import FileTypesCard from "@/components/cards/filetypes/FileTypesCard.vue";
+// import DataAccessesCard from "@/components/cards/dataaccesses/DataAccessesCard.vue";
 
 export default {
   components: {
     OfferedResourcesCard,
     SourceTypesCard,
-    FileTypesCard,
-    DataAccessesCard,
+    // FileTypesCard,
+    // DataAccessesCard,
   },
   data() {
     return {};
