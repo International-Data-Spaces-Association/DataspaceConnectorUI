@@ -52,17 +52,14 @@ export default {
             }));
 
             promises.push(await dataUtils.getLogLevels().then(response => {
-                console.log(">>> getLogLevels: ", response);
                 this.$data.logLevels = response;
             }));
 
             promises.push(await dataUtils.getConnectorStatuses().then(response => {
-                console.log(">>> getConnectorStatuses: ", response);
                 this.$data.connectorStatuses = response;
             }));
 
             promises.push(await dataUtils.getConnectorDeployModes().then(response => {
-                console.log(">>> getConnectorDeployModes: ", response);
                 this.$data.connectorDeployModes = response;
             }));
 
@@ -73,7 +70,6 @@ export default {
             }));
 
             promises.push(await dataUtils.getConfigModel().then(configModel => {
-                console.log(">>> getConfigModel: ", configModel);
                 this.$data.proxyUrl = configModel.proxyUrl;
                 let username = configModel.username;
                 let password = configModel.password;
@@ -101,7 +97,6 @@ export default {
             }));
 
             promises.push(await dataUtils.getConnectorSettings().then(connector => {
-                console.log(">>> getConnectorSettings: ", connector);
                 this.$data.connectorTitle = connector.title;
                 this.$data.connectorDescription = connector.description;
                 this.$data.connectorEndpoint = connector.endpoint;

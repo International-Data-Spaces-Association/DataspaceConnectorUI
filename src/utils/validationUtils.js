@@ -29,10 +29,8 @@ export default {
         return [
             v => {
                 let valid = true;
-                console.log(">>> V: ", v);
                 if (v.trim() != "") {
                     let split = v.split(',');
-                    console.log(">>> S: ", split);
                     for (let url of split) {
                         if (!(/^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(url.trim()))) {
                             valid = /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(url.trim()) || 'Only URIs (http://... or https://...) allowed';
