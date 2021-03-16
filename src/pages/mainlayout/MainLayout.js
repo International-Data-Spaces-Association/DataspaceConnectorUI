@@ -19,6 +19,9 @@ export default {
         $route() {
             this.$data.breadcrumbs = this.$route.meta.breadcrumb;
         },
+        uiTitle: function () {
+            document.title = this.$data.uiTitle;
+        }
     },
     mounted: function () {
         if (process.env.VUE_APP_UI_TITLE !== undefined && process.env.VUE_APP_UI_TITLE != "#UI_TITLE#") {
