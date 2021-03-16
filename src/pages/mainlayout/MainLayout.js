@@ -1,5 +1,7 @@
 import NavigationMenu from "@/components/navigationmenu/NavigationMenu.vue";
 import InfoBox from "@/components/infobox/InfoBox.vue";
+import dataUtils from "@/utils/dataUtils";
+
 // import BrokersPage from "@/pages/brokers/BrokersPage.vue";
 
 export default {
@@ -22,9 +24,16 @@ export default {
         if (process.env.VUE_APP_UI_TITLE !== undefined && process.env.VUE_APP_UI_TITLE != "#UI_TITLE#") {
             this.$data.uiTitle = process.env.VUE_APP_UI_TITLE;
         }
+        this.setTitleFromConnector();
         this.$data.breadcrumbs = this.$route.meta.breadcrumb;
         this.$root.$on('showBusyIndicator', (show) => {
             this.$data.showBusyIndicator = show;
         });
     },
+    methods: {
+        async setTitleFromConnector() {
+            let connectorData = (await dataUtils.getConnectorSettings());
+            this.$data.uiTitle = connectorData.title;
+        }
+    }
 };
