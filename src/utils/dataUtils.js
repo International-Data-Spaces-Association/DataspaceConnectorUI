@@ -212,8 +212,9 @@ export default {
     },
 
     getBackendConnections(callback) {
-        backendConnections = [];
         restUtils.get(backendUrl + "/generic/endpoints").then(response => {
+            backendConnections = [];
+
             var genericEndpoints = response.data;
 
             for (var genericEndpoint of genericEndpoints) {
