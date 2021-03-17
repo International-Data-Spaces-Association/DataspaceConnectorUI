@@ -75,10 +75,20 @@ export default {
         },
         deleteCallback(choice, callbackData) {
             if (choice == "yes") {
+                let resourceId = callbackData.item.id;
                 this.$root.$emit('showBusyIndicator', true);
-                dataUtils.deleteResource(callbackData.item.id, () => {
-                    this.getResources();
-                    this.$root.$emit('showBusyIndicator', false);
+                dataUtils.getResourceRegistrationStatus(resourceId).then(data => {
+                    let brokerUris = [];
+                    for (let status of data) {
+                        brokerUris.push(status.brokerId);
+                    }
+                    dataUtils.deleteResource(resourceId, () => {
+                        dataUtils.updateResourceAtBrokers(brokerUris, resourceId, () => {
+                            this.getResources();
+                            this.$root.$emit('showBusyIndicator', false);
+                        });
+                    });
+
                 });
             }
         },
