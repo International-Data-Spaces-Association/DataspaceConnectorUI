@@ -12,26 +12,27 @@ export default {
         return {
             search: '',
             headers: [{
-                    text: 'Title',
-                    value: 'title'
-                },
-                {
-                    text: 'Description',
-                    value: 'description'
-                },
-                {
-                    text: 'Type',
-                    value: 'sourceType'
-                }, {
-                    text: 'Policy',
-                    value: 'policyName'
-                },
-                {
-                    text: '',
-                    value: 'actions',
-                    sortable: false,
-                    align: 'right'
-                }
+                text: 'Title',
+                value: 'title'
+            },
+            {
+                text: 'Description',
+                value: 'description'
+            },
+            {
+                text: 'Type',
+                value: 'sourceType'
+            }, {
+                text: 'Policy',
+                value: 'policyName'
+            },
+            {
+                text: '',
+                value: 'actions',
+                sortable: false,
+                align: 'right',
+                width: 150
+            }
             ],
             resources: [],
             filteredResources: [],
