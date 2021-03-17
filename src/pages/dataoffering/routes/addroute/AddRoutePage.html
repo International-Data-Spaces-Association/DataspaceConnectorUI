@@ -4,7 +4,7 @@
             <v-text-field label="Route description" v-model="description"></v-text-field>
         </v-col>
     </v-row>
-    <v-row no-gutters>
+    <v-row no-gutters v-if="isNewRoute">
         <v-col cols="12" md="12">
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
                 @click="showAddBackendDialog">Add
