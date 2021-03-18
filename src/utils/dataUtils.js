@@ -242,8 +242,8 @@ export default {
     createBroker(url, title) {
         let dataUtils = this;
         return new Promise(function (resolve, reject) {
-            restUtils.post(backendUrl + "/broker?brokerUri=" + this.escape(url) + "&title=" +
-                this.escape(title)).then(() => {
+            restUtils.post(backendUrl + "/broker?brokerUri=" + dataUtils.escape(url) + "&title=" +
+                dataUtils.escape(title)).then(() => {
                     dataUtils.registerConnectorAtBroker(url).then(() => {
                         resolve();
                     });
@@ -257,8 +257,8 @@ export default {
     updateBroker(url, title) {
         let dataUtils = this;
         return new Promise(function (resolve, reject) {
-            restUtils.put(backendUrl + "/broker?brokerUri=" + this.escape(url) + "&title=" +
-                this.escape(title)).then(() => {
+            restUtils.put(backendUrl + "/broker?brokerUri=" + dataUtils.escape(url) + "&title=" +
+                dataUtils.escape(title)).then(() => {
                     dataUtils.registerConnectorAtBroker(url).then(() => {
                         resolve();
                     });
@@ -270,8 +270,9 @@ export default {
     },
 
     deleteBroker(brokerId) {
+        let dataUtils = this;
         return new Promise(function (resolve, reject) {
-            restUtils.delete(backendUrl + "/broker?brokerId=" + this.escape(brokerId)).then(() => {
+            restUtils.delete(backendUrl + "/broker?brokerId=" + dataUtils.escape(brokerId)).then(() => {
                 resolve();
             }).catch(error => {
                 console.log("Error in deleteBroker(): ", error);
@@ -475,7 +476,6 @@ export default {
 
     async editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, contractJson,
         sourceType, brokerUris, brokerDeleteUris, genericEndpointId, callback) {
-        console.log(">>>");
         let params = "?resourceId=" + this.escape(resourceId) + "&title=" + this.escape(title) + "&description=" + this.escape(description) + "&language=" +
             language + "&keyword=" + this.escape(keyword) + "&version=" + this.escape(version) + "&standardlicense=" + this.escape(standardlicense) +
             "&publisher=" + this.escape(publisher);
