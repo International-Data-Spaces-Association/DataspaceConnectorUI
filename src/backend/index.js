@@ -20,7 +20,9 @@ app.use(bodyParser.json());
 
 function post(url, data) {
     console.log(">>> POST " + url);
-    return axios.post(url, data);
+    return axios.post(url, data, {
+        headers: { 'content-type': 'charset=utf-8' }
+    });
 }
 
 function put(url, data) {
@@ -38,6 +40,10 @@ function del(url) {
     return axios.delete(url);
 }
 
+function escape(text) {
+    return encodeURIComponent(text);
+}
+
 app.get('/connector', (req, res) => {
     get(configModelUrl + "/api/ui/connector").then(response => {
         res.send(response.data);
@@ -48,7 +54,7 @@ app.get('/connector', (req, res) => {
 });
 
 app.post('/connector/endpoint', (req, res) => {
-    var params = "?accessUrl=" + req.query.accessUrl;
+    var params = "?accessUrl=" + escape(req.query.accessUrl);
     post(configModelUrl + "/api/ui/connector/endpoint" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -67,7 +73,7 @@ app.get('/resources', (req, res) => {
 });
 
 app.get('/resource', (req, res) => {
-    get(configModelUrl + "/api/ui/resource?resourceId=" + req.query.resourceId).then(response => {
+    get(configModelUrl + "/api/ui/resource?resourceId=" + escape(req.query.resourceId)).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /resource", error.response.status);
@@ -76,9 +82,9 @@ app.get('/resource', (req, res) => {
 });
 
 app.post('/resource', (req, res) => {
-    var params = "?title=" + req.query.title + "&description=" + req.query.description +
-        "&language=" + req.query.language + "&keyword=" + req.query.keyword + "&version=" + req.query.version + "&standardlicense=" +
-        req.query.standardlicense + "&publisher=" + req.query.publisher;
+    var params = "?title=" + escape(req.query.title) + "&description=" + escape(req.query.description) +
+        "&language=" + escape(req.query.language) + "&keyword=" + escape(req.query.keyword) + "&version=" + escape(req.query.version) + "&standardlicense=" +
+        escape(req.query.standardlicense) + "&publisher=" + escape(req.query.publisher);
     post(configModelUrl + "/api/ui/resource" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -88,10 +94,10 @@ app.post('/resource', (req, res) => {
 });
 
 app.put('/resource', (req, res) => {
-    var params = "?resourceId=" + req.query.resourceId + "&title=" + req.query.title +
-        "&description=" + req.query.description + "&language=" + req.query.language + "&keyword=" + req.query.keyword +
-        "&version=" + req.query.version + "&standardlicense=" + req.query.standardlicense + "&publisher=" +
-        req.query.publisher;
+    var params = "?resourceId=" + escape(req.query.resourceId) + "&title=" + escape(req.query.title) +
+        "&description=" + escape(req.query.description) + "&language=" + escape(req.query.language) + "&keyword=" + escape(req.query.keyword) +
+        "&version=" + escape(req.query.version) + "&standardlicense=" + escape(req.query.standardlicense) + "&publisher=" +
+        escape(req.query.publisher);
     put(configModelUrl + "/api/ui/resource" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -101,7 +107,7 @@ app.put('/resource', (req, res) => {
 });
 
 app.delete('/resource', (req, res) => {
-    del(configModelUrl + "/api/ui/resource?resourceId=" + req.query.resourceId).then(response => {
+    del(configModelUrl + "/api/ui/resource?resourceId=" + escape(req.query.resourceId)).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on DELETE /resource", error.response.status);
@@ -110,7 +116,7 @@ app.delete('/resource', (req, res) => {
 });
 
 app.put('/contract', (req, res) => {
-    var params = "?resourceId=" + req.query.resourceId;
+    var params = "?resourceId=" + escape(req.query.resourceId);
     put(configModelUrl + "/api/ui/resource/contract" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -121,8 +127,8 @@ app.put('/contract', (req, res) => {
 
 app.post('/representation', (req, res) => {
     // TODO filename extension and byte size should not be set in UI.
-    var params = "?resourceId=" + req.query.resourceId + "&endpointId=" + req.query.endpointId + "&language=" + req.query.language + "&filenameExtension=json" +
-        "&bytesize=1234&sourceType=" + req.query.sourceType;
+    var params = "?resourceId=" + escape(req.query.resourceId) + "&endpointId=" + escape(req.query.endpointId) + "&language=" + escape(req.query.language) + "&filenameExtension=json" +
+        "&bytesize=1234&sourceType=" + escape(req.query.sourceType);
     post(configModelUrl + "/api/ui/resource/representation" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -133,9 +139,9 @@ app.post('/representation', (req, res) => {
 
 app.put('/representation', (req, res) => {
     // TODO filename extension and byte size should not be set in UI.
-    var params = "?resourceId=" + req.query.resourceId + "&representationId=" + req.query.representationId +
-        "&endpointId=" + req.query.endpointId + "&language=" + req.query.language + "&filenameExtension=json" +
-        "&bytesize=1234&sourceType=" + req.query.sourceType;
+    var params = "?resourceId=" + escape(req.query.resourceId) + "&representationId=" + escape(req.query.representationId) +
+        "&endpointId=" + escape(req.query.endpointId) + "&language=" + escape(req.query.language) + "&filenameExtension=json" +
+        "&bytesize=1234&sourceType=" + escape(req.query.sourceType);
     put(configModelUrl + "/api/ui/resource/representation" + params, req.body).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -154,7 +160,7 @@ app.get('/approutes', (req, res) => {
 });
 
 app.get('/approute', (req, res) => {
-    var params = "?routeId=" + req.query.routeId;
+    var params = "?routeId=" + escape(req.query.routeId);
     get(configModelUrl + "/api/ui/approute" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -164,7 +170,7 @@ app.get('/approute', (req, res) => {
 });
 
 app.get('/approute/step/endpoint/info', (req, res) => {
-    var params = "?routeId=" + req.query.routeId + "&endpointId=" + req.query.endpointId;
+    var params = "?routeId=" + escape(req.query.routeId) + "&endpointId=" + escape(req.query.endpointId);
     get(configModelUrl + "/api/ui/approute/step/endpoint/info" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -183,8 +189,8 @@ app.get('/generic/endpoints', (req, res) => {
 });
 
 app.post('/generic/endpoint', (req, res) => {
-    post(configModelUrl + "/api/ui/generic/endpoint?accessURL=" + encodeURIComponent(req.query.accessUrl) + "&username=" +
-        encodeURIComponent(req.query.username) + "&password=" + encodeURIComponent(req.query.password)).then(response => {
+    post(configModelUrl + "/api/ui/generic/endpoint?accessURL=" + escape(req.query.accessUrl) + "&username=" +
+        escape(req.query.username) + "&password=" + escape(req.query.password)).then(response => {
             res.send(response.data);
         }).catch(error => {
             console.log("Error on POST /generic/endpoint", error.response.status);
@@ -193,9 +199,9 @@ app.post('/generic/endpoint', (req, res) => {
 });
 
 app.put('/generic/endpoint', (req, res) => {
-    put(configModelUrl + "/api/ui/generic/endpoint?id=" + encodeURIComponent(req.query.id) + "&accessURL=" +
-        encodeURIComponent(req.query.accessUrl) + "&username=" + encodeURIComponent(req.query.username) + "&password=" +
-        encodeURIComponent(req.query.password)).then(response => {
+    put(configModelUrl + "/api/ui/generic/endpoint?id=" + escape(req.query.id) + "&accessURL=" +
+        escape(req.query.accessUrl) + "&username=" + escape(req.query.username) + "&password=" +
+        escape(req.query.password)).then(response => {
             res.send(response.data);
         }).catch(error => {
             console.log("Error on PUT /generic/endpoint", error.response.status);
@@ -205,7 +211,7 @@ app.put('/generic/endpoint', (req, res) => {
 
 app.delete('/generic/endpoint', (req, res) => {
     del(configModelUrl + "/api/ui/generic/endpoint?endpointId=" +
-        encodeURIComponent(req.query.endpointId)).then(response => {
+        escape(req.query.endpointId)).then(response => {
             res.send(response.data);
         }).catch(error => {
             console.log("Error on DELETE /generic/endpoint", error.response.status);
@@ -214,9 +220,9 @@ app.delete('/generic/endpoint', (req, res) => {
 });
 
 app.put('/approute', (req, res) => {
-    put(configModelUrl + "/api/ui/approute/endpoint?routeId=" + req.query.routeId + "&endpointId=" +
-        req.query.endpointId + "&accessUrl=" + req.query.accessUrl + "&username=" +
-        req.query.username + "&password=" + req.query.password).then(response => {
+    put(configModelUrl + "/api/ui/approute/endpoint?routeId=" + escape(req.query.routeId) + "&endpointId=" +
+        escape(req.query.endpointId) + "&accessUrl=" + escape(req.query.accessUrl) + "&username=" +
+        escape(req.query.username) + "&password=" + escape(req.query.password)).then(response => {
             res.send(response.data);
         }).catch(error => {
             console.log("Error on POST /resource", error.response.status);
@@ -225,7 +231,7 @@ app.put('/approute', (req, res) => {
 });
 
 app.delete('/approute', (req, res) => {
-    del(configModelUrl + "/api/ui/approute?routeId=" + req.query.routeId).then(response => {
+    del(configModelUrl + "/api/ui/approute?routeId=" + escape(req.query.routeId)).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on DELETE /approute", error.response.status);
@@ -272,7 +278,7 @@ app.get('/brokers', (req, res) => {
 });
 
 app.post('/broker', (req, res) => {
-    let params = "?brokerUri=" + encodeURIComponent(req.query.brokerUri) + "&title=" + encodeURIComponent(req.query.title);
+    let params = "?brokerUri=" + escape(req.query.brokerUri) + "&title=" + escape(req.query.title);
     post(configModelUrl + "/api/ui/broker" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -282,7 +288,7 @@ app.post('/broker', (req, res) => {
 });
 
 app.post('/broker/register', (req, res) => {
-    let params = "?brokerUri=" + encodeURIComponent(req.query.brokerUri);
+    let params = "?brokerUri=" + escape(req.query.brokerUri);
     post(configModelUrl + "/api/ui/broker/register" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -292,7 +298,7 @@ app.post('/broker/register', (req, res) => {
 });
 
 app.post('/broker/unregister', (req, res) => {
-    let params = "?brokerUri=" + encodeURIComponent(req.query.brokerUri);
+    let params = "?brokerUri=" + escape(req.query.brokerUri);
     post(configModelUrl + "/api/ui/broker/unregister" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -302,7 +308,7 @@ app.post('/broker/unregister', (req, res) => {
 });
 
 app.post('/broker/update/resource', (req, res) => {
-    let params = "?brokerUri=" + req.query.brokerUri + "&resourceId=" + req.query.resourceId;
+    let params = "?brokerUri=" + escape(req.query.brokerUri) + "&resourceId=" + escape(req.query.resourceId);
     post(configModelUrl + "/api/ui/broker/update/resource" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -312,7 +318,7 @@ app.post('/broker/update/resource', (req, res) => {
 });
 
 app.get('/broker/resource/information', (req, res) => {
-    let params = "?resourceId=" + req.query.resourceId;
+    let params = "?resourceId=" + escape(req.query.resourceId);
     get(configModelUrl + "/api/ui/broker/resource/information" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -322,7 +328,7 @@ app.get('/broker/resource/information', (req, res) => {
 });
 
 app.post('/broker/delete/resource', (req, res) => {
-    let params = "?brokerUri=" + encodeURIComponent(req.query.brokerUri) + "&resourceId=" + encodeURIComponent(req.query.resourceId);
+    let params = "?brokerUri=" + escape(req.query.brokerUri) + "&resourceId=" + escape(req.query.resourceId);
     post(configModelUrl + "/api/ui/broker/delete/resource" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -332,7 +338,7 @@ app.post('/broker/delete/resource', (req, res) => {
 });
 
 app.put('/broker', (req, res) => {
-    let params = "?brokerUri=" + encodeURIComponent(req.query.brokerUri) + "&title=" + encodeURIComponent(req.query.title);
+    let params = "?brokerUri=" + escape(req.query.brokerUri) + "&title=" + escape(req.query.title);
     put(configModelUrl + "/api/ui/broker" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -342,7 +348,7 @@ app.put('/broker', (req, res) => {
 });
 
 app.delete('/broker', (req, res) => {
-    del(configModelUrl + "/api/ui/broker?brokerUri=" + encodeURIComponent(req.query.brokerId)).then(response => {
+    del(configModelUrl + "/api/ui/broker?brokerUri=" + escape(req.query.brokerId)).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on DELETE /broker", error.response.status);
@@ -371,26 +377,6 @@ app.get('/offeredresourcesstats', (req, res) => {
     });
 });
 
-app.get('/proxy', (req, res) => {
-    get(configModelUrl + "/api/ui/configmodel/proxy").then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on GET /configmodel/proxy", error.response.status);
-        res.send(error);
-    });
-});
-
-app.put('/proxy', (req, res) => {
-    let params = "?proxyUri=" + req.query.proxyUri + "&noProxyUri=" + req.query.noProxyUri + "&username=" +
-        req.query.username + "&password=" + req.query.password;
-    put(configModelUrl + "/api/ui/configmodel/proxy" + params).then(response => {
-        res.send(response.data);
-    }).catch(error => {
-        console.log("Error on PUT /configmodel/proxy", error.response.status);
-        res.send(error);
-    });
-});
-
 app.get('/configmodel', (req, res) => {
     get(configModelUrl + "/api/ui/configmodel").then(response => {
         res.send(response.data);
@@ -401,9 +387,10 @@ app.get('/configmodel', (req, res) => {
 });
 
 app.put('/configmodel', (req, res) => {
-    let params = "?loglevel=" + req.query.logLevel + "&connectorDeployMode=" + req.query.connectorDeployMode + "&trustStore=" +
-        req.query.trustStoreUrl + "&trustStorePassword=" + req.query.trustStorePassword + "&keyStore=" + req.query.keyStoreUrl +
-        "&keyStorePassword=" + req.query.keyStorePassword;
+    let params = "?loglevel=" + escape(req.query.logLevel) + "&connectorDeployMode=" + escape(req.query.connectorDeployMode) + "&trustStore=" +
+        escape(req.query.trustStoreUrl) + "&trustStorePassword=" + escape(req.query.trustStorePassword) + "&keyStore=" + escape(req.query.keyStoreUrl) +
+        "&keyStorePassword=" + escape(req.query.keyStorePassword) + "&proxyUri=" + escape(req.query.proxyUri) + "&noProxyUri=" + escape(req.query.noProxyUri) +
+        "&username=" + escape(req.query.username) + "&password=" + escape(req.query.password);
     put(configModelUrl + "/api/ui/configmodel" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -422,11 +409,11 @@ app.get('/connector', (req, res) => {
 });
 
 app.put('/connector', (req, res) => {
-    let params = "?title=" + req.query.connectorTitle + "&description=" + req.query.connectorDescription +
-        "&endpoint=" + req.query.connectorEndpoint + "&version=" + req.query.connectorVersion +
-        "&curator=" + req.query.connectorCurator + "&maintainer=" + req.query.connectorMaintainer +
-        "&inboundModelVersion=" + req.query.connectorInboundModelVersion + "&outboundModelVersion=" +
-        req.query.connectorOutboundModelVersion;
+    let params = "?title=" + escape(req.query.connectorTitle) + "&description=" + escape(req.query.connectorDescription) +
+        "&endpoint=" + escape(req.query.connectorEndpoint) + "&version=" + escape(req.query.connectorVersion) +
+        "&curator=" + escape(req.query.connectorCurator) + "&maintainer=" + escape(req.query.connectorMaintainer) +
+        "&inboundModelVersion=" + escape(req.query.connectorInboundModelVersion) + "&outboundModelVersion=" +
+        escape(req.query.connectorOutboundModelVersion);
     put(configModelUrl + "/api/ui/connector" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -454,8 +441,8 @@ app.get('/route/deploymethod', (req, res) => {
     });
 });
 
-app.post('/route/deploymethod', (req, res) => {
-    let params = "?deployMethod=" + req.query.deployMethod;
+app.put('/route/deploymethod', (req, res) => {
+    let params = "?deployMethod=" + escape(req.query.deployMethod);
     put(configModelUrl + "/api/ui/route/deploymethod" + params).then(response => {
         res.send(response.data);
     }).catch(error => {
@@ -465,7 +452,7 @@ app.post('/route/deploymethod', (req, res) => {
 });
 
 app.get('/enum', (req, res) => {
-    get(configModelUrl + "/api/ui/enum/" + req.query.enumName).then(response => {
+    get(configModelUrl + "/api/ui/enum/" + escape(req.query.enumName)).then(response => {
         res.send(response.data);
     }).catch(error => {
         console.log("Error on GET /enum", error.response.status);
@@ -474,7 +461,7 @@ app.get('/enum', (req, res) => {
 });
 
 app.post('/approute', (req, res) => {
-    let params = "?description=" + req.query.description;
+    let params = "?description=" + escape(req.query.description);
     post(configModelUrl + "/api/ui/approute" + params).then(response => {
         console.log(">>> new route response: ", response.data);
         res.send(response.data.id);
@@ -487,13 +474,13 @@ app.post('/approute', (req, res) => {
 app.post('/approute/step', (req, res) => {
     let params;
     if (req.query.resourceId == null) {
-        params = "?routeId=" + req.query.routeId + "&startId=" + req.query.startId + "&startCoordinateX=" + req.query.startCoordinateX +
-            "&startCoordinateY=" + req.query.startCoordinateY + "&endId=" + req.query.endId + "&endCoordinateX=" + req.query.endCoordinateX +
-            "&endCoordinateY=" + req.query.endCoordinateY;
+        params = "?routeId=" + escape(req.query.routeId) + "&startId=" + escape(req.query.startId) + "&startCoordinateX=" + escape(req.query.startCoordinateX) +
+            "&startCoordinateY=" + escape(req.query.startCoordinateY) + "&endId=" + escape(req.query.endId) + "&endCoordinateX=" + escape(req.query.endCoordinateX) +
+            "&endCoordinateY=" + escape(req.query.endCoordinateY);
     } else {
-        params = "?routeId=" + req.query.routeId + "&startId=" + req.query.startId + "&startCoordinateX=" + req.query.startCoordinateX +
-            "&startCoordinateY=" + req.query.startCoordinateY + "&endId=" + req.query.endId + "&endCoordinateX=" + req.query.endCoordinateX +
-            "&endCoordinateY=" + req.query.endCoordinateY + "&resourceId=" + req.query.resourceId;
+        params = "?routeId=" + escape(req.query.routeId) + "&startId=" + escape(req.query.startId) + "&startCoordinateX=" + escape(req.query.startCoordinateX) +
+            "&startCoordinateY=" + escape(req.query.startCoordinateY) + "&endId=" + escape(req.query.endId) + "&endCoordinateX=" + escape(req.query.endCoordinateX) +
+            "&endCoordinateY=" + escape(req.query.endCoordinateY) + "&resourceId=" + escape(req.query.resourceId);
     }
     post(configModelUrl + "/api/ui/approute/step" + params).then(response => {
         res.send(response.data);
@@ -504,9 +491,9 @@ app.post('/approute/step', (req, res) => {
 });
 
 app.post('/request/description', (req, res) => {
-    let params = "?recipientId=" + encodeURIComponent(req.query.recipientId);
+    let params = "?recipientId=" + escape(req.query.recipientId);
     if (req.query.requestedResourceId !== undefined) {
-        params += "&requestedResourceId=" + encodeURIComponent(req.query.requestedResourceId);
+        params += "&requestedResourceId=" + escape(req.query.requestedResourceId);
     }
     post(configModelUrl + "/api/ui/request/description" + params).then(response => {
         res.send(response.data);

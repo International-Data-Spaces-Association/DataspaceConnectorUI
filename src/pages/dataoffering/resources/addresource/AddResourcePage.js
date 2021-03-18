@@ -84,6 +84,9 @@ export default {
         setReadOnly(readonly) {
             this.$data.readonly = readonly;
             this.$refs.metaDataPage.readonly = readonly;
+            this.$refs.policyPage.readonly = readonly;
+            this.$refs.representationPage.readonly = readonly;
+            this.$refs.brokersPage.readonly = readonly;
         },
         save() {
             var genericEndpointId = null;

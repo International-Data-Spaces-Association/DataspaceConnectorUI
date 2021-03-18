@@ -232,8 +232,10 @@ export default {
         let noProxyArray = "";
         if (idsConfigModel["ids:connectorProxy"] !== undefined) {
             proxyUrl = idsConfigModel["ids:connectorProxy"][0]["ids:proxyURI"]["@id"];
-            username = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authUsername"];
-            password = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authPassword"];
+            if (idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"] !== undefined) {
+                username = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authUsername"];
+                password = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authPassword"];
+            }
             noProxyArray = idsConfigModel["ids:connectorProxy"][0]["ids:noProxy"];
         }
         let logLevel = idsConfigModel["ids:configurationModelLogLevel"]["@id"].replace("idsc:", "");

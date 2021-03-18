@@ -116,7 +116,7 @@ export default {
             this.$data.saveMessage = "";
             this.$root.$emit('showBusyIndicator', true);
             let proxyUrl = null;
-            if (this.$data.proxyUrl != "") {
+            if (this.$data.proxyUrl.trim() != "") {
                 proxyUrl = this.$data.proxyUrl;
             }
             let username = null;
@@ -129,10 +129,10 @@ export default {
                     password = this.$data.proxyPassword;
                 }
             }
-            savePromises.push(await dataUtils.changeProxySettings(proxyUrl, this.$data.proxyNoProxy, username, password));
             savePromises.push(await dataUtils.changeDeployMethod(this.$data.deployMethod));
             savePromises.push(await dataUtils.changeConfigModel(this.$data.logLevel, this.$data.connectorDeployMode,
-                this.$data.trustStoreUrl, this.$data.trustStorePassword, this.$data.keyStoreUrl, this.$data.keyStorePassword));
+                this.$data.trustStoreUrl, this.$data.trustStorePassword, this.$data.keyStoreUrl, this.$data.keyStorePassword,
+                proxyUrl, this.$data.proxyNoProxy, username, password));
             savePromises.push(await dataUtils.changeConnectorSettings(this.$data.connectorTitle, this.$data.connectorDescription,
                 this.$data.connectorEndpoint, "v" + this.$data.connectorVersion, this.$data.connectorCurator,
                 this.$data.connectorMaintainer, this.$data.connectorInboundModelVersion, this.$data.connectorOutboundModelVersion));
