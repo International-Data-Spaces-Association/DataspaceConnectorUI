@@ -443,7 +443,7 @@ export default {
     createResource(title, description, language, keyword, version, standardlicense, publisher, contractJson,
         sourceType, brokerUris, genericEndpointId, callback) {
         let params = "?title=" + this.escape(title) + "&description=" + this.escape(description) + "&language=" +
-            language + "&keyword=" + this.escape(keyword) + "&version=" + this.escape(version) + "&standardlicense=" + this.escape(standardlicense) +
+            this.escape(language) + "&keyword=" + this.escape(keyword) + "&version=" + this.escape(version) + "&standardlicense=" + this.escape(standardlicense) +
             "&publisher=" + this.escape(publisher);
         restUtils.post(backendUrl + "/resource" + params).then((response) => {
             let resourceId = response.data.resourceID;
@@ -477,7 +477,7 @@ export default {
     async editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, contractJson,
         sourceType, brokerUris, brokerDeleteUris, genericEndpointId, callback) {
         let params = "?resourceId=" + this.escape(resourceId) + "&title=" + this.escape(title) + "&description=" + this.escape(description) + "&language=" +
-            language + "&keyword=" + this.escape(keyword) + "&version=" + this.escape(version) + "&standardlicense=" + this.escape(standardlicense) +
+            this.escape(language) + "&keyword=" + this.escape(keyword) + "&version=" + this.escape(version) + "&standardlicense=" + this.escape(standardlicense) +
             "&publisher=" + this.escape(publisher);
         restUtils.put(backendUrl + "/resource" + params).then(() => {
             params = "?resourceId=" + this.escape(resourceId);
@@ -518,7 +518,7 @@ export default {
         startCoordinateY, endCoordinateX, endCoordinateY) {
         let dataUtils = this;
         let params = "?title=" + this.escape(title) + "&description=" + this.escape(description) + "&language=" +
-            language + "&keyword=" + this.escape(keyword) + "&version=" + this.escape(version) + "&standardlicense=" + this.escape(standardlicense) +
+            this.escape(language) + "&keyword=" + this.escape(keyword) + "&version=" + this.escape(version) + "&standardlicense=" + this.escape(standardlicense) +
             "&publisher=" + this.escape(publisher);
         return new Promise(function (resolve, reject) {
             restUtils.post(backendUrl + "/resource" + params).then((response) => {
