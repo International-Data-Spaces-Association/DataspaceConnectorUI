@@ -25,14 +25,14 @@ export default {
             this.$data.valid = this.$data.selected.length > 0;
         }
     },
-    mounted: function () {},
+    mounted: function () { },
     methods: {
         show(node) {
             this.$data.node = node;
             let resource;
             if (node == null) {
                 this.$data.title = "Add IDS Endpoint";
-                resource = clientDataModel.createResource();
+                resource = clientDataModel.createResource(-1);
             } else {
                 this.$data.title = "Edit IDS Endpoint";
                 resource = clientDataModel.createResource(-1, node.title, node.description,

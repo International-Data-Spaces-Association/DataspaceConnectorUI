@@ -14,8 +14,6 @@ export default {
                 value: 'url'
             }],
             brokers: [],
-            sourceType: "",
-            sourceTypeItems: [],
             selected: [],
             lastSelected: [],
             readonly: false
@@ -23,18 +21,12 @@ export default {
     },
     mounted: function () {
         this.getBrokers();
-        this.loadSourceTypes();
         this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
     },
     methods: {
         gotVisible() {
             this.getBrokers();
             this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
-        },
-        async loadSourceTypes() {
-            dataUtils.getSourceTypes(sourceTypes => {
-                this.$data.sourceTypeItems = sourceTypes;
-            });
         },
         previousPage() {
             this.$emit('previousPage')

@@ -523,10 +523,10 @@ export default {
         return new Promise(function (resolve, reject) {
             restUtils.post(backendUrl + "/resource" + params).then((response) => {
                 let resourceId = response.data.resourceID;
-                params = "?resourceId=" + this.escape(resourceId);
+                params = "?resourceId=" + dataUtils.escape(resourceId);
                 restUtils.put(backendUrl + "/contract" + params, contractJson).then(() => {
-                    params = "?resourceId=" + this.escape(resourceId) + "&endpointId=" + this.escape(genericEndpointId) + "&language=" + this.escape(language) +
-                        "&sourceType=" + this.escape(sourceType);
+                    params = "?resourceId=" + dataUtils.escape(resourceId) + "&endpointId=" + dataUtils.escape(genericEndpointId) + "&language=" + dataUtils.escape(language) +
+                        "&sourceType=" + dataUtils.escape(sourceType);
                     restUtils.post(backendUrl + "/representation" + params).then(() => {
                         dataUtils.createConnectorEndpoint("http://data_" + Date.now(), endpointId => {
                             dataUtils.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
