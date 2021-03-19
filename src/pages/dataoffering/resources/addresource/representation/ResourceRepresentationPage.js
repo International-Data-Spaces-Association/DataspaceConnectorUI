@@ -63,7 +63,6 @@ export default {
                 this.$data.backendConnections = backendConnections;
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
-                this.$root.$emit('showBusyIndicator', false);
             });
         },
         loadResource(resource) {
