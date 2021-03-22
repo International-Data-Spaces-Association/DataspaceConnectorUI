@@ -25,7 +25,8 @@ export default {
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
             allValid: false,
-            readonly: false
+            readonly: false,
+            newBackendConnection: false
         };
     },
     watch: {
@@ -56,6 +57,7 @@ export default {
             this.$emit('nextPage');
         },
         backendConnectionSaved() {
+            this.$data.newBackendConnection = true;
             this.getBackendConnections();
         },
         getBackendConnections() {
@@ -63,6 +65,10 @@ export default {
                 this.$data.backendConnections = backendConnections;
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
+                if (this.$data.newBackendConnection) {
+                    this.$data.newBackendConnection = false;
+                    this.$root.$emit('showBusyIndicator', false);
+                }
             });
         },
         loadResource(resource) {
