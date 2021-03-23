@@ -8,18 +8,26 @@
             <v-form v-model="valid" ref="form">
                 <v-row no-gutters>
                     <v-col cols="12" md="5" class="selectcol">
-                        <v-select label="Output" v-model="outputId" :items="outputs" item-text="text" item-value="id"
+                        <v-select
+                            v-if="sourceNode == null || sourceNode.type != 'idsendpointnode' || outputs.length > 0"
+                            label="Output" v-model="outputId" :items="outputs" item-text="text" item-value="id"
                             :rules="defaultRule">
                         </v-select>
+                        <div v-if="outputs.length == 0 && sourceNode != null && sourceNode.type == 'idsendpointnode'"
+                            class="noselectdiv">
+                            {{ sourceNode.text }}</div>
                     </v-col>
                     <v-col cols="12" md="2" class="inoutarrowcol">
                         <div class="inoutarrow">➞</div>
                     </v-col>
                     <v-col cols="12" md="5" class="selectcol">
-                        <v-select v-if="inputs.length > 0" label="Input" v-model="inputId" :items="inputs"
-                            item-text="text" item-value="id" :rules="defaultRule">
+                        <v-select
+                            v-if="destinationNode == null || destinationNode.type != 'idsendpointnode' || inputs.length > 0"
+                            label="Input" v-model="inputId" :items="inputs" item-text="text" item-value="id"
+                            :rules="defaultRule">
                         </v-select>
-                        <div v-if="inputs.length == 0 && destinationNode != null" class="noselectdiv">
+                        <div v-if="inputs.length == 0 && destinationNode != null && destinationNode.type == 'idsendpointnode'"
+                            class="noselectdiv">
                             {{ destinationNode.text }}</div>
                     </v-col>
                 </v-row>
