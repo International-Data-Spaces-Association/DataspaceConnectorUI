@@ -556,7 +556,8 @@ export default {
                   type: "pass",
                   name: "Pass",
                 };
-                that.internalConnections.push(conn);
+                // that.internalConnections.push(conn);
+                that.$emit("connectionAdded", conn);
               }
               that.connectingInfo.source = null;
               that.connectingInfo.sourcePosition = null;
