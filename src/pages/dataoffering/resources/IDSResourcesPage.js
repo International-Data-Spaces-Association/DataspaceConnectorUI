@@ -37,7 +37,9 @@ export default {
             resources: [],
             filteredResources: [],
             filterResourceType: null,
-            fileTypes: ["All"]
+            fileTypes: ["All"],
+            sortBy: 'title',
+            sortDesc: false,
         };
     },
     mounted: function () {
