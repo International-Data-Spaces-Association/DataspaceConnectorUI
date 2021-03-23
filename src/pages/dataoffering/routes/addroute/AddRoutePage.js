@@ -84,16 +84,16 @@ export default {
             dataUtils.getEndpointInfo(routeId, endpoint["@id"], endpointInfo => {
                 if (endpoint["@type"] == "ids:GenericEndpoint") {
                     if (!this.nodeExists(endpoint["@id"])) {
-                        this.addBackend(endpoint["@id"], endpointInfo.xCoordinate, endpointInfo.yCoordinate);
+                        this.addBackend(endpoint["@id"], endpointInfo.xcoordinate, endpointInfo.ycoordinate);
                     }
                 } else if (endpoint["@type"] == "ids:AppEndpoint") {
                     let appId = dataUtils.getAppIdOfEndpointId(endpoint["@id"]);
                     if (!this.nodeExists(appId)) {
-                        this.addApp(appId, endpointInfo.xCoordinate, endpointInfo.yCoordinate);
+                        this.addApp(appId, endpointInfo.xcoordinate, endpointInfo.ycoordinate);
                     }
                 } else if (endpoint["@type"] == "ids:ConnectorEndpoint") {
                     if (!this.nodeExists(endpoint["@id"])) {
-                        this.addIdsEndpoint(endpoint["@id"], endpointInfo.xCoordinate, endpointInfo.yCoordinate, output);
+                        this.addIdsEndpoint(endpoint["@id"], endpointInfo.xcoordinate, endpointInfo.ycoordinate, output);
                     }
                 }
                 callback();
