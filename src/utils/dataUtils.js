@@ -190,12 +190,12 @@ export default {
         let params = {
             "resourceId": resourceId
         }
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             restUtils.call("GET", "/api/ui/broker/resource/information", params).then(response => {
                 resolve(response.data);
             }).catch(error => {
                 console.log("Error in getResourceRegistrationStatus(): ", error);
-                reject();
+                throw new Error(error);
             });
         });
     },

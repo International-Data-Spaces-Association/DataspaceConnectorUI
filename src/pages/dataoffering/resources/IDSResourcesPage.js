@@ -77,10 +77,14 @@ export default {
             if (choice == "yes") {
                 let resourceId = callbackData.item.id;
                 this.$root.$emit('showBusyIndicator', true);
+
                 dataUtils.getResourceRegistrationStatus(resourceId).then(data => {
                     let brokerUris = [];
-                    for (let status of data) {
-                        brokerUris.push(status.brokerId);
+                    // TODO workaround to handle error of api, can be removed when api is fixed.
+                    if (data.name === undefined) {
+                        for (let status of data) {
+                            brokerUris.push(status.brokerId);
+                        }
                     }
                     dataUtils.deleteResource(resourceId, () => {
                         dataUtils.updateResourceAtBrokers(brokerUris, resourceId, () => {
