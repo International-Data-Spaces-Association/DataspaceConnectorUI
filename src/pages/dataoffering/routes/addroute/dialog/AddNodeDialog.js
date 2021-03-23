@@ -11,7 +11,8 @@ export default {
             itemKey: "id",
             headers: [],
             selected: [],
-            items: []
+            items: [],
+            noDataText: ""
         };
     },
     watch: {
@@ -19,7 +20,7 @@ export default {
             this.$data.valid = this.$data.selected.length > 0;
         }
     },
-    mounted: function () {},
+    mounted: function () { },
     methods: {
         show(items, nodeType, columnTitle, valueName) {
             this.$data.itemKey = valueName;
@@ -31,6 +32,7 @@ export default {
 
             this.$data.selected = [];
             this.$data.items = items;
+            this.$data.noDataText = "No " + nodeType.toLowerCase() + "s available";
             this.$data.dialog = true;
         },
         add() {

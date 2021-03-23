@@ -17,7 +17,8 @@
     </v-row>
     <v-row no-gutters>
       <v-col cols="12" md="11" sm="12">
-        <v-data-table :headers="headers" :items="filteredResources" :items-per-page="5" :search="search">
+        <v-data-table :headers="headers" :items="filteredResources" :items-per-page="5" :search="search"
+          no-data-text="No resources available">
           <template v-slot:item.actions="{ item }">
             <v-icon class="mr-2" @click="showItem(item)">
               mdi-eye
