@@ -496,7 +496,7 @@ export default {
     },
 
     createResource(title, description, language, keyword, version, standardlicense, publisher, contractJson,
-        sourceType, brokerUris, genericEndpointId, callback) {
+        filetype, bytesize, brokerUris, genericEndpointId, callback) {
         let params = {
             "title": title,
             "description": description,
@@ -516,9 +516,9 @@ export default {
                     "resourceId": resourceId,
                     "endpointId": genericEndpointId,
                     "language": language,
-                    "sourceType": sourceType,
-                    "filenameExtension": "json",
-                    "bytesize": 1234
+                    "sourceType": "LOCAL",
+                    "filenameExtension": filetype,
+                    "bytesize": bytesize
                 }
                 restUtils.call("POST", "/api/ui/resource/representation", params).then(() => {
                     this.createConnectorEndpoint("http://data_" + Date.now(), endpointId => {
@@ -545,7 +545,7 @@ export default {
     },
 
     async editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, contractJson,
-        sourceType, brokerUris, brokerDeleteUris, genericEndpointId, callback) {
+        filetype, bytesize, brokerUris, brokerDeleteUris, genericEndpointId, callback) {
         let params = {
             "resourceId": resourceId,
             "title": title,
@@ -566,7 +566,8 @@ export default {
                     "representationId": representationId,
                     "endpointId": genericEndpointId,
                     "language": language,
-                    "sourceType": sourceType
+                    "filenameExtension": filetype,
+                    "bytesize": bytesize
                 }
                 restUtils.call("PUT", "/api/ui/resource/representation", params).then(() => {
                     this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId, callback);
@@ -598,7 +599,7 @@ export default {
     },
 
     createResourceIdsEndpointAndAddSubRoute(title, description, language, keyword, version, standardlicense,
-        publisher, contractJson, sourceType, brokerUris, genericEndpointId, routeId, startId, startCoordinateX,
+        publisher, contractJson, filetype, bytesize, brokerUris, genericEndpointId, routeId, startId, startCoordinateX,
         startCoordinateY, endCoordinateX, endCoordinateY) {
         let dataUtils = this;
         let params = {
@@ -621,9 +622,9 @@ export default {
                         "resourceId": resourceId,
                         "endpointId": genericEndpointId,
                         "language": language,
-                        "sourceType": sourceType,
-                        "filenameExtension": "json",
-                        "bytesize": 1234
+                        "sourceType": "LOCAL",
+                        "filenameExtension": filetype,
+                        "bytesize": bytesize
                     };
                     restUtils.call("POST", "/api/ui/resource/representation", params).then(() => {
                         dataUtils.createConnectorEndpoint("http://data_" + Date.now(), endpointId => {

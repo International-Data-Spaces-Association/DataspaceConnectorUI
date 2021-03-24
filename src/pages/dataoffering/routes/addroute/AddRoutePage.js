@@ -300,7 +300,7 @@ export default {
                     subRoutePromises.push(await dataUtils.createResourceIdsEndpointAndAddSubRoute(destinationNode.title,
                         destinationNode.description, destinationNode.language, destinationNode.keywords,
                         destinationNode.version, destinationNode.standardlicense,
-                        destinationNode.publisher, destinationNode.contractJson, destinationNode.sourceType,
+                        destinationNode.publisher, destinationNode.contractJson, destinationNode.filetype, destinationNode.bytesize,
                         destinationNode.brokerList, genericEndpointId, routeId, connection.sourceEndpointId, sourceNode.x,
                         sourceNode.y, destinationNode.x, destinationNode.y));
                 } else {

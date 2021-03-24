@@ -44,7 +44,7 @@ export default {
             this.$refs.addResourcePage.set(resource);
             this.$data.dialog = true;
         },
-        saved(title, description, language, keywords, version, standardlicense, publisher, contractJson, sourceType, brokerList) {
+        saved(title, description, language, keywords, version, standardlicense, publisher, contractJson, filetype, bytesize, brokerList) {
             let isNew = false;
             if (this.$data.node == null) {
                 isNew = true;
@@ -68,7 +68,9 @@ export default {
             this.$data.node.standardlicense = standardlicense;
             this.$data.node.publisher = publisher;
             this.$data.node.contractJson = contractJson;
-            this.$data.node.sourceType = sourceType;
+            this.$data.node.sourceType = "LOCAL";
+            this.$data.node.filetype = filetype;
+            this.$data.node.bytesize = bytesize;
             this.$data.node.brokerList = brokerList;
 
             if (isNew) {

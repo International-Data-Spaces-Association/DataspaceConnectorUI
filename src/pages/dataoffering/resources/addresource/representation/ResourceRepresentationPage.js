@@ -24,9 +24,12 @@ export default {
             selected: [],
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
+            numberRule: validationUtils.getNumberRequiredRule(),
             allValid: false,
             readonly: false,
-            newBackendConnection: false
+            newBackendConnection: false,
+            filetype: "",
+            bytesize: ""
         };
     },
     watch: {
@@ -77,6 +80,7 @@ export default {
             } else {
                 this.$data.sourceType = resource.sourceType;
             }
+
             this.$data.selected = [];
             dataUtils.getRoutes(routes => {
                 for (let route of routes) {

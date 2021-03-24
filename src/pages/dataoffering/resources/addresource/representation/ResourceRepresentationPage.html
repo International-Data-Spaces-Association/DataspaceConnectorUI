@@ -2,9 +2,8 @@
   <v-row no-gutters>
     <v-col cols="12" md="11">
       <v-form v-model="valid" ref="form">
-        <v-select label="Source Type" v-model="sourceType" :items="sourceTypeItems" :rules="defaultRule" required
-          :readonly="readonly">
-        </v-select>
+        <v-text-field label="File type" v-model="filetype" :rules="defaultRule"> </v-text-field>
+        <v-text-field label="Bytesize" v-model="bytesize" :rules="numberRule"> </v-text-field>
       </v-form>
 
     </v-col>
