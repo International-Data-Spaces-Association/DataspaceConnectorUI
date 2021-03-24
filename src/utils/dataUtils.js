@@ -512,6 +512,7 @@ export default {
                 "resourceId": resourceId
             }
             restUtils.call("PUT", "/api/ui/resource/contract", params, contractJson).then(() => {
+                // TODO remove sourceType when API changed.
                 params = {
                     "resourceId": resourceId,
                     "endpointId": genericEndpointId,
@@ -561,13 +562,15 @@ export default {
                 "resourceId": resourceId
             }
             restUtils.call("PUT", "/api/ui/resource/contract", params, contractJson).then(() => {
+                // TODO remove sourceType when API changed.
                 params = {
                     "resourceId": resourceId,
                     "representationId": representationId,
                     "endpointId": genericEndpointId,
                     "language": language,
                     "filenameExtension": filetype,
-                    "bytesize": bytesize
+                    "bytesize": bytesize,
+                    "sourceType": "LOCAL"
                 }
                 restUtils.call("PUT", "/api/ui/resource/representation", params).then(() => {
                     this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId, callback);

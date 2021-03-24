@@ -1,8 +1,11 @@
-<dashboard-card class="filetypescard">
+<dashboard-card class="sourcetypescard">
     <template v-slot:header>
         File Types
     </template>
     <template v-slot:content>
-        <apexchart height="180" type="donut" :options="options" :series="series"></apexchart>
+        <apexchart width="380" height="200" :options="options" :series="series"
+            v-bind:class="{ hideChart: !chartVisible }">
+        </apexchart>
+        <div class="noChartDataDiv" v-bind:class="{ hideNoChartData: chartVisible }">No resources</div>
     </template>
 </dashboard-card>

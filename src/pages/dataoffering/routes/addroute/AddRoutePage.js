@@ -256,7 +256,8 @@ export default {
                 standardlicense: resource.standardLicense,
                 publisher: resource.publisher,
                 contractJson: resource.contract,
-                sourceType: resource.sourceType,
+                filetype: resource.fileType,
+                bytesize: resource.bytesize,
                 brokerList: resource.brokerList
             });
             this.validateRoute();

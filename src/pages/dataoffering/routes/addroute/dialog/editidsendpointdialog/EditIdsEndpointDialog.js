@@ -37,7 +37,7 @@ export default {
                 this.$data.title = "Edit IDS Endpoint";
                 resource = clientDataModel.createResource(-1, node.title, node.description,
                     node.language, node.keywords, node.version, node.standardlicense, node.publisher, node.contractJson,
-                    node.sourceType);
+                    node.sourceType, node.filetype, node.bytesize);
                 resource.brokerList = node.brokerList;
             }
 
@@ -68,6 +68,7 @@ export default {
             this.$data.node.standardlicense = standardlicense;
             this.$data.node.publisher = publisher;
             this.$data.node.contractJson = contractJson;
+            // TODO remove sourceType when API changed.
             this.$data.node.sourceType = "LOCAL";
             this.$data.node.filetype = filetype;
             this.$data.node.bytesize = bytesize;

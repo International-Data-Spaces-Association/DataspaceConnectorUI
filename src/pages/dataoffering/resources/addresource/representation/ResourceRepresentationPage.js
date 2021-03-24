@@ -75,10 +75,15 @@ export default {
             });
         },
         loadResource(resource) {
-            if (resource.sourceType === undefined) {
+            if (resource.fileType === undefined && resource.bytesize === undefined) {
                 this.$refs.form.reset();
             } else {
-                this.$data.sourceType = resource.sourceType;
+                if (resource.fileType !== undefined) {
+                    this.$data.filetype = resource.fileType;
+                }
+                if (resource.bytesize !== undefined) {
+                    this.$data.bytesize = resource.bytesize;
+                }
             }
 
             this.$data.selected = [];
