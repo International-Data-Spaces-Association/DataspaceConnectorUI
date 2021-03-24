@@ -23,7 +23,7 @@
         <v-col cols="12" md="12">
             <flowchart class="routespagechart" :nodes="nodes" :connections="connections" :render="render"
                 @editnode="handleEditNode" @editconnection="editConnection" @connectionAdded="connectionAdded"
-                @save="handleChartSave" ref="chart">
+                @connectionRemoved="connectionRemoved" @nodeRemoved="nodeRemoved" @save="handleChartSave" ref="chart">
             </flowchart>
         </v-col>
     </v-row>

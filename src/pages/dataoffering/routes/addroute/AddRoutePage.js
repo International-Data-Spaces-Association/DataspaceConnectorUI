@@ -315,6 +315,12 @@ export default {
                 this.$data.saveMessage = "Successfully saved."
             });
         },
+        connectionRemoved() {
+            this.validateRoute();
+        },
+        nodeRemoved() {
+            this.validateRoute();
+        },
         validateRoute() {
             this.$data.saveMessage = "";
             this.$data.routeValid = true;

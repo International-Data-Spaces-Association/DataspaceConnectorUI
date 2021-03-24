@@ -607,12 +607,14 @@ export default {
       if (this.currentConnections.length > 0) {
         for (let conn of this.currentConnections) {
           this.removeConnection(conn);
+          this.$emit("connectionRemoved");
         }
         this.currentConnections.splice(0, this.currentConnections.length);
       }
       if (this.currentNodes.length > 0) {
         for (let node of this.currentNodes) {
           this.removeNode(node);
+          this.$emit("nodeRemoved");
         }
         this.currentNodes.splice(0, this.currentNodes.length);
       }
