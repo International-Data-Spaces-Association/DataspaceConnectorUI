@@ -783,7 +783,7 @@ export default {
     changeConfigModel(logLevel, connectorDeployMode,
         trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword, proxyUrl, proxyNoProxy, username, password) {
         let params = {
-            "logLevel": logLevel,
+            "loglevel": logLevel,
             "connectorDeployMode": connectorDeployMode,
             "trustStore": trustStoreUrl,
             "trustStorePassword": trustStorePassword,
