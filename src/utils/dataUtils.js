@@ -424,7 +424,6 @@ export default {
     getBackendConnection(id) {
         var result = null;
         for (var backendConnection of backendConnections) {
-            console.log(id, " <> ", backendConnection.id);
             if (id == backendConnection.id) {
                 result = backendConnection;
                 break;

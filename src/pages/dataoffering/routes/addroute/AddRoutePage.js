@@ -50,7 +50,6 @@ export default {
             this.$refs.chart.clear();
             dataUtils.getRoute(id, route => {
                 this.$data.currentRoute = route;
-                console.log("LOAD ROUTE: ", route);
                 this.$data.description = route["ids:routeDescription"];
                 for (let subRoute of route["ids:hasSubRoute"]) {
                     let start = subRoute["ids:appRouteStart"][0];
@@ -59,8 +58,8 @@ export default {
                     if (subRoute["ids:appRouteOutput"] !== undefined) {
                         output = subRoute["ids:appRouteOutput"][0];
                     }
-                    this.addNode(id, start, output, () => {
-                        this.addNode(id, end, output, () => {
+                    this.addNode(id, start, output, sourceEndpointInfo => {
+                        this.addNode(id, end, output, destinationEndpointInfo => {
                             let startNodeObjectId = start["@id"];
                             if (start["@type"] == "ids:AppEndpoint") {
                                 startNodeObjectId = dataUtils.getAppIdOfEndpointId(start["@id"]);
@@ -71,7 +70,8 @@ export default {
                             }
                             let startNodeId = dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
                             let endNodeId = dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
-                            this.loadConnection(startNodeId, start["@id"], endNodeId, end["@id"]);
+                            let isLeftToRight = sourceEndpointInfo.xcoordinate < destinationEndpointInfo.xcoordinate;
+                            this.loadConnection(startNodeId, start["@id"], endNodeId, end["@id"], isLeftToRight);
                         });
                     });
 
@@ -97,21 +97,21 @@ export default {
                         this.addIdsEndpoint(endpoint["@id"], endpointInfo.xcoordinate, endpointInfo.ycoordinate, output);
                     }
                 }
-                callback();
+                callback(endpointInfo);
             });
         },
-        loadConnection(startNodeId, startEndpointId, endNodeId, endEndpointId) {
+        loadConnection(startNodeId, startEndpointId, endNodeId, endEndpointId, isLeftToRight) {
             // TODO Load connector position from backend (currently not saved).
             let connectorId = +new Date();
             let connection = {
                 source: {
                     id: startNodeId,
-                    position: "right",
+                    position: isLeftToRight ? "right" : "left",
                 },
                 sourceEndpointId: startEndpointId,
                 destination: {
                     id: endNodeId,
-                    position: "left",
+                    position: isLeftToRight ? "left" : "right",
                 },
                 destinationEndpointId: endEndpointId,
                 id: connectorId,
@@ -168,7 +168,6 @@ export default {
         newIdsEndpointNodeSaved(node) {
             let x = this.getXForNewNode();
             let y = 150;
-            console.log("X Y: ", x, y);
             node.x = x;
             node.y = y;
             this.$refs.chart.add(node);
@@ -237,9 +236,7 @@ export default {
             if (y === undefined) {
                 y = 150;
             }
-            console.log("X Y: ", x, y);
             let resource = clientDataModel.convertIdsResource(output);
-            console.log(">>> ADD IDS END: ", resource);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: x,
@@ -293,7 +290,6 @@ export default {
             for (var connection of connections) {
                 var sourceNode = dataUtils.getNode(connection.source.id, nodes);
                 var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
-                console.log(sourceNode, connection.sourceEndpointId + " => " + connection.destinationEndpointId, destinationNode);
                 if (sourceNode.type == "backendnode") {
                     genericEndpointId = sourceNode.objectId;
                 }
@@ -342,7 +338,6 @@ export default {
                     break;
                 }
             }
-            console.log("");
         },
         render: function (g, node, isSelected) {
             node.width = node.width || 120;
