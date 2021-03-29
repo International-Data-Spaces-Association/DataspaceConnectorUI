@@ -87,11 +87,8 @@ export default {
 
                 dataUtils.getResourceRegistrationStatus(resourceId).then(data => {
                     let brokerUris = [];
-                    // TODO workaround to handle error of api, can be removed when api is fixed.
-                    if (data.name === undefined) {
-                        for (let status of data) {
-                            brokerUris.push(status.brokerId);
-                        }
+                    for (let status of data) {
+                        brokerUris.push(status.brokerId);
                     }
                     dataUtils.deleteResource(resourceId, () => {
                         dataUtils.updateResourceAtBrokers(brokerUris, resourceId, () => {
