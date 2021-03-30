@@ -66,9 +66,9 @@ environment:
      - UI_BACKEND_URL=http://localhost:80
 ```
 
-## Contributing
+## Development
 
-Pleas read the [development guide](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI/blob/develop/DEVELOPMENT_GUIDE.md).
+Please read the [development guide](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI/blob/develop/DEVELOPMENT_GUIDE.md).
 
 ## Contributing
 
