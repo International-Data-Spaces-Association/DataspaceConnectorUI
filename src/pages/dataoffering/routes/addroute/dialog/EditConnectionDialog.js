@@ -21,12 +21,7 @@ export default {
             destinationNode: null
         };
     },
-    watch: {
-        valid: function () {
-            console.log("IN/OUT VALID: ", this.$data.valid);
-        }
-    },
-    mounted: function () {},
+    mounted: function () { },
     methods: {
         show(connection, nodes, isNewConnection) {
             this.$data.isNewConnection = isNewConnection;

@@ -2,9 +2,8 @@
   <v-row no-gutters>
     <v-col cols="12" md="11">
       <v-form v-model="valid" ref="form">
-        <v-select label="Source Type" v-model="sourceType" :items="sourceTypeItems" :rules="defaultRule" required
-          :readonly="readonly">
-        </v-select>
+        <v-text-field label="File type" v-model="filetype" :rules="defaultRule" :readonly="readonly"> </v-text-field>
+        <v-text-field label="Bytesize" v-model="bytesize" :rules="numberRule" :readonly="readonly"> </v-text-field>
       </v-form>
 
     </v-col>
@@ -20,14 +19,14 @@
   <v-row v-if="fromRoutePage === undefined && !readonly" no-gutters>
     <v-col cols="12" md="11" sm="12">
       <v-data-table v-model="selected" :headers="headers" :items="backendConnections" :items-per-page="5"
-        :search="search" show-select :single-select=true item-key="url">
+        :search="search" show-select :single-select=true item-key="url" no-data-text="No backend connections available">
       </v-data-table>
     </v-col>
   </v-row>
   <v-row v-if="fromRoutePage === undefined && readonly" no-gutters>
     <v-col cols="12" md="11" sm="12">
       <v-data-table :headers="headers" :items="selected" :items-per-page="5" :search="search" :single-select=true
-        item-key="url">
+        item-key="url" no-data-text="No backend connections set">
       </v-data-table>
     </v-col>
   </v-row>

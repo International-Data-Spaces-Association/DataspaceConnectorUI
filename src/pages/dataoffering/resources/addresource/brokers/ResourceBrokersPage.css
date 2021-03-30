@@ -1,3 +1,8 @@
 .add-resource-page .resourcetypestab .v-slide-group {
     display: none;
 }
+
+.broker-table-title {
+    margin-top: 20px;
+    font-weight: bold;
+}

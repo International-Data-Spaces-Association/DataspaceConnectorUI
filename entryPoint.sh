@@ -5,5 +5,4 @@ set -xe
 sed -i "s@#UI_BACKEND_URL#@$UI_BACKEND_URL@g" .env
 sed -i "s@#UI_TITLE#@$UI_TITLE@g" .env
 
-npm run backend &
-serve -l 8082 -s dist
+npm run-script startprod

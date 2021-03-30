@@ -1,4 +1,18 @@
-.filetypescard {
+.sourcetypescard {
     width: 400px;
     height: 300px;
+}
+
+.hideChart {
+    display: none;
+}
+
+.hideNoChartData {
+    display: none!important;
+}
+
+.noChartDataDiv {
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
 }

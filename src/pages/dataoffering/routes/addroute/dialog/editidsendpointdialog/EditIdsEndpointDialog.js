@@ -25,26 +25,26 @@ export default {
             this.$data.valid = this.$data.selected.length > 0;
         }
     },
-    mounted: function () {},
+    mounted: function () { },
     methods: {
         show(node) {
             this.$data.node = node;
             let resource;
             if (node == null) {
                 this.$data.title = "Add IDS Endpoint";
-                resource = clientDataModel.createResource();
+                resource = clientDataModel.createResource(-1);
             } else {
                 this.$data.title = "Edit IDS Endpoint";
                 resource = clientDataModel.createResource(-1, node.title, node.description,
                     node.language, node.keywords, node.version, node.standardlicense, node.publisher, node.contractJson,
-                    node.sourceType);
+                    node.sourceType, node.filetype, node.bytesize);
                 resource.brokerList = node.brokerList;
             }
 
             this.$refs.addResourcePage.set(resource);
             this.$data.dialog = true;
         },
-        saved(title, description, language, keywords, version, standardlicense, publisher, contractJson, sourceType, brokerList) {
+        saved(title, description, language, keywords, version, standardlicense, publisher, contractJson, filetype, bytesize, brokerList) {
             let isNew = false;
             if (this.$data.node == null) {
                 isNew = true;
@@ -68,7 +68,10 @@ export default {
             this.$data.node.standardlicense = standardlicense;
             this.$data.node.publisher = publisher;
             this.$data.node.contractJson = contractJson;
-            this.$data.node.sourceType = sourceType;
+            // TODO remove sourceType when API changed.
+            this.$data.node.sourceType = "LOCAL";
+            this.$data.node.filetype = filetype;
+            this.$data.node.bytesize = bytesize;
             this.$data.node.brokerList = brokerList;
 
             if (isNew) {

@@ -8,7 +8,7 @@
             <v-row no-gutters>
                 <v-col cols="12" md="11" sm="12">
                     <v-data-table v-model="selected" :headers="headers" :items="items" :items-per-page="5"
-                        :search="search" show-select :single-select=true :item-key="itemKey">
+                        :search="search" show-select :single-select=true :item-key="itemKey" :no-data-text="noDataText">
                     </v-data-table>
                 </v-col>
             </v-row>

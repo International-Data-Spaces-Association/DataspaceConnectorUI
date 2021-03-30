@@ -21,7 +21,7 @@ export default {
     methods: {
         async getOfferedResourcesStats() {
             this.$data.numberOfAssignedData = 0;
-            const response = (await dataUtils.getOfferedResourcesStats()).data;
+            const response = (await dataUtils.getOfferedResourcesStats());
             if (response.totalNumber === undefined) {
                 this.$data.offeredResourcesAvailable = false;
             } else {

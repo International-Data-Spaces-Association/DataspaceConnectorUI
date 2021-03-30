@@ -23,13 +23,14 @@
         <v-col cols="12" md="12">
             <flowchart class="routespagechart" :nodes="nodes" :connections="connections" :render="render"
                 @editnode="handleEditNode" @editconnection="editConnection" @connectionAdded="connectionAdded"
-                @save="handleChartSave" ref="chart">
+                @connectionRemoved="connectionRemoved" @nodeRemoved="nodeRemoved" @save="handleChartSave" ref="chart">
             </flowchart>
         </v-col>
     </v-row>
     <v-row no-gutters v-if="isNewRoute">
         <v-col cols="12" md="6" class="save-route-col">
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="saveRoute">Save
+            <v-btn elevation="1" color="primary" :disabled="!routeValid" class="buttontext--text routespagebutton"
+                @click="saveRoute">Save
             </v-btn>
             <div class="save-message">{{ saveMessage }}</div>
         </v-col>

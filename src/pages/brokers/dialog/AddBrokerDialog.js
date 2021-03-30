@@ -22,6 +22,7 @@ export default {
     methods: {
         addButtonClicked() {
             this.$data.urlReadOnly = false;
+            this.$data.currentBroker = null;
             this.$data.title = "Add Broker";
             this.$data.brokerTitle = "";
             this.$data.url = "";

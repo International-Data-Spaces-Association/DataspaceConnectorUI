@@ -101,26 +101,27 @@ export default {
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
             var contractJson = this.$refs.policyPage.getContractJson();
-            var sourceType = this.$refs.representationPage.sourceType;
+            var filetype = this.$refs.representationPage.filetype;
+            var bytesize = this.$refs.representationPage.bytesize;
             var brokerList = this.$refs.brokersPage.getBrokerNewList()
             let brokerDeleteList = this.$refs.brokersPage.getBrokerDeleteList();
 
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
                 this.$emit("saved", title, description, language, keywords, version, standardlicense, publisher,
-                    contractJson, sourceType, brokerList);
+                    contractJson, filetype, bytesize, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
                     dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher,
-                        contractJson, sourceType, brokerList, genericEndpointId, () => {
+                        contractJson, filetype, bytesize, brokerList, genericEndpointId, () => {
                             this.$router.push('idresourcesoffering');
                             this.$root.$emit('showBusyIndicator', false);
                         });
                 } else {
                     dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
                         title, description, language, keywords, version, standardlicense, publisher, contractJson,
-                        sourceType, brokerList, brokerDeleteList, genericEndpointId, () => {
+                        filetype, bytesize, brokerList, brokerDeleteList, genericEndpointId, () => {
                             this.$router.push('idresourcesoffering');
                             this.$root.$emit('showBusyIndicator', false);
                         });

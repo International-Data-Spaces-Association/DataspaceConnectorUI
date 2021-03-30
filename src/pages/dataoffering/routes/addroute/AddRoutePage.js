@@ -25,13 +25,15 @@ export default {
             currentRoute: null,
             description: "",
             saveMessage: "",
-            isNewRoute: false
+            isNewRoute: false,
+            routeValid: true
         };
     },
     mounted: function () {
         this.getBackendConnections(() => {
             this.getApps(() => {
                 this.$data.saveMessage = "";
+                this.validateRoute();
                 if (this.$route.query.routeId === undefined) {
                     this.$data.isNewRoute = true;
                     this.$data.currentRoute = null;
@@ -41,7 +43,6 @@ export default {
                 }
             });
         });
-
     },
     methods: {
         loadRoute(id) {
@@ -49,7 +50,6 @@ export default {
             this.$refs.chart.clear();
             dataUtils.getRoute(id, route => {
                 this.$data.currentRoute = route;
-                console.log("LOAD ROUTE: ", route);
                 this.$data.description = route["ids:routeDescription"];
                 for (let subRoute of route["ids:hasSubRoute"]) {
                     let start = subRoute["ids:appRouteStart"][0];
@@ -58,8 +58,8 @@ export default {
                     if (subRoute["ids:appRouteOutput"] !== undefined) {
                         output = subRoute["ids:appRouteOutput"][0];
                     }
-                    this.addNode(id, start, output, () => {
-                        this.addNode(id, end, output, () => {
+                    this.addNode(id, start, output, sourceEndpointInfo => {
+                        this.addNode(id, end, output, destinationEndpointInfo => {
                             let startNodeObjectId = start["@id"];
                             if (start["@type"] == "ids:AppEndpoint") {
                                 startNodeObjectId = dataUtils.getAppIdOfEndpointId(start["@id"]);
@@ -70,7 +70,8 @@ export default {
                             }
                             let startNodeId = dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
                             let endNodeId = dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
-                            this.loadConnection(startNodeId, start["@id"], endNodeId, end["@id"]);
+                            let isLeftToRight = sourceEndpointInfo.xcoordinate < destinationEndpointInfo.xcoordinate;
+                            this.loadConnection(startNodeId, start["@id"], endNodeId, end["@id"], isLeftToRight);
                         });
                     });
 
@@ -84,33 +85,33 @@ export default {
             dataUtils.getEndpointInfo(routeId, endpoint["@id"], endpointInfo => {
                 if (endpoint["@type"] == "ids:GenericEndpoint") {
                     if (!this.nodeExists(endpoint["@id"])) {
-                        this.addBackend(endpoint["@id"], endpointInfo.xCoordinate, endpointInfo.yCoordinate);
+                        this.addBackend(endpoint["@id"], endpointInfo.xcoordinate, endpointInfo.ycoordinate);
                     }
                 } else if (endpoint["@type"] == "ids:AppEndpoint") {
                     let appId = dataUtils.getAppIdOfEndpointId(endpoint["@id"]);
                     if (!this.nodeExists(appId)) {
-                        this.addApp(appId, endpointInfo.xCoordinate, endpointInfo.yCoordinate);
+                        this.addApp(appId, endpointInfo.xcoordinate, endpointInfo.ycoordinate);
                     }
                 } else if (endpoint["@type"] == "ids:ConnectorEndpoint") {
                     if (!this.nodeExists(endpoint["@id"])) {
-                        this.addIdsEndpoint(endpoint["@id"], endpointInfo.xCoordinate, endpointInfo.yCoordinate, output);
+                        this.addIdsEndpoint(endpoint["@id"], endpointInfo.xcoordinate, endpointInfo.ycoordinate, output);
                     }
                 }
-                callback();
+                callback(endpointInfo);
             });
         },
-        loadConnection(startNodeId, startEndpointId, endNodeId, endEndpointId) {
+        loadConnection(startNodeId, startEndpointId, endNodeId, endEndpointId, isLeftToRight) {
             // TODO Load connector position from backend (currently not saved).
             let connectorId = +new Date();
             let connection = {
                 source: {
                     id: startNodeId,
-                    position: "right",
+                    position: isLeftToRight ? "right" : "left",
                 },
                 sourceEndpointId: startEndpointId,
                 destination: {
                     id: endNodeId,
-                    position: "left",
+                    position: isLeftToRight ? "left" : "right",
                 },
                 destinationEndpointId: endEndpointId,
                 id: connectorId,
@@ -162,14 +163,15 @@ export default {
         newConnectionSaved(connection) {
             // New connection saved for the first time.
             this.$refs.chart.internalConnections.push(connection);
+            this.validateRoute();
         },
         newIdsEndpointNodeSaved(node) {
             let x = this.getXForNewNode();
             let y = 150;
-            console.log("X Y: ", x, y);
             node.x = x;
             node.y = y;
             this.$refs.chart.add(node);
+            this.validateRoute();
         },
         showAddBackendDialog() {
             this.$refs.addBackendDialog.show(this.$data.backendConnections, "Backend Connection", "URL", "url");
@@ -194,6 +196,7 @@ export default {
                 text: backend.url,
                 objectId: id,
             });
+            this.validateRoute();
         },
         getXForNewNode() {
             let x = 20;
@@ -221,6 +224,7 @@ export default {
                 text: app.title,
                 objectId: id,
             });
+            this.validateRoute();
         },
         showAddIdsEndpointDialog() {
             this.$refs.editIDSEndpointDialog.show(null);
@@ -232,9 +236,7 @@ export default {
             if (y === undefined) {
                 y = 150;
             }
-            console.log("X Y: ", x, y);
             let resource = clientDataModel.convertIdsResource(output);
-            console.log(">>> ADD IDS END: ", resource);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: x,
@@ -251,9 +253,11 @@ export default {
                 standardlicense: resource.standardLicense,
                 publisher: resource.publisher,
                 contractJson: resource.contract,
-                sourceType: resource.sourceType,
+                filetype: resource.fileType,
+                bytesize: resource.bytesize,
                 brokerList: resource.brokerList
             });
+            this.validateRoute();
         },
         saveRoute() {
             this.$data.saveMessage = "";
@@ -286,7 +290,6 @@ export default {
             for (var connection of connections) {
                 var sourceNode = dataUtils.getNode(connection.source.id, nodes);
                 var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
-                console.log(sourceNode, connection.sourceEndpointId + " => " + connection.destinationEndpointId, destinationNode);
                 if (sourceNode.type == "backendnode") {
                     genericEndpointId = sourceNode.objectId;
                 }
@@ -294,7 +297,7 @@ export default {
                     subRoutePromises.push(await dataUtils.createResourceIdsEndpointAndAddSubRoute(destinationNode.title,
                         destinationNode.description, destinationNode.language, destinationNode.keywords,
                         destinationNode.version, destinationNode.standardlicense,
-                        destinationNode.publisher, destinationNode.contractJson, destinationNode.sourceType,
+                        destinationNode.publisher, destinationNode.contractJson, destinationNode.filetype, destinationNode.bytesize,
                         destinationNode.brokerList, genericEndpointId, routeId, connection.sourceEndpointId, sourceNode.x,
                         sourceNode.y, destinationNode.x, destinationNode.y));
                 } else {
@@ -308,6 +311,33 @@ export default {
                 this.$data.receivedResults = [];
                 this.$data.saveMessage = "Successfully saved."
             });
+        },
+        connectionRemoved() {
+            this.validateRoute();
+        },
+        nodeRemoved() {
+            this.validateRoute();
+        },
+        validateRoute() {
+            this.$data.saveMessage = "";
+            this.$data.routeValid = true;
+            if (this.$refs.chart.internalNodes.length < 2 || this.$refs.chart.internalConnections.length < 1) {
+                this.$data.saveMessage = "At least two connected nodes required.";
+                this.$data.routeValid = false;
+            }
+            for (let connection of this.$refs.chart.internalConnections) {
+                var sourceNode = dataUtils.getNode(connection.source.id, this.$refs.chart.internalNodes);
+                var destinationNode = dataUtils.getNode(connection.destination.id, this.$refs.chart.internalNodes);
+                if (sourceNode.type == "idsendpointnode") {
+                    this.$data.saveMessage = "IDS Endpoint should not be a source node.";
+                    this.$data.routeValid = false;
+                    break;
+                } else if (destinationNode.type == "backendnode") {
+                    this.$data.saveMessage = "Backend should not be a destination node.";
+                    this.$data.routeValid = false;
+                    break;
+                }
+            }
         },
         render: function (g, node, isSelected) {
             node.width = node.width || 120;

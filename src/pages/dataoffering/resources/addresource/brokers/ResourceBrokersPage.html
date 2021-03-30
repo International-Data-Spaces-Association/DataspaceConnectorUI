@@ -1,15 +1,25 @@
 <div>
   <v-row no-gutters v-if="readonly">
+    <v-col cols="12" md="11" sm="12" class="broker-table-title">
+      Registered to the following brokers:
+    </v-col>
+  </v-row>
+  <v-row no-gutters v-if="readonly">
     <v-col cols="12" md="11" sm="12">
       <v-data-table :headers="headers" :items="selected " :items-per-page="5" :search="search" :single-select=true
-        item-key="url">
+        item-key="url" no-data-text="Not registered to any broker">
       </v-data-table>
+    </v-col>
+  </v-row>
+  <v-row no-gutters v-if="!readonly">
+    <v-col cols="12" md="11" sm="12" class="broker-table-title">
+      Select brokers to which the resource should be registered:
     </v-col>
   </v-row>
   <v-row no-gutters v-if="!readonly">
     <v-col cols="12" md="11" sm="12">
       <v-data-table v-model="selected" :headers="headers" :items="brokers" :items-per-page="5" :search="search"
-        show-select item-key="url">
+        show-select item-key="url" no-data-text="No brokers available">
       </v-data-table>
     </v-col>
   </v-row>

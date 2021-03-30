@@ -21,7 +21,7 @@ export default {
             },
             {
                 text: 'Type',
-                value: 'sourceType'
+                value: 'fileType'
             }, {
                 text: 'Policy',
                 value: 'policyName'
@@ -36,7 +36,10 @@ export default {
             ],
             resources: [],
             filteredResources: [],
-            filterResourceType: null
+            filterResourceType: null,
+            fileTypes: ["All"],
+            sortBy: 'title',
+            sortDesc: false,
         };
     },
     mounted: function () {
@@ -47,6 +50,10 @@ export default {
             this.$root.$emit('showBusyIndicator', true);
             dataUtils.getResources(resources => {
                 this.$data.resources = resources;
+                this.$data.fileTypes = ["All"];
+                for (let resource of resources) {
+                    this.$data.fileTypes.push(resource.fileType);
+                }
                 this.filterChanged();
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
@@ -58,7 +65,7 @@ export default {
             } else {
                 this.$data.filteredResources = [];
                 for (var resource of this.$data.resources) {
-                    if (resource.type == this.$data.filterResourceType) {
+                    if (resource.fileType == this.$data.filterResourceType) {
                         this.$data.filteredResources.push(resource);
                     }
                 }
@@ -77,6 +84,7 @@ export default {
             if (choice == "yes") {
                 let resourceId = callbackData.item.id;
                 this.$root.$emit('showBusyIndicator', true);
+
                 dataUtils.getResourceRegistrationStatus(resourceId).then(data => {
                     let brokerUris = [];
                     for (let status of data) {

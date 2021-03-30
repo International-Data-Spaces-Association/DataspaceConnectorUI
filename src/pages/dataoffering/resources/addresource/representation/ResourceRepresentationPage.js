@@ -24,8 +24,12 @@ export default {
             selected: [],
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
+            numberRule: validationUtils.getNumberRequiredRule(),
             allValid: false,
-            readonly: false
+            readonly: false,
+            newBackendConnection: false,
+            filetype: "",
+            bytesize: ""
         };
     },
     watch: {
@@ -56,6 +60,7 @@ export default {
             this.$emit('nextPage');
         },
         backendConnectionSaved() {
+            this.$data.newBackendConnection = true;
             this.getBackendConnections();
         },
         getBackendConnections() {
@@ -63,15 +68,24 @@ export default {
                 this.$data.backendConnections = backendConnections;
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
-                this.$root.$emit('showBusyIndicator', false);
+                if (this.$data.newBackendConnection) {
+                    this.$data.newBackendConnection = false;
+                    this.$root.$emit('showBusyIndicator', false);
+                }
             });
         },
         loadResource(resource) {
-            if (resource.sourceType === undefined) {
+            if (resource.fileType === undefined && resource.bytesize === undefined) {
                 this.$refs.form.reset();
             } else {
-                this.$data.sourceType = resource.sourceType;
+                if (resource.fileType !== undefined) {
+                    this.$data.filetype = resource.fileType;
+                }
+                if (resource.bytesize !== undefined) {
+                    this.$data.bytesize = resource.bytesize;
+                }
             }
+
             this.$data.selected = [];
             dataUtils.getRoutes(routes => {
                 for (let route of routes) {

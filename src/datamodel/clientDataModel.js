@@ -1,7 +1,7 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, title, description, language, keywords, version, standardLicense, publisher, contract, sourceType, fileType, representationId) {
+    createResource(id, title, description, language, keywords, version, standardLicense, publisher, contract, sourceType, fileType, bytesize, representationId) {
         let resource = {};
         if (id === undefined) {
             resource.id = "";
@@ -65,6 +65,11 @@ export default {
             resource.fileType = "";
         } else {
             resource.fileType = fileType;
+        }
+        if (bytesize === undefined) {
+            resource.bytesize = "";
+        } else {
+            resource.bytesize = bytesize;
         }
         if (representationId === undefined) {
             resource.representationId = null;
@@ -198,12 +203,14 @@ export default {
         }
         let sourceType = undefined;
         let fileType = undefined;
+        let bytesize = undefined;
         let representationId = null;
         if (idsResource["ids:representation"] !== undefined) {
             if (idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"] !== undefined) {
                 sourceType = idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"];
             }
             fileType = idsResource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
+            bytesize = idsResource["ids:representation"][0]["ids:instance"][0]["ids:byteSize"];
             representationId = idsResource["ids:representation"][0]["@id"];
         }
         let keywords = "";
@@ -217,11 +224,10 @@ export default {
                 count++;
             }
         }
-
         return this.createResource(idsResource["@id"], idsResource["ids:title"][0]["@value"], idsResource["ids:description"][0]["@value"],
             idsResource["ids:language"][0]["@id"].replace("idsc:", ""), keywords,
             idsResource["ids:version"], standardLicense, publisher,
-            contract, sourceType, fileType, representationId);
+            contract, sourceType, fileType, bytesize, representationId);
     },
 
 
