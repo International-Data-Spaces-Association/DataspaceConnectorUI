@@ -1,6 +1,6 @@
 {
   "name": "ids-configmanager-ui",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --open --port 8082",
