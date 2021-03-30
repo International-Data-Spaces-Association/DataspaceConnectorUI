@@ -2,16 +2,22 @@
 All notable changes to this project will be documented in this file.
 (The major version of IDS-Configmanager and IDS-Configmanager-UI indicates compatibility)
 
-
-## [4.0.0] - 2021-03-03
+## [6.0.0] - 2021-03-30
 
 ### Added
-- Dashboard
-- Create, update & delete IDS resources
-- Create, update & delete Backend Connections
-- Create, update & delete Brokers with connector registration/unregistration
-- Create & view routes for data offers (still under construction)
-- Change settings of connector & config model
+- Add file type on dashboard & resource page
+- Resource representation: add file type & bytesize
+### Changes
+- UI backend refactoring: one generic endpoint forwading all UI API calls
+- Changed tables "no data" texts
+- Removed source type on dashboard & resource page
+### Fixes
+- Additional escaping
+- Fix scope problems in dataUtils.js
+- Fix false hiding of busy indicator
+- Use correct routes API
+- Routes: flowchart fixes
+- Routes client-side validation
 
 ## [5.0.0] - 2021-03-30
 
@@ -32,4 +38,16 @@ All notable changes to this project will be documented in this file.
 - Fix settings validation problem
 - Fix problem with read-only textfield of broker dialog
 - Call updateResourceAtBroker on resource delete
+
+## [4.0.0] - 2021-03-03
+
+### Added
+- Dashboard
+- Create, update & delete IDS resources
+- Create, update & delete Backend Connections
+- Create, update & delete Brokers with connector registration/unregistration
+- Create & view routes for data offers (still under construction)
+- Change settings of connector & config model
+
+
 
