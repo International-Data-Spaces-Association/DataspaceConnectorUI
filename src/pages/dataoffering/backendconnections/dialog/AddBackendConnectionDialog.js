@@ -16,7 +16,7 @@ export default {
             urlRule: validationUtils.getUrlRequiredRule()
         };
     },
-    mounted: function () {},
+    mounted: function () { },
     // watch: {
     //     dialog() {
     //         console.log("SHOW: ", this.$data.dialog);
@@ -35,19 +35,35 @@ export default {
             this.$data.username = "";
             this.$data.password = "";
         },
-        saveBackendConnection() {
+        async saveBackendConnection() {
             if (this.$data.currentEndpoint == null) {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
-                dataUtils.createBackendConnection(this.$data.url, this.$data.username, this.$data.password, () => {
-                    this.$emit('backendConnectionSaved');
-                });
+                try {
+                    // let response = (await dataUtils.createBackendConnection(this.$data.url, this.$data.username, this.$data.password));
+                    let response = (await dataUtils.createBackendConnection("asdf", this.$data.username, this.$data.password));
+                    console.log(">>> BC RESPONSE: ", response);
+                    if (response.name !== undefined && response.name == "Error") {
+                        this.$root.$emit('error', "Update backend connection failed.");
+                    }
+                } catch (error) {
+                    console.log("Error on saveBackendConnection(): ", error);
+                    this.$root.$emit('error', "Update backend connection failed.");
+                }
+                this.$emit('backendConnectionSaved');
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
-                dataUtils.updateBackendConnection(this.currentEndpoint["@id"], this.$data.url, this.$data.username, this.$data.password, () => {
-                    this.$emit('backendConnectionSaved');
-                });
+                try {
+                    let response = (await dataUtils.updateBackendConnection(this.currentEndpoint["@id"], this.$data.url, this.$data.username, this.$data.password));
+                    if (response.name !== undefined && response.name == "Error") {
+                        this.$root.$emit('error', "Update backend connection failed.");
+                    }
+                } catch (error) {
+                    console.log("Error on saveBackendConnection(): ", error);
+                    this.$root.$emit('error', "Update backend connection failed.");
+                }
+                this.$emit('backendConnectionSaved');
             }
         },
         edit(endpoint) {

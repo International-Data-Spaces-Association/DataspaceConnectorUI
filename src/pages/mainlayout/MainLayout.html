@@ -29,4 +29,13 @@
             <v-progress-circular indeterminate :size="70" :width="7" color="primary"></v-progress-circular>
         </v-overlay>
     </v-main>
+    <v-snackbar v-model="errorSnackbar" :timeout="-1" color="error">
+        {{ errorText }}
+
+        <template v-slot:action="{ attrs }">
+            <v-btn color="pink" text v-bind="attrs" @click="errorSnackbar = false">
+                X
+            </v-btn>
+        </template>
+    </v-snackbar>
 </v-app>

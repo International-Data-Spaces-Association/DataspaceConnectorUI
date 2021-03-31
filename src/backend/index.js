@@ -59,28 +59,44 @@ app.post('/', (req, res) => {
         post(configModelUrl + call, req.body.body).then(response => {
             res.send(response.data);
         }).catch(error => {
-            console.log("Error on POST " + req.body.url, error.response.status);
+            if (error.response === undefined) {
+                console.log("Error on POST " + req.body.url, error);
+            } else {
+                console.log("Error on POST " + req.body.url, error.response.status);
+            }
             res.send(error);
         });
     } else if (req.body.type == "PUT") {
         put(configModelUrl + call, req.body.body).then(response => {
             res.send(response.data);
         }).catch(error => {
-            console.log("Error on PUT " + req.body.url, error.response.status);
+            if (error.response === undefined) {
+                console.log("Error on PUT " + req.body.url, error);
+            } else {
+                console.log("Error on PUT " + req.body.url, error.response.status);
+            }
             res.send(error);
         });
     } else if (req.body.type == "GET") {
         get(configModelUrl + call).then(response => {
             res.send(response.data);
         }).catch(error => {
-            console.log("Error on GET " + req.body.url, error.response.status);
+            if (error.response === undefined) {
+                console.log("Error on GET " + req.body.url, error);
+            } else {
+                console.log("Error on GET " + req.body.url, error.response.status);
+            }
             res.send(error);
         });
     } else if (req.body.type == "DELETE") {
         del(configModelUrl + call).then(response => {
             res.send(response.data);
         }).catch(error => {
-            console.log("Error on DELETE " + req.body.url, error.response.status);
+            if (error.response === undefined) {
+                console.log("Error on DELETE " + req.body.url, error);
+            } else {
+                console.log("Error on DELETE " + req.body.url, error.response.status);
+            }
             res.send(error);
         });
     }

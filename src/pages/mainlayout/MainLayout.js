@@ -13,7 +13,9 @@ export default {
         drawer: null,
         breadcrumbs: [],
         showBusyIndicator: false,
-        uiTitle: "IDS Configuration Manager"
+        uiTitle: "IDS Configuration Manager",
+        errorSnackbar: false,
+        errorText: ""
     }),
     watch: {
         $route() {
@@ -31,6 +33,10 @@ export default {
         this.$data.breadcrumbs = this.$route.meta.breadcrumb;
         this.$root.$on('showBusyIndicator', (show) => {
             this.$data.showBusyIndicator = show;
+        });
+        this.$root.$on('error', (errorText) => {
+            this.$data.errorText = errorText;
+            this.$data.errorSnackbar = true;
         });
     },
     methods: {
