@@ -63,6 +63,7 @@ app.post('/', (req, res) => {
                 console.log("Error on POST " + req.body.url, error);
             } else {
                 console.log("Error on POST " + req.body.url, error.response.status);
+                console.log(error.response.data);
             }
             res.send(error);
         });
@@ -74,6 +75,7 @@ app.post('/', (req, res) => {
                 console.log("Error on PUT " + req.body.url, error);
             } else {
                 console.log("Error on PUT " + req.body.url, error.response.status);
+                console.log(error.response.data);
             }
             res.send(error);
         });
@@ -85,6 +87,7 @@ app.post('/', (req, res) => {
                 console.log("Error on GET " + req.body.url, error);
             } else {
                 console.log("Error on GET " + req.body.url, error.response.status);
+                console.log(error.response.data);
             }
             res.send(error);
         });
@@ -96,6 +99,7 @@ app.post('/', (req, res) => {
                 console.log("Error on DELETE " + req.body.url, error);
             } else {
                 console.log("Error on DELETE " + req.body.url, error.response.status);
+                console.log(error.response.data);
             }
             res.send(error);
         });

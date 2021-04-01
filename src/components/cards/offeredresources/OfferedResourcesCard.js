@@ -22,7 +22,7 @@ export default {
         async getOfferedResourcesStats() {
             this.$data.numberOfAssignedData = 0;
             try {
-                const response = (await dataUtils.getOfferedResourcesStats());
+                let response = (await dataUtils.getOfferedResourcesStats());
                 if (response.totalNumber === undefined) {
                     this.$data.offeredResourcesAvailable = false;
                     this.$root.$emit('error', "Get offered resources failed.");

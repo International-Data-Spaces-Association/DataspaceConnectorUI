@@ -31,7 +31,7 @@ export default {
     },
     methods: {
         async getBackendConnections() {
-            let response = (await dataUtils.getBackendConnections());
+            let response = await dataUtils.getBackendConnections();
             if (response.name !== undefined && response.name == "Error") {
                 this.$root.$emit('error', "Get backend connections failed.");
             } else {

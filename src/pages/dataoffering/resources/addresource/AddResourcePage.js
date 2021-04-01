@@ -59,10 +59,13 @@ export default {
                 }
             }
         },
-        loadResource(id) {
+        async loadResource(id) {
             this.$root.$emit('showBusyIndicator', true);
-            dataUtils.getResource(id, resource => {
-                this.$data.currentResource = resource;
+            let response = await dataUtils.getResource(id);
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get resource failed.");
+            } else {
+                this.$data.currentResource = response;
                 this.$data.isNewResource = false;
                 this.$refs.metaDataPage.loadResource(this.$data.currentResource);
                 this.$refs.policyPage.loadResource(this.$data.currentResource);
@@ -70,7 +73,8 @@ export default {
                 this.$refs.brokersPage.loadResource(this.$data.currentResource);
                 this.$root.$emit('showBusyIndicator', false);
                 this.$forceUpdate();
-            });
+            }
+
         },
         set(resource) {
             this.$data.currentResource = resource;
@@ -88,7 +92,7 @@ export default {
             this.$refs.representationPage.readonly = readonly;
             this.$refs.brokersPage.readonly = readonly;
         },
-        save() {
+        async save() {
             var genericEndpointId = null;
             if (this.$refs.representationPage.selected.length > 0) {
                 genericEndpointId = this.$refs.representationPage.selected[0].id;
@@ -113,18 +117,16 @@ export default {
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
-                    dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher,
-                        contractJson, filetype, bytesize, brokerList, genericEndpointId, () => {
-                            this.$router.push('idresourcesoffering');
-                            this.$root.$emit('showBusyIndicator', false);
-                        });
+                    await dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher,
+                        contractJson, filetype, bytesize, brokerList, genericEndpointId, this.$root);
+                    this.$router.push('idresourcesoffering');
+                    this.$root.$emit('showBusyIndicator', false);
                 } else {
-                    dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
+                    await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
                         title, description, language, keywords, version, standardlicense, publisher, contractJson,
-                        filetype, bytesize, brokerList, brokerDeleteList, genericEndpointId, () => {
-                            this.$router.push('idresourcesoffering');
-                            this.$root.$emit('showBusyIndicator', false);
-                        });
+                        filetype, bytesize, brokerList, brokerDeleteList, genericEndpointId, this.$root);
+                    this.$router.push('idresourcesoffering');
+                    this.$root.$emit('showBusyIndicator', false);
                 }
             }
         }

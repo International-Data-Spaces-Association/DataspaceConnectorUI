@@ -40,9 +40,7 @@ export default {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
                 try {
-                    // let response = (await dataUtils.createBackendConnection(this.$data.url, this.$data.username, this.$data.password));
-                    let response = (await dataUtils.createBackendConnection("asdf", this.$data.username, this.$data.password));
-                    console.log(">>> BC RESPONSE: ", response);
+                    let response = (await dataUtils.createBackendConnection(this.$data.url, this.$data.username, this.$data.password));
                     if (response.name !== undefined && response.name == "Error") {
                         this.$root.$emit('error', "Update backend connection failed.");
                     }

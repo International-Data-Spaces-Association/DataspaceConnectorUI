@@ -35,7 +35,7 @@ export default {
             this.$data.showBusyIndicator = show;
         });
         this.$root.$on('error', (errorText) => {
-            this.$data.errorText = errorText;
+            this.$data.errorText = errorText + " (See logs for details)";
             this.$data.errorSnackbar = true;
         });
     },

@@ -15,7 +15,6 @@ export default {
             deployMethods: [],
             logLevels: [],
             logLevel: "",
-            connectorStatuses: [],
             connectorStatus: "",
             connectorDeployModes: [],
             connectorDeployMode: "",
@@ -46,30 +45,41 @@ export default {
     methods: {
         async getSettings() {
             this.$root.$emit('showBusyIndicator', true);
-            let promises = [];
-            promises.push(await dataUtils.getDeployMethods().then(response => {
+            let response = await dataUtils.getDeployMethods();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get deploy methods failed.");
+            } else {
                 this.$data.deployMethods = response;
-            }));
+            }
 
-            promises.push(await dataUtils.getLogLevels().then(response => {
+            response = await dataUtils.getLogLevels()
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get log levels failed.");
+            } else {
                 this.$data.logLevels = response;
-            }));
+            }
 
-            promises.push(await dataUtils.getConnectorStatuses().then(response => {
-                this.$data.connectorStatuses = response;
-            }));
-
-            promises.push(await dataUtils.getConnectorDeployModes().then(response => {
+            response = await dataUtils.getConnectorDeployModes();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get connector deploy modes failed.");
+            } else {
                 this.$data.connectorDeployModes = response;
-            }));
+            }
 
-            promises.push(await dataUtils.getDeployMethod().then(response => {
+            response = await dataUtils.getDeployMethod();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get current deploy method failed.");
+            } else {
                 if (response != null && response != "") {
                     this.$data.deployMethod = response[0][1].deployMethod;
                 }
-            }));
+            }
 
-            promises.push(await dataUtils.getConfigModel().then(configModel => {
+            response = await dataUtils.getConfigModel();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get config model failed.");
+            } else {
+                let configModel = response;
                 this.$data.proxyUrl = configModel.proxyUrl;
                 let username = configModel.username;
                 let password = configModel.password;
@@ -94,9 +104,13 @@ export default {
                 this.$data.trustStorePassword = configModel.trustStorePassword;
                 this.$data.keyStoreUrl = configModel.keyStoreUrl;
                 this.$data.keyStorePassword = configModel.keyStorePassword;
-            }));
+            }
 
-            promises.push(await dataUtils.getConnectorSettings().then(connector => {
+            response = await dataUtils.getConnectorSettings();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get connector settings failed.");
+            } else {
+                let connector = response;
                 this.$data.connectorTitle = connector.title;
                 this.$data.connectorDescription = connector.description;
                 this.$data.connectorEndpoint = connector.endpoint;
@@ -105,14 +119,12 @@ export default {
                 this.$data.connectorMaintainer = connector.maintainer;
                 this.$data.connectorInboundModelVersion = connector.inboundModelVersion;
                 this.$data.connectorOutboundModelVersion = connector.outboundModelVersion;
-            }));
+            }
 
-            Promise.all(promises).then(() => {
-                this.$root.$emit('showBusyIndicator', false);
-            });
+            this.$root.$emit('showBusyIndicator', false);
         },
         async saveSettings() {
-            let savePromises = [];
+            let error = false;
             this.$data.saveMessage = "";
             this.$root.$emit('showBusyIndicator', true);
             let proxyUrl = null;
@@ -129,17 +141,32 @@ export default {
                     password = this.$data.proxyPassword;
                 }
             }
-            savePromises.push(await dataUtils.changeDeployMethod(this.$data.deployMethod));
-            savePromises.push(await dataUtils.changeConfigModel(this.$data.logLevel, this.$data.connectorDeployMode,
+            let response = await dataUtils.changeDeployMethod(this.$data.deployMethod);
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Save deploy method failed.");
+                error = true;
+            }
+
+            response = await dataUtils.changeConfigModel(this.$data.logLevel, this.$data.connectorDeployMode,
                 this.$data.trustStoreUrl, this.$data.trustStorePassword, this.$data.keyStoreUrl, this.$data.keyStorePassword,
-                proxyUrl, this.$data.proxyNoProxy, username, password));
-            savePromises.push(await dataUtils.changeConnectorSettings(this.$data.connectorTitle, this.$data.connectorDescription,
+                proxyUrl, this.$data.proxyNoProxy, username, password);
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Save config model failed.");
+                error = true;
+            }
+
+            response = await dataUtils.changeConnectorSettings(this.$data.connectorTitle, this.$data.connectorDescription,
                 this.$data.connectorEndpoint, "v" + this.$data.connectorVersion, this.$data.connectorCurator,
-                this.$data.connectorMaintainer, this.$data.connectorInboundModelVersion, this.$data.connectorOutboundModelVersion));
-            Promise.all(savePromises).then(() => {
-                this.$root.$emit('showBusyIndicator', false);
+                this.$data.connectorMaintainer, this.$data.connectorInboundModelVersion, this.$data.connectorOutboundModelVersion);
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Save connector settings failed.");
+                error = true;
+            }
+
+            this.$root.$emit('showBusyIndicator', false);
+            if (!error) {
                 this.$data.saveMessage = "Successfully saved.";
-            });
+            }
         }
     }
 };
