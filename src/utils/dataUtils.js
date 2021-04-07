@@ -556,38 +556,36 @@ export default {
             response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson)).data;
             if (response.name !== undefined && response.name == "Error") {
                 vueRoot.$emit('error', "Save resource contract failed.");
+            }
+            // TODO remove sourceType when API changed.
+            params = {
+                "resourceId": resourceId,
+                "endpointId": genericEndpointId,
+                "language": language,
+                "sourceType": "LOCAL",
+                "filenameExtension": filetype,
+                "bytesize": bytesize
+            }
+            response = (await restUtils.call("POST", "/api/ui/resource/representation", params)).data;
+            if (response.name !== undefined && response.name == "Error") {
+                vueRoot.$emit('error', "Save resource representation failed.");
+            }
+            response = (await this.createConnectorEndpoint("http://data_" + Date.now()));
+            if (response.name !== undefined && response.name == "Error") {
+                vueRoot.$emit('error', "Save connector endpoint failed.");
             } else {
-                // TODO remove sourceType when API changed.
-                params = {
-                    "resourceId": resourceId,
-                    "endpointId": genericEndpointId,
-                    "language": language,
-                    "sourceType": "LOCAL",
-                    "filenameExtension": filetype,
-                    "bytesize": bytesize
-                }
-                response = (await restUtils.call("POST", "/api/ui/resource/representation", params)).data;
+                let endpointId = response;
+                response = (await this.createNewRoute(this.getCurrentDate() + " - " + title));
                 if (response.name !== undefined && response.name == "Error") {
-                    vueRoot.$emit('error', "Save resource representation failed.");
+                    vueRoot.$emit('error', "Save route failed.");
                 } else {
-                    response = (await this.createConnectorEndpoint("http://data_" + Date.now()));
+                    let routeId = response;
+                    response = (await this.createSubRoute(routeId, genericEndpointId, 20, 150,
+                        endpointId, 220, 150, resourceId));
                     if (response.name !== undefined && response.name == "Error") {
-                        vueRoot.$emit('error', "Save connector endpoint failed.");
+                        vueRoot.$emit('error', "Save route step failed.");
                     } else {
-                        let endpointId = response;
-                        response = (await this.createNewRoute(this.getCurrentDate() + " - " + title));
-                        if (response.name !== undefined && response.name == "Error") {
-                            vueRoot.$emit('error', "Save route failed.");
-                        } else {
-                            let routeId = response;
-                            response = (await this.createSubRoute(routeId, genericEndpointId, 20, 150,
-                                endpointId, 220, 150, resourceId));
-                            if (response.name !== undefined && response.name == "Error") {
-                                vueRoot.$emit('error', "Save route step failed.");
-                            } else {
-                                this.updateResourceAtBrokers(brokerUris, resourceId);
-                            }
-                        }
+                        this.updateResourceAtBrokers(brokerUris, resourceId);
                     }
                 }
             }
@@ -618,24 +616,22 @@ export default {
             response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson));
             if (response.name !== undefined && response.name == "Error") {
                 vueRoot.$emit('error', "Save resource contract failed.");
-            } else {
-                // TODO remove sourceType when API changed.
-                params = {
-                    "resourceId": resourceId,
-                    "representationId": representationId,
-                    "endpointId": genericEndpointId,
-                    "language": language,
-                    "filenameExtension": filetype,
-                    "bytesize": bytesize,
-                    "sourceType": "LOCAL"
-                }
-                response = (await restUtils.call("PUT", "/api/ui/resource/representation", params));
-                if (response.name !== undefined && response.name == "Error") {
-                    vueRoot.$emit('error', "Save resource representation failed.");
-                } else {
-                    this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
-                }
             }
+            // TODO remove sourceType when API changed.
+            params = {
+                "resourceId": resourceId,
+                "representationId": representationId,
+                "endpointId": genericEndpointId,
+                "language": language,
+                "filenameExtension": filetype,
+                "bytesize": bytesize,
+                "sourceType": "LOCAL"
+            }
+            response = (await restUtils.call("PUT", "/api/ui/resource/representation", params));
+            if (response.name !== undefined && response.name == "Error") {
+                vueRoot.$emit('error', "Save resource representation failed.");
+            }
+            this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
         }
     },
 
@@ -675,30 +671,28 @@ export default {
             if (response.name !== undefined && response.name == "Error") {
                 error = true;
                 vueRoot.$emit('error', "Save resource contract failed.");
+            }
+            // TODO remove sourceType when API changed.
+            params = {
+                "resourceId": resourceId,
+                "endpointId": genericEndpointId,
+                "language": language,
+                "sourceType": "LOCAL",
+                "filenameExtension": filetype,
+                "bytesize": bytesize
+            };
+            response = (await restUtils.call("POST", "/api/ui/resource/representation", params));
+            if (response.name !== undefined && response.name == "Error") {
+                error = true;
+                vueRoot.$emit('error', "Save resource representation failed.");
+            }
+            let endpointId = (await this.createConnectorEndpoint("http://data_" + Date.now()));
+            response = await this.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
+                endpointId, endCoordinateX, endCoordinateY, resourceId);
+            if (response.name !== undefined && response.name == "Error") {
+                vueRoot.$emit('error', "Save route step failed.");
             } else {
-                // TODO remove sourceType when API changed.
-                params = {
-                    "resourceId": resourceId,
-                    "endpointId": genericEndpointId,
-                    "language": language,
-                    "sourceType": "LOCAL",
-                    "filenameExtension": filetype,
-                    "bytesize": bytesize
-                };
-                response = (await restUtils.call("POST", "/api/ui/resource/representation", params));
-                if (response.name !== undefined && response.name == "Error") {
-                    error = true;
-                    vueRoot.$emit('error', "Save resource representation failed.");
-                } else {
-                    let endpointId = (await this.createConnectorEndpoint("http://data_" + Date.now()));
-                    response = await this.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
-                        endpointId, endCoordinateX, endCoordinateY, resourceId);
-                    if (response.name !== undefined && response.name == "Error") {
-                        vueRoot.$emit('error', "Save route step failed.");
-                    } else {
-                        await this.updateResourceAtBrokers(brokerUris, resourceId);
-                    }
-                }
+                await this.updateResourceAtBrokers(brokerUris, resourceId);
             }
         }
         return error;
