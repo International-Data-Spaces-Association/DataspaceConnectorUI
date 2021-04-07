@@ -205,7 +205,7 @@ export default {
         let fileType = undefined;
         let bytesize = undefined;
         let representationId = null;
-        if (idsResource["ids:representation"] !== undefined) {
+        if (idsResource["ids:representation"] !== undefined && idsResource["ids:representation"].length > 0) {
             if (idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"] !== undefined) {
                 sourceType = idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"];
             }

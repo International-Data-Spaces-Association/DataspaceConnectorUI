@@ -532,7 +532,7 @@ export default {
         });
     },
 
-    async createResource(title, description, language, keyword, version, standardlicense, publisher, contractJson,
+    async createResource(title, description, language, keyword, version, standardlicense, publisher, pattern, contractJson,
         filetype, bytesize, brokerUris, genericEndpointId, vueRoot) {
         console.log("dataUtils.createRes: ", this);
         let params = {
@@ -550,9 +550,10 @@ export default {
         } else {
             let resourceId = response.resourceID;
             params = {
-                "resourceId": resourceId
+                "resourceId": resourceId,
+                "pattern": pattern
             }
-            response = (await restUtils.call("PUT", "/api/ui/resource/contract", params, contractJson)).data;
+            response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson)).data;
             if (response.name !== undefined && response.name == "Error") {
                 vueRoot.$emit('error', "Save resource contract failed.");
             } else {
@@ -593,7 +594,7 @@ export default {
         }
     },
 
-    async editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, contractJson,
+    async editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, pattern, contractJson,
         filetype, bytesize, brokerUris, brokerDeleteUris, genericEndpointId, vueRoot) {
         let params = {
             "resourceId": resourceId,
@@ -611,9 +612,10 @@ export default {
             vueRoot.$emit('error', "Save resource failed.");
         } else {
             params = {
-                "resourceId": resourceId
+                "resourceId": resourceId,
+                "pattern": pattern
             }
-            response = (await restUtils.call("PUT", "/api/ui/resource/contract", params, contractJson));
+            response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson));
             if (response.name !== undefined && response.name == "Error") {
                 vueRoot.$emit('error', "Save resource contract failed.");
             } else {
@@ -647,7 +649,7 @@ export default {
     },
 
     async createResourceIdsEndpointAndAddSubRoute(title, description, language, keyword, version, standardlicense,
-        publisher, contractJson, filetype, bytesize, brokerUris, genericEndpointId, routeId, startId, startCoordinateX,
+        publisher, pattern, contractJson, filetype, bytesize, brokerUris, genericEndpointId, routeId, startId, startCoordinateX,
         startCoordinateY, endCoordinateX, endCoordinateY, vueRoot) {
         let error = false;
         let params = {
@@ -666,9 +668,10 @@ export default {
         } else {
             let resourceId = response.data.resourceID;
             params = {
-                "resourceId": resourceId
+                "resourceId": resourceId,
+                "pattern": pattern
             };
-            response = (await restUtils.call("PUT", "/api/ui/resource/contract", params, contractJson));
+            response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson));
             if (response.name !== undefined && response.name == "Error") {
                 error = true;
                 vueRoot.$emit('error', "Save resource contract failed.");

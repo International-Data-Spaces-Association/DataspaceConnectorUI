@@ -62,6 +62,9 @@ export default {
             }
             this.$refs[this.$data.policyType].setPolicy(contract);
         },
+        getPattern() {
+            return this.$refs[this.$data.policyType].pattern;
+        },
         getContractJson() {
             return this.$refs[this.$data.policyType].contractJson;
         },

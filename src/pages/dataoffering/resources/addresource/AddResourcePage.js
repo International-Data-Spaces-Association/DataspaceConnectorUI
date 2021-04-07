@@ -104,6 +104,7 @@ export default {
             var version = this.$refs.metaDataPage.version;
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
+            var pattern = this.$refs.policyPage.getPattern();
             var contractJson = this.$refs.policyPage.getContractJson();
             var filetype = this.$refs.representationPage.filetype;
             var bytesize = this.$refs.representationPage.bytesize;
@@ -113,17 +114,17 @@ export default {
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
                 this.$emit("saved", title, description, language, keywords, version, standardlicense, publisher,
-                    contractJson, filetype, bytesize, brokerList);
+                    pattern, contractJson, filetype, bytesize, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
                     await dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher,
-                        contractJson, filetype, bytesize, brokerList, genericEndpointId, this.$root);
+                        pattern, contractJson, filetype, bytesize, brokerList, genericEndpointId, this.$root);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
-                        title, description, language, keywords, version, standardlicense, publisher, contractJson,
+                        title, description, language, keywords, version, standardlicense, publisher, pattern, contractJson,
                         filetype, bytesize, brokerList, brokerDeleteList, genericEndpointId, this.$root);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
