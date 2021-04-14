@@ -42,16 +42,10 @@ export default {
     },
     mounted: function () {
         this.getBackendConnections();
-        this.loadSourceTypes();
     },
     methods: {
         gotVisible() {
             this.getBackendConnections();
-        },
-        async loadSourceTypes() {
-            dataUtils.getSourceTypes(sourceTypes => {
-                this.$data.sourceTypeItems = sourceTypes;
-            });
         },
         previousPage() {
             this.$emit('previousPage')
