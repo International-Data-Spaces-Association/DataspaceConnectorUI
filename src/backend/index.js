@@ -4,7 +4,7 @@ import axios from "axios";
 import bodyParser from "body-parser";
 
 const app = express();
-const port = 80;
+const port = 8083;
 let configModelUrl = "http://localhost:8081";
 
 console.log("CONFIGMANAGER_URL", process.env.CONFIGMANAGER_URL);

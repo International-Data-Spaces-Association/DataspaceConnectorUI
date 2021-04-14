@@ -1,6 +1,6 @@
 import Axios from "axios";
 
-let backendUrl = "http://localhost:80";
+let backendUrl = "http://localhost:8083";
 
 console.log("VUE_APP_UI_BACKEND_URL: ", process.env.VUE_APP_UI_BACKEND_URL);
 
