@@ -28,9 +28,7 @@ export default {
     },
     methods: {
         async loadLanguages() {
-            DataUtils.getLanguages(languages => {
-                this.$data.languageItems = languages;
-            });
+            this.$data.languageItems = (await DataUtils.getLanguages());
         },
         nextPage() {
             this.$emit('nextPage');

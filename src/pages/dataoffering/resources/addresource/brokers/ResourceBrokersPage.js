@@ -37,8 +37,11 @@ export default {
         backendConnectionSaved() {
             this.getBrokers();
         },
-        getBrokers() {
-            dataUtils.getBrokers(brokers => {
+        async getBrokers() {
+            let response = await dataUtils.getBrokers();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get brokers failed.");
+            } else {
                 this.$data.brokers = [];
                 for (let broker of brokers) {
                     if(broker[1]["brokerStatus"] == "REGISTERED"){
@@ -51,7 +54,7 @@ export default {
                 }
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
-            });
+            }
         },
         loadResource(resource) {
             this.$data.selected = [];

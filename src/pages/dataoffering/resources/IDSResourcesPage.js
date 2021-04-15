@@ -46,18 +46,21 @@ export default {
         this.getResources();
     },
     methods: {
-        getResources() {
+        async getResources() {
             this.$root.$emit('showBusyIndicator', true);
-            dataUtils.getResources(resources => {
-                this.$data.resources = resources;
+            let response = await dataUtils.getResources();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get resources failed.");
+            } else {
+                this.$data.resources = response;
                 this.$data.fileTypes = ["All"];
-                for (let resource of resources) {
+                for (let resource of this.$data.resources) {
                     this.$data.fileTypes.push(resource.fileType);
                 }
                 this.filterChanged();
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
-            });
+            }
         },
         filterChanged() {
             if (this.$data.filterResourceType == null | this.$data.filterResourceType == "All") {
@@ -80,24 +83,28 @@ export default {
             this.$refs.confirmationDialog.callback = this.deleteCallback;
             this.$refs.confirmationDialog.dialog = true;
         },
-        deleteCallback(choice, callbackData) {
+        async deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 let resourceId = callbackData.item.id;
                 this.$root.$emit('showBusyIndicator', true);
 
-                dataUtils.getResourceRegistrationStatus(resourceId).then(data => {
+                let response = await dataUtils.getResourceRegistrationStatus(resourceId);
+                if (response.name !== undefined && response.name == "Error") {
+                    this.$root.$emit('error', "Get resource registration status failed.");
+                } else {
                     let brokerUris = [];
-                    for (let status of data) {
+                    for (let status of response) {
                         brokerUris.push(status.brokerId);
                     }
-                    dataUtils.deleteResource(resourceId, () => {
-                        dataUtils.updateResourceAtBrokers(brokerUris, resourceId, () => {
-                            this.getResources();
-                            this.$root.$emit('showBusyIndicator', false);
-                        });
-                    });
-
-                });
+                    response = await dataUtils.deleteResource(resourceId);
+                    if (response.name !== undefined && response.name == "Error") {
+                        this.$root.$emit('error', "Delete resource failed.");
+                    } else {
+                        response = await dataUtils.updateResourceAtBrokers(brokerUris, resourceId);
+                        this.getResources();
+                        this.$root.$emit('showBusyIndicator', false);
+                    }
+                }
             }
         },
         editItem(item) {

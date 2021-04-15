@@ -27,23 +27,19 @@ export default {
             this.$data.brokerTitle = "";
             this.$data.url = "";
         },
-        saveBroker() {
+        async saveBroker() {
             if (this.$data.currentBroker == null) {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
-                dataUtils.createBroker(this.$data.url, this.$data.brokerTitle).then(() => {
-                    this.$emit('brokerSaved');
-                });
+                await dataUtils.createBroker(this.$data.url, this.$data.brokerTitle, this.$root);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
-                dataUtils.updateBroker(this.$data.url, this.$data.brokerTitle).then(() => {
-                    this.$emit('brokerSaved');
-                });
+                await dataUtils.updateBroker(this.$data.url, this.$data.brokerTitle, this.$root);
             }
+            this.$emit('brokerSaved');
         },
         edit(broker) {
-            console.log(">>> BROKER: ", broker);
             this.$data.title = "Edit Broker"
             this.$data.urlReadOnly = true;
             this.$data.currentBroker = broker;

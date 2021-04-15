@@ -21,21 +21,26 @@ export default {
     methods: {
         async getOfferedResourcesStats() {
             this.$data.numberOfAssignedData = 0;
-            const response = (await dataUtils.getOfferedResourcesStats());
-            if (response.totalNumber === undefined) {
-                this.$data.offeredResourcesAvailable = false;
-            } else {
-                this.$data.offeredResourcesAvailable = true;
-                this.$data.totalNumber = response.totalNumber;
-                if (response.totalNumber > 1) {
-                    this.$data.totalNumberType = "resources"
+            try {
+                let response = (await dataUtils.getOfferedResourcesStats());
+                if (response.totalNumber === undefined) {
+                    this.$data.offeredResourcesAvailable = false;
+                    this.$root.$emit('error', "Get offered resources failed.");
                 } else {
-                    this.$data.totalNumberType = "resource"
+                    this.$data.offeredResourcesAvailable = true;
+                    this.$data.totalNumber = response.totalNumber;
+                    if (response.totalNumber > 1) {
+                        this.$data.totalNumberType = "resources"
+                    } else {
+                        this.$data.totalNumberType = "resource"
+                    }
+                    this.$data.totalSize = this.getTotalSize(response.totalSize);
+                    this.$data.totalSizeType = this.getTotalSizeType(response.totalSize);
                 }
-                this.$data.totalSize = this.getTotalSize(response.totalSize);
-                this.$data.totalSizeType = this.getTotalSizeType(response.totalSize);
+                this.$forceUpdate();
+            } catch (error) {
+                console.log("Error on getOfferedResourcesStats(): ", error);
             }
-            this.$forceUpdate();
         },
         getTotalSize(totalSize) {
             let totalSizeNew = -1;

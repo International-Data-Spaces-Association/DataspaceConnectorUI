@@ -24,6 +24,8 @@ export default {
     mounted: function () { },
     methods: {
         show(connection, nodes, isNewConnection) {
+            let autoSetInput = false;
+            let autoSetOutput = false;
             this.$data.isNewConnection = isNewConnection;
             this.$data.connection = connection;
             this.$data.sourceNode = dataUtils.getNode(connection.source.id, nodes);
@@ -40,17 +42,31 @@ export default {
             }
 
             if (connection.sourceEndpointId === undefined) {
-                this.$data.outputId = null;
+                if (sourceEndpoints.length == 1) {
+                    this.$data.outputId = this.getItem(sourceEndpoints[0]).id;
+                    autoSetOutput = true;
+                } else {
+                    this.$data.outputId = null;
+                }
             } else {
                 this.$data.outputId = connection.sourceEndpointId;
             }
             if (connection.destinationEndpointId === undefined) {
-                this.$data.inputId = null;
+                if (destEndpoints.length == 1) {
+                    this.$data.inputId = this.getItem(destEndpoints[0]).id;
+                    autoSetInput = true;
+                } else {
+                    this.$data.inputId = null;
+                }
             } else {
                 this.$data.inputId = connection.destinationEndpointId;
             }
             this.dialog = true;
             this.$refs.form.resetValidation();
+            // If there are no alternative inputs/outputs for the user to select, then automatically save connection settings.
+            if (((autoSetInput || this.$data.destinationNode.type == "idsendpointnode") && (autoSetOutput || this.$data.sourceNode.type == "idsendpointnode"))) {
+                this.save();
+            }
         },
         save() {
             this.$data.connection.sourceEndpointId = this.$data.outputId;

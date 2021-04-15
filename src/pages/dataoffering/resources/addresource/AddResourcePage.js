@@ -59,10 +59,13 @@ export default {
                 }
             }
         },
-        loadResource(id) {
+        async loadResource(id) {
             this.$root.$emit('showBusyIndicator', true);
-            dataUtils.getResource(id, resource => {
-                this.$data.currentResource = resource;
+            let response = await dataUtils.getResource(id);
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get resource failed.");
+            } else {
+                this.$data.currentResource = response;
                 this.$data.isNewResource = false;
                 this.$refs.metaDataPage.loadResource(this.$data.currentResource);
                 this.$refs.policyPage.loadResource(this.$data.currentResource);
@@ -70,7 +73,8 @@ export default {
                 this.$refs.brokersPage.loadResource(this.$data.currentResource);
                 this.$root.$emit('showBusyIndicator', false);
                 this.$forceUpdate();
-            });
+            }
+
         },
         set(resource) {
             this.$data.currentResource = resource;
@@ -88,7 +92,7 @@ export default {
             this.$refs.representationPage.readonly = readonly;
             this.$refs.brokersPage.readonly = readonly;
         },
-        save() {
+        async save() {
             var genericEndpointId = null;
             if (this.$refs.representationPage.selected.length > 0) {
                 genericEndpointId = this.$refs.representationPage.selected[0].id;
@@ -100,6 +104,7 @@ export default {
             var version = this.$refs.metaDataPage.version;
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
+            var pattern = this.$refs.policyPage.getPattern();
             var contractJson = this.$refs.policyPage.getContractJson();
             var filetype = this.$refs.representationPage.filetype;
             var bytesize = this.$refs.representationPage.bytesize;
@@ -109,22 +114,20 @@ export default {
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
                 this.$emit("saved", title, description, language, keywords, version, standardlicense, publisher,
-                    contractJson, filetype, bytesize, brokerList);
+                    pattern, contractJson, filetype, bytesize, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
-                    dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher,
-                        contractJson, filetype, bytesize, brokerList, genericEndpointId, () => {
-                            this.$router.push('idresourcesoffering');
-                            this.$root.$emit('showBusyIndicator', false);
-                        });
+                    await dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher,
+                        pattern, contractJson, filetype, bytesize, brokerList, genericEndpointId, this.$root);
+                    this.$router.push('idresourcesoffering');
+                    this.$root.$emit('showBusyIndicator', false);
                 } else {
-                    dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
-                        title, description, language, keywords, version, standardlicense, publisher, contractJson,
-                        filetype, bytesize, brokerList, brokerDeleteList, genericEndpointId, () => {
-                            this.$router.push('idresourcesoffering');
-                            this.$root.$emit('showBusyIndicator', false);
-                        });
+                    await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
+                        title, description, language, keywords, version, standardlicense, publisher, pattern, contractJson,
+                        filetype, bytesize, brokerList, brokerDeleteList, genericEndpointId, this.$root);
+                    this.$router.push('idresourcesoffering');
+                    this.$root.$emit('showBusyIndicator', false);
                 }
             }
         }

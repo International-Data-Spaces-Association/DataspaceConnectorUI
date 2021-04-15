@@ -23,7 +23,11 @@ export default {
     },
     methods: {
         async getFileTypes() {
-            dataUtils.getResources(resources => {
+            let response = await dataUtils.getResources();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get resources failed.");
+            } else {
+                let resources = response;
                 if (resources.length == 0) {
                     this.$data.chartVisible = false;
                 } else {
@@ -51,7 +55,7 @@ export default {
                     }
                     this.$data.series = series;
                 }
-            });
+            }
         }
     }
 
