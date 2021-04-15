@@ -43,8 +43,8 @@ export default {
                 this.$root.$emit('error', "Get brokers failed.");
             } else {
                 this.$data.brokers = [];
-                for (let broker of brokers) {
-                    if(broker[1]["brokerStatus"] == "REGISTERED"){
+                for (let broker of response) {
+                    if (broker[1]["brokerStatus"] == "REGISTERED") {
                         this.$data.brokers.push({
                             broker: broker,
                             title: broker[1]["title"],
