@@ -30,7 +30,6 @@ const OPERATOR_TYPE_TO_SYMBOL = {
 
 
 let languages = null;
-let sourcTypes = null;
 let apps = null;
 let backendConnections = null;
 
@@ -153,22 +152,6 @@ export default {
                 });
             } else {
                 resolve(languages);
-            }
-        });
-    },
-
-    getSourceTypes() {
-        return new Promise(function (resolve) {
-            if (sourcTypes == null) {
-                restUtils.call("GET", "/api/ui/enum/SourceType").then(response => {
-                    sourcTypes = response.data;
-                    resolve(sourcTypes);
-                }).catch(error => {
-                    console.log("Error in loadData(): ", error);
-                    resolve(error);
-                });
-            } else {
-                resolve(sourcTypes);
             }
         });
     },

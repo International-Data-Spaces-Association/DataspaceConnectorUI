@@ -50,7 +50,8 @@
                 Deploy
             </v-col>
             <v-col cols="12" md="9">
-                <v-select label="Deploy Method" v-model="deployMethod" :items="deployMethods">
+                <v-select label="Deploy Method" v-model="deployMethod" :items="deployMethods" item-text="displayName"
+                    item-value="originalName">
                 </v-select>
             </v-col>
         </v-row>
@@ -59,7 +60,8 @@
                 LogLevel
             </v-col>
             <v-col cols="12" md="9">
-                <v-select label="Log Level" v-model="logLevel" :items="logLevels">
+                <v-select label="Log Level" v-model="logLevel" :items="logLevels" item-text="displayName"
+                    item-value="originalName">
                 </v-select>
             </v-col>
         </v-row>
@@ -68,7 +70,8 @@
                 Connector DeployMode
             </v-col>
             <v-col cols="12" md="9">
-                <v-select label="Connector Deploy Mode" v-model="connectorDeployMode" :items="connectorDeployModes">
+                <v-select label="Connector Deploy Mode" v-model="connectorDeployMode" :items="connectorDeployModes"
+                    item-text="displayName" item-value="originalName">
                 </v-select>
             </v-col>
         </v-row>
