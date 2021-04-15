@@ -40,14 +40,15 @@ export default {
         getBrokers() {
             dataUtils.getBrokers(brokers => {
                 this.$data.brokers = [];
-                for (var broker of brokers) {
-                    this.$data.brokers.push({
-                        broker: broker,
-                        title: broker[1]["title"],
-                        url: broker[1]["brokerUri"]
-                    });
+                for (let broker of brokers) {
+                    if(broker[1]["brokerStatus"] == "REGISTERED"){
+                        this.$data.brokers.push({
+                            broker: broker,
+                            title: broker[1]["title"],
+                            url: broker[1]["brokerUri"]
+                        });
+                    }
                 }
-
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
             });
