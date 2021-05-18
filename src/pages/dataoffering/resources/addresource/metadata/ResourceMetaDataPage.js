@@ -39,7 +39,7 @@ export default {
             } else {
                 this.$data.title = resource.title;
                 this.$data.description = resource.description;
-                this.$data.language = resource.language;
+                this.$data.language = resource.language.substring(resource.language.lastIndexOf("/")+1);
                 this.$data.keywords = resource.keywords;
                 this.$data.version = resource.version;
                 this.$data.standardlicense = resource.standardLicense;

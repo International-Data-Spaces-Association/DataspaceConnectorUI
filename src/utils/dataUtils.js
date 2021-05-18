@@ -266,7 +266,7 @@ export default {
         return {
             id: genericEndpoint["@id"],
             endpoint: genericEndpoint,
-            url: genericEndpoint["ids:accessURL"]["@id"]
+            url: genericEndpoint["ids:accessURL"]?genericEndpoint["ids:accessURL"]["@id"]:"http://"
         };
     },
 
@@ -316,12 +316,13 @@ export default {
         });
     },
 
-    createBackendConnection(url, username, password) {
+    createBackendConnection(url, username, password, sourceType) {
         return new Promise(function (resolve) {
             let params = {
                 "accessURL": url,
                 "username": username,
-                "password": password
+                "password": password,
+                "sourceType": sourceType
             };
             restUtils.call("POST", "/api/ui/generic/endpoint", params).then(response => {
                 resolve(response.data);
@@ -332,13 +333,15 @@ export default {
         });
     },
 
-    updateBackendConnection(id, url, username, password) {
+    updateBackendConnection(id, url, username, password, sourceType) {
+        console.log("updateBackendConnection");
         return new Promise(function (resolve) {
             let params = {
                 "id": id,
                 "accessURL": url,
                 "username": username,
-                "password": password
+                "password": password,
+                "sourceType": sourceType
             };
             restUtils.call("PUT", "/api/ui/generic/endpoint", params).then(response => {
                 resolve(response.data);
@@ -568,7 +571,7 @@ export default {
                     if (response.name !== undefined && response.name == "Error") {
                         vueRoot.$emit('error', "Save route step failed.");
                     } else {
-                        this.updateResourceAtBrokers(brokerUris, resourceId);
+                        await this.updateResourceAtBrokers(brokerUris, resourceId);
                     }
                 }
             }
@@ -577,6 +580,7 @@ export default {
 
     async editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, pattern, contractJson,
         filetype, bytesize, brokerUris, brokerDeleteUris, genericEndpointId, vueRoot) {
+        console.log("Edit Resource");
         let params = {
             "resourceId": resourceId,
             "title": title,
@@ -614,7 +618,7 @@ export default {
             if (response.name !== undefined && response.name == "Error") {
                 vueRoot.$emit('error', "Save resource representation failed.");
             }
-            this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
+            await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
         }
     },
 

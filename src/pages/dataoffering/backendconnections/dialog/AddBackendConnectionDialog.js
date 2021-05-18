@@ -9,6 +9,8 @@ export default {
             currentEndpoint: null,
             title: "",
             url: null,
+            sourceType: "LOCAL",
+            sourceTypes: ["LOCAL", "HTTP_GET", "HTTPS_GET", "HTTPS_GET_BASICAUTH"],
             username: null,
             password: null,
             showPassword: false,
@@ -32,15 +34,19 @@ export default {
             this.$data.title = "Add Backend Connection";
             this.$data.currentEndpoint = null;
             this.$data.url = "";
+            this.$data.sourceType = "LOCAL";
             this.$data.username = "";
             this.$data.password = "";
+        },
+        cancelBackendConnection(){
+          this.$data.dialog = false;
         },
         async saveBackendConnection() {
             if (this.$data.currentEndpoint == null) {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
                 try {
-                    let response = (await dataUtils.createBackendConnection(this.$data.url, this.$data.username, this.$data.password));
+                    let response = (await dataUtils.createBackendConnection(this.$data.url, this.$data.username, this.$data.password, this.$data.sourceType));
                     if (response.name !== undefined && response.name == "Error") {
                         this.$root.$emit('error', "Update backend connection failed.");
                     }
@@ -53,7 +59,7 @@ export default {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
                 try {
-                    let response = (await dataUtils.updateBackendConnection(this.currentEndpoint["@id"], this.$data.url, this.$data.username, this.$data.password));
+                    let response = (await dataUtils.updateBackendConnection(this.currentEndpoint["@id"], this.$data.url, this.$data.username, this.$data.password, this.$data.sourceType));
                     if (response.name !== undefined && response.name == "Error") {
                         this.$root.$emit('error', "Update backend connection failed.");
                     }
@@ -65,9 +71,13 @@ export default {
             }
         },
         edit(endpoint) {
+            console.log("edit Endpoint");
             this.$data.title = "Edit Backend Connection"
             this.$data.currentEndpoint = endpoint;
             this.$data.url = endpoint["ids:accessURL"]["@id"];
+            let sourceTypeField = endpoint["@context"].ids+"sourceType";
+            let sourceType = endpoint[sourceTypeField];
+            this.$data.sourceType = sourceType["@value"];
             this.$data.username = endpoint["ids:genericEndpointAuthentication"]["ids:authUsername"];
             this.$data.password = endpoint["ids:genericEndpointAuthentication"]["ids:authPassword"];
             this.$data.dialog = true;

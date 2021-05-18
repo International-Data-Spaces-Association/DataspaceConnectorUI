@@ -31,7 +31,6 @@ export default {
     methods: {
         async getRoutes() {
             this.$root.$emit('showBusyIndicator', true);
-
             let response = await dataUtils.getRoutes();
             if (response.name !== undefined && response.name == "Error") {
                 this.$root.$emit('error', "Get routes failed.");

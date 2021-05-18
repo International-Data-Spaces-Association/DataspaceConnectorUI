@@ -45,7 +45,7 @@ export default {
                         broker: broker,
                         title: broker[1]["title"],
                         url: broker[1]["brokerUri"],
-                        registerStatus: this.toRegisterStatusClass(broker[1]["brokerStatus"])
+                        registerStatus: this.toRegisterStatusClass(broker[1]["brokerRegistrationStatus"])
                     });
                 }
 

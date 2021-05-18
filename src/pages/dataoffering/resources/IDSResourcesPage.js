@@ -22,9 +22,14 @@ export default {
             {
                 text: 'Type',
                 value: 'fileType'
-            }, {
+            }, 
+            {
                 text: 'Policy',
                 value: 'policyName'
+            },
+            {
+                text: 'Brokers',
+                value: 'brokers'
             },
             {
                 text: '',
@@ -56,6 +61,8 @@ export default {
                 this.$data.fileTypes = ["All"];
                 for (let resource of this.$data.resources) {
                     this.$data.fileTypes.push(resource.fileType);
+                    let brokers = await dataUtils.getResourceRegistrationStatus(resource.id);
+                    resource.brokers = brokers.map(x => x.brokerId);
                 }
                 this.filterChanged();
                 this.$forceUpdate();

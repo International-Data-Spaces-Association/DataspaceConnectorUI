@@ -71,7 +71,7 @@ export default {
                 this.$root.$emit('error', "Get current deploy method failed.");
             } else {
                 if (response != null && response != "") {
-                    this.$data.deployMethod = response[0][1].deployMethod;
+                    this.$data.deployMethod = response[0][1].routeDeployMethod;
                 }
             }
 
@@ -97,9 +97,12 @@ export default {
                     count++;
                 }
                 this.$data.proxyNoProxy = noProxy;
-                this.$data.logLevel = configModel.logLevel;
-                this.$data.connectorStatus = configModel.connectorStatus;
-                this.$data.connectorDeployMode = configModel.connectorDeployMode;
+                const loglevelTmp = configModel.logLevel;
+                this.$data.logLevel = loglevelTmp.substring(loglevelTmp.lastIndexOf("/") +1);
+                const connectorStatusTmp = configModel.connectorStatus;
+                this.$data.connectorStatus = connectorStatusTmp.substring(connectorStatusTmp.lastIndexOf("/")+1);
+                const connectorDeployModeTmp = configModel.connectorDeployMode;
+                this.$data.connectorDeployMode = connectorDeployModeTmp.substring(connectorDeployModeTmp.lastIndexOf("/")+1);
                 this.$data.trustStoreUrl = configModel.trustStoreUrl;
                 this.$data.trustStorePassword = configModel.trustStorePassword;
                 this.$data.keyStoreUrl = configModel.keyStoreUrl;

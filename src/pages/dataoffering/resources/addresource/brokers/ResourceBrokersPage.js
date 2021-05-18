@@ -44,7 +44,7 @@ export default {
             } else {
                 this.$data.brokers = [];
                 for (let broker of response) {
-                    if (broker[1]["brokerStatus"] == "REGISTERED") {
+                    if (broker[1]["brokerRegistrationStatus"] == "REGISTERED") {
                         this.$data.brokers.push({
                             broker: broker,
                             title: broker[1]["title"],

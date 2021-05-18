@@ -42,7 +42,7 @@ export default {
         },
         backendConnectionSaved() {
             this.getBackendConnections();
-        },
+        },        
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Backend Connection";
             this.$refs.confirmationDialog.text = "Are you sure you want to delete the Backend Connection '" + item.url + "'?";
