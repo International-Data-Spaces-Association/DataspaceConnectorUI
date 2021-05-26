@@ -30,12 +30,12 @@ export default {
             this.$data.connection = connection;
             this.$data.sourceNode = dataUtils.getNode(connection.source.id, nodes);
             this.$data.destinationNode = dataUtils.getNode(connection.destination.id, nodes);
-            let sourceEndpoints = dataUtils.getEndpointList(this.$data.sourceNode, "idsc:OUTPUT_ENDPOINT");
+            let sourceEndpoints = dataUtils.getEndpointList(this.$data.sourceNode, "https://w3id.org/idsa/code/OUTPUT_ENDPOINT");
             this.$data.outputs = [];
             for (let endpoint of sourceEndpoints) {
                 this.$data.outputs.push(this.getItem(endpoint));
             }
-            let destEndpoints = dataUtils.getEndpointList(this.$data.destinationNode, "idsc:INPUT_ENDPOINT");
+            let destEndpoints = dataUtils.getEndpointList(this.$data.destinationNode, "https://w3id.org/idsa/code/INPUT_ENDPOINT");
             this.$data.inputs = [];
             for (let endpoint of destEndpoints) {
                 this.$data.inputs.push(this.getItem(endpoint));
