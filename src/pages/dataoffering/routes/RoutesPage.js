@@ -29,19 +29,21 @@ export default {
         this.getRoutes();
     },
     methods: {
-        getRoutes() {
+        async getRoutes() {
             this.$root.$emit('showBusyIndicator', true);
-
-            dataUtils.getRoutes(routes => {
+            let response = await dataUtils.getRoutes();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get routes failed.");
+            } else {
                 this.$data.routes = [];
-                for (let route of routes) {
+                for (let route of response) {
                     this.$data.routes.push({
                         id: route["@id"],
                         description: route["ids:routeDescription"]
                     });
                 }
                 this.$root.$emit('showBusyIndicator', false);
-            });
+            }
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Route";
@@ -52,12 +54,15 @@ export default {
             this.$refs.confirmationDialog.callback = this.deleteCallback;
             this.$refs.confirmationDialog.dialog = true;
         },
-        deleteCallback(choice, callbackData) {
+        async deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                dataUtils.deleteRoute(callbackData.item.id, () => {
+                let response = await dataUtils.deleteRoute(callbackData.item.id);
+                if (response.name !== undefined && response.name == "Error") {
+                    this.$root.$emit('error', "Delete route failed.");
+                } else {
                     this.getRoutes();
-                })
+                }
             }
         },
         editItem(item) {

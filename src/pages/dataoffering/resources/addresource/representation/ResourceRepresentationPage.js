@@ -42,16 +42,10 @@ export default {
     },
     mounted: function () {
         this.getBackendConnections();
-        this.loadSourceTypes();
     },
     methods: {
         gotVisible() {
             this.getBackendConnections();
-        },
-        async loadSourceTypes() {
-            dataUtils.getSourceTypes(sourceTypes => {
-                this.$data.sourceTypeItems = sourceTypes;
-            });
         },
         previousPage() {
             this.$emit('previousPage')
@@ -63,18 +57,21 @@ export default {
             this.$data.newBackendConnection = true;
             this.getBackendConnections();
         },
-        getBackendConnections() {
-            dataUtils.getBackendConnections(backendConnections => {
-                this.$data.backendConnections = backendConnections;
+        async getBackendConnections() {
+            let response = await dataUtils.getBackendConnections();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get backend connections failed.");
+            } else {
+                this.$data.backendConnections = response;
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
                 if (this.$data.newBackendConnection) {
                     this.$data.newBackendConnection = false;
                     this.$root.$emit('showBusyIndicator', false);
                 }
-            });
+            }
         },
-        loadResource(resource) {
+        async loadResource(resource) {
             if (resource.fileType === undefined && resource.bytesize === undefined) {
                 this.$refs.form.reset();
             } else {
@@ -87,8 +84,11 @@ export default {
             }
 
             this.$data.selected = [];
-            dataUtils.getRoutes(routes => {
-                for (let route of routes) {
+            let response = await dataUtils.getRoutes();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get routes failed.");
+            } else {
+                for (let route of response) {
                     if (route["ids:hasSubRoute"] !== undefined) {
                         for (let step of route["ids:hasSubRoute"]) {
                             if (step["ids:appRouteOutput"] !== undefined) {
@@ -99,7 +99,7 @@ export default {
                         }
                     }
                 }
-            });
+            }
         }
     }
 };

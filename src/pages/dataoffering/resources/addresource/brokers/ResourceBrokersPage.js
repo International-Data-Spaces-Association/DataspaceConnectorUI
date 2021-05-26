@@ -37,20 +37,24 @@ export default {
         backendConnectionSaved() {
             this.getBrokers();
         },
-        getBrokers() {
-            dataUtils.getBrokers(brokers => {
+        async getBrokers() {
+            let response = await dataUtils.getBrokers();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get brokers failed.");
+            } else {
                 this.$data.brokers = [];
-                for (var broker of brokers) {
-                    this.$data.brokers.push({
-                        broker: broker,
-                        title: broker[1]["title"],
-                        url: broker[1]["brokerUri"]
-                    });
+                for (let broker of response) {
+                    if (broker[1]["brokerRegistrationStatus"] == "REGISTERED") {
+                        this.$data.brokers.push({
+                            broker: broker,
+                            title: broker[1]["title"],
+                            url: broker[1]["brokerUri"]
+                        });
+                    }
                 }
-
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
-            });
+            }
         },
         loadResource(resource) {
             this.$data.selected = [];

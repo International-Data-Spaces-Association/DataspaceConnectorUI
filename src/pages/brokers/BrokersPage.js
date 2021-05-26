@@ -33,21 +33,25 @@ export default {
         this.getBrokers();
     },
     methods: {
-        getBrokers() {
-            dataUtils.getBrokers(brokers => {
+        async getBrokers() {
+            let response = await dataUtils.getBrokers();
+
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get brokers failed.");
+            } else {
                 this.$data.brokers = [];
-                for (var broker of brokers) {
+                for (var broker of response) {
                     this.$data.brokers.push({
                         broker: broker,
                         title: broker[1]["title"],
                         url: broker[1]["brokerUri"],
-                        registerStatus: this.toRegisterStatusClass(broker[1]["brokerStatus"])
+                        registerStatus: this.toRegisterStatusClass(broker[1]["brokerRegistrationStatus"])
                     });
                 }
 
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
-            });
+            }
         },
         toRegisterStatusClass(brokerStatus) {
             let statusClass = "notRegisteredAtBroker";
@@ -76,10 +80,12 @@ export default {
                 this.deleteBroker(callbackData.item.broker[1]["brokerUri"]);
             }
         },
-        deleteBroker(brokerId) {
-            dataUtils.deleteBroker(brokerId).then(() => {
-                this.getBrokers();
-            });
+        async deleteBroker(brokerId) {
+            let response = await dataUtils.deleteBroker(brokerId);
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Delete broker failed.");
+            }
+            this.getBrokers();
         },
         editItem(item) {
             this.$refs.addBrokerDialog.edit(item.broker);

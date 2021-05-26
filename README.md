@@ -4,7 +4,7 @@ User interface for the [IDS Configurationmanager](https://github.com/FraunhoferI
 
 The following illustration visualizes the interaction of [Dataspace Connector](https://github.com/FraunhoferISST/DataspaceConnector), [IDS Framework](https://github.com/FraunhoferISST/IDS-Connector-Framework), [Configuration Manager](https://github.com/FraunhoferISST/IDS-Configurationmanager), and GUI. All components have a defined API that allows individual components to be removed or replaced. The connector can be deployed standalone and can be connected to existing backend systems. Configuration Manager and GUI facilitate the operation and configuration of the connector. If desired, the Dataspace Connector may be replaced by another connector implementation, either integrating the framework or not.
 
-![Overall architecture](https://github.com/fkie/ids-configmanager-ui/blob/master/images/overall-architecture.png?raw=true)
+![Overall architecture](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI/blob/develop/images/overall-architecture.png?raw=true)
 
 ## Installation
 
@@ -65,6 +65,10 @@ environment:
      - CONFIGMANAGER_URL=http://localhost:8081
      - UI_BACKEND_URL=http://localhost:80
 ```
+
+## Development
+
+Please read the [development guide](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI/blob/develop/DEVELOPMENT_GUIDE.md).
 
 ## Contributing
 
