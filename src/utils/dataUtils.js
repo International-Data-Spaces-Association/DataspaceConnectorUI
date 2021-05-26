@@ -23,9 +23,9 @@ const POLICY_DESCRIPTION_TO_NAME = {
 };
 
 const OPERATOR_TYPE_TO_SYMBOL = {
-    "idsc:EQ": "=",
-    "idsc:LTEQ": "<=",
-    "idsc:LT": "<",
+    "https://w3id.org/idsa/code/EQ": "=",
+    "https://w3id.org/idsa/code/LTEQ": "<=",
+    "https://w3id.org/idsa/code/LT": "<",
 };
 
 
@@ -266,7 +266,7 @@ export default {
         return {
             id: genericEndpoint["@id"],
             endpoint: genericEndpoint,
-            url: genericEndpoint["ids:accessURL"]?genericEndpoint["ids:accessURL"]["@id"]:"http://"
+            url: genericEndpoint["ids:accessURL"] ? genericEndpoint["ids:accessURL"]["@id"] : "http://"
         };
     },
 
