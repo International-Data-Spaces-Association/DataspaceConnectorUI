@@ -1,43 +1,59 @@
 # Changelog
 All notable changes to this project will be documented in this file.
-(The major version of IDS-Configmanager and IDS-Configmanager-UI indicates compatibility)
+(Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector, this way the major version of DSC, CM and UI indicates compatibility)
 
-## [6.0.0] - 2021-03-30
+## [7.0.1] - 2021-06-17
+
+### Fixes
+- set correct IDS endpoint accessUrl
+
+## [7.0.0] - 2021-05-26
 
 ### Added
-- Add file type on dashboard & resource page
-- Resource representation: add file type & bytesize
-### Changes
-- UI backend refactoring: one generic endpoint forwading all UI API calls
-- Changed tables "no data" texts
-- Removed source type on dashboard & resource page
-### Fixes
-- Additional escaping
-- Fix scope problems in dataUtils.js
-- Fix false hiding of busy indicator
-- Use correct routes API
-- Routes: flowchart fixes
-- Routes client-side validation
+- Snackbar for showing API call error (on bottom of page)
+- Resources: broker column
 
-## [5.0.0] - 2021-03-30
+### Fixes
+- Use new app endpoint type names
+- Add route: Remove empty border on resource representation page
+- Use new resource policy operator names
+
+### Changes
+- Refactoring of dataUtils
+- Use new resource contract API
+- Routes: automatically select input/output of connectors
+- Changes in enum values API
+- Changed UI backend default port to 8083 (no more root needed)
+- Add resource: only list brokers where connector is registered
+- Design change on resource representation page
+
+## [6.0.0] - 2021-03-29
 
 ### Added
-- Configure URL of UI backend & Configmanager with docker compose env variable
-- Set UI title with docker compose env variable
-- Data Consumption: receive connector resources
-- Set website title to UI title
-### Changes
-- Use Roboto font
-- Remove file type & data acceses dashboard cards
-- Routes: don't show "Add ..." buttons on "show route"
+- Client-side route validation
+- File type & byte size in resource representation
+
 ### Fixes
-- Escaping all api call parameters
-- Eager loading of resource page tabs
-- disable host check
-- Implementation of new api for source- & file-types dashboard cards
-- Fix settings validation problem
-- Fix problem with read-only textfield of broker dialog
-- Call updateResourceAtBroker on resource delete
+- Addtional escaping of API call parameters
+- False hiding of busy indicator
+
+### Changes
+- UI backend refactoring: using one generic API endpoint
+- Remove source type from resource representation
+
+## [5.0.0] - 2021-03-10
+
+### Added
+- Set UI title from connector data
+- Data consumption: receive connector resources
+
+### Fixes
+- Escaping of API call parameters
+- Settings validation problem
+- Routes: flowchart fix for right-to-left connections
+
+### Changes
+- Major Change: Call /configmodel API for proxy settings
 
 ## [4.0.0] - 2021-03-03
 
@@ -48,6 +64,3 @@ All notable changes to this project will be documented in this file.
 - Create, update & delete Brokers with connector registration/unregistration
 - Create & view routes for data offers (still under construction)
 - Change settings of connector & config model
-
-
-
