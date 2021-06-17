@@ -64,3 +64,4 @@ All notable changes to this project will be documented in this file.
 - Create, update & delete Brokers with connector registration/unregistration
 - Create & view routes for data offers (still under construction)
 - Change settings of connector & config model
+
