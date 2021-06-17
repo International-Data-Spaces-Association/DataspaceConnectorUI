@@ -32,6 +32,7 @@ const OPERATOR_TYPE_TO_SYMBOL = {
 let languages = null;
 let apps = null;
 let backendConnections = null;
+let connectorAddress = null;
 
 export default {
     POLICY_PROVIDE_ACCESS,
@@ -334,7 +335,6 @@ export default {
     },
 
     updateBackendConnection(id, url, username, password, sourceType) {
-        console.log("updateBackendConnection");
         return new Promise(function (resolve) {
             let params = {
                 "id": id,
@@ -504,7 +504,24 @@ export default {
         return moment().format("YYYY-MM-DD");
     },
 
-    createConnectorEndpoint(accessUrl) {
+    async getConnectorAddress() {
+        let address = "";
+        if (connectorAddress == null) {
+            let response = (await restUtils.call("GET", "/api/ui/configmodel")).data;
+            if (response["ids:connectorDescription"] !== undefined && response["ids:connectorDescription"]["ids:hasDefaultEndpoint"] !== undefined
+                && response["ids:connectorDescription"]["ids:hasDefaultEndpoint"]["ids:accessURL"] !== undefined) {
+                address = response["ids:connectorDescription"]["ids:hasDefaultEndpoint"]["ids:accessURL"]["@id"].replace("/api/ids/data", "");
+                connectorAddress = address;
+            }
+        } else {
+            address = connectorAddress;
+        }
+        return address;
+    },
+
+    async createConnectorEndpoint(resourceUUID) {
+        let connectorAddress = (await this.getConnectorAddress());
+        let accessUrl = connectorAddress + "/admin/api/resources/" + resourceUUID + "/data";
         return new Promise(function (resolve) {
             let params = {
                 "accessUrl": accessUrl
@@ -520,7 +537,6 @@ export default {
 
     async createResource(title, description, language, keyword, version, standardlicense, publisher, pattern, contractJson,
         filetype, bytesize, brokerUris, genericEndpointId, vueRoot) {
-        console.log("dataUtils.createRes: ", this);
         let params = {
             "title": title,
             "description": description,
@@ -534,6 +550,7 @@ export default {
         if (response.name !== undefined && response.name == "Error") {
             vueRoot.$emit('error', "Save resource failed.");
         } else {
+            let resourceUUID = response.connectorResponse;
             let resourceId = response.resourceID;
             params = {
                 "resourceId": resourceId,
@@ -556,7 +573,7 @@ export default {
             if (response.name !== undefined && response.name == "Error") {
                 vueRoot.$emit('error', "Save resource representation failed.");
             }
-            response = (await this.createConnectorEndpoint("http://data_" + Date.now()));
+            response = (await this.createConnectorEndpoint(resourceUUID));
             if (response.name !== undefined && response.name == "Error") {
                 vueRoot.$emit('error', "Save connector endpoint failed.");
             } else {
@@ -580,7 +597,6 @@ export default {
 
     async editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, pattern, contractJson,
         filetype, bytesize, brokerUris, brokerDeleteUris, genericEndpointId, vueRoot) {
-        console.log("Edit Resource");
         let params = {
             "resourceId": resourceId,
             "title": title,
@@ -649,6 +665,7 @@ export default {
             error = true;
             vueRoot.$emit('error', "Save resource contract failed.");
         } else {
+            let resourceUUID = response.data.connectorResponse;
             let resourceId = response.data.resourceID;
             params = {
                 "resourceId": resourceId,
@@ -673,7 +690,7 @@ export default {
                 error = true;
                 vueRoot.$emit('error', "Save resource representation failed.");
             }
-            let endpointId = (await this.createConnectorEndpoint("http://data_" + Date.now()));
+            let endpointId = (await this.createConnectorEndpoint(resourceUUID));
             response = await this.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
                 endpointId, endCoordinateX, endCoordinateY, resourceId);
             if (response.name !== undefined && response.name == "Error") {
