@@ -277,11 +277,11 @@ export default {
             "title": title
         };
         let response = await restUtils.call("POST", "/api/ui/broker", params);
-        if (response.name !== undefined && response.name == "Error") {
+        if (this.isError(response)) {
             vueRoot.$emit('error', "Save broker failed.");
         } else {
             response = await this.registerConnectorAtBroker(url);
-            if (response.name !== undefined && response.name == "Error") {
+            if (this.isError(response)) {
                 vueRoot.$emit('error', "Register connector at broker failed.");
             }
         }
@@ -293,11 +293,11 @@ export default {
             "title": title
         };
         let response = await restUtils.call("PUT", "/api/ui/broker", params);
-        if (response.name !== undefined && response.name == "Error") {
+        if (this.isError(response)) {
             vueRoot.$emit('error', "Update broker failed.");
         } else {
             response = await this.registerConnectorAtBroker(url);
-            if (response.name !== undefined && response.name == "Error") {
+            if (this.isError(response)) {
                 vueRoot.$emit('error', "Register connector at broker failed.");
             }
         }
@@ -535,29 +535,35 @@ export default {
         });
     },
 
+    isError(response) {
+        return (response.name !== undefined && response.name == "Error") || response.error !== undefined;
+    },
+
     async createResource(title, description, language, keyword, version, standardlicense, publisher, pattern, contractJson,
         filetype, bytesize, brokerUris, genericEndpointId, vueRoot) {
-        let params = {
+        // TODO Version?, Sovereign, EndpointDocumentation
+        let response = (await restUtils.call(true, "POST", "/api/offers", null, {
             "title": title,
             "description": description,
+            "keywords": keyword,
+            "publisher": publisher,
             "language": language,
-            "keyword": keyword,
-            "version": version,
-            "standardlicense": standardlicense,
-            "publisher": publisher
-        }
-        let response = (await restUtils.call("POST", "/api/ui/resource", params)).data;
-        if (response.name !== undefined && response.name == "Error") {
+            "licence": standardlicense
+        })).data;
+
+        console.log(">>> DSC RESPONSE: ", response);
+
+        if (this.isError(response)) {
             vueRoot.$emit('error', "Save resource failed.");
         } else {
             let resourceUUID = response.connectorResponse;
             let resourceId = response.resourceID;
-            params = {
+            let params = {
                 "resourceId": resourceId,
                 "pattern": pattern
             }
             response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson)).data;
-            if (response.name !== undefined && response.name == "Error") {
+            if (this.isError(response)) {
                 vueRoot.$emit('error', "Save resource contract failed.");
             }
             // TODO remove sourceType when API changed.
@@ -570,22 +576,22 @@ export default {
                 "bytesize": bytesize
             }
             response = (await restUtils.call("POST", "/api/ui/resource/representation", params)).data;
-            if (response.name !== undefined && response.name == "Error") {
+            if (this.isError(response)) {
                 vueRoot.$emit('error', "Save resource representation failed.");
             }
             response = (await this.createConnectorEndpoint(resourceUUID));
-            if (response.name !== undefined && response.name == "Error") {
+            if (this.isError(response)) {
                 vueRoot.$emit('error', "Save connector endpoint failed.");
             } else {
                 let endpointId = response;
                 response = (await this.createNewRoute(this.getCurrentDate() + " - " + title));
-                if (response.name !== undefined && response.name == "Error") {
+                if (this.isError(response)) {
                     vueRoot.$emit('error', "Save route failed.");
                 } else {
                     let routeId = response;
                     response = (await this.createSubRoute(routeId, genericEndpointId, 20, 150,
                         endpointId, 220, 150, resourceId));
-                    if (response.name !== undefined && response.name == "Error") {
+                    if (this.isError(response)) {
                         vueRoot.$emit('error', "Save route step failed.");
                     } else {
                         await this.updateResourceAtBrokers(brokerUris, resourceId);
@@ -609,7 +615,7 @@ export default {
         }
 
         let response = (await restUtils.call("PUT", "/api/ui/resource", params));
-        if (response.name !== undefined && response.name == "Error") {
+        if (this.isError(response)) {
             vueRoot.$emit('error', "Save resource failed.");
         } else {
             params = {
@@ -617,7 +623,7 @@ export default {
                 "pattern": pattern
             }
             response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson));
-            if (response.name !== undefined && response.name == "Error") {
+            if (this.isError(response)) {
                 vueRoot.$emit('error', "Save resource contract failed.");
             }
             // TODO remove sourceType when API changed.
@@ -631,7 +637,7 @@ export default {
                 "sourceType": "LOCAL"
             }
             response = (await restUtils.call("PUT", "/api/ui/resource/representation", params));
-            if (response.name !== undefined && response.name == "Error") {
+            if (this.isError(response)) {
                 vueRoot.$emit('error', "Save resource representation failed.");
             }
             await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
@@ -661,7 +667,7 @@ export default {
             "publisher": publisher
         };
         let response = (await restUtils.call("POST", "/api/ui/resource", params));
-        if (response.name !== undefined && response.name == "Error") {
+        if (this.isError(response)) {
             error = true;
             vueRoot.$emit('error', "Save resource contract failed.");
         } else {
@@ -672,7 +678,7 @@ export default {
                 "pattern": pattern
             };
             response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson));
-            if (response.name !== undefined && response.name == "Error") {
+            if (this.isError(response)) {
                 error = true;
                 vueRoot.$emit('error', "Save resource contract failed.");
             }
@@ -686,14 +692,14 @@ export default {
                 "bytesize": bytesize
             };
             response = (await restUtils.call("POST", "/api/ui/resource/representation", params));
-            if (response.name !== undefined && response.name == "Error") {
+            if (this.isError(response)) {
                 error = true;
                 vueRoot.$emit('error', "Save resource representation failed.");
             }
             let endpointId = (await this.createConnectorEndpoint(resourceUUID));
             response = await this.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
                 endpointId, endCoordinateX, endCoordinateY, resourceId);
-            if (response.name !== undefined && response.name == "Error") {
+            if (this.isError(response)) {
                 vueRoot.$emit('error', "Save route step failed.");
             } else {
                 await this.updateResourceAtBrokers(brokerUris, resourceId);

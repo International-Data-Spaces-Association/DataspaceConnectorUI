@@ -13,8 +13,9 @@ export default {
         return Axios.post(url, data);
     },
 
-    call(type, url, params, body) {
+    call(toConnector = false, type, url, params, body) {
         return this.post(backendUrl + "/", {
+            "toConnector": toConnector,
             "type": type,
             "url": url,
             "params": params,

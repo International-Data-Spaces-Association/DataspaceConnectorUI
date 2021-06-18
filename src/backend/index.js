@@ -1,15 +1,31 @@
 import express from "express";
 import cors from "cors";
 import axios from "axios";
+import https from "https";
+import fs from "fs";
 import bodyParser from "body-parser";
 
 const app = express();
 const port = 8083;
-let configModelUrl = "http://localhost:8081";
+let connectorUrl = "https://localhost:8080"
+let configManagerUrl = "http://localhost:8081";
+let auth = {
+    username: 'admin',
+    password: 'password'
+}
+let httpsAgent = new https.Agent({
+    rejectUnauthorized: false
+    //ca: fs.readFileSync('dsc.crt')
+});
+
+console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
+if (process.env.CONNECTOR_URL !== undefined) {
+    connectorUrl = process.env.CONNECTOR_URL;
+}
 
 console.log("CONFIGMANAGER_URL", process.env.CONFIGMANAGER_URL);
 if (process.env.CONFIGMANAGER_URL !== undefined) {
-    configModelUrl = process.env.CONFIGMANAGER_URL;
+    configManagerUrl = process.env.CONFIGMANAGER_URL;
 }
 
 app.use(cors());
@@ -20,24 +36,27 @@ app.use(bodyParser.json());
 
 function post(url, data) {
     console.log(">>> POST " + url);
+    console.log(">>> DATA: ", data);
     return axios.post(url, data, {
-        headers: { 'content-type': 'charset=utf-8' }
+        headers: { 'content-type': 'application/json' },
+        auth,
+        httpsAgent
     });
 }
 
 function put(url, data) {
     console.log(">>> PUT " + url);
-    return axios.put(url, data);
+    return axios.put(url, data, { auth, httpsAgent });
 }
 
 function get(url) {
     console.log(">>> GET " + url);
-    return axios.get(url);
+    return axios.get(url, { auth, httpsAgent });
 }
 
 function del(url) {
     console.log(">>> DELETE " + url);
-    return axios.delete(url);
+    return axios.delete(url, { auth, httpsAgent });
 }
 
 function escape(text) {
@@ -55,8 +74,9 @@ app.post('/', (req, res) => {
         }
         i++;
     }
+    let url = req.body.toConnector ? connectorUrl : configManagerUrl;
     if (req.body.type == "POST") {
-        post(configModelUrl + call, req.body.body).then(response => {
+        post(url + call, req.body.body).then(response => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {
@@ -68,19 +88,20 @@ app.post('/', (req, res) => {
             res.send(error);
         });
     } else if (req.body.type == "PUT") {
-        put(configModelUrl + call, req.body.body).then(response => {
+        put(url + call, req.body.body).then(response => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {
                 console.log("Error on PUT " + req.body.url, error);
+                res.send(error);
             } else {
                 console.log("Error on PUT " + req.body.url, error.response.status);
                 console.log(error.response.data);
+                res.send(error.response.data);
             }
-            res.send(error);
         });
     } else if (req.body.type == "GET") {
-        get(configModelUrl + call).then(response => {
+        get(url + call).then(response => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {
@@ -92,7 +113,7 @@ app.post('/', (req, res) => {
             res.send(error);
         });
     } else if (req.body.type == "DELETE") {
-        del(configModelUrl + call).then(response => {
+        del(url + call).then(response => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {
