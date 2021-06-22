@@ -13,9 +13,19 @@ export default {
         return Axios.post(url, data);
     },
 
-    call(toConnector = false, type, url, params, body) {
+    call(type, url, params, body) {
         return this.post(backendUrl + "/", {
-            "toConnector": toConnector,
+            "toConnector": false,
+            "type": type,
+            "url": url,
+            "params": params,
+            "body": body
+        })
+    },
+
+    callConnector(type, url, params, body) {
+        return this.post(backendUrl + "/", {
+            "toConnector": true,
             "type": type,
             "url": url,
             "params": params,

@@ -100,7 +100,7 @@ export default {
             var title = this.$refs.metaDataPage.title;
             var description = this.$refs.metaDataPage.description;
             var language = this.$refs.metaDataPage.language;
-            var keywords = this.$refs.metaDataPage.keywords;
+            var keywords = this.$refs.metaDataPage.keywords.replace(/ /g, "").split(",");
             var version = this.$refs.metaDataPage.version;
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
