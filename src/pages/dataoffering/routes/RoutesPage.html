@@ -30,6 +30,18 @@
                 </v-data-table>
             </v-col>
         </v-row>
+        <v-row class="route-errors-title">
+            <v-col cols="12" md="11" sm="12">
+                Route errors:
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="11" sm="12">
+                <v-data-table :headers="errorHeaders" :items="routeErrors" :items-per-page="5"
+                    no-data-text="No route errors">
+                </v-data-table>
+            </v-col>
+        </v-row>
     </div>
     <confirmation-dialog ref="confirmationDialog"></confirmation-dialog>
 </div>
