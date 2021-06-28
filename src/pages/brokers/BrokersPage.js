@@ -90,22 +90,24 @@ export default {
         editItem(item) {
             this.$refs.addBrokerDialog.edit(item.broker);
         },
-        registerUnregister(item) {
+        async registerUnregister(item) {
             this.$root.$emit('showBusyIndicator', true);
             if (item.registerStatus == "notRegisteredAtBroker") {
-                dataUtils.registerConnectorAtBroker(item.url).then(() => {
-                    this.getBrokers();
-                }).catch(error => {
-                    console.log("Error on registerConnectorAtBroker: ", error);
-                    this.getBrokers();
-                });
+                try {
+                    await dataUtils.registerConnectorAtBroker(item.url);
+                } catch (error) {
+                    console.log("Error on API call: ", error.details);
+                    this.$root.$emit('error', "Register connector at broker failed.");
+                }
+                this.getBrokers();
             } else {
-                dataUtils.unregisterConnectorAtBroker(item.url).then(() => {
-                    this.getBrokers();
-                }).catch(error => {
-                    console.log("Error on unregisterConnectorAtBroker: ", error);
-                    this.getBrokers();
-                });
+                try {
+                    await dataUtils.unregisterConnectorAtBroker(item.url);
+                } catch (error) {
+                    console.log("Error on API call: ", error.details);
+                    this.$root.$emit('error', "Unregister connector at broker failed.");
+                }
+                this.getBrokers();
             }
         }
     }

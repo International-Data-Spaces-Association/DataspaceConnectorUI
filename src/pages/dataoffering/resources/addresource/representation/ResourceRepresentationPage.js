@@ -58,10 +58,8 @@ export default {
             this.getBackendConnections();
         },
         async getBackendConnections() {
-            let response = await dataUtils.getBackendConnections();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get backend connections failed.");
-            } else {
+            try {
+                let response = await dataUtils.getBackendConnections();
                 this.$data.backendConnections = response;
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
@@ -69,6 +67,9 @@ export default {
                     this.$data.newBackendConnection = false;
                     this.$root.$emit('showBusyIndicator', false);
                 }
+            } catch (error) {
+                console.log("Error on API call: ", error.details);
+                this.$root.$emit('error', "Get backend connections failed.");
             }
         },
         async loadResource(resource) {

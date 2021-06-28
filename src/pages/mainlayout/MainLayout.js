@@ -41,8 +41,13 @@ export default {
     },
     methods: {
         async setTitleFromConnector() {
-            let connectorData = (await dataUtils.getConnectorSettings());
-            this.$data.uiTitle = connectorData.title;
+            try {
+                let connectorData = (await dataUtils.getConnectorSettings());
+                this.$data.uiTitle = connectorData.title;
+            } catch (error) {
+                console.log("Error on API call: ", error.details);
+                this.$root.$emit('error', "Get connector settings failed.");
+            }
         }
     }
 };

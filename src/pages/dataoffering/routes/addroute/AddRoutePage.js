@@ -34,25 +34,27 @@ export default {
     },
     methods: {
         async init() {
-            let response = await dataUtils.getBackendConnections();
-            if (response.name !== undefined && response.name == "Error") {
+            let response = [];
+            try {
+                response = await dataUtils.getBackendConnections();
+            } catch (error) {
+                console.log("Error on API call: ", error.details);
                 this.$root.$emit('error', "Get backend connections failed.");
+            }
+            this.$data.backendConnections = response;
+            response = await dataUtils.getApps();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get apps failed.");
             } else {
-                this.$data.backendConnections = response;
-                response = await dataUtils.getApps();
-                if (response.name !== undefined && response.name == "Error") {
-                    this.$root.$emit('error', "Get apps failed.");
+                this.$data.apps = response;
+                this.$data.saveMessage = "";
+                this.validateRoute();
+                if (this.$route.query.routeId === undefined) {
+                    this.$data.isNewRoute = true;
+                    this.$data.currentRoute = null;
+                    this.description = dataUtils.getCurrentDate() + " - Unnamed";
                 } else {
-                    this.$data.apps = response;
-                    this.$data.saveMessage = "";
-                    this.validateRoute();
-                    if (this.$route.query.routeId === undefined) {
-                        this.$data.isNewRoute = true;
-                        this.$data.currentRoute = null;
-                        this.description = dataUtils.getCurrentDate() + " - Unnamed";
-                    } else {
-                        this.loadRoute(this.$route.query.routeId);
-                    }
+                    this.loadRoute(this.$route.query.routeId);
                 }
             }
         },

@@ -63,6 +63,31 @@ function escape(text) {
     return encodeURIComponent(text);
 }
 
+function stringifySafe(obj, replacer, spaces, cycleReplacer) {
+    return JSON.stringify(obj, serializer(replacer, cycleReplacer), spaces)
+}
+
+function serializer(replacer, cycleReplacer) {
+    var stack = [], keys = []
+
+    if (cycleReplacer == null) cycleReplacer = function (key, value) {
+        if (stack[0] === value) return "[Circular ~]"
+        return "[Circular ~." + keys.slice(0, stack.indexOf(value)).join(".") + "]"
+    }
+
+    return function (key, value) {
+        if (stack.length > 0) {
+            var thisPos = stack.indexOf(this)
+            ~thisPos ? stack.splice(thisPos + 1) : stack.push(this)
+            ~thisPos ? keys.splice(thisPos, Infinity, key) : keys.push(key)
+            if (~stack.indexOf(value)) value = cycleReplacer.call(this, key, value)
+        }
+        else stack.push(value)
+
+        return replacer == null ? value : replacer.call(this, key, value)
+    }
+}
+
 app.post('/', (req, res) => {
     let call = req.body.url;
     let i = 0;
@@ -81,11 +106,12 @@ app.post('/', (req, res) => {
         }).catch(error => {
             if (error.response === undefined) {
                 console.log("Error on POST " + req.body.url, error);
+                res.send(error);
             } else {
-                console.log("Error on POST " + req.body.url, error.response.status);
-                console.log(error.response.data);
+                console.log("Error on POST " + req.body.url, stringifySafe(error.response));
+                res.send(stringifySafe(error.response));
             }
-            res.send(error);
+
         });
     } else if (req.body.type == "PUT") {
         put(url + call, req.body.body).then(response => {
@@ -95,9 +121,8 @@ app.post('/', (req, res) => {
                 console.log("Error on PUT " + req.body.url, error);
                 res.send(error);
             } else {
-                console.log("Error on PUT " + req.body.url, error.response.status);
-                console.log(error.response.data);
-                res.send(error.response.data);
+                console.log("Error on PUT " + req.body.url, stringifySafe(error.response));
+                res.send(stringifySafe(error.response));
             }
         });
     } else if (req.body.type == "GET") {
@@ -106,11 +131,11 @@ app.post('/', (req, res) => {
         }).catch(error => {
             if (error.response === undefined) {
                 console.log("Error on GET " + req.body.url, error);
+                res.send(error);
             } else {
-                console.log("Error on GET " + req.body.url, error.response.status);
-                console.log(error.response.data);
+                console.log("Error on GET " + req.body.url, stringifySafe(error.response));
+                res.send(stringifySafe(error.response));
             }
-            res.send(error);
         });
     } else if (req.body.type == "DELETE") {
         del(url + call).then(response => {
@@ -118,11 +143,11 @@ app.post('/', (req, res) => {
         }).catch(error => {
             if (error.response === undefined) {
                 console.log("Error on DELETE " + req.body.url, error);
+                res.send(error);
             } else {
-                console.log("Error on DELETE " + req.body.url, error.response.status);
-                console.log(error.response.data);
+                console.log("Error on DELETE " + req.body.url, stringifySafe(error.response));
+                res.send(stringifySafe(error.response));
             }
-            res.send(error);
         });
     }
 });

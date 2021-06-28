@@ -31,18 +31,19 @@ export default {
     },
     methods: {
         async getBackendConnections() {
-            let response = await dataUtils.getBackendConnections();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get backend connections failed.");
-            } else {
+            try {
+                let response = await dataUtils.getBackendConnections();
                 this.$data.backendConnections = response;
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
+            } catch (error) {
+                console.log("Error on API call: ", error.details);
+                this.$root.$emit('error', "Get backend connections failed.");
             }
         },
         backendConnectionSaved() {
             this.getBackendConnections();
-        },        
+        },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Backend Connection";
             this.$refs.confirmationDialog.text = "Are you sure you want to delete the Backend Connection '" + item.url + "'?";

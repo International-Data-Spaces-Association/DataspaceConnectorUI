@@ -189,44 +189,28 @@ export default {
     },
 
     convertIdsResource(idsResource) {
-        let standardLicense = undefined;
-        if (idsResource["ids:standardLicense"] !== undefined) {
-            standardLicense = idsResource["ids:standardLicense"]["@id"];
-        }
-        let publisher = undefined;
-        if (idsResource["ids:publisher"] !== undefined) {
-            publisher = idsResource["ids:publisher"]["@id"];
-        }
+        // TODO Need to get contract & representation with seperate API calls (waiting for better way).
+
         let contract = undefined;
-        if (idsResource["ids:contractOffer"] !== undefined) {
-            contract = idsResource["ids:contractOffer"][0];
-        }
+        // if (idsResource["ids:contractOffer"] !== undefined) {
+        //     contract = idsResource["ids:contractOffer"][0];
+        // }
         let sourceType = undefined;
         let fileType = undefined;
         let bytesize = undefined;
         let representationId = null;
-        if (idsResource["ids:representation"] !== undefined && idsResource["ids:representation"].length > 0) {
-            if (idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"] !== undefined) {
-                sourceType = idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"];
-            }
-            fileType = idsResource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
-            bytesize = idsResource["ids:representation"][0]["ids:instance"][0]["ids:byteSize"];
-            representationId = idsResource["ids:representation"][0]["@id"];
-        }
-        let keywords = "";
-        if (idsResource["ids:keyword"] !== undefined) {
-            let count = 0;
-            for (let keyword of idsResource["ids:keyword"]) {
-                if (count > 0) {
-                    keywords += ", ";
-                }
-                keywords += keyword["@value"];
-                count++;
-            }
-        }
-        return this.createResource(idsResource["@id"], idsResource["ids:title"][0]["@value"], idsResource["ids:description"][0]["@value"],
-            idsResource["ids:language"][0]["@id"].replace("idsc:", ""), keywords,
-            idsResource["ids:version"], standardLicense, publisher,
+        // if (idsResource["ids:representation"] !== undefined && idsResource["ids:representation"].length > 0) {
+        //     if (idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"] !== undefined) {
+        //         sourceType = idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"];
+        //     }
+        //     fileType = idsResource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
+        //     bytesize = idsResource["ids:representation"][0]["ids:instance"][0]["ids:byteSize"];
+        //     representationId = idsResource["ids:representation"][0]["@id"];
+        // }
+
+        return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), idsResource.title, idsResource.description,
+            idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.keywords,
+            idsResource.version, idsResource.license, idsResource.publisher,
             contract, sourceType, fileType, bytesize, representationId);
     },
 

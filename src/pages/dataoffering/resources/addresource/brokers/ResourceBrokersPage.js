@@ -39,22 +39,19 @@ export default {
         },
         async getBrokers() {
             let response = await dataUtils.getBrokers();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get brokers failed.");
-            } else {
-                this.$data.brokers = [];
-                for (let broker of response) {
-                    if (broker[1]["brokerRegistrationStatus"] == "REGISTERED") {
-                        this.$data.brokers.push({
-                            broker: broker,
-                            title: broker[1]["title"],
-                            url: broker[1]["brokerUri"]
-                        });
-                    }
+            this.$data.brokers = [];
+            for (let broker of response) {
+                if (broker[1]["brokerRegistrationStatus"] == "REGISTERED") {
+                    this.$data.brokers.push({
+                        broker: broker,
+                        title: broker[1]["title"],
+                        url: broker[1]["brokerUri"]
+                    });
                 }
-                this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
-                this.$forceUpdate();
             }
+            this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
+            this.$forceUpdate();
+
         },
         loadResource(resource) {
             this.$data.selected = [];
