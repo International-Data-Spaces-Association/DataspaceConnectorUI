@@ -21,6 +21,10 @@ export default {
                 align: 'right'
             }],
             errorHeaders: [{
+                text: 'Time',
+                value: 'timestamp',
+                width: 135
+            }, {
                 text: 'Route ID',
                 value: 'routeId',
             }, {
@@ -31,6 +35,7 @@ export default {
                 value: 'endpoint'
             }],
             sortBy: 'description',
+            errorSortBy: 'timestamp',
             sortDesc: true,
             routes: [],
             routeErrors: []
@@ -62,7 +67,11 @@ export default {
             if (response.name !== undefined && response.name == "Error") {
                 this.$root.$emit('error', "Get route errors failed.");
             } else {
-                this.$data.routeErrors = response.reverse();
+                let routeErrors = response.reverse();
+                for (let routeError of routeErrors) {
+                    routeError.timestamp = routeError.timestamp.substring(0, 19).replace("T", " ");
+                }
+                this.$data.routeErrors = routeErrors;
             }
         },
         deleteItem(item) {
