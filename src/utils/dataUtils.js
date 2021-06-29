@@ -734,6 +734,17 @@ export default {
         });
     },
 
+    getRouteErrors() {
+        return new Promise(function (resolve) {
+            restUtils.call("GET", "/api/ui/route/error").then(response => {
+                resolve(response.data);
+            }).catch(error => {
+                console.log("Error in getRouteErrors(): ", error);
+                resolve(error);
+            });
+        });
+    },
+
     createNewRoute(description) {
         return new Promise(function (resolve) {
             let params = {

@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector, this way the major version of DSC, CM and UI indicates compatibility)
 
+## [7.1.0] - 2021-06-29
+
+### Added
+- Show route error list on page "Data Offering > Routes"
+
 ## [7.0.1] - 2021-06-17
 
 ### Fixes

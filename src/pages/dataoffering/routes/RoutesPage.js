@@ -20,9 +20,25 @@ export default {
                 sortable: false,
                 align: 'right'
             }],
+            errorHeaders: [{
+                text: 'Time',
+                value: 'timestamp',
+                width: 135
+            }, {
+                text: 'Route ID',
+                value: 'routeId',
+            }, {
+                text: 'Error',
+                value: 'message'
+            }, {
+                text: 'Endpoint',
+                value: 'endpoint'
+            }],
             sortBy: 'description',
+            errorSortBy: 'timestamp',
             sortDesc: true,
-            routes: []
+            routes: [],
+            routeErrors: []
         };
     },
     mounted: function () {
@@ -31,6 +47,7 @@ export default {
     methods: {
         async getRoutes() {
             this.$root.$emit('showBusyIndicator', true);
+            await this.getRouteErrors();
             let response = await dataUtils.getRoutes();
             if (response.name !== undefined && response.name == "Error") {
                 this.$root.$emit('error', "Get routes failed.");
@@ -43,6 +60,18 @@ export default {
                     });
                 }
                 this.$root.$emit('showBusyIndicator', false);
+            }
+        },
+        async getRouteErrors() {
+            let response = await dataUtils.getRouteErrors();
+            if (response.name !== undefined && response.name == "Error") {
+                this.$root.$emit('error', "Get route errors failed.");
+            } else {
+                let routeErrors = response.reverse();
+                for (let routeError of routeErrors) {
+                    routeError.timestamp = routeError.timestamp.substring(0, 19).replace("T", " ");
+                }
+                this.$data.routeErrors = routeErrors;
             }
         },
         deleteItem(item) {

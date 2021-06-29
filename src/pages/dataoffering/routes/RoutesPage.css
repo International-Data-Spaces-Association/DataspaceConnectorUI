@@ -21,3 +21,8 @@
     display: flex;
     justify-content: center;
 }
+
+.route-errors-title {
+    font-weight: bold;
+    margin-top: 15px;
+}
