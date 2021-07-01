@@ -20,14 +20,6 @@ export default {
                 value: 'description'
             },
             {
-                text: 'Type',
-                value: 'fileType'
-            },
-            {
-                text: 'Policy',
-                value: 'policyName'
-            },
-            {
                 text: 'Brokers',
                 value: 'brokers'
             },
@@ -91,23 +83,16 @@ export default {
                 let resourceId = callbackData.item.id;
                 this.$root.$emit('showBusyIndicator', true);
 
-                let response = await dataUtils.getResourceRegistrationStatus(resourceId);
-                if (response.name !== undefined && response.name == "Error") {
-                    this.$root.$emit('error', "Get resource registration status failed.");
-                } else {
-                    let brokerUris = [];
-                    for (let status of response) {
-                        brokerUris.push(status.brokerId);
-                    }
-                    response = await dataUtils.deleteResource(resourceId);
-                    if (response.name !== undefined && response.name == "Error") {
-                        this.$root.$emit('error', "Delete resource failed.");
-                    } else {
-                        response = await dataUtils.updateResourceAtBrokers(brokerUris, resourceId);
-                        this.getResources();
-                        this.$root.$emit('showBusyIndicator', false);
-                    }
+                try {
+                    await dataUtils.deleteResource(resourceId);
+                    // TODO Update at all brokers where the resource is registered.
+                } catch (error) {
+                    console.log("Error on API call: ", error.details);
+                    this.$root.$emit('error', "Delete resource failed.");
                 }
+
+                this.getResources();
+                this.$root.$emit('showBusyIndicator', false);
             }
         },
         editItem(item) {

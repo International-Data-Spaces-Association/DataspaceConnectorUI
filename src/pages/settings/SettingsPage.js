@@ -45,84 +45,89 @@ export default {
     methods: {
         async getSettings() {
             this.$root.$emit('showBusyIndicator', true);
-            let response = await dataUtils.getDeployMethods();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get deploy methods failed.");
-            } else {
+            try {
+                let response = await dataUtils.getDeployMethods();
                 this.$data.deployMethods = response;
-            }
 
-            response = await dataUtils.getLogLevels()
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get log levels failed.");
-            } else {
+                response = await dataUtils.getLogLevels()
                 this.$data.logLevels = response;
-            }
 
-            response = await dataUtils.getConnectorDeployModes();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get connector deploy modes failed.");
-            } else {
+                response = await dataUtils.getConnectorDeployModes();
                 this.$data.connectorDeployModes = response;
             }
+            catch (error) {
+                console.log("Error on API call: ", error.details);
+                this.$root.$emit('error', "Get enum values failed.");
+            }
 
-            response = await dataUtils.getDeployMethod();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get current deploy method failed.");
-            } else {
+            try {
+                let response = await dataUtils.getDeployMethod();
                 if (response != null && response != "") {
                     this.$data.deployMethod = response[0][1].routeDeployMethod;
                 }
             }
-
-            response = await dataUtils.getConfigModel();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get config model failed.");
-            } else {
-                let configModel = response;
-                this.$data.proxyUrl = configModel.proxyUrl;
-                let username = configModel.username;
-                let password = configModel.password;
-                let noProxyArray = configModel.noProxyArray;
-                this.$data.proxyAuthenticationNeeded = username != "" || password != "";
-                this.$data.proxyUsername = username;
-                this.$data.proxyPassword = password;
-                let noProxy = "";
-                let count = 0;
-                for (let el of noProxyArray) {
-                    if (count > 0) {
-                        noProxy += ", ";
-                    }
-                    noProxy += el["@id"];
-                    count++;
-                }
-                this.$data.proxyNoProxy = noProxy;
-                const loglevelTmp = configModel.logLevel;
-                this.$data.logLevel = loglevelTmp.substring(loglevelTmp.lastIndexOf("/") +1);
-                const connectorStatusTmp = configModel.connectorStatus;
-                this.$data.connectorStatus = connectorStatusTmp.substring(connectorStatusTmp.lastIndexOf("/")+1);
-                const connectorDeployModeTmp = configModel.connectorDeployMode;
-                this.$data.connectorDeployMode = connectorDeployModeTmp.substring(connectorDeployModeTmp.lastIndexOf("/")+1);
-                this.$data.trustStoreUrl = configModel.trustStoreUrl;
-                this.$data.trustStorePassword = configModel.trustStorePassword;
-                this.$data.keyStoreUrl = configModel.keyStoreUrl;
-                this.$data.keyStorePassword = configModel.keyStorePassword;
+            catch (error) {
+                console.log("Error on API call: ", error.details);
+                this.$root.$emit('error', "Get deploy method failed.");
             }
 
-            response = await dataUtils.getConnectorSettings();
-            if (response.name !== undefined && response.name == "Error") {
+            try {
+                let response = await dataUtils.getConnectorSettings();
+                console.log("CONN SETTINGS: ", response);
+            }
+            catch (error) {
+                console.log("Error on API call: ", error.details);
                 this.$root.$emit('error', "Get connector settings failed.");
-            } else {
-                let connector = response;
-                this.$data.connectorTitle = connector.title;
-                this.$data.connectorDescription = connector.description;
-                this.$data.connectorEndpoint = connector.endpoint;
-                this.$data.connectorVersion = connector.version;
-                this.$data.connectorCurator = connector.curator;
-                this.$data.connectorMaintainer = connector.maintainer;
-                this.$data.connectorInboundModelVersion = connector.inboundModelVersion;
-                this.$data.connectorOutboundModelVersion = connector.outboundModelVersion;
             }
+
+            // response = await dataUtils.getConfigModel();
+            // if (response.name !== undefined && response.name == "Error") {
+            //     this.$root.$emit('error', "Get config model failed.");
+            // } else {
+            //     let configModel = response;
+            //     this.$data.proxyUrl = configModel.proxyUrl;
+            //     let username = configModel.username;
+            //     let password = configModel.password;
+            //     let noProxyArray = configModel.noProxyArray;
+            //     this.$data.proxyAuthenticationNeeded = username != "" || password != "";
+            //     this.$data.proxyUsername = username;
+            //     this.$data.proxyPassword = password;
+            //     let noProxy = "";
+            //     let count = 0;
+            //     for (let el of noProxyArray) {
+            //         if (count > 0) {
+            //             noProxy += ", ";
+            //         }
+            //         noProxy += el["@id"];
+            //         count++;
+            //     }
+            //     this.$data.proxyNoProxy = noProxy;
+            //     const loglevelTmp = configModel.logLevel;
+            //     this.$data.logLevel = loglevelTmp.substring(loglevelTmp.lastIndexOf("/") +1);
+            //     const connectorStatusTmp = configModel.connectorStatus;
+            //     this.$data.connectorStatus = connectorStatusTmp.substring(connectorStatusTmp.lastIndexOf("/")+1);
+            //     const connectorDeployModeTmp = configModel.connectorDeployMode;
+            //     this.$data.connectorDeployMode = connectorDeployModeTmp.substring(connectorDeployModeTmp.lastIndexOf("/")+1);
+            //     this.$data.trustStoreUrl = configModel.trustStoreUrl;
+            //     this.$data.trustStorePassword = configModel.trustStorePassword;
+            //     this.$data.keyStoreUrl = configModel.keyStoreUrl;
+            //     this.$data.keyStorePassword = configModel.keyStorePassword;
+            // }
+
+            // response = await dataUtils.getConnectorSettings();
+            // if (response.name !== undefined && response.name == "Error") {
+            //     this.$root.$emit('error', "Get connector settings failed.");
+            // } else {
+            //     let connector = response;
+            //     this.$data.connectorTitle = connector.title;
+            //     this.$data.connectorDescription = connector.description;
+            //     this.$data.connectorEndpoint = connector.endpoint;
+            //     this.$data.connectorVersion = connector.version;
+            //     this.$data.connectorCurator = connector.curator;
+            //     this.$data.connectorMaintainer = connector.maintainer;
+            //     this.$data.connectorInboundModelVersion = connector.inboundModelVersion;
+            //     this.$data.connectorOutboundModelVersion = connector.outboundModelVersion;
+            // }
 
             this.$root.$emit('showBusyIndicator', false);
         },

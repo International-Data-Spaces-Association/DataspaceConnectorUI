@@ -289,18 +289,9 @@ export default {
         });
     },
 
-    deleteResource(id) {
-        return new Promise(function (resolve) {
-            let params = {
-                "resourceId": id
-            };
-            restUtils.call("DELETE", "/api/ui/resource", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log(error);
-                resolve(error);
-            });
-        });
+    async deleteResource(id) {
+        let response = (await restUtils.callConnector("DELETE", "/api/offers/" + id));
+        return response;
     },
 
     getRoute(id) {
@@ -695,27 +686,15 @@ export default {
 
     },
 
-    getDeployMethods() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/enum/deployMethod").then((response) => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getDeployMethods(): ", error);
-                resolve(error);
-            });
-        });
+    async getDeployMethods() {
+        let response = await restUtils.call("GET", "/api/ui/enum/deployMethod");
+        return response;
 
     },
 
-    getDeployMethod() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/route/deploymethod").then((response) => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getDeployMethod(): ", error);
-                resolve(error);
-            });
-        });
+    async getDeployMethod() {
+        let response = await restUtils.call("GET", "/api/ui/route/deploymethod");
+        return response;
     },
 
     changeDeployMethod(deployMethod) {
@@ -732,15 +711,9 @@ export default {
         });
     },
 
-    getLogLevels() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/enum/logLevel").then((response) => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getLogLevels(): ", error);
-                resolve(error);
-            });
-        });
+    async getLogLevels() {
+        let response = await restUtils.call("GET", "/api/ui/enum/logLevel");
+        return response;
     },
 
     getConfigModel() {
@@ -779,8 +752,9 @@ export default {
     },
 
     async getConnectorSettings() {
-        let response = await restUtils.call("GET", "/api/ui/connector");
-        return clientDataModel.convertIdsConnector(response.data);
+        let response = await restUtils.callConnector("GET", "/api/configuration");
+        console.log("CONN SETTINGS: ", response);
+        return clientDataModel.convertIdsConnector(response);
     },
 
     changeConnectorSettings(connectorTitle, connectorDescription,
@@ -806,15 +780,9 @@ export default {
         });
     },
 
-    getConnectorDeployModes() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/enum/connectorDeployMode").then((response) => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getConnectorDeployModes(): " + error);
-                resolve(error);
-            });
-        });
+    async getConnectorDeployModes() {
+        let response = await restUtils.call("GET", "/api/ui/enum/connectorDeployMode");
+        return response;
     },
 
     receiveResources(recipientId) {

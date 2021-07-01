@@ -1,7 +1,7 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, title, description, language, keywords, version, standardLicense, publisher, contract, sourceType, fileType, bytesize, representationId) {
+    createResource(id, title, description, language, keywords, version, standardLicense, publisher) {
         let resource = {};
         if (id === undefined) {
             resource.id = "";
@@ -42,39 +42,6 @@ export default {
             resource.publisher = "";
         } else {
             resource.publisher = publisher;
-        }
-        if (contract === undefined) {
-            resource.contract = "";
-            resource.policyName = "";
-        } else {
-            resource.contract = contract;
-            let type;
-            if (contract["ids:permission"] !== undefined) {
-                type = contract["ids:permission"][0]["ids:description"][0]["@value"];
-            } else if (contract["ids:prohibition"] !== undefined) {
-                type = contract["ids:prohibition"][0]["ids:description"][0]["@value"];
-            }
-            resource.policyName = dataUtils.convertDescriptionToPolicyName(type);
-        }
-        if (sourceType === undefined) {
-            resource.sourceType = "";
-        } else {
-            resource.sourceType = sourceType;
-        }
-        if (fileType === undefined) {
-            resource.fileType = "";
-        } else {
-            resource.fileType = fileType;
-        }
-        if (bytesize === undefined) {
-            resource.bytesize = "";
-        } else {
-            resource.bytesize = bytesize;
-        }
-        if (representationId === undefined) {
-            resource.representationId = null;
-        } else {
-            resource.representationId = representationId;
         }
         return resource;
     },
@@ -189,29 +156,11 @@ export default {
     },
 
     convertIdsResource(idsResource) {
-        // TODO Need to get contract & representation with seperate API calls (waiting for better way).
-
-        let contract = undefined;
-        // if (idsResource["ids:contractOffer"] !== undefined) {
-        //     contract = idsResource["ids:contractOffer"][0];
-        // }
-        let sourceType = undefined;
-        let fileType = undefined;
-        let bytesize = undefined;
-        let representationId = null;
-        // if (idsResource["ids:representation"] !== undefined && idsResource["ids:representation"].length > 0) {
-        //     if (idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"] !== undefined) {
-        //         sourceType = idsResource["ids:representation"][0]["https://w3id.org/idsa/core/sourceType"]["@value"];
-        //     }
-        //     fileType = idsResource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
-        //     bytesize = idsResource["ids:representation"][0]["ids:instance"][0]["ids:byteSize"];
-        //     representationId = idsResource["ids:representation"][0]["@id"];
-        // }
-
-        return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), idsResource.title, idsResource.description,
+        let title = idsResource.title.substring(1, idsResource.title.lastIndexOf("\""));
+        let description = idsResource.description.substring(1, idsResource.description.lastIndexOf("\""));
+        return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.keywords,
-            idsResource.version, idsResource.license, idsResource.publisher,
-            contract, sourceType, fileType, bytesize, representationId);
+            idsResource.version, idsResource.license, idsResource.publisher);
     },
 
 
@@ -242,35 +191,44 @@ export default {
 
     convertIdsConnector(idsConnector) {
         let title = "";
-        if (idsConnector["ids:title"] !== undefined) {
-            title = idsConnector["ids:title"][0]["@value"];
-        }
         let description = "";
-        if (idsConnector["ids:description"] !== undefined) {
-            description = idsConnector["ids:description"][0]["@value"];
-        }
         let endpoint = "";
-        if (idsConnector["ids:hasEndpoint"] !== undefined && idsConnector["ids:hasEndpoint"].length > 0) {
-            endpoint = idsConnector["ids:hasEndpoint"][0]["ids:accessURL"]["@id"];
-        } else if (idsConnector["ids:hasDefaultEndpoint"] !== undefined) {
-            endpoint = idsConnector["ids:hasDefaultEndpoint"]["@id"];
-        }
         let version = "";
-        if (idsConnector["ids:version"] !== undefined) {
-            version = idsConnector["ids:version"].replace("v", "");
-        }
         let curator = "";
-        if (idsConnector["ids:curator"] !== undefined) {
-            curator = idsConnector["ids:curator"]["@id"];
-        }
         let maintainer = "";
-        if (idsConnector["ids:maintainer"] !== undefined) {
-            maintainer = idsConnector["ids:maintainer"]["@id"];
-        }
         let inboundModelVersion = "";
-        if (idsConnector["ids:inboundModelVersion"] !== undefined) {
-            inboundModelVersion = idsConnector["ids:inboundModelVersion"][0];
+
+        if (idsConnector["ids:connectorDescription"] !== undefined) {
+            if (idsConnector["ids:connectorDescription"]["ids:title"] !== undefined) {
+                title = idsConnector["ids:connectorDescription"]["ids:title"][0]["@value"];
+            }
+
+            if (idsConnector["ids:connectorDescription"]["ids:description"] !== undefined) {
+                description = idsConnector["ids:connectorDescription"]["ids:description"][0]["@value"];
+            }
+
+            if (idsConnector["ids:connectorDescription"]["ids:hasDefaultEndpoint"] !== undefined) {
+                endpoint = idsConnector["ids:connectorDescription"]["ids:hasDefaultEndpoint"]["@id"];
+            }
+
+            if (idsConnector["ids:connectorDescription"]["ids:version"] !== undefined) {
+                version = idsConnector["ids:connectorDescription"]["ids:version"];
+            }
+
+            if (idsConnector["ids:connectorDescription"]["ids:curator"] !== undefined) {
+                curator = idsConnector["ids:connectorDescription"]["ids:curator"]["@id"];
+            }
+
+            if (idsConnector["ids:connectorDescription"]["ids:maintainer"] !== undefined) {
+                maintainer = idsConnector["ids:connectorDescription"]["ids:maintainer"]["@id"];
+            }
+
+            if (idsConnector["ids:connectorDescription"]["ids:inboundModelVersion"] !== undefined) {
+                inboundModelVersion = idsConnector["ids:connectorDescription"]["ids:inboundModelVersion"][0];
+            }
         }
+
+
         let outboundModelVersion = "";
         if (idsConnector["ids:outboundModelVersion"] !== undefined) {
             outboundModelVersion = idsConnector["ids:outboundModelVersion"];
