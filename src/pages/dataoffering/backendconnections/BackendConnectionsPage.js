@@ -1,6 +1,7 @@
 import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/dialog/AddBackendConnectionDialog.vue";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "@/utils/errorUtils";
 
 
 export default {
@@ -37,8 +38,7 @@ export default {
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
             } catch (error) {
-                console.log("Error on API call: ", error.details);
-                this.$root.$emit('error', "Get backend connections failed.");
+                errorUtils.showError(error, "Get backend connections");
             }
         },
         backendConnectionSaved() {

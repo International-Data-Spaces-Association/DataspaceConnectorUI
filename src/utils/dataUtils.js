@@ -1,6 +1,7 @@
 import moment from 'moment';
 import clientDataModel from "@/datamodel/clientDataModel";
 import restUtils from "./restUtils";
+import errorUtils from './errorUtils';
 
 const POLICY_N_TIMES_USAGE = "N Times Usage";
 const POLICY_DURATION_USAGE = "Duration Usage";
@@ -32,7 +33,11 @@ const OPERATOR_TYPE_TO_SYMBOL = {
 let languages = null;
 let apps = null;
 let backendConnections = null;
-let connectorAddress = null;
+let connectorUrl = "https://localhost:8080"
+console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
+if (process.env.CONNECTOR_URL !== undefined) {
+    connectorUrl = process.env.CONNECTOR_URL;
+}
 
 export default {
     POLICY_PROVIDE_ACCESS,
@@ -218,7 +223,7 @@ export default {
         };
     },
 
-    async createBroker(url, title, vueRoot) {
+    async createBroker(url, title) {
         try {
             let params = {
                 "brokerUri": url,
@@ -226,12 +231,11 @@ export default {
             };
             await restUtils.call("POST", "/api/ui/broker", params);
         } catch (error) {
-            console.log("Error on API call: ", error.details);
-            vueRoot.$emit('error', "Create broker failed.");
+            errorUtils.showError(error, "Create broker");
         }
     },
 
-    async updateBroker(url, title, vueRoot) {
+    async updateBroker(url, title) {
         try {
             let params = {
                 "brokerUri": url,
@@ -240,8 +244,7 @@ export default {
             await restUtils.call("PUT", "/api/ui/broker", params);
             await this.registerConnectorAtBroker(url);
         } catch (error) {
-            console.log("Error on API call: ", error.details);
-            vueRoot.$emit('error', "Update broker failed.");
+            errorUtils.showError(error, "Update broker");
         }
     },
 
@@ -438,18 +441,7 @@ export default {
     },
 
     async getConnectorAddress() {
-        let address = "";
-        if (connectorAddress == null) {
-            let response = (await restUtils.call("GET", "/api/ui/configmodel")).data;
-            if (response["ids:connectorDescription"] !== undefined && response["ids:connectorDescription"]["ids:hasDefaultEndpoint"] !== undefined
-                && response["ids:connectorDescription"]["ids:hasDefaultEndpoint"]["ids:accessURL"] !== undefined) {
-                address = response["ids:connectorDescription"]["ids:hasDefaultEndpoint"]["ids:accessURL"]["@id"].replace("/api/ids/data", "");
-                connectorAddress = address;
-            }
-        } else {
-            address = connectorAddress;
-        }
-        return address;
+        return connectorUrl;
     },
 
     async createConnectorEndpoint(resourceUUID) {
@@ -473,8 +465,8 @@ export default {
         return url.substring(url.lastIndexOf("/") + 1, url.length);
     },
 
-    async createResource(title, description, language, keyword, version, standardlicense, publisher, pattern, contractJson,
-        filetype, bytesize, brokerUris, genericEndpointId, vueRoot) {
+    async createResource(title, description, language, keyword, standardlicense, publisher, pattern, contractJson,
+        filetype, brokerUris, genericEndpoint) {
         try {
             // TODO Sovereign, EndpointDocumentation
             let response = (await restUtils.callConnector("POST", "/api/offers", null, {
@@ -486,7 +478,6 @@ export default {
                 "licence": standardlicense
             }));
 
-            let resourceUUID = response.connectorResponse;
             let resourceId = this.getIdOfConnectorResponse(response);
             response = (await restUtils.callConnector("POST", "/api/contracts", null, {}));
 
@@ -506,27 +497,35 @@ export default {
                 "language": language,
                 "mediaType": filetype,
             }));
-
             let representationId = this.getIdOfConnectorResponse(response);
+
+            response = (await restUtils.callConnector("POST", "/api/artifacts", null, {
+                "accessUrl": genericEndpoint["ids:accessURL"]["@id"],
+                "username": genericEndpoint["ids:genericEndpointAuthentication"]["ids:authUsername"],
+                "password": genericEndpoint["ids:genericEndpointAuthentication"]["ids:authPassword"]
+            }));
+            let artifactId = this.getIdOfConnectorResponse(response);
+
             response = (await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/representations", null, [representationId]));
 
-            response = (await this.createConnectorEndpoint(resourceUUID));
+            response = (await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]));
+
+            response = (await this.createConnectorEndpoint(resourceId));
             let endpointId = response;
             response = (await this.createNewRoute(this.getCurrentDate() + " - " + title));
             let routeId = response;
-            response = (await this.createSubRoute(routeId, genericEndpointId, 20, 150,
-                endpointId, 220, 150, resourceId));
+            response = (await this.createSubRoute(routeId, genericEndpoint["@id"], 20, 150,
+                endpointId, 220, 150, "https://w3id.org/idsa/autogen/resource/" + resourceId));
 
             await this.updateResourceAtBrokers(brokerUris, resourceId);
 
         } catch (error) {
-            console.log("Error on API call: ", error.details);
-            vueRoot.$emit('error', "Save resource failed.");
+            errorUtils.showError(error, "Save resource");
         }
     },
 
-    async editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, pattern, contractJson,
-        filetype, bytesize, brokerUris, brokerDeleteUris, genericEndpointId, vueRoot) {
+    async editResource(resourceId, representationId, title, description, language, keyword, standardlicense, publisher, pattern, contractJson,
+        filetype, brokerUris, brokerDeleteUris, genericEndpoint) {
         try {
             let params = {
                 "resourceId": resourceId,
@@ -534,7 +533,6 @@ export default {
                 "description": description,
                 "language": language,
                 "keyword": keyword,
-                "version": version,
                 "standardlicense": standardlicense,
                 "publisher": publisher
             }
@@ -551,18 +549,16 @@ export default {
             params = {
                 "resourceId": resourceId,
                 "representationId": representationId,
-                "endpointId": genericEndpointId,
+                "endpointId": genericEndpoint["@id"],
                 "language": language,
                 "filenameExtension": filetype,
-                "bytesize": bytesize,
                 "sourceType": "LOCAL"
             }
             await restUtils.call("PUT", "/api/ui/resource/representation", params);
 
             await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
         } catch (error) {
-            console.log("Error on API call: ", error.details);
-            vueRoot.$emit('error', "Save resource failed.");
+            errorUtils.showError(error, "Save resource");
         }
     },
 
@@ -577,7 +573,7 @@ export default {
 
     async createResourceIdsEndpointAndAddSubRoute(title, description, language, keyword, version, standardlicense,
         publisher, pattern, contractJson, filetype, bytesize, brokerUris, genericEndpointId, routeId, startId, startCoordinateX,
-        startCoordinateY, endCoordinateX, endCoordinateY, vueRoot) {
+        startCoordinateY, endCoordinateX, endCoordinateY) {
         let hasError = false;
         try {
             let params = {
@@ -616,8 +612,7 @@ export default {
             await this.updateResourceAtBrokers(brokerUris, resourceId);
         } catch (error) {
             hasError = true;
-            console.log("Error on API call: ", error.details);
-            vueRoot.$emit('error', "Create IDS endpoint failed.");
+            errorUtils.showError(error, "Create IDS endpoint");
         }
 
         return hasError;
@@ -655,18 +650,12 @@ export default {
         });
     },
 
-    createNewRoute(description) {
-        return new Promise(function (resolve) {
-            let params = {
-                "description": description
-            }
-            restUtils.call("POST", "/api/ui/approute", params).then(response => {
-                resolve(response.data.id);
-            }).catch(error => {
-                console.log("Error in createNewRoute(): ", error);
-                resolve(error);
-            });
-        });
+    async createNewRoute(description) {
+        let params = {
+            "description": description
+        }
+        let response = await restUtils.call("POST", "/api/ui/approute", params);
+        return response.id;
     },
 
     createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, resourceId) {

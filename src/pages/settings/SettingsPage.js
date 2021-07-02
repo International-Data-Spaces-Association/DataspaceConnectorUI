@@ -1,4 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "../../utils/errorUtils";
 import validationUtils from "../../utils/validationUtils";
 
 export default {
@@ -56,8 +57,7 @@ export default {
                 this.$data.connectorDeployModes = response;
             }
             catch (error) {
-                console.log("Error on API call: ", error.details);
-                this.$root.$emit('error', "Get enum values failed.");
+                errorUtils.showError(error, "Get enum values");
             }
 
             try {
@@ -67,8 +67,7 @@ export default {
                 }
             }
             catch (error) {
-                console.log("Error on API call: ", error.details);
-                this.$root.$emit('error', "Get deploy method failed.");
+                errorUtils.showError(error, "Get deploy method");
             }
 
             try {
@@ -76,8 +75,7 @@ export default {
                 console.log("CONN SETTINGS: ", response);
             }
             catch (error) {
-                console.log("Error on API call: ", error.details);
-                this.$root.$emit('error', "Get connector settings failed.");
+                errorUtils.showError(error, "Get connector settings");
             }
 
             // response = await dataUtils.getConfigModel();

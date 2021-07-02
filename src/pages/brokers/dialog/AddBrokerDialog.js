@@ -31,11 +31,11 @@ export default {
             if (this.$data.currentBroker == null) {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
-                await dataUtils.createBroker(this.$data.url, this.$data.brokerTitle, this.$root);
+                await dataUtils.createBroker(this.$data.url, this.$data.brokerTitle);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
-                await dataUtils.updateBroker(this.$data.url, this.$data.brokerTitle, this.$root);
+                await dataUtils.updateBroker(this.$data.url, this.$data.brokerTitle);
             }
             this.$emit('brokerSaved');
         },

@@ -93,39 +93,37 @@ export default {
             this.$refs.brokersPage.readonly = readonly;
         },
         async save() {
-            var genericEndpointId = null;
+            var genericEndpoint = null;
             if (this.$refs.representationPage.selected.length > 0) {
-                genericEndpointId = this.$refs.representationPage.selected[0].id;
+                genericEndpoint = this.$refs.representationPage.selected[0].endpoint;
             }
             var title = this.$refs.metaDataPage.title;
             var description = this.$refs.metaDataPage.description;
             var language = this.$refs.metaDataPage.language;
             var keywords = this.$refs.metaDataPage.keywords.replace(/ /g, "").split(",");
-            var version = this.$refs.metaDataPage.version;
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
             var pattern = this.$refs.policyPage.getPattern();
             var contractJson = this.$refs.policyPage.getContractJson();
             var filetype = this.$refs.representationPage.filetype;
-            var bytesize = this.$refs.representationPage.bytesize;
             var brokerList = this.$refs.brokersPage.getBrokerNewList()
             let brokerDeleteList = this.$refs.brokersPage.getBrokerDeleteList();
 
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
-                this.$emit("saved", title, description, language, keywords, version, standardlicense, publisher,
-                    pattern, contractJson, filetype, bytesize, brokerList);
+                this.$emit("saved", title, description, language, keywords, 0, standardlicense, publisher,
+                    pattern, contractJson, filetype, 0, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
-                    await dataUtils.createResource(title, description, language, keywords, version, standardlicense, publisher,
-                        pattern, contractJson, filetype, bytesize, brokerList, genericEndpointId, this.$root);
+                    await dataUtils.createResource(title, description, language, keywords, standardlicense, publisher,
+                        pattern, contractJson, filetype, brokerList, genericEndpoint);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
-                        title, description, language, keywords, version, standardlicense, publisher, pattern, contractJson,
-                        filetype, bytesize, brokerList, brokerDeleteList, genericEndpointId, this.$root);
+                        title, description, language, keywords, standardlicense, publisher, pattern, contractJson,
+                        filetype, brokerList, brokerDeleteList, genericEndpoint);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                 }

@@ -106,7 +106,7 @@ app.post('/', (req, res) => {
         }).catch(error => {
             if (error.response === undefined) {
                 console.log("Error on POST " + req.body.url, error);
-                res.send(error);
+                res.send(stringifySafe(error));
             } else {
                 console.log("Error on POST " + req.body.url, stringifySafe(error.response));
                 res.send(stringifySafe(error.response));
@@ -119,7 +119,7 @@ app.post('/', (req, res) => {
         }).catch(error => {
             if (error.response === undefined) {
                 console.log("Error on PUT " + req.body.url, error);
-                res.send(error);
+                res.send(stringifySafe(error));
             } else {
                 console.log("Error on PUT " + req.body.url, stringifySafe(error.response));
                 res.send(stringifySafe(error.response));
@@ -130,10 +130,10 @@ app.post('/', (req, res) => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {
-                console.log("Error on GET " + req.body.url, error);
-                res.send(error);
+                console.log("Error 1 on GET " + req.body.url, error);
+                res.send(stringifySafe(error));
             } else {
-                console.log("Error on GET " + req.body.url, stringifySafe(error.response));
+                console.log("Error 2 on GET " + req.body.url, stringifySafe(error.response));
                 res.send(stringifySafe(error.response));
             }
         });
@@ -143,7 +143,7 @@ app.post('/', (req, res) => {
         }).catch(error => {
             if (error.response === undefined) {
                 console.log("Error on DELETE " + req.body.url, error);
-                res.send(error);
+                res.send(stringifySafe(error));
             } else {
                 console.log("Error on DELETE " + req.body.url, stringifySafe(error.response));
                 res.send(stringifySafe(error.response));

@@ -2,6 +2,7 @@ import AddResourceFilePage from "@/pages/dataoffering/resources/addresource/file
 import AddResourceDatabasePage from "@/pages/dataoffering/resources/addresource/database/AddResourceDatabasePage.vue";
 import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/dialog/AddBackendConnectionDialog.vue";
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "@/utils/errorUtils";
 import validationUtils from "../../../../../utils/validationUtils";
 
 export default {
@@ -29,7 +30,6 @@ export default {
             readonly: false,
             newBackendConnection: false,
             filetype: "",
-            bytesize: ""
         };
     },
     watch: {
@@ -68,19 +68,15 @@ export default {
                     this.$root.$emit('showBusyIndicator', false);
                 }
             } catch (error) {
-                console.log("Error on API call: ", error.details);
-                this.$root.$emit('error', "Get backend connections failed.");
+                errorUtils.showError(error, "Get backend connections");
             }
         },
         async loadResource(resource) {
-            if (resource.fileType === undefined && resource.bytesize === undefined) {
+            if (resource.fileType === undefined) {
                 this.$refs.form.reset();
             } else {
                 if (resource.fileType !== undefined) {
                     this.$data.filetype = resource.fileType;
-                }
-                if (resource.bytesize !== undefined) {
-                    this.$data.bytesize = resource.bytesize;
                 }
             }
 

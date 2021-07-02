@@ -1,4 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "@/utils/errorUtils";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import ResourceDetailsDialog from "./resourcedetailsdialog/ResourceDetailsDialog.vue";
 
@@ -87,8 +88,7 @@ export default {
                     await dataUtils.deleteResource(resourceId);
                     // TODO Update at all brokers where the resource is registered.
                 } catch (error) {
-                    console.log("Error on API call: ", error.details);
-                    this.$root.$emit('error', "Delete resource failed.");
+                    errorUtils.showError(error, "Delete resource");
                 }
 
                 this.getResources();

@@ -1,6 +1,7 @@
 import AddBrokerDialog from "@/pages/brokers/dialog/AddBrokerDialog.vue";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import dataUtils from "../../utils/dataUtils";
+import errorUtils from "../../utils/errorUtils";
 
 
 export default {
@@ -96,16 +97,14 @@ export default {
                 try {
                     await dataUtils.registerConnectorAtBroker(item.url);
                 } catch (error) {
-                    console.log("Error on API call: ", error.details);
-                    this.$root.$emit('error', "Register connector at broker failed.");
+                    errorUtils.showError(error, "Register connector at broker");
                 }
                 this.getBrokers();
             } else {
                 try {
                     await dataUtils.unregisterConnectorAtBroker(item.url);
                 } catch (error) {
-                    console.log("Error on API call: ", error.details);
-                    this.$root.$emit('error', "Unregister connector at broker failed.");
+                    errorUtils.showError(error, "Unregister connector at broker");
                 }
                 this.getBrokers();
             }

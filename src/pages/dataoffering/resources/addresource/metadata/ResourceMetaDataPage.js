@@ -13,12 +13,10 @@ export default {
             keywords: "",
             publisher: "",
             standardlicense: "",
-            version: "",
             language: "",
             languageItems: [],
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
-            versionRule: validationUtils.getVersionRequiredRule(),
             urlRule: validationUtils.getUrlRequiredRule(),
             readonly: false
         };
@@ -39,9 +37,8 @@ export default {
             } else {
                 this.$data.title = resource.title;
                 this.$data.description = resource.description;
-                this.$data.language = resource.language.substring(resource.language.lastIndexOf("/")+1);
+                this.$data.language = resource.language.substring(resource.language.lastIndexOf("/") + 1);
                 this.$data.keywords = resource.keywords;
-                this.$data.version = resource.version;
                 this.$data.standardlicense = resource.standardLicense;
                 this.$data.publisher = resource.publisher;
             }

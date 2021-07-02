@@ -156,8 +156,14 @@ export default {
     },
 
     convertIdsResource(idsResource) {
-        let title = idsResource.title.substring(1, idsResource.title.lastIndexOf("\""));
-        let description = idsResource.description.substring(1, idsResource.description.lastIndexOf("\""));
+        let title = idsResource.title;
+        if (title.includes("\"@en")) {
+            title = idsResource.title.substring(1, idsResource.title.lastIndexOf("\""));
+        }
+        let description = idsResource.description
+        if (description.includes("\"@en")) {
+            description = idsResource.description.substring(1, idsResource.description.lastIndexOf("\""));
+        }
         return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.keywords,
             idsResource.version, idsResource.license, idsResource.publisher);

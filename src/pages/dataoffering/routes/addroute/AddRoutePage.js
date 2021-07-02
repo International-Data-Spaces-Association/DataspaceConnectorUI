@@ -5,6 +5,7 @@ import EditConnectionDialog from "./dialog/EditConnectionDialog.vue";
 import AddNodeDialog from "./dialog/AddNodeDialog.vue";
 import Flowchart from "@/components/flowchart/Flowchart.vue";
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "@/utils/errorUtils";
 import clientDataModel from "../../../../datamodel/clientDataModel";
 
 export default {
@@ -38,8 +39,7 @@ export default {
             try {
                 response = await dataUtils.getBackendConnections();
             } catch (error) {
-                console.log("Error on API call: ", error.details);
-                this.$root.$emit('error', "Get backend connections failed.");
+                errorUtils.showError(error, "Get backend connections");
             }
             this.$data.backendConnections = response;
             response = await dataUtils.getApps();
@@ -318,7 +318,7 @@ export default {
                         destinationNode.version, destinationNode.standardlicense,
                         destinationNode.publisher, destinationNode.pattern, destinationNode.contractJson, destinationNode.filetype, destinationNode.bytesize,
                         destinationNode.brokerList, genericEndpointId, routeId, connection.sourceEndpointId, sourceNode.x,
-                        sourceNode.y, destinationNode.x, destinationNode.y, this.$root);
+                        sourceNode.y, destinationNode.x, destinationNode.y);
                     if (err) {
                         this.$root.$emit('error', "Save route step failed.");
                         error = true;
