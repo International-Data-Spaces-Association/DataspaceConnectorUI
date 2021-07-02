@@ -130,10 +130,10 @@ app.post('/', (req, res) => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {
-                console.log("Error 1 on GET " + req.body.url, error);
+                console.log("Error on GET " + req.body.url, error);
                 res.send(stringifySafe(error));
             } else {
-                console.log("Error 2 on GET " + req.body.url, stringifySafe(error.response));
+                console.log("Error on GET " + req.body.url, stringifySafe(error.response));
                 res.send(stringifySafe(error.response));
             }
         });

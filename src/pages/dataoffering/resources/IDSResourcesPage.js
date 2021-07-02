@@ -99,7 +99,7 @@ export default {
             this.$router.push('editresource?id=' + item.id);
         },
         showItem(item) {
-            this.$refs.resourceDetailsDialog.show(item);
+            this.$refs.resourceDetailsDialog.show(item.id);
         }
     },
 };

@@ -10,7 +10,9 @@ if (process.env.VUE_APP_UI_BACKEND_URL !== undefined && process.env.VUE_APP_UI_B
 
 export default {
     post(url, data) {
-        return Axios.post(url, data);
+        return Axios.post(url, data, {
+            headers: { 'content-type': 'application/json' }
+        });
     },
 
     async call(type, url, params, body) {

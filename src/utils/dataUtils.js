@@ -127,17 +127,27 @@ export default {
         return resources;
     },
 
-    getResource(id) {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/resource", {
-                "resourceId": id
-            }).then(response => {
-                resolve(clientDataModel.convertIdsResource(response.data));
-            }).catch(error => {
-                console.log("Error in loadResource(): ", error);
-                resolve(error);
-            });
-        });
+    async getResource(resourceId) {
+        let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
+        let rule = undefined;
+        let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contract;
+        if (contracts.length > 0) {
+            let contract = contracts[0];
+            let contractId = this.getIdOfConnectorResponse(contract);
+            let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
+            if (rules.length > 0) {
+                rule = rules[0];
+                // TODO ERR_UNESCAPED_CHARACTERS for body
+                let policyType = (await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
+                console.log(">>> policyType: ", policyType);
+            }
+        }
+        let representations = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/representations"))["_embedded"].representations;
+        let representation = undefined;
+        if (representations.length > 0) {
+            representation = representations[0];
+        }
+        return clientDataModel.convertIdsResource(resource, representation, rule);
     },
 
     async getLanguages() {
@@ -470,7 +480,7 @@ export default {
                 "keywords": keyword,
                 "publisher": publisher,
                 "language": language,
-                "licence": standardlicense
+                "license": standardlicense
             }));
 
             let resourceId = this.getIdOfConnectorResponse(response);

@@ -3,6 +3,7 @@ import ResourceMetaDataPage from "./metadata/ResourceMetaDataPage.vue";
 import ResourcePolicyPage from "./policy/ResourcePolicyPage.vue";
 import ResourceRepresentationPage from "./representation/ResourceRepresentationPage.vue";
 import ResourceBrokersPage from "./brokers/ResourceBrokersPage.vue";
+import errorUtils from "../../../../utils/errorUtils";
 
 export default {
     components: {
@@ -61,20 +62,19 @@ export default {
         },
         async loadResource(id) {
             this.$root.$emit('showBusyIndicator', true);
-            let response = await dataUtils.getResource(id);
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get resource failed.");
-            } else {
+            try {
+                let response = await dataUtils.getResource(id);
                 this.$data.currentResource = response;
                 this.$data.isNewResource = false;
                 this.$refs.metaDataPage.loadResource(this.$data.currentResource);
                 this.$refs.policyPage.loadResource(this.$data.currentResource);
                 this.$refs.representationPage.loadResource(this.$data.currentResource);
                 this.$refs.brokersPage.loadResource(this.$data.currentResource);
-                this.$root.$emit('showBusyIndicator', false);
-                this.$forceUpdate();
+            } catch (error) {
+                errorUtils.showError(error, "Get resource");
             }
-
+            this.$root.$emit('showBusyIndicator', false);
+            this.$forceUpdate();
         },
         set(resource) {
             this.$data.currentResource = resource;
