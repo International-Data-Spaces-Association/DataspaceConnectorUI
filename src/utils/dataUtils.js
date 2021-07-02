@@ -444,20 +444,15 @@ export default {
         return connectorUrl;
     },
 
-    async createConnectorEndpoint(resourceUUID) {
+    async createConnectorEndpoint(artifactId) {
         let connectorAddress = (await this.getConnectorAddress());
-        let accessUrl = connectorAddress + "/admin/api/resources/" + resourceUUID + "/data";
-        return new Promise(function (resolve) {
-            let params = {
-                "accessUrl": accessUrl
-            }
-            restUtils.call("POST", "/api/ui/connector/endpoint", params).then((response) => {
-                resolve(response.data.connectorEndpointId);
-            }).catch(error => {
-                console.log("Error in createConnectorEndpoint(): ", error);
-                resolve(error);
-            });
-        });
+        let accessUrl = connectorAddress + "/api/artifacts/" + artifactId + "/data";
+
+        let params = {
+            "accessUrl": accessUrl
+        }
+        let response = await restUtils.call("POST", "/api/ui/connector/endpoint", params);
+        return response.connectorEndpointId;
     },
 
     getIdOfConnectorResponse(response) {
@@ -479,43 +474,43 @@ export default {
             }));
 
             let resourceId = this.getIdOfConnectorResponse(response);
-            response = (await restUtils.callConnector("POST", "/api/contracts", null, {}));
+            response = await restUtils.callConnector("POST", "/api/contracts", null, {});
 
             let contractId = this.getIdOfConnectorResponse(response);
             // TODO use correct rule from UI
-            response = (await restUtils.callConnector("POST", "/api/rules", null, {
+            response = await restUtils.callConnector("POST", "/api/rules", null, {
                 "title": "Provide Access",
                 "value": "{\"@type\":\"ids:Permission\",\"@id\":\"https://w3id.org/idsa/autogen/permission/a2107dd7-a2bc-4037-a17e-ffbe9f28cbf0\",\"ids:target\":null,\"ids:description\":[{\"@value\":\"provide-access\",\"@type\":\"http://www.w3.org/2001/XMLSchema#string\"}],\"ids:title\":[{\"@value\":\"Allow Data Usage\",\"@type\":\"http://www.w3.org/2001/XMLSchema#string\"}],\"ids:preDuty\":null,\"ids:constraint\":null,\"ids:assetRefinement\":null,\"ids:postDuty\":null,\"ids:action\":[{\"properties\":null,\"@id\":\"idsc:USE\"}],\"ids:assignee\":null,\"ids:assigner\":null}"
-            }));
+            });
 
             let ruleId = this.getIdOfConnectorResponse(response);
-            response = (await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]));
+            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]);
 
-            response = (await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]));
+            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
 
-            response = (await restUtils.callConnector("POST", "/api/representations", null, {
+            response = await restUtils.callConnector("POST", "/api/representations", null, {
                 "language": language,
                 "mediaType": filetype,
-            }));
+            });
             let representationId = this.getIdOfConnectorResponse(response);
 
-            response = (await restUtils.callConnector("POST", "/api/artifacts", null, {
+            response = await restUtils.callConnector("POST", "/api/artifacts", null, {
                 "accessUrl": genericEndpoint["ids:accessURL"]["@id"],
                 "username": genericEndpoint["ids:genericEndpointAuthentication"]["ids:authUsername"],
                 "password": genericEndpoint["ids:genericEndpointAuthentication"]["ids:authPassword"]
-            }));
+            });
             let artifactId = this.getIdOfConnectorResponse(response);
 
-            response = (await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/representations", null, [representationId]));
+            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/representations", null, [representationId]);
 
-            response = (await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]));
+            response = await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]);
 
-            response = (await this.createConnectorEndpoint(resourceId));
+            response = await this.createConnectorEndpoint(artifactId);
             let endpointId = response;
-            response = (await this.createNewRoute(this.getCurrentDate() + " - " + title));
+            response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
             let routeId = response;
-            response = (await this.createSubRoute(routeId, genericEndpoint["@id"], 20, 150,
-                endpointId, 220, 150, "https://w3id.org/idsa/autogen/resource/" + resourceId));
+            response = await this.createSubRoute(routeId, genericEndpoint["@id"], 20, 150,
+                endpointId, 220, 150, "https://w3id.org/idsa/autogen/resource/" + resourceId);
 
             await this.updateResourceAtBrokers(brokerUris, resourceId);
 
