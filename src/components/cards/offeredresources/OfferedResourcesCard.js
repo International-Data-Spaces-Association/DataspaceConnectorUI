@@ -39,7 +39,8 @@ export default {
                 }
                 this.$forceUpdate();
             } catch (error) {
-                console.log("Error on getOfferedResourcesStats(): ", error);
+                console.log("Error on API call: ", error.details);
+                this.$root.$emit('error', "Get resource statistics failed.");
             }
         },
         getTotalSize(totalSize) {

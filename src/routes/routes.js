@@ -1,6 +1,5 @@
 import MainLayout from "@/pages/mainlayout/MainLayout.vue";
 import PageStructure from "@/pages/PageStructure";
-import Dsc from "@/pages/dsc/Dsc"
 
 const routes = [{
   path: "/",
@@ -41,13 +40,6 @@ function generateRoutes(pageStructure, routes, currentBreadcrumb, parent) {
     }
     currentBreadcrumb.pop();
   }
-
-  // TODO REMOVE (just for testing DSC API calls)
-  routes.push({
-    path: "dsc",
-    name: "DSC",
-    component: Dsc
-  });
 }
 
 export default routes;

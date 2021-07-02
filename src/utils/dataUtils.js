@@ -82,30 +82,35 @@ export default {
         return type;
     },
 
-    getOfferedResourcesStats() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/resources").then(response => {
-                if (response.data.name !== undefined && response.data.name == "Error") {
-                    resolve(response.data);
-                } else {
-                    let resources = response.data;
-                    let totalSize = 0;
-                    for (let resource of resources) {
-                        if (resource["ids:representation"] !== undefined) {
-                            if (resource["ids:representation"][0]["ids:instance"] !== undefined) {
-                                totalSize += resource["ids:representation"][0]["ids:instance"][0]["ids:byteSize"];
-                            }
-                        }
-                    }
-                    resolve({
-                        totalNumber: resources.length,
-                        totalSize: totalSize
-                    });
-                }
-            }).catch(error => {
-                resolve(error);
-            });
-        });
+    async getOfferedResourcesStats() {
+        let totalNumber = 0;
+        let totalSize = 0;
+        let response = await restUtils.callConnector("GET", "/api/offers");
+        totalNumber = response.page.totalElements;
+        response = await restUtils.callConnector("GET", "/api/artifacts");
+        let artifacts = response._embedded.artifacts;
+        for (let artifact of artifacts) {
+            totalSize += artifact.byteSize;
+        }
+        return {
+            totalNumber: totalNumber,
+            totalSize: totalSize
+        };
+    },
+
+    async getOfferedResourcesFileTypes() {
+        let response = await restUtils.callConnector("GET", "/api/representations");
+        let representations = response._embedded.representations;
+        let fileTypes = [];
+        for (let representation of representations) {
+            let type = representation.mediaType;
+            if (fileTypes[type] === undefined) {
+                fileTypes[type] = 1;
+            } else {
+                fileTypes[type] = fileTypes[type] + 1;
+            }
+        }
+        return fileTypes;
     },
 
     async getResources() {
@@ -168,12 +173,12 @@ export default {
         return response;
     },
 
-    updateResourceAtBroker(brokerUri, resourceId) {
+    async updateResourceAtBroker(brokerUri, resourceId) {
         let params = {
             "recipient": brokerUri,
             "resourceId": resourceId
         };
-        restUtils.callConnector("POST", "​/api​/ids​/resource​/update", params);
+        await restUtils.callConnector("POST", "​/api​/ids​/resource​/update", params);
     },
 
     deleteResourceAtBroker(brokerUri, resourceId) {

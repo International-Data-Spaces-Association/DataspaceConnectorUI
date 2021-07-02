@@ -23,39 +23,21 @@ export default {
     },
     methods: {
         async getFileTypes() {
-            let response = await dataUtils.getResources();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get resources failed.");
-            } else {
-                let resources = response;
-                if (resources.length == 0) {
-                    this.$data.chartVisible = false;
-                } else {
-                    this.$data.chartVisible = true;
-                    let fileTypes = [];
-                    for (let resource of resources) {
-                        let type = resource.fileType;
-                        if (fileTypes[type] === undefined) {
-                            fileTypes[type] = 1;
-                        } else {
-                            fileTypes[type] = fileTypes[type] + 1;
-                        }
-                    }
-                    let labels = [];
-                    let series = [];
-                    for (let fileType in fileTypes) {
-                        labels.push(fileType);
-                        series.push(fileTypes[fileType]);
-                    }
-                    this.$data.options = {
-                        chart: {
-                            type: "donut"
-                        },
-                        labels: labels
-                    }
-                    this.$data.series = series;
-                }
+            let fileTypes = await dataUtils.getOfferedResourcesFileTypes();
+            this.$data.chartVisible = true;
+            let labels = [];
+            let series = [];
+            for (let fileType in fileTypes) {
+                labels.push(fileType);
+                series.push(fileTypes[fileType]);
             }
+            this.$data.options = {
+                chart: {
+                    type: "donut"
+                },
+                labels: labels
+            }
+            this.$data.series = series;
         }
     }
 
