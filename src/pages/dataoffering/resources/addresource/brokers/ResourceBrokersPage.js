@@ -38,10 +38,10 @@ export default {
             this.getBrokers();
         },
         async getBrokers() {
-            let response = await dataUtils.getBrokers();
+            let response = (await dataUtils.getBrokers())._embedded.brokerViewList;
             this.$data.brokers = [];
             for (let broker of response) {
-                if (broker[1]["brokerRegistrationStatus"] == "REGISTERED") {
+                if (broker.status == "Registered") {
                     this.$data.brokers.push({
                         broker: broker,
                         title: broker[1]["title"],

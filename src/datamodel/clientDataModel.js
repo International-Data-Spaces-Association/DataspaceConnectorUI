@@ -1,7 +1,7 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, title, description, language, keywords, version, standardLicense, publisher, fileType) {
+    createResource(id, title, description, language, keywords, version, standardLicense, publisher, fileType, policyName, contract) {
         let resource = {};
         if (id === undefined) {
             resource.id = "";
@@ -47,6 +47,16 @@ export default {
             resource.fileType = "";
         } else {
             resource.fileType = fileType;
+        }
+        if (policyName === undefined) {
+            resource.policyName = "";
+        } else {
+            resource.policyName = policyName;
+        }
+        if (contract === undefined) {
+            resource.contract = "";
+        } else {
+            resource.contract = contract;
         }
         return resource;
     },
@@ -160,7 +170,7 @@ export default {
         return connector;
     },
 
-    convertIdsResource(idsResource, representation, rule) {
+    convertIdsResource(idsResource, representation, policyName, contract) {
         let title = idsResource.title;
         if (title.includes("\"@en")) {
             title = idsResource.title.substring(1, idsResource.title.lastIndexOf("\""));
@@ -176,7 +186,7 @@ export default {
 
         return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.keywords,
-            idsResource.version, idsResource.license, idsResource.publisher, fileType);
+            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyName, contract);
     },
 
 

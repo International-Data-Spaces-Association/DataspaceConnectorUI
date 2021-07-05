@@ -23,18 +23,18 @@ export default {
     data() {
         return {
             policyType: null,
-            contractJson: "",
+            policyDisplayName: null,
             readonly: false
         };
     },
     mounted: function () {
-        this.$data.policyType = dataUtils.POLICY_PROVIDE_ACCESS;
+        this.$data.policyDisplayName = dataUtils.POLICY_PROVIDE_ACCESS;
         this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
     },
     watch: {
-        policyType: function () {
+        policyDisplayName: function () {
             for (let name of dataUtils.getPolicyNames()) {
-                if (name == this.$data.policyType) {
+                if (name == this.$data.policyDisplayName) {
                     this.$refs[name].visibleclass = "";
                     this.$refs[name].readonly = this.$data.readonly;
                 } else {
@@ -49,24 +49,21 @@ export default {
         },
         loadResource(resource) {
             if (resource.contract === undefined) {
-                this.$data.policyType = dataUtils.POLICY_PROVIDE_ACCESS;
+                this.$data.policyDisplayName = dataUtils.POLICY_PROVIDE_ACCESS;
             } else {
                 this.setPolicy(resource.contract, resource.policyName);
             }
         },
-        setPolicy(contract, policyName) {
+        setPolicy(contract, policyType) {
             if (contract == "") {
-                this.$data.policyType = dataUtils.POLICY_PROVIDE_ACCESS;
+                this.$data.policyDisplayName = dataUtils.POLICY_PROVIDE_ACCESS;
             } else {
-                this.$data.policyType = policyName;
+                this.$data.policyDisplayName = dataUtils.getPolicyDisplayName(policyType);
             }
-            this.$refs[this.$data.policyType].setPolicy(contract);
+            this.$refs[this.$data.policyDisplayName].setPolicy(contract);
         },
-        getPattern() {
-            return this.$refs[this.$data.policyType].pattern;
-        },
-        getContractJson() {
-            return this.$refs[this.$data.policyType].contractJson;
+        getDescription() {
+            return this.$refs[this.$data.policyDisplayName].description;
         },
         previousPage() {
             this.$emit('previousPage')

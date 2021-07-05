@@ -1,15 +1,11 @@
-import DataUtils from "@/utils/dataUtils";
 import validationUtils from "../../../../../../../utils/validationUtils";
 
 export default {
     components: {},
     data() {
         return {
-            pattern: "N_TIMES_USAGE",
-            contractJson: "",
-            nTimesUsageOperator: null,
+            description: "",
             nTimesUsageValue: null,
-            pipEndpoint: "",
             defaultRule: validationUtils.getRequiredRule(),
             numberRule: validationUtils.getNumberRequiredRule(),
             urlRule: validationUtils.getUrlRequiredRule(),
@@ -30,21 +26,16 @@ export default {
         },
         setPolicy(contract) {
             if (contract == "") {
-                this.$data.nTimesUsageOperator = null;
                 this.$data.nTimesUsageValue = null;
-                this.$data.pipEndpoint = "";
             } else {
-                this.$data.nTimesUsageOperator = DataUtils.convertOperatorTypeToSymbol(contract["ids:permission"][0]["ids:constraint"][0]["ids:operator"]["@id"]);
-                this.$data.nTimesUsageValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
-                this.$data.pipEndpoint = contract["ids:permission"][0]["ids:constraint"][0]["ids:pipEndpoint"]["@id"];
+                this.$data.nTimesUsageValue = contract["ids:constraint"][0]["ids:rightOperand"]["@value"];
             }
             this.nTimesUsageTfChange();
         },
         nTimesUsageTfChange() {
-            this.$data.contractJson = {
-                "binaryoperator": this.$data.nTimesUsageOperator,
-                "number": this.$data.nTimesUsageValue,
-                "pipendpoint": this.$data.pipEndpoint
+            this.$data.description = {
+                "type": "N_TIMES_USAGE",
+                "value": this.$data.nTimesUsageValue
             };
         }
     }

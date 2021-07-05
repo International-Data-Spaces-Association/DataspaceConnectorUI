@@ -35,24 +35,25 @@ export default {
     },
     methods: {
         async getBrokers() {
-            let response = await dataUtils.getBrokers();
-
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get brokers failed.");
-            } else {
+            this.$root.$emit('showBusyIndicator', false);
+            try {
+                let response = (await dataUtils.getBrokers())._embedded.brokerViewList;
                 this.$data.brokers = [];
                 for (var broker of response) {
                     this.$data.brokers.push({
                         broker: broker,
-                        title: broker[1]["title"],
-                        url: broker[1]["brokerUri"],
-                        registerStatus: this.toRegisterStatusClass(broker[1]["brokerRegistrationStatus"])
+                        id: dataUtils.getIdOfConnectorResponse(broker),
+                        title: broker.title,
+                        url: broker.location,
+                        registerStatus: this.toRegisterStatusClass(broker.status)
                     });
                 }
-
-                this.$forceUpdate();
-                this.$root.$emit('showBusyIndicator', false);
+            } catch (error) {
+                errorUtils.showError(error, "Get brokers");
             }
+            this.$forceUpdate();
+            this.$root.$emit('showBusyIndicator', false);
+
         },
         toRegisterStatusClass(brokerStatus) {
             let statusClass = "notRegisteredAtBroker";
@@ -78,13 +79,14 @@ export default {
         deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                this.deleteBroker(callbackData.item.broker[1]["brokerUri"]);
+                this.deleteBroker(callbackData.item.id);
             }
         },
         async deleteBroker(brokerId) {
-            let response = await dataUtils.deleteBroker(brokerId);
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Delete broker failed.");
+            try {
+                await dataUtils.deleteBroker(brokerId);
+            } catch (error) {
+                errorUtils.showError(error, "Delete broker");
             }
             this.getBrokers();
         },

@@ -4,8 +4,7 @@ export default {
     components: {},
     data() {
         return {
-            pattern: "DURATION_USAGE",
-            contractJson: "",
+            description: "",
             durationUsageValue: null,
             numberRule: validationUtils.getNumberRequiredRule(),
             durationValid: false,
@@ -24,12 +23,13 @@ export default {
             this.$emit('nextPage');
         },
         setPolicy(contract) {
-            this.$data.durationUsageValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("PT", "").replace("H", "");
+            this.$data.durationUsageValue = contract["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("PT", "").replace("H", "");
             this.durationUsageTfChange();
         },
         durationUsageTfChange() {
-            this.$data.contractJson = {
-                "number": this.$data.durationUsageValue
+            this.$data.description = {
+                "type": "DURATION_USAGE",
+                "duration": "PT" + this.$data.durationUsageValue + "H"
             };
         },
     }

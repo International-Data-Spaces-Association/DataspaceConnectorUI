@@ -5,8 +5,7 @@ export default {
     components: {},
     data() {
         return {
-            pattern: "USAGE_UNTIL_DELETION",
-            contractJson: "",
+            description: "",
             startMenu: false,
             startValue: null,
             endMenu: false,
@@ -27,7 +26,7 @@ export default {
             this.$emit('previousPage')
         },
         nextPage() {
-            this.createContractJson();
+            this.createDescription();
             this.$emit('nextPage')
         },
         setPolicy(contract) {
@@ -35,13 +34,14 @@ export default {
             this.$data.startValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
             this.$data.endValue = contract["ids:permission"][0]["ids:constraint"][1]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
             this.$data.deleteAtValue = contract["ids:permission"][0]["ids:postDuty"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
-            this.createContractJson();
+            this.createDescription();
         },
-        createContractJson() {
-            this.$data.contractJson = {
-                "startDate": this.$data.startValue + "T00:00:00Z",
-                "endDate": this.$data.endValue + "T00:00:00Z",
-                "deletionDate": this.$data.deleteAtValue + "T00:00:00Z"
+        createDescription() {
+            this.$data.description = {
+                "type": "USAGE_UNTIL_DELETION",
+                "start": this.$data.startValue + "T00:00:00Z",
+                "end": this.$data.endValue + "T00:00:00Z",
+                "date": this.$data.deleteAtValue + "T00:00:00Z"
             };
         }
     }

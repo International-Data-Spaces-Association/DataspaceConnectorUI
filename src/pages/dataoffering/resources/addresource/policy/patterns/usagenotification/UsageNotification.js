@@ -4,8 +4,7 @@ export default {
     components: {},
     data() {
         return {
-            pattern: "USAGE_NOTIFICATION",
-            contractJson: "",
+            description: "",
             value: null,
             urlRule: validationUtils.getUrlRequiredRule(),
             valid: false,
@@ -28,7 +27,8 @@ export default {
             this.tfChange();
         },
         tfChange() {
-            this.$data.contractJson = {
+            this.$data.description = {
+                "type": "USAGE_NOTIFICATION",
                 "url": this.$data.value
             };
         },

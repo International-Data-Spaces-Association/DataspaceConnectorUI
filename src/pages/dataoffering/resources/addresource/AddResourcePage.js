@@ -61,6 +61,7 @@ export default {
             }
         },
         async loadResource(id) {
+            this.$data.active_tab = 0;
             this.$root.$emit('showBusyIndicator', true);
             try {
                 let response = await dataUtils.getResource(id);
@@ -103,8 +104,7 @@ export default {
             var keywords = this.$refs.metaDataPage.keywords.replace(/ /g, "").split(",");
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
-            var pattern = this.$refs.policyPage.getPattern();
-            var contractJson = this.$refs.policyPage.getContractJson();
+            var policyDescription = this.$refs.policyPage.getDescription();
             var filetype = this.$refs.representationPage.filetype;
             var brokerList = this.$refs.brokersPage.getBrokerNewList()
             let brokerDeleteList = this.$refs.brokersPage.getBrokerDeleteList();
@@ -112,17 +112,17 @@ export default {
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
                 this.$emit("saved", title, description, language, keywords, 0, standardlicense, publisher,
-                    pattern, contractJson, filetype, 0, brokerList);
+                    policyDescription, filetype, 0, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
                     await dataUtils.createResource(title, description, language, keywords, standardlicense, publisher,
-                        pattern, contractJson, filetype, brokerList, genericEndpoint);
+                        policyDescription, filetype, brokerList, genericEndpoint);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
-                        title, description, language, keywords, standardlicense, publisher, pattern, contractJson,
+                        title, description, language, keywords, standardlicense, publisher, policyDescription,
                         filetype, brokerList, brokerDeleteList, genericEndpoint);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);

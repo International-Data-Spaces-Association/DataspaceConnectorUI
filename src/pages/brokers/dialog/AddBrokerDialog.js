@@ -35,7 +35,7 @@ export default {
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
-                await dataUtils.updateBroker(this.$data.url, this.$data.brokerTitle);
+                await dataUtils.updateBroker(dataUtils.getIdOfConnectorResponse(this.$data.currentBroker), this.$data.url, this.$data.brokerTitle);
             }
             this.$emit('brokerSaved');
         },
@@ -43,8 +43,8 @@ export default {
             this.$data.title = "Edit Broker"
             this.$data.urlReadOnly = true;
             this.$data.currentBroker = broker;
-            this.$data.url = broker[1].brokerUri;
-            this.$data.brokerTitle = broker[1].title;
+            this.$data.url = broker.location;
+            this.$data.brokerTitle = broker.title;
             this.$data.dialog = true;
         }
     }

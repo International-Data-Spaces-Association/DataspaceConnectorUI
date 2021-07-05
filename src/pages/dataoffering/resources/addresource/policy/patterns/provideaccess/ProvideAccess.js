@@ -2,8 +2,9 @@ export default {
     components: {},
     data() {
         return {
-            pattern: "PROVIDE_ACCESS",
-            contractJson: "",
+            description: {
+                "type": "PROVIDE_ACCESS"
+            },
             visibleclass: "",
             readonly: false
         };

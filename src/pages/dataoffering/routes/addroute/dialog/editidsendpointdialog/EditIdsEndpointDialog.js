@@ -36,7 +36,7 @@ export default {
             } else {
                 this.$data.title = "Edit IDS Endpoint";
                 resource = clientDataModel.createResource(-1, node.title, node.description,
-                    node.language, node.keywords, node.version, node.standardlicense, node.publisher, node.contractJson,
+                    node.language, node.keywords, node.version, node.standardlicense, node.publisher, node.policyDescription,
                     node.sourceType, node.filetype, node.bytesize);
                 resource.brokerList = node.brokerList;
             }
@@ -44,7 +44,7 @@ export default {
             this.$refs.addResourcePage.set(resource);
             this.$data.dialog = true;
         },
-        saved(title, description, language, keywords, version, standardlicense, publisher, pattern, contractJson, filetype, bytesize, brokerList) {
+        saved(title, description, language, keywords, version, standardlicense, publisher, policyDescription, filetype, bytesize, brokerList) {
             let isNew = false;
             if (this.$data.node == null) {
                 isNew = true;
@@ -67,8 +67,7 @@ export default {
             this.$data.node.version = version;
             this.$data.node.standardlicense = standardlicense;
             this.$data.node.publisher = publisher;
-            this.$data.node.pattern = pattern;
-            this.$data.node.contractJson = contractJson;
+            this.$data.node.policyDescription = policyDescription;
             // TODO remove sourceType when API changed.
             this.$data.node.sourceType = "LOCAL";
             this.$data.node.filetype = filetype;

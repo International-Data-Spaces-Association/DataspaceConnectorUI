@@ -46,13 +46,17 @@ export default {
     methods: {
         async getResources() {
             this.$root.$emit('showBusyIndicator', true);
-            let response = await dataUtils.getResources();
-            this.$data.resources = response;
-            this.$data.fileTypes = ["All"];
-            for (let resource of this.$data.resources) {
-                this.$data.fileTypes.push(resource.fileType);
-                let brokers = await dataUtils.getResourceRegistrationStatus(resource.id);
-                resource.brokers = brokers.map(x => x.brokerId);
+            try {
+                let response = await dataUtils.getResources();
+                this.$data.resources = response;
+                this.$data.fileTypes = ["All"];
+                for (let resource of this.$data.resources) {
+                    this.$data.fileTypes.push(resource.fileType);
+                    let brokers = await dataUtils.getResourceRegistrationStatus(resource.id);
+                    resource.brokers = brokers.map(x => x.brokerId);
+                }
+            } catch (error) {
+                errorUtils.showError(error, "Get resources");
             }
             this.filterChanged();
             this.$forceUpdate();

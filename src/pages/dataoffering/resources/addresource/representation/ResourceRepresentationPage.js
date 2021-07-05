@@ -81,14 +81,13 @@ export default {
             }
 
             this.$data.selected = [];
-            let response = await dataUtils.getRoutes();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get routes failed.");
-            } else {
+            try {
+                let response = await dataUtils.getRoutes();
                 for (let route of response) {
                     if (route["ids:hasSubRoute"] !== undefined) {
                         for (let step of route["ids:hasSubRoute"]) {
                             if (step["ids:appRouteOutput"] !== undefined) {
+                                console.log(step["ids:appRouteOutput"][0]["@id"], " == ", resource.id);
                                 if (step["ids:appRouteOutput"][0]["@id"] == resource.id) {
                                     this.$data.selected.push(dataUtils.genericEndpointToBackendConnection(route["ids:appRouteStart"][0]));
                                 }
@@ -96,6 +95,8 @@ export default {
                         }
                     }
                 }
+            } catch (error) {
+                errorUtils.showError(error, "Get resource route");
             }
         }
     }
