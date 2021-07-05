@@ -170,6 +170,61 @@ export default {
         return connector;
     },
 
+    createGenericEndpoint(id, accessUrl, sourceType, username, password) {
+        let genericEndpoint = {};
+
+        if (id === undefined) {
+            genericEndpoint.id = "";
+        } else {
+            genericEndpoint.id = id;
+        }
+
+        if (accessUrl === undefined) {
+            genericEndpoint.accessUrl = "";
+        } else {
+            genericEndpoint.accessUrl = accessUrl;
+        }
+
+        if (sourceType === undefined) {
+            genericEndpoint.sourceType = "";
+        } else {
+            genericEndpoint.sourceType = sourceType;
+        }
+
+        if (username === undefined) {
+            genericEndpoint.username = "";
+        } else {
+            genericEndpoint.username = username;
+        }
+
+        if (password === undefined) {
+            genericEndpoint.password = "";
+        } else {
+            genericEndpoint.password = password;
+        }
+
+        return genericEndpoint;
+    },
+
+    convertIdsGenericEndpoint(genericEndpoint) {
+        let id = genericEndpoint["@id"];
+        let accessUrl = undefined;
+        if (genericEndpoint["ids:accessURL"] !== undefined) {
+            accessUrl = genericEndpoint["ids:accessURL"]["@id"];
+        }
+        let sourceType = undefined;
+        if (genericEndpoint["https://w3id.org/idsa/core/sourceType"] !== undefined) {
+            sourceType = genericEndpoint["https://w3id.org/idsa/core/sourceType"]["@value"]
+        }
+        let username = undefined;
+        let password = undefined;
+        if (genericEndpoint["ids:genericEndpointAuthentication"] !== undefined) {
+            username = genericEndpoint["ids:genericEndpointAuthentication"]["ids:authUsername"];
+            password = genericEndpoint["ids:genericEndpointAuthentication"]["ids:authPassword"];
+        }
+        return this.createGenericEndpoint(id, accessUrl, sourceType, username, password);
+    },
+
     convertIdsResource(idsResource, representation, policyName, contract) {
         let title = idsResource.title;
         if (title.includes("\"@en")) {

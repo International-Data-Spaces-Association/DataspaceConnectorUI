@@ -17,7 +17,7 @@ export default {
             search: '',
             headers: [{
                 text: 'URL',
-                value: 'url'
+                value: 'accessUrl'
             }],
             backendConnections: [],
             sourceType: "",

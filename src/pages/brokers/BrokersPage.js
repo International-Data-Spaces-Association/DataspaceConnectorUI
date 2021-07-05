@@ -45,7 +45,7 @@ export default {
                         id: dataUtils.getIdOfConnectorResponse(broker),
                         title: broker.title,
                         url: broker.location,
-                        registerStatus: this.toRegisterStatusClass(broker.status)
+                        registerStatus: dataUtils.toRegisterStatusClass(broker.status)
                     });
                 }
             } catch (error) {
@@ -54,13 +54,6 @@ export default {
             this.$forceUpdate();
             this.$root.$emit('showBusyIndicator', false);
 
-        },
-        toRegisterStatusClass(brokerStatus) {
-            let statusClass = "notRegisteredAtBroker";
-            if (brokerStatus == "REGISTERED") {
-                statusClass = "registeredAtBroker";
-            }
-            return statusClass;
         },
         brokerSaved() {
             this.getBrokers();

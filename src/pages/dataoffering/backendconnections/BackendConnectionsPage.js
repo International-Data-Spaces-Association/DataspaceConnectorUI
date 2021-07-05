@@ -14,7 +14,7 @@ export default {
             search: '',
             headers: [{
                 text: 'URL',
-                value: 'url'
+                value: 'accessUrl'
             },
             {
                 text: '',
@@ -73,7 +73,7 @@ export default {
             this.getBackendConnections();
         },
         editItem(item) {
-            this.$refs.addBackendConnectionDialog.edit(item.endpoint);
+            this.$refs.addBackendConnectionDialog.edit(item);
         }
     }
 };

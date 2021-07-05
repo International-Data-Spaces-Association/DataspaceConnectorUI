@@ -68,15 +68,12 @@ export default {
             }
         },
         edit(endpoint) {
-            console.log("edit Endpoint");
             this.$data.title = "Edit Backend Connection"
             this.$data.currentEndpoint = endpoint;
-            this.$data.url = endpoint["ids:accessURL"]["@id"];
-            let sourceTypeField = endpoint["@context"].ids + "sourceType";
-            let sourceType = endpoint[sourceTypeField];
-            this.$data.sourceType = sourceType["@value"];
-            this.$data.username = endpoint["ids:genericEndpointAuthentication"]["ids:authUsername"];
-            this.$data.password = endpoint["ids:genericEndpointAuthentication"]["ids:authPassword"];
+            this.$data.url = endpoint.accessUrl;
+            this.$data.sourceType = endpoint.sourceType;
+            this.$data.username = endpoint.username;
+            this.$data.password = endpoint.password;
             this.$data.dialog = true;
         }
     }

@@ -233,6 +233,14 @@ export default {
         });
     },
 
+    toRegisterStatusClass(brokerStatus) {
+        let statusClass = "notRegisteredAtBroker";
+        if (brokerStatus == "Registered") {
+            statusClass = "registeredAtBroker";
+        }
+        return statusClass;
+    },
+
     async getBrokers() {
         return await restUtils.callConnector("GET", "/api/brokers");
     },
@@ -241,8 +249,17 @@ export default {
         backendConnections = [];
         let genericEndpoints = await restUtils.callConnector("GET", "/api/configmanager/generic/endpoints");
         for (let genericEndpoint of genericEndpoints) {
-            backendConnections.push(this.genericEndpointToBackendConnection(genericEndpoint));
+            backendConnections.push(clientDataModel.convertIdsGenericEndpoint(genericEndpoint));
         }
+
+        // TODO REMOVE!!! Just for testing until API available.
+        backendConnections.push({
+            id: "123-123-123",
+            accessUrl: "http://backend",
+            sourceType: "HTTP_GET",
+            username: "admin",
+            password: "123"
+        });
         return backendConnections;
     },
 

@@ -1,4 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "../../../../../utils/errorUtils";
 
 export default {
     components: {},
@@ -38,16 +39,22 @@ export default {
             this.getBrokers();
         },
         async getBrokers() {
-            let response = (await dataUtils.getBrokers())._embedded.brokerViewList;
-            this.$data.brokers = [];
-            for (let broker of response) {
-                if (broker.status == "Registered") {
-                    this.$data.brokers.push({
-                        broker: broker,
-                        title: broker[1]["title"],
-                        url: broker[1]["brokerUri"]
-                    });
+            try {
+                let response = (await dataUtils.getBrokers())._embedded.brokerViewList;
+                this.$data.brokers = [];
+                for (let broker of response) {
+                    if (broker.status == "Registered") {
+                        this.$data.brokers.push({
+                            broker: broker,
+                            id: dataUtils.getIdOfConnectorResponse(broker),
+                            title: broker.title,
+                            url: broker.location,
+                            registerStatus: dataUtils.toRegisterStatusClass(broker.status)
+                        });
+                    }
                 }
+            } catch (error) {
+                errorUtils.showError(error, "Get brokers");
             }
             this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
             this.$forceUpdate();
