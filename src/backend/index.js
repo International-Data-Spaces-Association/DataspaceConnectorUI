@@ -14,6 +14,8 @@ let auth = {
     password: 'password'
 }
 let httpsAgent = new https.Agent({
+    maxVersion: "TLSv1.2",
+    minVersion: "TLSv1.2",
     rejectUnauthorized: false
     //ca: fs.readFileSync('dsc.crt')
 });
@@ -46,17 +48,30 @@ function post(url, data) {
 
 function put(url, data) {
     console.log(">>> PUT " + url);
-    return axios.put(url, data, { auth, httpsAgent });
+    console.log(">>> DATA: ", data);
+    return axios.put(url, data, {
+        headers: { 'content-type': 'application/json' },
+        auth,
+        httpsAgent
+    });
 }
 
 function get(url) {
     console.log(">>> GET " + url);
-    return axios.get(url, { auth, httpsAgent });
+    return axios.get(url, {
+        headers: { 'content-type': 'application/json' },
+        auth,
+        httpsAgent
+    });
 }
 
 function del(url) {
     console.log(">>> DELETE " + url);
-    return axios.delete(url, { auth, httpsAgent });
+    return axios.delete(url, {
+        headers: { 'content-type': 'application/json' },
+        auth,
+        httpsAgent
+    });
 }
 
 function escape(text) {
