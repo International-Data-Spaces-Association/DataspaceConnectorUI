@@ -1,5 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
-import errorUtils from "../../utils/errorUtils";
+// import errorUtils from "../../utils/errorUtils";
 import validationUtils from "../../utils/validationUtils";
 
 export default {
@@ -45,6 +45,10 @@ export default {
     },
     methods: {
         async getSettings() {
+            dataUtils.test();
+
+            // TODO Multi line comment for testing above code.
+            /*
             this.$root.$emit('showBusyIndicator', true);
             try {
                 let response = await dataUtils.getDeployMethods();
@@ -76,7 +80,7 @@ export default {
             }
             catch (error) {
                 errorUtils.showError(error, "Get connector settings");
-            }
+            }*/
 
             // response = await dataUtils.getConfigModel();
             // if (response.name !== undefined && response.name == "Error") {
@@ -130,49 +134,49 @@ export default {
             this.$root.$emit('showBusyIndicator', false);
         },
         async saveSettings() {
-            let error = false;
-            this.$data.saveMessage = "";
-            this.$root.$emit('showBusyIndicator', true);
-            let proxyUrl = null;
-            if (this.$data.proxyUrl.trim() != "") {
-                proxyUrl = this.$data.proxyUrl;
-            }
-            let username = null;
-            let password = null;
-            if (this.$data.proxyAuthenticationNeeded) {
-                if (this.$data.proxyUsername.trim() != "") {
-                    username = this.$data.proxyUsername;
-                }
-                if (this.$data.proxyPassword.trim() != "") {
-                    password = this.$data.proxyPassword;
-                }
-            }
-            let response = await dataUtils.changeDeployMethod(this.$data.deployMethod);
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Save deploy method failed.");
-                error = true;
-            }
+            // let error = false;
+            // this.$data.saveMessage = "";
+            // this.$root.$emit('showBusyIndicator', true);
+            // let proxyUrl = null;
+            // if (this.$data.proxyUrl.trim() != "") {
+            //     proxyUrl = this.$data.proxyUrl;
+            // }
+            // let username = null;
+            // let password = null;
+            // if (this.$data.proxyAuthenticationNeeded) {
+            //     if (this.$data.proxyUsername.trim() != "") {
+            //         username = this.$data.proxyUsername;
+            //     }
+            //     if (this.$data.proxyPassword.trim() != "") {
+            //         password = this.$data.proxyPassword;
+            //     }
+            // }
+            // let response = await dataUtils.changeDeployMethod(this.$data.deployMethod);
+            // if (response.name !== undefined && response.name == "Error") {
+            //     this.$root.$emit('error', "Save deploy method failed.");
+            //     error = true;
+            // }
 
-            response = await dataUtils.changeConfigModel(this.$data.logLevel, this.$data.connectorDeployMode,
-                this.$data.trustStoreUrl, this.$data.trustStorePassword, this.$data.keyStoreUrl, this.$data.keyStorePassword,
-                proxyUrl, this.$data.proxyNoProxy, username, password);
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Save config model failed.");
-                error = true;
-            }
+            // response = await dataUtils.changeConfigModel(this.$data.logLevel, this.$data.connectorDeployMode,
+            //     this.$data.trustStoreUrl, this.$data.trustStorePassword, this.$data.keyStoreUrl, this.$data.keyStorePassword,
+            //     proxyUrl, this.$data.proxyNoProxy, username, password);
+            // if (response.name !== undefined && response.name == "Error") {
+            //     this.$root.$emit('error', "Save config model failed.");
+            //     error = true;
+            // }
 
-            response = await dataUtils.changeConnectorSettings(this.$data.connectorTitle, this.$data.connectorDescription,
-                this.$data.connectorEndpoint, "v" + this.$data.connectorVersion, this.$data.connectorCurator,
-                this.$data.connectorMaintainer, this.$data.connectorInboundModelVersion, this.$data.connectorOutboundModelVersion);
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Save connector settings failed.");
-                error = true;
-            }
+            // response = await dataUtils.changeConnectorSettings(this.$data.connectorTitle, this.$data.connectorDescription,
+            //     this.$data.connectorEndpoint, "v" + this.$data.connectorVersion, this.$data.connectorCurator,
+            //     this.$data.connectorMaintainer, this.$data.connectorInboundModelVersion, this.$data.connectorOutboundModelVersion);
+            // if (response.name !== undefined && response.name == "Error") {
+            //     this.$root.$emit('error', "Save connector settings failed.");
+            //     error = true;
+            // }
 
-            this.$root.$emit('showBusyIndicator', false);
-            if (!error) {
-                this.$data.saveMessage = "Successfully saved.";
-            }
+            // this.$root.$emit('showBusyIndicator', false);
+            // if (!error) {
+            //     this.$data.saveMessage = "Successfully saved.";
+            // }
         }
     }
 };

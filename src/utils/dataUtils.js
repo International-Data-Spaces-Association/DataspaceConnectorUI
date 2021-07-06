@@ -188,26 +188,26 @@ export default {
         }
     },
 
-    unregisterConnectorAtBroker(brokerUri) {
-        return new Promise(function (resolve) {
+    async unregisterConnectorAtBroker(brokerUri) {
+        try {
             let params = {
-                "brokerUri": brokerUri
+                "recipient ": brokerUri
             };
-            restUtils.call("POST", "/api/ui/broker/unregister", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in unregisterConnectorAtBroker(): ", error);
-                resolve(error);
-            });
-        });
+            await restUtils.callConnector("POST", "/api/ids/connector/unavailable", params);
+        } catch (error) {
+            errorUtils.showError(error, "Unregister connector at broker");
+        }
     },
 
-    async getResourceRegistrationStatus(resourceId) {
-        let params = {
-            "resourceId": resourceId
-        }
-        let response = (await restUtils.call("GET", "/api/ui/broker/resource/information", params));
-        return response;
+    async getResourceRegistrationStatus(/*resourceId*/) {
+        // let params = {
+        //     "resourceId": resourceId
+        // }
+        // let response = (await restUtils.call("GET", "/api/ui/broker/resource/information", params));
+        // return response;
+
+        // TODO call DSC API 
+        return [];
     },
 
     async updateResourceAtBroker(brokerUri, resourceId) {
@@ -484,11 +484,10 @@ export default {
         let connectorAddress = (await this.getConnectorAddress());
         let accessUrl = connectorAddress + "/api/artifacts/" + artifactId + "/data";
 
-        let params = {
-            "accessUrl": accessUrl
-        }
-        let response = await restUtils.call("POST", "/api/ui/connector/endpoint", params);
-        return response.connectorEndpointId;
+        return await restUtils.callConnector("POST", "/api/endpoints", null, {
+            "location": accessUrl,
+            "type": "CONNECTOR"
+        });
     },
 
     getIdOfConnectorResponse(response) {
@@ -531,9 +530,9 @@ export default {
             let representationId = this.getIdOfConnectorResponse(response);
 
             response = await restUtils.callConnector("POST", "/api/artifacts", null, {
-                "accessUrl": genericEndpoint["ids:accessURL"]["@id"],
-                "username": genericEndpoint["ids:genericEndpointAuthentication"]["ids:authUsername"],
-                "password": genericEndpoint["ids:genericEndpointAuthentication"]["ids:authPassword"]
+                "accessUrl": genericEndpoint.accessUrl,
+                "username": genericEndpoint.username,
+                "password": genericEndpoint.password
             });
             let artifactId = this.getIdOfConnectorResponse(response);
 
@@ -542,7 +541,8 @@ export default {
             response = await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]);
 
             response = await this.createConnectorEndpoint(artifactId);
-            let endpointId = response;
+            let endpointId = this.getIdOfConnectorResponse(response);
+
             response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
             let routeId = response;
             response = await this.createSubRoute(routeId, genericEndpoint["@id"], 20, 150,
@@ -671,14 +671,14 @@ export default {
     },
 
     async getRoutes() {
-        return await restUtils.call("GET", "/api/ui/approutes");
+        return await restUtils.callConnector("GET", "/api/configmanager/approutes");
     },
 
     async createNewRoute(description) {
         let params = {
             "description": description
         }
-        let response = await restUtils.call("POST", "/api/ui/approute", params);
+        let response = await restUtils.call("POST", "/api​/configmanager​/approute", params);
         return response.id;
     },
 
@@ -694,7 +694,7 @@ export default {
                 "endCoordinateY": endCoordinateY,
                 "resourceId": resourceId
             }
-            restUtils.call("POST", "/api/ui/approute/step", params).then(response => {
+            restUtils.call("POST", "/api​/configmanager​/approute/step", params).then(response => {
                 resolve(response.data);
             }).catch(error => {
                 console.log("Error in createSubRoute(): ", error);
@@ -734,40 +734,29 @@ export default {
         return response;
     },
 
-    getConfigModel() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/configmodel").then((response) => {
-                resolve(clientDataModel.convertIdsConfigModel(response.data));
-            }).catch(error => {
-                console.log("Error in getConfigModel(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    changeConfigModel(logLevel, connectorDeployMode,
-        trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword, proxyUrl, proxyNoProxy, username, password) {
-        return new Promise(function (resolve) {
-            let params = {
-                "loglevel": logLevel,
-                "connectorDeployMode": connectorDeployMode,
-                "trustStore": trustStoreUrl,
-                "trustStorePassword": trustStorePassword,
-                "keyStore": keyStoreUrl,
-                "keyStorePassword": keyStorePassword,
-                "proxyUri": proxyUrl,
-                "noProxyUri": proxyNoProxy,
-                "username": username,
-                "password": password
-            };
-            restUtils.call("PUT", "/api/ui/configmodel", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in changeConfigModel(): ", error);
-                resolve(error);
-            });
-        });
-    },
+    // changeConfigModel(logLevel, connectorDeployMode,
+    //     trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword, proxyUrl, proxyNoProxy, username, password) {
+    //     return new Promise(function (resolve) {
+    //         let params = {
+    //             "loglevel": logLevel,
+    //             "connectorDeployMode": connectorDeployMode,
+    //             "trustStore": trustStoreUrl,
+    //             "trustStorePassword": trustStorePassword,
+    //             "keyStore": keyStoreUrl,
+    //             "keyStorePassword": keyStorePassword,
+    //             "proxyUri": proxyUrl,
+    //             "noProxyUri": proxyNoProxy,
+    //             "username": username,
+    //             "password": password
+    //         };
+    //         restUtils.call("PUT", "/api/ui/configmodel", params).then(response => {
+    //             resolve(response.data);
+    //         }).catch(error => {
+    //             console.log("Error in changeConfigModel(): ", error);
+    //             resolve(error);
+    //         });
+    //     });
+    // },
 
     async getConnectorSettings() {
         let response = await restUtils.callConnector("GET", "/api/configuration");
@@ -775,28 +764,28 @@ export default {
         return clientDataModel.convertIdsConnector(response);
     },
 
-    changeConnectorSettings(connectorTitle, connectorDescription,
-        connectorEndpoint, connectorVersion, connectorCurator,
-        connectorMaintainer, connectorInboundModelVersion, connectorOutboundModelVersion) {
-        return new Promise(function (resolve) {
-            let params = {
-                "title": connectorTitle,
-                "description": connectorDescription,
-                "version": connectorVersion,
-                "curator": connectorCurator,
-                "endpoint": connectorEndpoint,
-                "maintainer": connectorMaintainer,
-                "inboundModelVersion": connectorInboundModelVersion,
-                "outboundModelVersion": connectorOutboundModelVersion
-            };
-            restUtils.call("PUT", "/api/ui/connector", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in changeConnectorSettings(): ", error);
-                resolve(error);
-            });
-        });
-    },
+    // changeConnectorSettings(connectorTitle, connectorDescription,
+    //     connectorEndpoint, connectorVersion, connectorCurator,
+    //     connectorMaintainer, connectorInboundModelVersion, connectorOutboundModelVersion) {
+    //     return new Promise(function (resolve) {
+    //         let params = {
+    //             "title": connectorTitle,
+    //             "description": connectorDescription,
+    //             "version": connectorVersion,
+    //             "curator": connectorCurator,
+    //             "endpoint": connectorEndpoint,
+    //             "maintainer": connectorMaintainer,
+    //             "inboundModelVersion": connectorInboundModelVersion,
+    //             "outboundModelVersion": connectorOutboundModelVersion
+    //         };
+    //         restUtils.call("PUT", "/api/ui/connector", params).then(response => {
+    //             resolve(response.data);
+    //         }).catch(error => {
+    //             console.log("Error in changeConnectorSettings(): ", error);
+    //             resolve(error);
+    //         });
+    //     });
+    // },
 
     async getConnectorDeployModes() {
         let response = await restUtils.callConnector("GET", "/api/configmanager/enum/connectorDeployMode");

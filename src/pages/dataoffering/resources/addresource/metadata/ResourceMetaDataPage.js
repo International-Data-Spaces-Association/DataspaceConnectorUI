@@ -1,5 +1,6 @@
 import ComponentGroup from "@/components/componentgroup/ComponentGroup.vue";
 import DataUtils from "@/utils/dataUtils";
+import errorUtils from "../../../../../utils/errorUtils";
 import validationUtils from "../../../../../utils/validationUtils";
 
 export default {
@@ -26,7 +27,11 @@ export default {
     },
     methods: {
         async loadLanguages() {
-            this.$data.languageItems = (await DataUtils.getLanguages());
+            try {
+                this.$data.languageItems = (await DataUtils.getLanguages());
+            } catch (error) {
+                errorUtils.showError(error, "Get languages");
+            }
         },
         nextPage() {
             this.$emit('nextPage');

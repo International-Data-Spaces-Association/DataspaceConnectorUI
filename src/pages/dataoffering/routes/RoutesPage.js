@@ -1,6 +1,7 @@
 // import dataUtils from "@/utils/dataUtils";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import dataUtils from "../../../utils/dataUtils";
+import errorUtils from "../../../utils/errorUtils";
 
 
 
@@ -31,10 +32,8 @@ export default {
     methods: {
         async getRoutes() {
             this.$root.$emit('showBusyIndicator', true);
-            let response = await dataUtils.getRoutes();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get routes failed.");
-            } else {
+            try {
+                let response = await dataUtils.getRoutes();
                 this.$data.routes = [];
                 for (let route of response) {
                     this.$data.routes.push({
@@ -42,8 +41,11 @@ export default {
                         description: route["ids:routeDescription"]
                     });
                 }
-                this.$root.$emit('showBusyIndicator', false);
+            } catch (error) {
+                errorUtils.showError(error, "Get routes");
             }
+            this.$root.$emit('showBusyIndicator', false);
+
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Route";

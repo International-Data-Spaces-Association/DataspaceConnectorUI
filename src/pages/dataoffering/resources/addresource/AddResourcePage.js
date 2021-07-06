@@ -96,7 +96,7 @@ export default {
         async save() {
             var genericEndpoint = null;
             if (this.$refs.representationPage.selected.length > 0) {
-                genericEndpoint = this.$refs.representationPage.selected[0].endpoint;
+                genericEndpoint = this.$refs.representationPage.selected[0];
             }
             var title = this.$refs.metaDataPage.title;
             var description = this.$refs.metaDataPage.description;
