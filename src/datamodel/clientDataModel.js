@@ -61,113 +61,107 @@ export default {
         return resource;
     },
 
-    createConfigModel(proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode,
-        trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword) {
-        let configModel = {};
-        if (proxyUrl === undefined) {
-            configModel.proxyUrl = "";
-        } else {
-            configModel.proxyUrl = proxyUrl;
-        }
-        if (username === undefined || username == "null") {
-            configModel.username = "";
-        } else {
-            configModel.username = username;
-        }
-        if (password === undefined || password == "null") {
-            configModel.password = "";
-        } else {
-            configModel.password = password;
-        }
-        if (noProxyArray === undefined) {
-            configModel.noProxyArray = [];
-        } else {
-            configModel.noProxyArray = noProxyArray;
-        }
-        if (logLevel === undefined) {
-            configModel.logLevel = "";
-        } else {
-            configModel.logLevel = logLevel;
-        }
-        if (connectorStatus === undefined) {
-            configModel.connectorStatus = "";
-        } else {
-            configModel.connectorStatus = connectorStatus;
-        }
-        if (connectorDeployMode === undefined) {
-            configModel.connectorDeployMode = "";
-        } else {
-            configModel.connectorDeployMode = connectorDeployMode;
-        }
-        if (trustStoreUrl === undefined) {
-            configModel.trustStoreUrl = "";
-        } else {
-            configModel.trustStoreUrl = trustStoreUrl;
-        }
-        if (trustStorePassword === undefined) {
-            configModel.trustStorePassword = "";
-        } else {
-            configModel.trustStorePassword = trustStorePassword;
-        }
-        if (keyStoreUrl === undefined) {
-            configModel.keyStoreUrl = "";
-        } else {
-            configModel.keyStoreUrl = keyStoreUrl;
-        }
-        if (keyStorePassword === undefined) {
-            configModel.keyStorePassword = "";
-        } else {
-            configModel.keyStorePassword = keyStorePassword;
-        }
-
-        return configModel;
-    },
-
-    createConnector(title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion) {
-        let connector = {};
+    createConnector(title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
+        proxyUrl, proxyUsername, proxyPassword, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
+        keyStoreUrl, keyStorePassword) {
+        let configuration = {};
         if (title === undefined) {
-            connector.title = "";
+            configuration.title = "";
         } else {
-            connector.title = title;
+            configuration.title = title;
         }
         if (description === undefined) {
-            connector.description = "";
+            configuration.description = "";
         } else {
-            connector.description = description;
+            configuration.description = description;
         }
         if (endpoint === undefined) {
-            connector.endpoint = "";
+            configuration.endpoint = "";
         } else {
-            connector.endpoint = endpoint;
+            configuration.endpoint = endpoint;
         }
         if (version === undefined) {
-            connector.version = "";
+            configuration.version = "";
         } else {
-            connector.version = version;
+            configuration.version = version;
         }
         if (curator === undefined) {
-            connector.curator = "";
+            configuration.curator = "";
         } else {
-            connector.curator = curator;
+            configuration.curator = curator;
         }
         if (maintainer === undefined) {
-            connector.maintainer = "";
+            configuration.maintainer = "";
         } else {
-            connector.maintainer = maintainer;
+            configuration.maintainer = maintainer;
         }
         if (inboundModelVersion === undefined) {
-            connector.inboundModelVersion = "";
+            configuration.inboundModelVersion = "";
         } else {
-            connector.inboundModelVersion = inboundModelVersion;
+            configuration.inboundModelVersion = inboundModelVersion;
         }
         if (outboundModelVersion === undefined) {
-            connector.outboundModelVersion = "";
+            configuration.outboundModelVersion = "";
         } else {
-            connector.outboundModelVersion = outboundModelVersion;
+            configuration.outboundModelVersion = outboundModelVersion;
+        }
+        if (proxyUrl === undefined) {
+            configuration.proxyUrl = "";
+        } else {
+            configuration.proxyUrl = proxyUrl;
+        }
+        if (proxyUsername === undefined) {
+            configuration.proxyUsername = "";
+        } else {
+            configuration.proxyUsername = proxyUsername;
+        }
+        if (proxyPassword === undefined) {
+            configuration.proxyPassword = "";
+        } else {
+            configuration.proxyPassword = proxyPassword;
+        }
+        if (noProxyArray === undefined) {
+            configuration.noProxyArray = "";
+        } else {
+            configuration.noProxyArray = noProxyArray;
+        }
+        if (logLevel === undefined) {
+            configuration.logLevel = "";
+        } else {
+            configuration.logLevel = logLevel;
+        }
+        if (connectorStatus === undefined) {
+            configuration.connectorStatus = "";
+        } else {
+            configuration.connectorStatus = connectorStatus;
+        }
+        if (connectorDeployMode === undefined) {
+            configuration.connectorDeployMode = "";
+        } else {
+            configuration.connectorDeployMode = connectorDeployMode;
+        }
+        if (trustStoreUrl === undefined) {
+            configuration.trustStoreUrl = "";
+        } else {
+            configuration.trustStoreUrl = trustStoreUrl;
+        }
+        if (trustStorePassword === undefined) {
+            configuration.trustStorePassword = "";
+        } else {
+            configuration.trustStorePassword = trustStorePassword;
+        }
+        if (keyStoreUrl === undefined) {
+            configuration.keyStoreUrl = "";
+        } else {
+            configuration.keyStoreUrl = keyStoreUrl;
+        }
+        if (keyStorePassword === undefined) {
+            configuration.keyStorePassword = "";
+        } else {
+            configuration.keyStorePassword = keyStorePassword;
         }
 
-
-        return connector;
+        return configuration;
     },
 
     createGenericEndpoint(id, accessUrl, sourceType, dataSourceId, username, password) {
@@ -252,32 +246,7 @@ export default {
     },
 
 
-    convertIdsConfigModel(idsConfigModel) {
-        let proxyUrl = "";
-        let username = "";
-        let password = "";
-        let noProxyArray = "";
-        if (idsConfigModel["ids:connectorProxy"] !== undefined) {
-            proxyUrl = idsConfigModel["ids:connectorProxy"][0]["ids:proxyURI"]["@id"];
-            if (idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"] !== undefined) {
-                username = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authUsername"];
-                password = idsConfigModel["ids:connectorProxy"][0]["ids:proxyAuthentication"]["ids:authPassword"];
-            }
-            noProxyArray = idsConfigModel["ids:connectorProxy"][0]["ids:noProxy"];
-        }
-        let logLevel = idsConfigModel["ids:configurationModelLogLevel"]["@id"].replace("idsc:", "");
-        let connectorStatus = idsConfigModel["ids:connectorStatus"]["@id"].replace("idsc:CONNECTOR_", "");
-        let connectorDeployMode = idsConfigModel["ids:connectorDeployMode"]["@id"].replace("idsc:", "");
-        let trustStoreUrl = idsConfigModel["ids:trustStore"]["@id"];
-        let trustStorePassword = idsConfigModel["ids:trustStorePassword"];
-        let keyStoreUrl = idsConfigModel["ids:keyStore"]["@id"];
-        let keyStorePassword = idsConfigModel["ids:keyStorePassword"];
-
-        return this.createConfigModel(proxyUrl, username, password, noProxyArray, logLevel, connectorStatus,
-            connectorDeployMode, trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword);
-    },
-
-    convertIdsConnector(idsConnector) {
+    convertIdsConfiguration(idsConfiguration) {
         let title = "";
         let description = "";
         let endpoint = "";
@@ -285,43 +254,32 @@ export default {
         let curator = "";
         let maintainer = "";
         let inboundModelVersion = "";
-
-        if (idsConnector["ids:connectorDescription"] !== undefined) {
-            if (idsConnector["ids:connectorDescription"]["ids:title"] !== undefined) {
-                title = idsConnector["ids:connectorDescription"]["ids:title"][0]["@value"];
-            }
-
-            if (idsConnector["ids:connectorDescription"]["ids:description"] !== undefined) {
-                description = idsConnector["ids:connectorDescription"]["ids:description"][0]["@value"];
-            }
-
-            if (idsConnector["ids:connectorDescription"]["ids:hasDefaultEndpoint"] !== undefined) {
-                endpoint = idsConnector["ids:connectorDescription"]["ids:hasDefaultEndpoint"]["@id"];
-            }
-
-            if (idsConnector["ids:connectorDescription"]["ids:version"] !== undefined) {
-                version = idsConnector["ids:connectorDescription"]["ids:version"];
-            }
-
-            if (idsConnector["ids:connectorDescription"]["ids:curator"] !== undefined) {
-                curator = idsConnector["ids:connectorDescription"]["ids:curator"]["@id"];
-            }
-
-            if (idsConnector["ids:connectorDescription"]["ids:maintainer"] !== undefined) {
-                maintainer = idsConnector["ids:connectorDescription"]["ids:maintainer"]["@id"];
-            }
-
-            if (idsConnector["ids:connectorDescription"]["ids:inboundModelVersion"] !== undefined) {
-                inboundModelVersion = idsConnector["ids:connectorDescription"]["ids:inboundModelVersion"][0];
-            }
-        }
-
-
         let outboundModelVersion = "";
-        if (idsConnector["ids:outboundModelVersion"] !== undefined) {
-            outboundModelVersion = idsConnector["ids:outboundModelVersion"];
+        let proxyUrl = "";
+        let username = "";
+        let password = "";
+        let noProxyArray = "";
+        let logLevel = "";
+        let connectorStatus = "";
+        let connectorDeployMode = "";
+        let trustStoreUrl = "";
+        let trustStorePassword = "";
+        let keyStoreUrl = "";
+        let keyStorePassword = "";
+
+        if (idsConfiguration !== undefined) {
+            if (idsConfiguration.proxy !== undefined && idsConfiguration.proxy != null) {
+                proxyUrl = idsConfiguration.proxy.location;
+                noProxyArray = idsConfiguration.proxy.exclusions;
+            }
+            logLevel = idsConfiguration.logLevel;
+            connectorDeployMode = idsConfiguration.deployMode;
+            trustStoreUrl = idsConfiguration.trustStore.name;
+            keyStoreUrl = idsConfiguration.keyStore.location;
         }
 
-        return this.createConnector(title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion);
+        return this.createConnector(title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
+            proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
+            keyStoreUrl, keyStorePassword);
     }
 }

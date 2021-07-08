@@ -1,4 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "../../utils/errorUtils";
 // import errorUtils from "../../utils/errorUtils";
 import validationUtils from "../../utils/validationUtils";
 
@@ -45,17 +46,13 @@ export default {
     },
     methods: {
         async getSettings() {
-            dataUtils.test();
 
-            // TODO Multi line comment for testing above code.
-            /*
+
             this.$root.$emit('showBusyIndicator', true);
             try {
                 let response = await dataUtils.getDeployMethods();
                 this.$data.deployMethods = response;
-
-                response = await dataUtils.getLogLevels()
-                this.$data.logLevels = response;
+                this.$data.logLevels = await dataUtils.getLogLevels();
 
                 response = await dataUtils.getConnectorDeployModes();
                 this.$data.connectorDeployModes = response;
@@ -64,23 +61,46 @@ export default {
                 errorUtils.showError(error, "Get enum values");
             }
 
-            try {
-                let response = await dataUtils.getDeployMethod();
-                if (response != null && response != "") {
-                    this.$data.deployMethod = response[0][1].routeDeployMethod;
-                }
-            }
-            catch (error) {
-                errorUtils.showError(error, "Get deploy method");
-            }
+            // try {
+            //     let response = await dataUtils.getDeployMethod();
+            //     if (response != null && response != "") {
+            //         this.$data.deployMethod = response[0][1].routeDeployMethod;
+            //     }
+            // }
+            // catch (error) {
+            //     errorUtils.showError(error, "Get deploy method");
+            // }
 
             try {
-                let response = await dataUtils.getConnectorSettings();
-                console.log("CONN SETTINGS: ", response);
+                let configuration = await dataUtils.getConnectorConfiguration();
+                this.$data.proxyUrl = configuration.proxyUrl;
+                let username = configuration.proxyUsername;
+                let password = configuration.proxyPassword;
+                let noProxyArray = configuration.noProxyArray;
+                this.$data.proxyAuthenticationNeeded = username != "" || password != "";
+                this.$data.proxyUsername = username;
+                this.$data.proxyPassword = password;
+                let noProxy = "";
+                let count = 0;
+                for (let el of noProxyArray) {
+                    if (count > 0) {
+                        noProxy += ", ";
+                    }
+                    noProxy += el;
+                    count++;
+                }
+                this.$data.proxyNoProxy = noProxy;
+                this.$data.logLevel = configuration.logLevel;
+                this.$data.connectorStatus = configuration.connectorStatus;
+                this.$data.connectorDeployMode = configuration.connectorDeployMode;
+                this.$data.trustStoreUrl = configuration.trustStoreUrl;
+                this.$data.trustStorePassword = configuration.trustStorePassword;
+                this.$data.keyStoreUrl = configuration.keyStoreUrl;
+                this.$data.keyStorePassword = configuration.keyStorePassword;
             }
             catch (error) {
                 errorUtils.showError(error, "Get connector settings");
-            }*/
+            }
 
             // response = await dataUtils.getConfigModel();
             // if (response.name !== undefined && response.name == "Error") {
@@ -116,7 +136,7 @@ export default {
             //     this.$data.keyStorePassword = configModel.keyStorePassword;
             // }
 
-            // response = await dataUtils.getConnectorSettings();
+            // response = await dataUtils.getConnectorConfiguration();
             // if (response.name !== undefined && response.name == "Error") {
             //     this.$root.$emit('error', "Get connector settings failed.");
             // } else {

@@ -44,7 +44,7 @@ export default {
     methods: {
         async setTitleFromConnector() {
             try {
-                let connectorData = (await dataUtils.getConnectorSettings());
+                let connectorData = (await dataUtils.getConnectorConfiguration());
                 this.$data.uiTitle = connectorData.title;
             } catch (error) {
                 errorUtils.showError(error, "Get connector settings");

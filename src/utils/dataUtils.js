@@ -742,10 +742,15 @@ export default {
     //     });
     // },
 
-    async getConnectorSettings() {
-        let response = await restUtils.callConnector("GET", "/api/configuration");
-        console.log("CONN SETTINGS: ", response);
-        return clientDataModel.convertIdsConnector(response);
+    async getConnectorConfiguration() {
+        let configurations = (await restUtils.callConnector("GET", "/api/configurations"))._embedded.configurations;
+        let configuration = undefined;
+        if (configurations !== undefined && configurations.length > 0) {
+            configuration = configurations[0];
+        }
+        console.log(">>> IDS CONFIG: ", configuration);
+        console.log(">>> UI CONFIG: ", clientDataModel.convertIdsConfiguration(configuration));
+        return clientDataModel.convertIdsConfiguration(configuration);
     },
 
     // changeConnectorSettings(connectorTitle, connectorDescription,
