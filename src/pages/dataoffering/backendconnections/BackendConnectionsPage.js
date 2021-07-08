@@ -28,13 +28,12 @@ export default {
         };
     },
     mounted: function () {
-        this.getBackendConnections();
+        this.getGenericEndpoints();
     },
     methods: {
-        async getBackendConnections() {
+        async getGenericEndpoints() {
             try {
-                let response = await dataUtils.getBackendConnections();
-                this.$data.backendConnections = response;
+                this.$data.backendConnections = await dataUtils.getGenericEndpoints();
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
             } catch (error) {
@@ -42,7 +41,7 @@ export default {
             }
         },
         backendConnectionSaved() {
-            this.getBackendConnections();
+            this.getGenericEndpoints();
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Backend Connection";
@@ -56,12 +55,12 @@ export default {
         deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                this.deleteBackendConnection(callbackData.item.endpoint["@id"]);
+                this.deleteBackendConnection(callbackData.item.id, callbackData.item.dataSourceId);
             }
         },
-        async deleteBackendConnection(id) {
+        async deleteBackendConnection(id, dataSourceId) {
             try {
-                let response = (await dataUtils.deleteBackendConnection(id));
+                let response = (await dataUtils.deleteGenericEndpoint(id, dataSourceId));
                 if (response.name !== undefined && response.name == "Error") {
                     this.$root.$emit('error', "Delete backend connection failed.");
                 }
@@ -70,7 +69,7 @@ export default {
                 console.log("Error on deleteBackendConnection(): ", error);
                 this.$root.$emit('error', "Delete backend connection failed.");
             }
-            this.getBackendConnections();
+            this.getGenericEndpoints();
         },
         editItem(item) {
             this.$refs.addBackendConnectionDialog.edit(item);

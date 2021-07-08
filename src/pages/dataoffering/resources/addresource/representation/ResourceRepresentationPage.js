@@ -41,11 +41,11 @@ export default {
         }
     },
     mounted: function () {
-        this.getBackendConnections();
+        this.getGenericEndpoints();
     },
     methods: {
         gotVisible() {
-            this.getBackendConnections();
+            this.getGenericEndpoints();
         },
         previousPage() {
             this.$emit('previousPage')
@@ -55,11 +55,11 @@ export default {
         },
         backendConnectionSaved() {
             this.$data.newBackendConnection = true;
-            this.getBackendConnections();
+            this.getGenericEndpoints();
         },
-        async getBackendConnections() {
+        async getGenericEndpoints() {
             try {
-                let response = await dataUtils.getBackendConnections();
+                let response = await dataUtils.getGenericEndpoints();
                 this.$data.backendConnections = response;
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();

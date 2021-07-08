@@ -245,32 +245,6 @@ export default {
         return await restUtils.callConnector("GET", "/api/brokers");
     },
 
-    async getBackendConnections() {
-        backendConnections = [];
-        let genericEndpoints = await restUtils.callConnector("GET", "/api/configmanager/generic/endpoints");
-        for (let genericEndpoint of genericEndpoints) {
-            backendConnections.push(clientDataModel.convertIdsGenericEndpoint(genericEndpoint));
-        }
-
-        // TODO REMOVE!!! Just for testing until API available.
-        backendConnections.push({
-            id: "123-123-123",
-            accessUrl: "http://backend",
-            sourceType: "HTTP_GET",
-            username: "admin",
-            password: "123"
-        });
-        return backendConnections;
-    },
-
-    genericEndpointToBackendConnection(genericEndpoint) {
-        return {
-            id: genericEndpoint["@id"],
-            endpoint: genericEndpoint,
-            url: genericEndpoint["ids:accessURL"] ? genericEndpoint["ids:accessURL"]["@id"] : "http://"
-        };
-    },
-
     async createBroker(url, title) {
         try {
             await restUtils.callConnector("POST", "/api/brokers", null, {
@@ -298,44 +272,66 @@ export default {
         return await restUtils.callConnector("DELETE", "/api/brokers/" + brokerId);
     },
 
-    createBackendConnection(url, username, password, sourceType) {
-        return new Promise(function (resolve) {
-            let params = {
-                "accessURL": url,
+    async getGenericEndpoints() {
+        let genericEndpoints = [];
+        let idsGenericEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.genericEndpointList;
+        for (let idsGenericEndpoint of idsGenericEndpoints) {
+            genericEndpoints.push(clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint));
+        }
+
+        return genericEndpoints;
+    },
+
+    genericEndpointToBackendConnection(genericEndpoint) {
+        return {
+            id: genericEndpoint["@id"],
+            endpoint: genericEndpoint,
+            url: genericEndpoint["ids:accessURL"] ? genericEndpoint["ids:accessURL"]["@id"] : "http://"
+        };
+    },
+
+    async createGenericEndpoint(url, username, password, sourceType) {
+        let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
+            "location": url,
+            "type": "GENERIC"
+        });
+        let genericEndpointId = this.getIdOfConnectorResponse(response);
+
+        response = await restUtils.callConnector("POST", "/api/datasources", null, {
+            "authentication": {
                 "username": username,
-                "password": password,
-                "sourceType": sourceType
-            };
-            restUtils.call("POST", "/api/ui/generic/endpoint", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in saveBackendConnection(): ", error);
-                resolve(error);
-            });
+                "password": password
+            },
+            "type": sourceType
+        });
+        let dataSourceId = this.getIdOfConnectorResponse(response);
+
+        // dataSourceId is needed with double quotes at start and end for this API call
+        await restUtils.callConnector("PUT", "/api/endpoints/" + genericEndpointId + "/datasource", null, "\"" + dataSourceId + "\"");
+    },
+
+    async updateGenericEndpoint(id, dataSourceId, url, username, password, sourceType) {
+        await restUtils.callConnector("PUT", "/api/endpoints/" + id, null, {
+            "location": url,
+            "type": "GENERIC"
+        });
+
+        await restUtils.callConnector("PUT", "/api/datasources/" + dataSourceId, null, {
+            "authentication": {
+                "username": username,
+                "password": password
+            },
+            "type": sourceType
         });
     },
 
-    updateBackendConnection(id, url, username, password, sourceType) {
-        return new Promise(function (resolve) {
-            let params = {
-                "id": id,
-                "accessURL": url,
-                "username": username,
-                "password": password,
-                "sourceType": sourceType
-            };
-            restUtils.call("PUT", "/api/ui/generic/endpoint", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in saveBackendConnection(): ", error);
-                resolve(error);
-            });
-        });
+    async deleteGenericEndpoint(id, dataSourceId) {
+        await restUtils.callConnector("DELETE", "/api/endpoints/" + id);
+        await restUtils.callConnector("DELETE", "/api/datasources/" + dataSourceId);
     },
 
     async deleteResource(id) {
-        let response = (await restUtils.callConnector("DELETE", "/api/offers/" + id));
-        return response;
+        return await restUtils.callConnector("DELETE", "/api/offers/" + id);
     },
 
     getRoute(id) {
@@ -361,20 +357,6 @@ export default {
                 resolve(response.data);
             }).catch(error => {
                 console.log(error);
-                resolve(error);
-            });
-        });
-    },
-
-    deleteBackendConnection(id) {
-        return new Promise(function (resolve) {
-            let params = {
-                "endpointId": id
-            };
-            restUtils.call("DELETE", "/api/ui/generic/endpoint", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in deleteBackendConnection(): ", error);
                 resolve(error);
             });
         });

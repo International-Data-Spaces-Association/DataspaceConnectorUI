@@ -37,7 +37,7 @@ export default {
         async init() {
             let response = [];
             try {
-                response = await dataUtils.getBackendConnections();
+                response = await dataUtils.getGenericEndpoints();
             } catch (error) {
                 errorUtils.showError(error, "Get backend connections");
             }

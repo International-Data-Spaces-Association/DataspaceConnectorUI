@@ -170,7 +170,7 @@ export default {
         return connector;
     },
 
-    createGenericEndpoint(id, accessUrl, sourceType, username, password) {
+    createGenericEndpoint(id, accessUrl, sourceType, dataSourceId, username, password) {
         let genericEndpoint = {};
 
         if (id === undefined) {
@@ -191,6 +191,12 @@ export default {
             genericEndpoint.sourceType = sourceType;
         }
 
+        if (dataSourceId === undefined) {
+            genericEndpoint.dataSourceId = "";
+        } else {
+            genericEndpoint.dataSourceId = dataSourceId;
+        }
+
         if (username === undefined) {
             genericEndpoint.username = "";
         } else {
@@ -207,22 +213,23 @@ export default {
     },
 
     convertIdsGenericEndpoint(genericEndpoint) {
-        let id = genericEndpoint["@id"];
+        let id = genericEndpoint.id;
         let accessUrl = undefined;
-        if (genericEndpoint["ids:accessURL"] !== undefined) {
-            accessUrl = genericEndpoint["ids:accessURL"]["@id"];
-        }
+        accessUrl = genericEndpoint.location;
         let sourceType = undefined;
-        if (genericEndpoint["https://w3id.org/idsa/core/sourceType"] !== undefined) {
-            sourceType = genericEndpoint["https://w3id.org/idsa/core/sourceType"]["@value"]
-        }
+        let dataSourceId = undefined;
         let username = undefined;
         let password = undefined;
-        if (genericEndpoint["ids:genericEndpointAuthentication"] !== undefined) {
-            username = genericEndpoint["ids:genericEndpointAuthentication"]["ids:authUsername"];
-            password = genericEndpoint["ids:genericEndpointAuthentication"]["ids:authPassword"];
+        if (genericEndpoint.dataSource !== undefined && genericEndpoint.dataSource != null) {
+            dataSourceId = genericEndpoint.dataSource.id;
+            sourceType = genericEndpoint.dataSource.type;
+            if (genericEndpoint.dataSource.authentication !== undefined) {
+                username = genericEndpoint.dataSource.authentication.username;
+                password = genericEndpoint.dataSource.authentication.password;
+            }
         }
-        return this.createGenericEndpoint(id, accessUrl, sourceType, username, password);
+
+        return this.createGenericEndpoint(id, accessUrl, sourceType, dataSourceId, username, password);
     },
 
     convertIdsResource(idsResource, representation, policyName, contract) {

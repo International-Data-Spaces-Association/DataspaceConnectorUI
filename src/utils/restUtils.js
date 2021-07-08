@@ -43,7 +43,8 @@ export default {
     },
 
     isError(response) {
-        return (response.name !== undefined && response.name == "Error") || response.error !== undefined || (response.status !== undefined && response.status == 500) || (response.length == 2 && response[1].error !== undefined);
+        return (response.name !== undefined && response.name == "Error") || response.error !== undefined ||
+            (response.status !== undefined && response.status >= 400) || (response.length == 2 && response[1].error !== undefined);
     },
 
     getErrorDetails(response) {
