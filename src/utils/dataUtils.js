@@ -275,8 +275,10 @@ export default {
     async getGenericEndpoints() {
         let genericEndpoints = [];
         let idsGenericEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.genericEndpointList;
-        for (let idsGenericEndpoint of idsGenericEndpoints) {
-            genericEndpoints.push(clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint));
+        if (idsGenericEndpoints !== undefined) {
+            for (let idsGenericEndpoint of idsGenericEndpoints) {
+                genericEndpoints.push(clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint));
+            }
         }
 
         return genericEndpoints;
