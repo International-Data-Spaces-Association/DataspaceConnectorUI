@@ -26,6 +26,10 @@ export default {
             this.$data.durationUsageValue = contract["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("PT", "").replace("H", "");
             this.durationUsageTfChange();
         },
+        setPolicyByDescription(policyDescription) {
+            this.$data.durationUsageValue = policyDescription.duration.replace("PT", "").replace("H", "");
+            this.durationUsageTfChange();
+        },
         durationUsageTfChange() {
             this.$data.description = {
                 "type": "DURATION_USAGE",

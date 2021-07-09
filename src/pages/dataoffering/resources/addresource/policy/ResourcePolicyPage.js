@@ -51,16 +51,20 @@ export default {
             if (resource.contract === undefined) {
                 this.$data.policyDisplayName = dataUtils.POLICY_PROVIDE_ACCESS;
             } else {
-                this.setPolicy(resource.contract, resource.policyName);
+                this.setPolicy(resource.contract, resource.policyName, resource.policyDescription);
             }
         },
-        setPolicy(contract, policyType) {
-            if (contract == "") {
-                this.$data.policyDisplayName = dataUtils.POLICY_PROVIDE_ACCESS;
+        setPolicy(contract, policyType, policyDescription) {
+            if (policyType == "") {
+                this.$refs[dataUtils.getPolicyNames()[0]].setPolicy(contract);
             } else {
                 this.$data.policyDisplayName = dataUtils.getPolicyDisplayName(policyType);
+                if (contract == "") {
+                    this.$refs[this.$data.policyDisplayName].setPolicyByDescription(policyDescription);
+                } else {
+                    this.$refs[this.$data.policyDisplayName].setPolicy(contract);
+                }
             }
-            this.$refs[this.$data.policyDisplayName].setPolicy(contract);
         },
         getDescription() {
             return this.$refs[this.$data.policyDisplayName].description;

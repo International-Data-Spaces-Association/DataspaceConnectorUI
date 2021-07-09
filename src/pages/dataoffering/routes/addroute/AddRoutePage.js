@@ -43,33 +43,27 @@ export default {
             }
             this.$data.backendConnections = response;
             response = await dataUtils.getApps();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get apps failed.");
+            this.$data.apps = response;
+            this.$data.saveMessage = "";
+            this.validateRoute();
+            if (this.$route.query.routeId === undefined) {
+                this.$data.isNewRoute = true;
+                this.$data.currentRoute = null;
+                this.description = dataUtils.getCurrentDate() + " - Unnamed";
             } else {
-                this.$data.apps = response;
-                this.$data.saveMessage = "";
-                this.validateRoute();
-                if (this.$route.query.routeId === undefined) {
-                    this.$data.isNewRoute = true;
-                    this.$data.currentRoute = null;
-                    this.description = dataUtils.getCurrentDate() + " - Unnamed";
-                } else {
-                    this.loadRoute(this.$route.query.routeId);
-                }
+                this.loadRoute(this.$route.query.routeId);
             }
         },
         async loadRoute(id) {
             this.$root.$emit('showBusyIndicator', true);
             this.$refs.chart.clear();
-            console.log("GET ROUTE: ", id);
-            let response = await dataUtils.getRoute(id);
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get route failed.");
-            } else {
+            try {
+                let response = await dataUtils.getRoute(id);
                 let route = response;
                 this.$data.currentRoute = route;
-                this.$data.description = route["ids:routeDescription"];
-                for (let subRoute of route["ids:hasSubRoute"]) {
+                this.$data.description = route.description;
+                let routeSteps = await dataUtils.getRouteSteps(id);
+                for (let subRoute of routeSteps) {
                     let start = subRoute["ids:appRouteStart"][0];
                     let end = subRoute["ids:appRouteEnd"][0];
                     let output = undefined;
@@ -92,9 +86,12 @@ export default {
                     let isLeftToRight = sourceEndpointInfo.xcoordinate < destinationEndpointInfo.xcoordinate;
                     this.loadConnection(startNodeId, start["@id"], endNodeId, end["@id"], isLeftToRight);
                 }
-                this.$root.$emit('showBusyIndicator', false);
-                this.$forceUpdate();
+            } catch (error) {
+                errorUtils.showError(error, "Get route");
             }
+            this.$root.$emit('showBusyIndicator', false);
+            this.$forceUpdate();
+
         },
         async addNode(routeId, endpoint, output) {
             let response = await dataUtils.getEndpointInfo(routeId, endpoint["@id"]);
@@ -181,19 +178,19 @@ export default {
             this.validateRoute();
         },
         showAddBackendDialog() {
-            this.$refs.addBackendDialog.show(this.$data.backendConnections, "Backend Connection", "URL", "url");
+            this.$refs.addBackendDialog.show(this.$data.backendConnections, "Backend Connection", "URL", "accessUrl");
         },
         showAddAppDialog() {
             this.$refs.addAppDialog.show(this.$data.apps, "App", "App title", "title");
         },
-        addBackend(id, x, y) {
+        async addBackend(id, x, y) {
             if (x === undefined) {
                 x = this.getXForNewNode();
             }
             if (y === undefined) {
                 y = 150;
             }
-            var backend = dataUtils.getBackendConnection(id);
+            var backend = await dataUtils.getGenericEndpoint(id);
             if (backend == null) {
                 this.$root.$emit('error', "Backend connection not found.");
             } else {
@@ -203,7 +200,7 @@ export default {
                     y: y,
                     name: 'Backend',
                     type: 'backendnode',
-                    text: backend.url,
+                    text: backend.accessUrl,
                     objectId: id,
                 });
             }

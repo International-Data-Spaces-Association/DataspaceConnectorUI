@@ -37,8 +37,8 @@ export default {
                 this.$data.routes = [];
                 for (let route of response) {
                     this.$data.routes.push({
-                        id: route["@id"],
-                        description: route["ids:routeDescription"]
+                        id: dataUtils.getIdOfConnectorResponse(route),
+                        description: route.description
                     });
                 }
             } catch (error) {
@@ -59,12 +59,12 @@ export default {
         async deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                let response = await dataUtils.deleteRoute(callbackData.item.id);
-                if (response.name !== undefined && response.name == "Error") {
-                    this.$root.$emit('error', "Delete route failed.");
-                } else {
-                    this.getRoutes();
+                try {
+                    await dataUtils.deleteRoute(callbackData.item.id);
+                } catch (error) {
+                    errorUtils.showError(error, "Delete route");
                 }
+                this.getRoutes();
             }
         },
         editItem(item) {

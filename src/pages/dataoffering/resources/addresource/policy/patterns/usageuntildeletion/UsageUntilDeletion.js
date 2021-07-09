@@ -36,6 +36,12 @@ export default {
             this.$data.deleteAtValue = contract["ids:permission"][0]["ids:postDuty"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
             this.createDescription();
         },
+        setPolicyByDescription(policyDescription) {
+            this.$data.startValue = policyDescription.start.replace("T00:00:00Z", "");
+            this.$data.endValue = policyDescription.end.replace("T00:00:00Z", "");
+            this.$data.deleteAtValue = policyDescription.date.replace("T00:00:00Z", "");
+            this.createDescription();
+        },
         createDescription() {
             this.$data.description = {
                 "type": "USAGE_UNTIL_DELETION",

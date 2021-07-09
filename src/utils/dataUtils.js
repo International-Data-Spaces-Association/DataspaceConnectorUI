@@ -24,11 +24,11 @@ const POLICY_DESCRIPTION_TO_NAME = {
 };
 
 const POLICY_TYPE_TO_DISPLAY_NAME = {
+    "PROVIDE_ACCESS": POLICY_PROVIDE_ACCESS,
+    "PROHIBIT_ACCESS": POLICY_PROHIBIT_ACCESS,
     "N_TIMES_USAGE": POLICY_N_TIMES_USAGE,
     "DURATION_USAGE": POLICY_DURATION_USAGE,
     "USAGE_DURING_INTERVAL": POLICY_USAGE_DURING_INTERVAL,
-    "PROVIDE_ACCESS": POLICY_PROVIDE_ACCESS,
-    "PROHIBIT_ACCESS": POLICY_PROHIBIT_ACCESS,
     "USAGE_UNTIL_DELETION": POLICY_USAGE_UNTIL_DELETION,
     "USAGE_LOGGING": POLICY_USAGE_LOGGING,
     "USAGE_NOTIFICATION": POLICY_USAGE_NOTIFICATION
@@ -43,7 +43,6 @@ const OPERATOR_TYPE_TO_SYMBOL = {
 
 let languages = null;
 let apps = null;
-let backendConnections = null;
 let connectorUrl = "https://localhost:8080"
 console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
 if (process.env.CONNECTOR_URL !== undefined) {
@@ -281,6 +280,17 @@ export default {
             }
         }
 
+        // TODO RAUS!!!
+        let genericEndpoint = {};
+        genericEndpoint.id = "bada7133-715b-4893-a659-202eae41426c";
+        genericEndpoint.accessUrl = "http://backend";
+        genericEndpoint.sourceType = "Database";
+        genericEndpoint.dataSourceId = "f21f8a9c-e5e5-4256-b425-b123d3ff23ee";
+        genericEndpoint.username = "";
+        genericEndpoint.password = "";
+
+        genericEndpoints.push(genericEndpoint);
+
         return genericEndpoints;
     },
 
@@ -336,54 +346,30 @@ export default {
         return await restUtils.callConnector("DELETE", "/api/offers/" + id);
     },
 
-    getRoute(id) {
-        return new Promise(function (resolve) {
-            let params = {
-                "routeId": id
-            };
-            restUtils.call("GET", "/api/ui/approute", params).then(response => {
-                resolve(response.data)
-            }).catch(error => {
-                console.log("Error in getRoute(): ", error);
-                resolve(error);
-            });
-        });
+    async getRoute(id) {
+        return await restUtils.callConnector("GET", "/api/routes/" + id);
     },
 
-    deleteRoute(id) {
-        return new Promise(function (resolve) {
-            let params = {
-                "routeId": id
-            };
-            restUtils.call("DELETE", "/api/ui/approute", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log(error);
-                resolve(error);
-            });
-        });
+    async getRouteSteps(id) {
+        return (await restUtils.callConnector("GET", "/api/routes/" + id + "/steps"))._embedded.routes;
     },
 
-    getApps() {
-        return new Promise(function (resolve) {
-            apps = [];
-            restUtils.call("GET", "/api/ui/apps").then(response => {
-                let appsResponse = response.data;
-                for (let app of appsResponse) {
-                    apps.push(app[1]);
-                }
-                resolve(apps);
-            }).catch(error => {
-                console.log("Error in getApps(): ", error);
-                resolve(error);
-            });
-        });
+    async deleteRoute(id) {
+        let routeSteps = await this.getRouteSteps(id);
+        for (let routeStep of routeSteps) {
+            await restUtils.callConnector("DELETE", "/api/routes/" + this.getIdOfConnectorResponse(routeStep));
+        }
+        await restUtils.callConnector("DELETE", "/api/routes/" + id);
+    },
+
+    async getApps() {
+        return (await restUtils.callConnector("GET", "/api/apps"))._embedded.apps;
     },
 
     getEndpointList(node, endpointType) {
         let endpointList = [];
         if (node.type == "backendnode") {
-            let endpoint = this.getBackendConnection(node.objectId).endpoint;
+            let endpoint = this.getGenericEndpoint(node.objectId).endpoint;
             endpointList.push(endpoint);
         } else if (node.type == "appnode") {
             let appEndpoints = this.getApp(node.objectId).appEndpointList[1];
@@ -396,18 +382,9 @@ export default {
         return endpointList;
     },
 
-    getBackendConnection(id) {
-        let result = null;
-        for (let backendConnection of backendConnections) {
-            if (id == backendConnection.id) {
-                result = backendConnection;
-                break;
-            }
-        }
-        if (result == null) {
-            console.log("Backend connection with ID ", id, " not found.");
-        }
-        return result;
+    async getGenericEndpoint(id) {
+        let idsGenericEndpoint = await await restUtils.callConnector("GET", "/api/endpoints/" + id);
+        return clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint)
     },
 
     getApp(id) {
@@ -528,9 +505,8 @@ export default {
             let endpointId = this.getIdOfConnectorResponse(response);
 
             response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
-            let routeId = response;
-            response = await this.createSubRoute(routeId, genericEndpoint["@id"], 20, 150,
-                endpointId, 220, 150, "https://w3id.org/idsa/autogen/resource/" + resourceId);
+            let routeId = this.getIdOfConnectorResponse(response);
+            response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, endpointId, 220, 150, artifactId);
 
             await this.updateResourceAtBrokers(brokerUris, resourceId);
 
@@ -655,37 +631,24 @@ export default {
     },
 
     async getRoutes() {
-        return await restUtils.callConnector("GET", "/api/configmanager/approutes");
+        return (await restUtils.callConnector("GET", "/api/routes"))._embedded.routes;
     },
 
     async createNewRoute(description) {
-        let params = {
+        return await restUtils.callConnector("POST", "/api/routes", null, {
             "description": description
-        }
-        let response = await restUtils.call("POST", "/api​/configmanager​/approute", params);
-        return response.id;
+        });
     },
 
-    createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, resourceId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "routeId": routeId,
-                "startId": startId,
-                "startCoordinateX": startCoordinateX,
-                "startCoordinateY": startCoordinateY,
-                "endId": endId,
-                "endCoordinateX": endCoordinateX,
-                "endCoordinateY": endCoordinateY,
-                "resourceId": resourceId
-            }
-            restUtils.call("POST", "/api​/configmanager​/approute/step", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in createSubRoute(): ", error);
-                resolve(error);
-            });
-        });
+    async createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, artifactId) {
+        let response = await restUtils.callConnector("POST", "/api/routes", null, {});
+        let subRouteId = this.getIdOfConnectorResponse(response);
+        await restUtils.callConnector("POST", "/api/routes/" + routeId + "/steps", null, [subRouteId]);
+        await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/start", null, "\"" + startId + "\"");
+        await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/end", null, "\"" + endId + "\"");
+        await restUtils.callConnector("POST", "/api/routes/" + routeId + "/outputs", null, [artifactId]);
 
+        // TODO startCoordinateX, startCoordinateY, endCoordinateX, endCoordinateY?
     },
 
     async getDeployMethods() {

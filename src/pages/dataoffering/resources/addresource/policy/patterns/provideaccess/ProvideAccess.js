@@ -20,6 +20,9 @@ export default {
         },
         setPolicy() {
             // nothing to do.
+        },
+        setPolicyByDescription() {
+            // nothing to do.
         }
     }
 };

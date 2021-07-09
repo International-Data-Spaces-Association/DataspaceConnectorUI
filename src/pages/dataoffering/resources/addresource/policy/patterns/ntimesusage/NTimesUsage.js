@@ -32,6 +32,10 @@ export default {
             }
             this.nTimesUsageTfChange();
         },
+        setPolicyByDescription(policyDescription) {
+            this.$data.nTimesUsageValue = policyDescription.value;
+            this.nTimesUsageTfChange();
+        },
         nTimesUsageTfChange() {
             this.$data.description = {
                 "type": "N_TIMES_USAGE",

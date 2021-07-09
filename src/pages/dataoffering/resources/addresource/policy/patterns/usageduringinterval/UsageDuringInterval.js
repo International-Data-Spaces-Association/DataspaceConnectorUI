@@ -33,6 +33,11 @@ export default {
             this.$data.usageDuringIntervalToValue = contract["ids:constraint"][1]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
             this.createDescription();
         },
+        setPolicyByDescription(policyDescription) {
+            this.$data.usageDuringIntervalFromValue = policyDescription.start.replace("T00:00:00Z", "");
+            this.$data.usageDuringIntervalToValue = policyDescription.end.replace("T00:00:00Z", "");
+            this.createDescription();
+        },
         createDescription() {
             this.$data.description = {
                 "type": "USAGE_DURING_INTERVAL",
