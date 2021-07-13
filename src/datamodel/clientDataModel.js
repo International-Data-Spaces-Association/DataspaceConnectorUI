@@ -1,12 +1,17 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, title, description, language, keywords, version, standardLicense, publisher, fileType, policyName, contract) {
+    createResource(id, creationDate, title, description, language, keywords, version, standardLicense, publisher, fileType, policyName, contract) {
         let resource = {};
         if (id === undefined) {
             resource.id = "";
         } else {
             resource.id = id;
+        }
+        if (creationDate === undefined) {
+            resource.creationDate = "";
+        } else {
+            resource.creationDate = creationDate = creationDate.substring(0, 19).replace("T", " ");
         }
         if (title === undefined) {
             resource.title = "";
@@ -207,7 +212,7 @@ export default {
     },
 
     convertIdsGenericEndpoint(genericEndpoint) {
-        let id = genericEndpoint.id;
+        let id = dataUtils.getIdOfConnectorResponse(genericEndpoint);
         let accessUrl = undefined;
         accessUrl = genericEndpoint.location;
         let sourceType = undefined;
@@ -240,7 +245,7 @@ export default {
             fileType = representation.mediaType;
         }
 
-        return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), title, description,
+        return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.keywords,
             idsResource.version, idsResource.license, idsResource.publisher, fileType, policyName, contract);
     },

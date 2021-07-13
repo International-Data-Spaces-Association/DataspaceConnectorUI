@@ -13,12 +13,16 @@ export default {
         return {
             search: '',
             headers: [{
+                text: 'Creation date',
+                value: 'creationDate',
+                width: 135
+            }, {
                 text: 'Title',
                 value: 'title'
             },
             {
-                text: 'Description',
-                value: 'description'
+                text: 'Keywords',
+                value: 'keywords'
             },
             {
                 text: 'Brokers',
@@ -36,8 +40,8 @@ export default {
             filteredResources: [],
             filterResourceType: null,
             fileTypes: ["All"],
-            sortBy: 'title',
-            sortDesc: false,
+            sortBy: 'creationDate',
+            sortDesc: true,
         };
     },
     mounted: function () {
@@ -52,7 +56,7 @@ export default {
                 this.$data.fileTypes = ["All"];
                 for (let resource of this.$data.resources) {
                     this.$data.fileTypes.push(resource.fileType);
-                    let brokers = await dataUtils.getResourceRegistrationStatus(resource.id);
+                    let brokers = await dataUtils.getBrokersOfResource(resource.id);
                     resource.brokers = brokers.map(x => x.brokerId);
                 }
             } catch (error) {

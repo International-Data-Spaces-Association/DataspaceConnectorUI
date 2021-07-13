@@ -198,15 +198,8 @@ export default {
         }
     },
 
-    async getResourceRegistrationStatus(/*resourceId*/) {
-        // let params = {
-        //     "resourceId": resourceId
-        // }
-        // let response = (await restUtils.call("GET", "/api/ui/broker/resource/information", params));
-        // return response;
-
-        // TODO call DSC API 
-        return [];
+    async getBrokersOfResource(resourceId) {
+        return (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/brokers"))._embedded.brokerViewList;
     },
 
     async updateResourceAtBroker(brokerUri, resourceId) {
@@ -273,23 +266,14 @@ export default {
 
     async getGenericEndpoints() {
         let genericEndpoints = [];
-        let idsGenericEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.genericEndpointList;
-        if (idsGenericEndpoints !== undefined) {
-            for (let idsGenericEndpoint of idsGenericEndpoints) {
-                genericEndpoints.push(clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint));
+        let idsEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.endpoints;
+        if (idsEndpoints !== undefined) {
+            for (let idsEndpoint of idsEndpoints) {
+                if (idsEndpoint.type == "GENERIC") {
+                    genericEndpoints.push(clientDataModel.convertIdsGenericEndpoint(idsEndpoint));
+                }
             }
         }
-
-        // TODO RAUS!!!
-        let genericEndpoint = {};
-        genericEndpoint.id = "bada7133-715b-4893-a659-202eae41426c";
-        genericEndpoint.accessUrl = "http://backend";
-        genericEndpoint.sourceType = "Database";
-        genericEndpoint.dataSourceId = "f21f8a9c-e5e5-4256-b425-b123d3ff23ee";
-        genericEndpoint.username = "";
-        genericEndpoint.password = "";
-
-        genericEndpoints.push(genericEndpoint);
 
         return genericEndpoints;
     },

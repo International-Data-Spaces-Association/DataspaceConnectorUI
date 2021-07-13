@@ -73,7 +73,7 @@ export default {
                     }
                 }
             } else {
-                dataUtils.getResourceRegistrationStatus(resource.id).then(data => {
+                dataUtils.getBrokersOfResource(resource.id).then(data => {
                     for (let status of data) {
                         let broker = this.getBroker(status.brokerId);
                         this.$data.selected.push(broker);
