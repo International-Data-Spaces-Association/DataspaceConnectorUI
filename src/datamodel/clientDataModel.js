@@ -219,15 +219,14 @@ export default {
         let dataSourceId = undefined;
         let username = undefined;
         let password = undefined;
-        if (genericEndpoint.dataSource !== undefined && genericEndpoint.dataSource != null) {
-            dataSourceId = genericEndpoint.dataSource.id;
-            sourceType = genericEndpoint.dataSource.type;
-            if (genericEndpoint.dataSource.authentication !== undefined) {
-                username = genericEndpoint.dataSource.authentication.username;
-                password = genericEndpoint.dataSource.authentication.password;
+        if (genericEndpoint.datasource !== undefined && genericEndpoint.datasource != null) {
+            dataSourceId = genericEndpoint.datasource.id;
+            sourceType = genericEndpoint.datasource.type;
+            if (genericEndpoint.datasource.authentication !== undefined) {
+                username = genericEndpoint.datasource.authentication.username;
+                password = genericEndpoint.datasource.authentication.password;
             }
         }
-
         return this.createGenericEndpoint(id, accessUrl, sourceType, dataSourceId, username, password);
     },
 

@@ -58,10 +58,6 @@ export default {
     POLICY_USAGE_UNTIL_DELETION,
     POLICY_USAGE_LOGGING,
 
-    escape(text) {
-        return encodeURIComponent(text);
-    },
-
     getPolicyNames() {
         return Object.values(POLICY_DESCRIPTION_TO_NAME);
     },
@@ -207,15 +203,15 @@ export default {
             "recipient": brokerUri,
             "resourceId": resourceId
         };
-        await restUtils.callConnector("POST", "​/api​/ids​/resource​/update", params);
+        await restUtils.callConnector("POST", "/api/ids/resource/update", params);
     },
 
-    deleteResourceAtBroker(brokerUri, resourceId) {
+    async deleteResourceAtBroker(brokerUri, resourceId) {
         let params = {
             "recipient": brokerUri,
             "resourceId": resourceId
         };
-        await restUtils.callConnector("POST", "​/api​/ids​/resource​/unavailable", params);
+        await restUtils.callConnector("POST", "/api/ids/resource/unavailable", params);
     },
 
     toRegisterStatusClass(brokerStatus) {
@@ -330,6 +326,10 @@ export default {
 
     async getRouteSteps(id) {
         return (await restUtils.callConnector("GET", "/api/routes/" + id + "/steps"))._embedded.routes;
+    },
+
+    async getRouteOutput(id) {
+        return (await restUtils.callConnector("GET", "/api/routes/" + id + "/outputs"))._embedded.artifacts;
     },
 
     async deleteRoute(id) {
@@ -614,17 +614,24 @@ export default {
 
     async createNewRoute(description) {
         return await restUtils.callConnector("POST", "/api/routes", null, {
-            "description": description
+            "description": description,
+            "routeType": "Route"
         });
     },
 
     async createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, artifactId) {
-        let response = await restUtils.callConnector("POST", "/api/routes", null, {});
+        let response = await restUtils.callConnector("POST", "/api/routes", null, {
+            "routeType": "Subroute",
+            "startCoordinateX": startCoordinateX,
+            "startCoordinateY": startCoordinateY,
+            "endCoordinateX": endCoordinateX,
+            "endCoordinateY": endCoordinateY
+        });
         let subRouteId = this.getIdOfConnectorResponse(response);
         await restUtils.callConnector("POST", "/api/routes/" + routeId + "/steps", null, [subRouteId]);
         await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/start", null, "\"" + startId + "\"");
         await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/end", null, "\"" + endId + "\"");
-        await restUtils.callConnector("POST", "/api/routes/" + routeId + "/outputs", null, [artifactId]);
+        await restUtils.callConnector("POST", "/api/routes/" + subRouteId + "/outputs", null, [artifactId]);
 
         // TODO startCoordinateX, startCoordinateY, endCoordinateX, endCoordinateY?
     },

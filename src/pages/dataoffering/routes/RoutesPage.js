@@ -36,10 +36,12 @@ export default {
                 let response = await dataUtils.getRoutes();
                 this.$data.routes = [];
                 for (let route of response) {
-                    this.$data.routes.push({
-                        id: dataUtils.getIdOfConnectorResponse(route),
-                        description: route.description
-                    });
+                    if (route.routeType == "Route") {
+                        this.$data.routes.push({
+                            id: dataUtils.getIdOfConnectorResponse(route),
+                            description: route.description
+                        });
+                    }
                 }
             } catch (error) {
                 errorUtils.showError(error, "Get routes");
