@@ -211,18 +211,11 @@ export default {
     },
 
     deleteResourceAtBroker(brokerUri, resourceId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "brokerUri": brokerUri,
-                "resourceId": resourceId
-            };
-            restUtils.call("POST", "/api/ui/broker/delete/resource", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in deleteResourceAtBroker(): ", error);
-                resolve(error);
-            });
-        });
+        let params = {
+            "recipient": brokerUri,
+            "resourceId": resourceId
+        };
+        await restUtils.callConnector("POST", "​/api​/ids​/resource​/unavailable", params);
     },
 
     toRegisterStatusClass(brokerStatus) {
@@ -327,6 +320,7 @@ export default {
     },
 
     async deleteResource(id) {
+        // let brokers = this.getBrokersOfResource(id);
         return await restUtils.callConnector("DELETE", "/api/offers/" + id);
     },
 

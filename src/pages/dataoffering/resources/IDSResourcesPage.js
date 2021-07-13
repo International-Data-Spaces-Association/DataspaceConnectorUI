@@ -94,7 +94,6 @@ export default {
 
                 try {
                     await dataUtils.deleteResource(resourceId);
-                    // TODO Update at all brokers where the resource is registered.
                 } catch (error) {
                     errorUtils.showError(error, "Delete resource");
                 }
