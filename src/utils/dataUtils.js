@@ -608,6 +608,19 @@ export default {
         });
     },
 
+    async getResourceOfArtifact(artifactId) {
+        let resource = undefined;
+        let representations = (await restUtils.callConnector("GET", "/api/artifacts/" + artifactId + "/representations"))._embedded.representations;
+        if (representations.length > 0) {
+            let representationId = this.getIdOfConnectorResponse(representations[0]);
+            let resources = (await restUtils.callConnector("GET", "/api/representations/" + representationId + "/offers"))._embedded.resources;
+            if (resources.length > 0) {
+                resource = resources[0];
+            }
+        }
+        return resource;
+    },
+
     async getRoutes() {
         return (await restUtils.callConnector("GET", "/api/routes"))._embedded.routes;
     },
@@ -615,13 +628,15 @@ export default {
     async createNewRoute(description) {
         return await restUtils.callConnector("POST", "/api/routes", null, {
             "description": description,
-            "routeType": "Route"
+            "routeType": "Route",
+            "deploy": "Camel"
         });
     },
 
     async createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, artifactId) {
         let response = await restUtils.callConnector("POST", "/api/routes", null, {
             "routeType": "Subroute",
+            "deploy": "Camel",
             "startCoordinateX": startCoordinateX,
             "startCoordinateY": startCoordinateY,
             "endCoordinateX": endCoordinateX,

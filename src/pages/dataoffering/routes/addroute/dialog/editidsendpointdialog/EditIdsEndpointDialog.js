@@ -35,10 +35,7 @@ export default {
                 resource = clientDataModel.createResource(-1);
             } else {
                 this.$data.title = "Edit IDS Endpoint";
-                resource = clientDataModel.createResource(-1, node.title, node.description,
-                    node.language, node.keywords, node.version, node.standardlicense, node.publisher, node.filetype, node.policyDescription.type, "");
-                resource.policyDescription = node.policyDescription;
-                resource.brokerList = node.brokerList;
+                resource = node.resource;
             }
 
             this.$refs.addResourcePage.set(resource);

@@ -6,7 +6,6 @@ import AddNodeDialog from "./dialog/AddNodeDialog.vue";
 import Flowchart from "@/components/flowchart/Flowchart.vue";
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
-import clientDataModel from "../../../../datamodel/clientDataModel";
 
 export default {
     components: {
@@ -64,27 +63,30 @@ export default {
                 this.$data.description = route.description;
                 let routeSteps = await dataUtils.getRouteSteps(id);
                 for (let subRoute of routeSteps) {
-                    let start = subRoute["ids:appRouteStart"][0];
-                    let end = subRoute["ids:appRouteEnd"][0];
+                    let subRouteId = dataUtils.getIdOfConnectorResponse(subRoute);
+                    let start = subRoute.start;
+                    let end = subRoute.end;
                     let output = undefined;
-                    if (subRoute["ids:appRouteOutput"] !== undefined) {
-                        output = subRoute["ids:appRouteOutput"][0];
+                    let outputs = await dataUtils.getRouteOutput(subRouteId);
+                    if (outputs.length > 0) {
+                        output = outputs[0];
                     }
-                    let sourceEndpointInfo = await this.addNode(id, start, output);
-                    let destinationEndpointInfo = await this.addNode(id, end, output);
-
-                    let startNodeObjectId = start["@id"];
-                    if (start["@type"] == "ids:AppEndpoint") {
-                        startNodeObjectId = dataUtils.getAppIdOfEndpointId(start["@id"]);
+                    await this.addNode(start, output, parseInt(subRoute.additional.startCoordinateX),
+                        parseInt(subRoute.additional.startCoordinateY));
+                    await this.addNode(end, output, parseInt(subRoute.additional.endCoordinateX),
+                        parseInt(subRoute.additional.endCoordinateY));
+                    let startNodeObjectId = start.id;
+                    if (start.type == "APP") {
+                        startNodeObjectId = dataUtils.getAppIdOfEndpointId(start.id);
                     }
-                    let endNodeObjectId = end["@id"];
-                    if (end["@type"] == "ids:AppEndpoint") {
-                        endNodeObjectId = dataUtils.getAppIdOfEndpointId(end["@id"]);
+                    let endNodeObjectId = end.id;
+                    if (end.type == "APP") {
+                        endNodeObjectId = dataUtils.getAppIdOfEndpointId(end.id);
                     }
                     let startNodeId = dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
                     let endNodeId = dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
-                    let isLeftToRight = sourceEndpointInfo.xcoordinate < destinationEndpointInfo.xcoordinate;
-                    this.loadConnection(startNodeId, start["@id"], endNodeId, end["@id"], isLeftToRight);
+                    let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
+                    this.loadConnection(startNodeId, start.id, endNodeId, end.id, isLeftToRight);
                 }
             } catch (error) {
                 errorUtils.showError(error, "Get route");
@@ -93,27 +95,22 @@ export default {
             this.$forceUpdate();
 
         },
-        async addNode(routeId, endpoint, output) {
-            let response = await dataUtils.getEndpointInfo(routeId, endpoint["@id"]);
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get endpoint info failed.");
-            } else {
-                let endpointInfo = response;
-                if (endpoint["@type"] == "ids:GenericEndpoint") {
-                    if (!this.nodeExists(endpoint["@id"])) {
-                        this.addBackend(endpoint["@id"], endpointInfo.xcoordinate, endpointInfo.ycoordinate);
-                    }
-                } else if (endpoint["@type"] == "ids:AppEndpoint") {
-                    let appId = dataUtils.getAppIdOfEndpointId(endpoint["@id"]);
-                    if (!this.nodeExists(appId)) {
-                        this.addApp(appId, endpointInfo.xcoordinate, endpointInfo.ycoordinate);
-                    }
-                } else if (endpoint["@type"] == "ids:ConnectorEndpoint") {
-                    if (!this.nodeExists(endpoint["@id"])) {
-                        this.addIdsEndpoint(endpoint["@id"], endpointInfo.xcoordinate, endpointInfo.ycoordinate, output);
-                    }
+        async addNode(endpoint, output, x, y) {
+            if (endpoint.type == "GENERIC") {
+                if (!this.nodeExists(endpoint.id)) {
+                    this.addBackend(endpoint.id, x, y);
                 }
-                return endpointInfo;
+            } else if (endpoint.type == "APP") {
+                let appId = dataUtils.getAppIdOfEndpointId(endpoint.id);
+                if (!this.nodeExists(appId)) {
+                    this.addApp(appId, x, y);
+                }
+            } else if (endpoint.type == "CONNECTOR") {
+                if (!this.nodeExists(endpoint.id)) {
+                    let artifactId = dataUtils.getIdOfConnectorResponse(output);
+                    let idsResource = await dataUtils.getResourceOfArtifact(artifactId);
+                    await this.addIdsEndpoint(endpoint.id, x, y, dataUtils.getIdOfConnectorResponse(idsResource));
+                }
             }
         },
         loadConnection(startNodeId, startEndpointId, endNodeId, endEndpointId, isLeftToRight) {
@@ -237,7 +234,7 @@ export default {
         showAddIdsEndpointDialog() {
             this.$refs.editIDSEndpointDialog.show(null);
         },
-        addIdsEndpoint(id, x, y, output) {
+        async addIdsEndpoint(id, x, y, resourceId) {
             if (x === undefined) {
                 x = this.getXForNewNode();
             }
@@ -245,8 +242,8 @@ export default {
                 y = 150;
             }
             let resource = {};
-            if (output !== undefined) {
-                resource = clientDataModel.convertIdsResource(output);
+            if (resourceId !== undefined) {
+                resource = await dataUtils.getResource(resourceId);
             }
             this.$refs.chart.add({
                 id: +new Date(),
@@ -256,17 +253,7 @@ export default {
                 type: 'idsendpointnode',
                 text: "IDS Endpoint",
                 objectId: id,
-                title: resource.title,
-                description: resource.description,
-                language: resource.language,
-                keywords: resource.keywords,
-                version: resource.version,
-                standardlicense: resource.standardLicense,
-                publisher: resource.publisher,
-                contractJson: resource.contract,
-                filetype: resource.fileType,
-                bytesize: resource.bytesize,
-                brokerList: resource.brokerList
+                resource: resource
             });
 
             this.validateRoute();
