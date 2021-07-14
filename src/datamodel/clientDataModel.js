@@ -174,7 +174,7 @@ export default {
         return configuration;
     },
 
-    createGenericEndpoint(id, accessUrl, sourceType, dataSourceId, username, password) {
+    createGenericEndpoint(id, accessUrl, sourceType, dataSourceId, username, password, type) {
         let genericEndpoint = {};
 
         if (id === undefined) {
@@ -213,6 +213,12 @@ export default {
             genericEndpoint.password = password;
         }
 
+        if (type === undefined) {
+            genericEndpoint.type = "";
+        } else {
+            genericEndpoint.type = type;
+        }
+
         return genericEndpoint;
     },
 
@@ -232,7 +238,41 @@ export default {
                 password = genericEndpoint.datasource.authentication.password;
             }
         }
-        return this.createGenericEndpoint(id, accessUrl, sourceType, dataSourceId, username, password);
+        return this.createGenericEndpoint(id, accessUrl, sourceType, dataSourceId, username, password, genericEndpoint.type);
+    },
+
+    createApp(id, title, description, type) {
+        let app = {};
+        if (id === undefined) {
+            app.id = "";
+        } else {
+            app.id = id;
+        }
+
+        if (title === undefined) {
+            app.title = "";
+        } else {
+            app.title = title;
+        }
+
+        if (description === undefined) {
+            app.description = "";
+        } else {
+            app.description = description;
+        }
+
+        if (type === undefined) {
+            app.type = "";
+        } else {
+            app.type = type;
+        }
+
+        return app;
+    },
+
+    convertIdsApp(idsApp) {
+        let id = dataUtils.getIdOfConnectorResponse(idsApp);
+        return this.createApp(id, idsApp.title, idsApp.description, "APP");
     },
 
     convertIdsResource(idsResource, representation, policyName, contract) {

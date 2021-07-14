@@ -42,7 +42,6 @@ const OPERATOR_TYPE_TO_SYMBOL = {
 
 
 let languages = null;
-let apps = null;
 let connectorUrl = "https://localhost:8080"
 console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
 if (process.env.CONNECTOR_URL !== undefined) {
@@ -341,51 +340,49 @@ export default {
     },
 
     async getApps() {
-        return (await restUtils.callConnector("GET", "/api/apps"))._embedded.apps;
+        let apps = [];
+        let idsApps = (await restUtils.callConnector("GET", "/api/apps"))._embedded.apps;
+        if (idsApps !== undefined) {
+            for (let idsApp of idsApps) {
+                apps.push(clientDataModel.convertIdsApp(idsApp));
+            }
+        }
+
+        return apps;
     },
 
-    getEndpointList(node, endpointType) {
+    async getEndpointList(node) {
         let endpointList = [];
         if (node.type == "backendnode") {
-            let endpoint = this.getGenericEndpoint(node.objectId).endpoint;
+            let endpoint = await this.getGenericEndpoint(node.objectId);
             endpointList.push(endpoint);
         } else if (node.type == "appnode") {
-            let appEndpoints = this.getApp(node.objectId).appEndpointList[1];
-            for (let appEndpoint of appEndpoints) {
-                if (appEndpoint[1].endpoint["ids:appEndpointType"]["@id"] == endpointType) {
-                    endpointList.push(appEndpoint[1].endpoint);
-                }
-            }
+            let endpoint = await this.getApp(node.objectId);
+            endpointList.push(endpoint);
         }
         return endpointList;
     },
 
     async getGenericEndpoint(id) {
         let idsGenericEndpoint = await await restUtils.callConnector("GET", "/api/endpoints/" + id);
-        return clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint)
+        return clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint);
     },
 
-    getApp(id) {
-        let result = null;
-        for (let app of apps) {
-            if (id == app.id) {
-                result = app;
-                break;
-            }
-        }
-        return result;
+    async getApp(id) {
+        let app = await await restUtils.callConnector("GET", "/api/apps/" + id);
+        return clientDataModel.convertIdsApp(app);
     },
 
-    getAppIdOfEndpointId(endpointId) {
+    getAppIdOfEndpointId() {
         let result = null;
-        for (let app of apps) {
-            for (let appEndpoint of app.appEndpointList[1]) {
-                if (endpointId == appEndpoint[1].endpoint["@id"]) {
-                    result = app.id;
-                    break;
-                }
-            }
-        }
+        // for (let app of apps) {
+        //     for (let appEndpoint of app.appEndpointList[1]) {
+        //         if (endpointId == appEndpoint[1].endpoint["@id"]) {
+        //             result = app.id;
+        //             break;
+        //         }
+        //     }
+        // }
         return result;
     },
 
@@ -495,6 +492,7 @@ export default {
 
     async editResource(/*resourceId, representationId, title, description, language, keyword, standardlicense, publisher, policyDescription,
         filetype, brokerUris, brokerDeleteUris, genericEndpoint*/) {
+
         // try {
         //     let params = {
         //         "resourceId": resourceId,
@@ -540,39 +538,74 @@ export default {
         }
     },
 
-    async createResourceIdsEndpointAndAddSubRoute(/*title, description, language, keyword, version, standardlicense,
-        publisher, policyDescription, filetype, bytesize, brokerUris, genericEndpointId, routeId, startId, startCoordinateX,
-        startCoordinateY, endCoordinateX, endCoordinateY*/) {
-        // let hasError = false;
-        // try {
-        //     let params = {
-        //         "title": title,
-        //         "description": description,
-        //         "language": language,
-        //         "keyword": keyword,
-        //         "version": version,
-        //         "standardlicense": standardlicense,
-        //         "publisher": publisher
-        //     };
-        //     let response = (await restUtils.call("POST", "/api/ui/resource", params));
+    async createResourceIdsEndpointAndAddSubRoute(sourceNode, destinationNode, genericEndpoint, routeId, startId) {
+        let hasError = false;
+        let resource = destinationNode.resource;
+        let title = resource.title;
+        let description = resource.description;
+        let language = resource.language;
+        let keywords = resource.keywords;
+        let standardlicense = resource.standardlicense;
+        let publisher = resource.publisher;
+        let policyDescription = resource.policyDescription;
+        let filetype = resource.filetype;
+        let brokerUris = resource.brokerList;
 
-        //     let resourceUUID = response.data.connectorResponse;
-        //     let resourceId = response.data.resourceID;
-        //     params = {
-        //         "resourceId": resourceId,
-        //         "pattern": pattern
-        //     };
-        //     response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson));
-        //     // TODO remove sourceType when API changed.
-        //     params = { 
-        //         "resourceId": resourceId,
-        //         "endpointId": genericEndpointId,
-        //         "language": language,
-        //         "sourceType": "LOCAL",
-        //         "filenameExtension": filetype,
-        //         "bytesize": bytesize
-        //     };
-        //     response = (await restUtils.call("POST", "/api/ui/resource/representation", params));
+        try {
+            // TODO Sovereign, EndpointDocumentation
+            let response = (await restUtils.callConnector("POST", "/api/offers", null, {
+                "title": title,
+                "description": description,
+                "keywords": keywords,
+                "publisher": publisher,
+                "language": language,
+                "license": standardlicense
+            }));
+
+            let resourceId = this.getIdOfConnectorResponse(response);
+            response = await restUtils.callConnector("POST", "/api/contracts", null, {});
+            let contractId = this.getIdOfConnectorResponse(response);
+
+            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+
+            response = await restUtils.callConnector("POST", "/api/rules", null, {
+                "value": JSON.stringify(ruleJson)
+            });
+
+            let ruleId = this.getIdOfConnectorResponse(response);
+            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]);
+
+            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
+
+            response = await restUtils.callConnector("POST", "/api/representations", null, {
+                "language": language,
+                "mediaType": filetype,
+            });
+            let representationId = this.getIdOfConnectorResponse(response);
+
+            response = await restUtils.callConnector("POST", "/api/artifacts", null, {
+                "accessUrl": genericEndpoint.accessUrl,
+                "username": genericEndpoint.username,
+                "password": genericEndpoint.password
+            });
+            let artifactId = this.getIdOfConnectorResponse(response);
+
+            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/representations", null, [representationId]);
+
+            response = await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]);
+
+            response = await this.createConnectorEndpoint(artifactId);
+            let endpointId = this.getIdOfConnectorResponse(response);
+
+            response = await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, endpointId, destinationNode.x, destinationNode.y, artifactId);
+
+            await this.updateResourceAtBrokers(brokerUris, resourceId);
+
+        } catch (error) {
+            errorUtils.showError(error, "Save Route");
+            hasError = true;
+        }
+
 
         //     let endpointId = (await this.createConnectorEndpoint(resourceUUID));
         //     response = await this.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
@@ -584,7 +617,7 @@ export default {
         //     errorUtils.showError(error, "Create IDS endpoint");
         // }
 
-        // return hasError;
+        return hasError;
     },
 
     async updateResourceAtBrokers(brokerUris, resourceId) {
@@ -634,21 +667,27 @@ export default {
     },
 
     async createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, artifactId) {
-        let response = await restUtils.callConnector("POST", "/api/routes", null, {
-            "routeType": "Subroute",
-            "deploy": "Camel",
-            "startCoordinateX": startCoordinateX,
-            "startCoordinateY": startCoordinateY,
-            "endCoordinateX": endCoordinateX,
-            "endCoordinateY": endCoordinateY
-        });
-        let subRouteId = this.getIdOfConnectorResponse(response);
-        await restUtils.callConnector("POST", "/api/routes/" + routeId + "/steps", null, [subRouteId]);
-        await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/start", null, "\"" + startId + "\"");
-        await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/end", null, "\"" + endId + "\"");
-        await restUtils.callConnector("POST", "/api/routes/" + subRouteId + "/outputs", null, [artifactId]);
+        let hasError = false;
+        try {
+            let response = await restUtils.callConnector("POST", "/api/routes", null, {
+                "routeType": "Subroute",
+                "deploy": "Camel",
+                "startCoordinateX": startCoordinateX,
+                "startCoordinateY": startCoordinateY,
+                "endCoordinateX": endCoordinateX,
+                "endCoordinateY": endCoordinateY
+            });
+            let subRouteId = this.getIdOfConnectorResponse(response);
+            await restUtils.callConnector("POST", "/api/routes/" + routeId + "/steps", null, [subRouteId]);
+            await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/start", null, "\"" + startId + "\"");
+            await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/end", null, "\"" + endId + "\"");
+            await restUtils.callConnector("POST", "/api/routes/" + subRouteId + "/outputs", null, [artifactId]);
 
-        // TODO startCoordinateX, startCoordinateY, endCoordinateX, endCoordinateY?
+        } catch (error) {
+            errorUtils.showError(error, "Save Route");
+            hasError = true;
+        }
+        return hasError;
     },
 
     async getDeployMethods() {

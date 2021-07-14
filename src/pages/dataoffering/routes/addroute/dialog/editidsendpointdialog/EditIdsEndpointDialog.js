@@ -57,19 +57,21 @@ export default {
 
             }
 
-            this.$data.node.title = title;
-            this.$data.node.description = description;
-            this.$data.node.language = language;
-            this.$data.node.keywords = keywords;
-            this.$data.node.version = version;
-            this.$data.node.standardlicense = standardlicense;
-            this.$data.node.publisher = publisher;
-            this.$data.node.policyDescription = policyDescription;
+            let resource = {};
+            resource.title = title;
+            resource.description = description;
+            resource.language = language;
+            resource.keywords = keywords;
+            resource.version = version;
+            resource.standardlicense = standardlicense;
+            resource.publisher = publisher;
+            resource.policyDescription = policyDescription;
             // TODO remove sourceType when API changed.
-            this.$data.node.sourceType = "LOCAL";
-            this.$data.node.filetype = filetype;
-            this.$data.node.bytesize = bytesize;
-            this.$data.node.brokerList = brokerList;
+            resource.sourceType = "LOCAL";
+            resource.filetype = filetype;
+            resource.bytesize = bytesize;
+            resource.brokerList = brokerList;
+            this.$data.node.resource = resource;
 
             if (isNew) {
                 this.$emit('newIdsEndpointNodeSaved', this.$data.node);

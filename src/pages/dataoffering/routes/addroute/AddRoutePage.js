@@ -77,11 +77,11 @@ export default {
                         parseInt(subRoute.additional.endCoordinateY));
                     let startNodeObjectId = start.id;
                     if (start.type == "APP") {
-                        startNodeObjectId = dataUtils.getAppIdOfEndpointId(start.id);
+                        // startNodeObjectId = dataUtils.getAppIdOfEndpointId(start.id);
                     }
                     let endNodeObjectId = end.id;
                     if (end.type == "APP") {
-                        endNodeObjectId = dataUtils.getAppIdOfEndpointId(end.id);
+                        // endNodeObjectId = dataUtils.getAppIdOfEndpointId(end.id);
                     }
                     let startNodeId = dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
                     let endNodeId = dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
@@ -98,13 +98,13 @@ export default {
         async addNode(endpoint, output, x, y) {
             if (endpoint.type == "GENERIC") {
                 if (!this.nodeExists(endpoint.id)) {
-                    this.addBackend(endpoint.id, x, y);
+                    await this.addBackend(endpoint.id, x, y);
                 }
             } else if (endpoint.type == "APP") {
-                let appId = dataUtils.getAppIdOfEndpointId(endpoint.id);
-                if (!this.nodeExists(appId)) {
-                    this.addApp(appId, x, y);
-                }
+                // let appId = dataUtils.getAppIdOfEndpointId(endpoint.id);
+                // if (!this.nodeExists(appId)) {
+                //     await this.addApp(appId, x, y);
+                // }
             } else if (endpoint.type == "CONNECTOR") {
                 if (!this.nodeExists(endpoint.id)) {
                     let artifactId = dataUtils.getIdOfConnectorResponse(output);
@@ -198,6 +198,7 @@ export default {
                     name: 'Backend',
                     type: 'backendnode',
                     text: backend.accessUrl,
+                    genericEndpoint: backend,
                     objectId: id,
                 });
             }
@@ -212,14 +213,14 @@ export default {
             }
             return x;
         },
-        addApp(id, x, y) {
+        async addApp(id, x, y) {
             if (x === undefined) {
                 x = this.getXForNewNode();
             }
             if (y === undefined) {
                 y = 150;
             }
-            var app = dataUtils.getApp(id);
+            var app = await dataUtils.getApp(id);
             this.$refs.chart.add({
                 id: +new Date(),
                 x: x,
@@ -279,45 +280,38 @@ export default {
             for (var connection of connections) {
                 connectionsCopy.push(connection);
             }
-            let response = await dataUtils.createNewRoute(this.$data.description);
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Save route failed.");
-            } else {
-                let routeId = response;
-                this.saveRouteSteps(routeId, connections, nodes);
+            try {
+                let response = await dataUtils.createNewRoute(this.$data.description);
+                let routeId = dataUtils.getIdOfConnectorResponse(response);
+                await this.saveRouteSteps(routeId, connections, nodes);
+            } catch (error) {
+                errorUtils.showError(error, "Save route");
             }
         },
         async saveRouteSteps(routeId, connections, nodes) {
             let error = false;
-            let genericEndpointId = null;
+            let genericEndpoint = null;
             for (var connection of connections) {
                 var sourceNode = dataUtils.getNode(connection.source.id, nodes);
                 var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
+
                 if (sourceNode.type == "backendnode") {
-                    genericEndpointId = sourceNode.objectId;
+                    genericEndpoint = sourceNode.genericEndpoint;
                 }
                 if (destinationNode.type == "idsendpointnode") {
-                    let err = await dataUtils.createResourceIdsEndpointAndAddSubRoute(destinationNode.title,
-                        destinationNode.description, destinationNode.language, destinationNode.keywords,
-                        destinationNode.version, destinationNode.standardlicense,
-                        destinationNode.publisher, destinationNode.policyDescription, destinationNode.filetype, destinationNode.bytesize,
-                        destinationNode.brokerList, genericEndpointId, routeId, connection.sourceEndpointId, sourceNode.x,
-                        sourceNode.y, destinationNode.x, destinationNode.y);
+                    let err = await dataUtils.createResourceIdsEndpointAndAddSubRoute(sourceNode, destinationNode, genericEndpoint, routeId, connection.sourceEndpointId);
                     if (err) {
-                        this.$root.$emit('error', "Save route step failed.");
                         error = true;
                         break;
                     }
                 } else {
-                    let response = await dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x,
+                    let err = await dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x,
                         sourceNode.y, connection.destinationEndpointId, destinationNode.x, destinationNode.y, null);
-                    if (response.name !== undefined && response.name == "Error") {
-                        this.$root.$emit('error', "Save route step failed.");
+                    if (err) {
                         error = true;
                         break;
                     }
                 }
-
             }
 
             if (!error) {
