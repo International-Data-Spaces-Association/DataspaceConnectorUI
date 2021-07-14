@@ -642,53 +642,10 @@ export default {
 
     },
 
-    async getDeployMethod() {
-        let response = await restUtils.callConnector("GET", "/api/configmanager/route/deploymethod");
-        return response;
-    },
-
-    changeDeployMethod(deployMethod) {
-        return new Promise(function (resolve) {
-            let params = {
-                "deployMethod": deployMethod
-            };
-            restUtils.call("PUT", "/api/ui/route/deploymethod", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in changeDeployMethod(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
     async getLogLevels() {
         let response = await restUtils.callConnector("GET", "/api/configmanager/enum/logLevel");
         return response;
     },
-
-    // changeConfigModel(logLevel, connectorDeployMode,
-    //     trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword, proxyUrl, proxyNoProxy, username, password) {
-    //     return new Promise(function (resolve) {
-    //         let params = {
-    //             "loglevel": logLevel,
-    //             "connectorDeployMode": connectorDeployMode,
-    //             "trustStore": trustStoreUrl,
-    //             "trustStorePassword": trustStorePassword,
-    //             "keyStore": keyStoreUrl,
-    //             "keyStorePassword": keyStorePassword,
-    //             "proxyUri": proxyUrl,
-    //             "noProxyUri": proxyNoProxy,
-    //             "username": username,
-    //             "password": password
-    //         };
-    //         restUtils.call("PUT", "/api/ui/configmodel", params).then(response => {
-    //             resolve(response.data);
-    //         }).catch(error => {
-    //             console.log("Error in changeConfigModel(): ", error);
-    //             resolve(error);
-    //         });
-    //     });
-    // },
 
     async getConnectorConfiguration() {
         let configurations = (await restUtils.callConnector("GET", "/api/configurations"))._embedded.configurations;
@@ -696,33 +653,36 @@ export default {
         if (configurations !== undefined && configurations.length > 0) {
             configuration = configurations[0];
         }
-        console.log(">>> IDS CONFIG: ", configuration);
-        console.log(">>> UI CONFIG: ", clientDataModel.convertIdsConfiguration(configuration));
         return clientDataModel.convertIdsConfiguration(configuration);
     },
 
-    // changeConnectorSettings(connectorTitle, connectorDescription,
-    //     connectorEndpoint, connectorVersion, connectorCurator,
-    //     connectorMaintainer, connectorInboundModelVersion, connectorOutboundModelVersion) {
-    //     return new Promise(function (resolve) {
-    //         let params = {
-    //             "title": connectorTitle,
-    //             "description": connectorDescription,
-    //             "version": connectorVersion,
-    //             "curator": connectorCurator,
-    //             "endpoint": connectorEndpoint,
-    //             "maintainer": connectorMaintainer,
-    //             "inboundModelVersion": connectorInboundModelVersion,
-    //             "outboundModelVersion": connectorOutboundModelVersion
-    //         };
-    //         restUtils.call("PUT", "/api/ui/connector", params).then(response => {
-    //             resolve(response.data);
-    //         }).catch(error => {
-    //             console.log("Error in changeConnectorSettings(): ", error);
-    //             resolve(error);
-    //         });
-    //     });
-    // },
+    async changeConnectorConfiguration(id, title, description, curator, maintainer, proxyUrl, proxyNoProxy, proxyUsername,
+        proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword) {
+        await restUtils.callConnector("PUT", "/api/configurations/" + id, null, {
+            "title": title,
+            "description": description,
+            "curator": curator,
+            "maintainer": maintainer,
+            "logLevel": loglevel,
+            "deployMode": deployMode,
+            "truststoreSettings": {
+                "name": trustStoreUrl,
+                "password": trustStorePassword
+            },
+            "proxySettings": {
+                "location": proxyUrl,
+                "exclusions": proxyNoProxy,
+                "authentication": {
+                    "username": proxyUsername,
+                    "password": proxyPassword
+                }
+            },
+            "keystoreSettings": {
+                "location": keyStoreUrl,
+                "password": keyStorePassword
+            }
+        });
+    },
 
     async getConnectorDeployModes() {
         let response = await restUtils.callConnector("GET", "/api/configmanager/enum/connectorDeployMode");

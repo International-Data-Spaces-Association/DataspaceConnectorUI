@@ -7,22 +7,40 @@
             <v-col cols="12" md="9">
                 <v-text-field label="Title" v-model="connectorTitle"> </v-text-field>
                 <v-text-field label="Description" v-model="connectorDescription"> </v-text-field>
-                <v-text-field label="Endpoint" v-model="connectorEndpoint" :rules="urlRule"> </v-text-field>
-                <v-text-field label="Version" v-model="connectorVersion" :rules="versionRule"> </v-text-field>
                 <v-text-field label="Curator" v-model="connectorCurator" :rules="urlRule"> </v-text-field>
                 <v-text-field label="Maintainer" v-model="connectorMaintainer" :rules="urlRule"> </v-text-field>
-                <v-text-field label="Inbound model version" v-model="connectorInboundModelVersion" :rules="versionRule">
-                </v-text-field>
-                <v-text-field label="Outbound model version" v-model="connectorOutboundModelVersion"
-                    :rules="versionRule"> </v-text-field>
             </v-col>
         </v-row>
         <v-row no-gutters class="settings-connector-status">
             <v-col cols="12" md="2">
-                ConnectorStatus
+                Connector endpoint
             </v-col>
             <v-col cols="12" md="9">
-                {{connectorStatus}}
+                {{ connectorEndpoint }}
+            </v-col>
+        </v-row>
+        <v-row no-gutters class="settings-connector-status">
+            <v-col cols="12" md="2">
+                Inbound model version
+            </v-col>
+            <v-col cols="12" md="9">
+                {{ connectorInboundModelVersion }}
+            </v-col>
+        </v-row>
+        <v-row no-gutters class="settings-connector-status">
+            <v-col cols="12" md="2">
+                Outbound model version
+            </v-col>
+            <v-col cols="12" md="9">
+                {{ connectorOutboundModelVersion }}
+            </v-col>
+        </v-row>
+        <v-row no-gutters class="settings-connector-status">
+            <v-col cols="12" md="2">
+                Connector version
+            </v-col>
+            <v-col cols="12" md="9">
+                {{ connectorVersion }}
             </v-col>
         </v-row>
         <v-row no-gutters>
@@ -40,19 +58,8 @@
                         @click:append="showPassword = !showPassword">
                     </v-text-field>
                 </div>
-                <v-textarea label="Do not use the proxy settings for these hosts and domains" v-model="proxyNoProxy"
-                    :rules="urlListRule">
+                <v-textarea label="Do not use the proxy settings for these hosts and domains" v-model="proxyNoProxy">
                 </v-textarea>
-            </v-col>
-        </v-row>
-        <v-row no-gutters>
-            <v-col cols="12" md="2">
-                Deploy
-            </v-col>
-            <v-col cols="12" md="9">
-                <v-select label="Deploy Method" v-model="deployMethod" :items="deployMethods" item-text="displayName"
-                    item-value="originalName">
-                </v-select>
             </v-col>
         </v-row>
         <v-row no-gutters>

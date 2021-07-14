@@ -66,10 +66,15 @@ export default {
         return resource;
     },
 
-    createConnector(title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
+    createConnectorConfig(id, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
         proxyUrl, proxyUsername, proxyPassword, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
         keyStoreUrl, keyStorePassword) {
         let configuration = {};
+        if (id === undefined) {
+            configuration.id = "";
+        } else {
+            configuration.id = id;
+        }
         if (title === undefined) {
             configuration.title = "";
         } else {
@@ -251,6 +256,7 @@ export default {
 
 
     convertIdsConfiguration(idsConfiguration) {
+        let id = "";
         let title = "";
         let description = "";
         let endpoint = "";
@@ -272,6 +278,17 @@ export default {
         let keyStorePassword = "";
 
         if (idsConfiguration !== undefined) {
+            id = dataUtils.getIdOfConnectorResponse(idsConfiguration);
+            title = idsConfiguration.title;
+            description = idsConfiguration.description;
+            endpoint = idsConfiguration.connectorEndpoint;
+            version = idsConfiguration.version;
+            curator = idsConfiguration.curator;
+            maintainer = idsConfiguration.maintainer;
+            inboundModelVersion = idsConfiguration.inboundModelVersion;
+            outboundModelVersion = idsConfiguration.outboundModelVersion;
+
+
             if (idsConfiguration.proxy !== undefined && idsConfiguration.proxy != null) {
                 proxyUrl = idsConfiguration.proxy.location;
                 noProxyArray = idsConfiguration.proxy.exclusions;
@@ -282,7 +299,7 @@ export default {
             keyStoreUrl = idsConfiguration.keyStore.location;
         }
 
-        return this.createConnector(title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
+        return this.createConnectorConfig(id, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
             proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
             keyStoreUrl, keyStorePassword);
     }
