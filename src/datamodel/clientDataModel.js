@@ -1,7 +1,8 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, creationDate, title, description, language, keywords, version, standardLicense, publisher, fileType, policyName, contract) {
+    createResource(id, creationDate, title, description, language, keywords, version, standardLicense,
+        publisher, fileType, policyName, contract, artifactId, representationId, ruleId) {
         let resource = {};
         if (id === undefined) {
             resource.id = "";
@@ -62,6 +63,21 @@ export default {
             resource.contract = "";
         } else {
             resource.contract = contract;
+        }
+        if (artifactId === undefined) {
+            resource.artifactId = "";
+        } else {
+            resource.artifactId = artifactId;
+        }
+        if (representationId === undefined) {
+            resource.representationId = "";
+        } else {
+            resource.representationId = representationId;
+        }
+        if (ruleId === undefined) {
+            resource.ruleId = "";
+        } else {
+            resource.ruleId = ruleId;
         }
         return resource;
     },
@@ -275,7 +291,7 @@ export default {
         return this.createApp(id, idsApp.title, idsApp.description, "APP");
     },
 
-    convertIdsResource(idsResource, representation, policyName, contract) {
+    convertIdsResource(idsResource, representation, policyName, contract, artifactId, ruleId) {
         let title = idsResource.title;
         if (title.includes("\"@en")) {
             title = idsResource.title.substring(1, idsResource.title.lastIndexOf("\""));
@@ -285,13 +301,15 @@ export default {
             description = idsResource.description.substring(1, idsResource.description.lastIndexOf("\""));
         }
         let fileType = undefined;
+        let representationId = undefined;
         if (representation !== undefined) {
             fileType = representation.mediaType;
+            representationId = dataUtils.getIdOfConnectorResponse(representation);
         }
 
         return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.keywords,
-            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyName, contract);
+            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyName, contract, artifactId, representationId, ruleId);
     },
 
 

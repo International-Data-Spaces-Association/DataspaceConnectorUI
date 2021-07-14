@@ -12,7 +12,7 @@
     <v-row v-if="fromRoutePage === undefined && !readonly" no-gutters>
       <v-col cols="12" md="11" sm="12">
         <v-data-table v-model="selected" :headers="headers" :items="backendConnections" :items-per-page="5"
-          :search="search" show-select :single-select=true item-key="url"
+          :search="search" show-select :single-select=true item-key="id"
           no-data-text="No backend connections available">
         </v-data-table>
       </v-col>
@@ -20,7 +20,7 @@
     <v-row v-if="fromRoutePage === undefined && readonly" no-gutters>
       <v-col cols="12" md="11" sm="12">
         <v-data-table :headers="headers" :items="selected" :items-per-page="5" :search="search" :single-select=true
-          item-key="url" no-data-text="No backend connections set">
+          item-key="id" no-data-text="No backend connections set">
         </v-data-table>
       </v-col>
     </v-row>

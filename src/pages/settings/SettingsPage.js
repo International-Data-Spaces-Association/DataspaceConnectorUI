@@ -76,15 +76,7 @@ export default {
                 this.$data.proxyAuthenticationNeeded = username != "" || password != "";
                 this.$data.proxyUsername = username;
                 this.$data.proxyPassword = password;
-                let noProxy = "";
-                let count = 0;
-                for (let el of noProxyArray) {
-                    if (count > 0) {
-                        noProxy += ", ";
-                    }
-                    noProxy += el;
-                    count++;
-                }
+                let noProxy = dataUtils.arrayToCommaSeperatedString(noProxyArray);
                 this.$data.proxyNoProxy = noProxy;
                 this.$data.logLevel = configuration.logLevel;
                 this.$data.connectorStatus = configuration.connectorStatus;

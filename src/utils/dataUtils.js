@@ -100,6 +100,23 @@ export default {
         return type;
     },
 
+    arrayToCommaSeperatedString(arr) {
+        let str = "";
+        let count = 0;
+        for (let el of arr) {
+            if (count > 0) {
+                str += ", ";
+            }
+            str += el;
+            count++;
+        }
+        return str
+    },
+
+    commaSeperatedStringToArray(str) {
+        return str.replace(/ /g, "").split(",");
+    },
+
     async getOfferedResourcesStats() {
         let totalNumber = 0;
         let totalSize = 0;
@@ -145,21 +162,29 @@ export default {
         let rule = undefined;
         let policyName = undefined;
         let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contract;
+        let ruleId = undefined;
         if (contracts.length > 0) {
             let contract = contracts[0];
             let contractId = this.getIdOfConnectorResponse(contract);
             let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
             if (rules.length > 0) {
                 rule = rules[0];
+                ruleId = this.getIdOfConnectorResponse(rule);
                 policyName = (await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
             }
         }
         let representations = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/representations"))["_embedded"].representations;
         let representation = undefined;
+        let artifactId = undefined;
         if (representations.length > 0) {
             representation = representations[0];
+            let representationId = this.getIdOfConnectorResponse(representation);
+            let artifacts = (await restUtils.callConnector("GET", "/api/representations/" + representationId + "/artifacts"))["_embedded"].artifacts;
+            if (artifacts.length > 0) {
+                artifactId = this.getIdOfConnectorResponse(artifacts[0]);
+            }
         }
-        return clientDataModel.convertIdsResource(resource, representation, policyName, JSON.parse(rule.value));
+        return clientDataModel.convertIdsResource(resource, representation, policyName, JSON.parse(rule.value), artifactId, ruleId);
     },
 
     async getLanguages() {
@@ -264,14 +289,6 @@ export default {
         }
 
         return genericEndpoints;
-    },
-
-    genericEndpointToBackendConnection(genericEndpoint) {
-        return {
-            id: genericEndpoint["@id"],
-            endpoint: genericEndpoint,
-            url: genericEndpoint["ids:accessURL"] ? genericEndpoint["ids:accessURL"]["@id"] : "http://"
-        };
     },
 
     async createGenericEndpoint(url, username, password, sourceType) {
@@ -490,43 +507,73 @@ export default {
         }
     },
 
-    async editResource(/*resourceId, representationId, title, description, language, keyword, standardlicense, publisher, policyDescription,
-        filetype, brokerUris, brokerDeleteUris, genericEndpoint*/) {
+    async editResource(resourceId, representationId, title, description, language, keyword, standardlicense, publisher, policyDescription,
+        filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
+        try {
+            await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
+                "title": title,
+                "description": description,
+                "keywords": keyword,
+                "publisher": publisher,
+                "language": language,
+                "license": standardlicense
+            });
 
-        // try {
-        //     let params = {
-        //         "resourceId": resourceId,
-        //         "title": title,
-        //         "description": description,
-        //         "language": language,
-        //         "keyword": keyword,
-        //         "standardlicense": standardlicense,
-        //         "publisher": publisher
-        //     }
+            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+            await restUtils.callConnector("PUT", "/api/rules/" + ruleId, null, {
+                "value": JSON.stringify(ruleJson)
+            });
 
-        //     await restUtils.call("PUT", "/api/ui/resource", params);
+            await restUtils.callConnector("PUT", "/api/representations/" + representationId, null, {
+                "language": language,
+                "mediaType": filetype,
+            });
 
-        //     params = {
-        //         "resourceId": resourceId,
-        //         "pattern": pattern
-        //     }
-        //     await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson);
+            await restUtils.callConnector("PUT", "/api/artifacts/" + artifactId, null, {
+                "accessUrl": genericEndpoint.accessUrl,
+                "username": genericEndpoint.username,
+                "password": genericEndpoint.password
+            });
 
-        //     // TODO remove sourceType when API changed.
-        //     params = {
-        //         "resourceId": resourceId,
-        //         "representationId": representationId,
-        //         "endpointId": genericEndpoint["@id"],
-        //         "language": language,
-        //         "filenameExtension": filetype,
-        //         "sourceType": "LOCAL"
-        //     }
-        //     await restUtils.call("PUT", "/api/ui/resource/representation", params);
+            let route = await this.getRouteWithEnd(artifactId);
+            let routeId = this.getIdOfConnectorResponse(route);
+            await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.id + "\"");
 
-        //     await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
-        // } catch (error) {
-        //     errorUtils.showError(error, "Save resource");
-        // }
+            await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
+
+            //     let params = {
+            //         "resourceId": resourceId,
+            //         "title": title,
+            //         "description": description,
+            //         "language": language,
+            //         "keyword": keyword,
+            //         "standardlicense": standardlicense,
+            //         "publisher": publisher
+            //     }
+
+            //     await restUtils.call("PUT", "/api/ui/resource", params);
+
+            //     params = {
+            //         "resourceId": resourceId,
+            //         "pattern": pattern
+            //     }
+            //     await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson);
+
+            //     // TODO remove sourceType when API changed.
+            //     params = {
+            //         "resourceId": resourceId,
+            //         "representationId": representationId,
+            //         "endpointId": genericEndpoint["@id"],
+            //         "language": language,
+            //         "filenameExtension": filetype,
+            //         "sourceType": "LOCAL"
+            //     }
+            //     await restUtils.call("PUT", "/api/ui/resource/representation", params);
+
+            //     await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
+        } catch (error) {
+            errorUtils.showError(error, "Save resource");
+        }
     },
 
     async updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId) {
@@ -652,6 +699,20 @@ export default {
             }
         }
         return resource;
+    },
+
+    async getRouteWithEnd(artifactId) {
+        let routeWithEnd = null;
+        let response = await this.getRoutes();
+        for (let route of response) {
+            if (route.end !== undefined && route.end != null) {
+                if (route.end.location.includes(artifactId)) {
+                    routeWithEnd = route;
+                    break;
+                }
+            }
+        }
+        return routeWithEnd;
     },
 
     async getRoutes() {

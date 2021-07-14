@@ -60,7 +60,7 @@ export default {
             this.$forceUpdate();
 
         },
-        loadResource(resource) {
+        async loadResource(resource) {
             this.$data.selected = [];
             if (resource.id == -1) {
                 if (resource.brokerList !== undefined) {
@@ -73,15 +73,15 @@ export default {
                     }
                 }
             } else {
-                dataUtils.getBrokersOfResource(resource.id).then(data => {
-                    for (let status of data) {
-                        let broker = this.getBroker(status.brokerId);
-                        this.$data.selected.push(broker);
-                        this.$data.lastSelected.push({
-                            url: status.brokerId
-                        });
-                    }
-                });
+                let brokers = await dataUtils.getBrokersOfResource(resource.id);
+                for (let status of brokers) {
+                    let broker = this.getBroker(status.brokerId);
+                    this.$data.selected.push(broker);
+                    this.$data.lastSelected.push({
+                        url: status.brokerId
+                    });
+                }
+
             }
         },
         getBroker(brokerUri) {

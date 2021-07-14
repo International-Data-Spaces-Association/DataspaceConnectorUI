@@ -101,7 +101,7 @@ export default {
             var title = this.$refs.metaDataPage.title;
             var description = this.$refs.metaDataPage.description;
             var language = this.$refs.metaDataPage.language;
-            var keywords = this.$refs.metaDataPage.keywords.replace(/ /g, "").split(",");
+            var keywords = dataUtils.commaSeperatedStringToArray(this.$refs.metaDataPage.keywords);
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
             var policyDescription = this.$refs.policyPage.getDescription();
@@ -123,7 +123,8 @@ export default {
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
                         title, description, language, keywords, standardlicense, publisher, policyDescription,
-                        filetype, brokerList, brokerDeleteList, genericEndpoint);
+                        filetype, brokerList, brokerDeleteList, genericEndpoint, this.$data.currentResource.ruleId,
+                        this.$data.currentResource.artifactId);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                 }

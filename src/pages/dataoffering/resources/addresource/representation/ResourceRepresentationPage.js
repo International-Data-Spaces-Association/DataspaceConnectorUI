@@ -4,6 +4,7 @@ import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 import validationUtils from "../../../../../utils/validationUtils";
+import clientDataModel from "../../../../../datamodel/clientDataModel";
 
 export default {
     components: {
@@ -82,19 +83,11 @@ export default {
 
             this.$data.selected = [];
             try {
-                let response = await dataUtils.getRoutes();
-                for (let route of response) {
-                    if (route["ids:hasSubRoute"] !== undefined) {
-                        for (let step of route["ids:hasSubRoute"]) {
-                            if (step["ids:appRouteOutput"] !== undefined) {
-                                console.log(step["ids:appRouteOutput"][0]["@id"], " == ", resource.id);
-                                if (step["ids:appRouteOutput"][0]["@id"] == resource.id) {
-                                    this.$data.selected.push(dataUtils.genericEndpointToBackendConnection(route["ids:appRouteStart"][0]));
-                                }
-                            }
-                        }
-                    }
-                }
+                let route = await dataUtils.getRouteWithEnd(resource.artifactId);
+                let ge = route.start;
+                let dataSource = ge.dataSource;
+                this.$data.selected.push(clientDataModel.createGenericEndpoint(ge.id, ge.location, dataSource.type,
+                    dataSource.id, dataSource.authentication.username, dataSource.authentication.password, ge.type));
             } catch (error) {
                 errorUtils.showError(error, "Get resource route");
             }
