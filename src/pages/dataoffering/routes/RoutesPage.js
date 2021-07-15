@@ -1,6 +1,7 @@
 // import dataUtils from "@/utils/dataUtils";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import dataUtils from "../../../utils/dataUtils";
+import errorUtils from "../../../utils/errorUtils";
 
 
 
@@ -48,30 +49,33 @@ export default {
         async getRoutes() {
             this.$root.$emit('showBusyIndicator', true);
             await this.getRouteErrors();
-            let response = await dataUtils.getRoutes();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get routes failed.");
-            } else {
+            try {
+                let response = await dataUtils.getRoutes();
                 this.$data.routes = [];
                 for (let route of response) {
-                    this.$data.routes.push({
-                        id: route["@id"],
-                        description: route["ids:routeDescription"]
-                    });
+                    if (route.routeType == "Route") {
+                        this.$data.routes.push({
+                            id: dataUtils.getIdOfConnectorResponse(route),
+                            description: route.description
+                        });
+                    }
                 }
-                this.$root.$emit('showBusyIndicator', false);
+            } catch (error) {
+                errorUtils.showError(error, "Get routes");
             }
+            this.$root.$emit('showBusyIndicator', false);
+
         },
         async getRouteErrors() {
-            let response = await dataUtils.getRouteErrors();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get route errors failed.");
-            } else {
+            try {
+                let response = await dataUtils.getRouteErrors();
                 let routeErrors = response.reverse();
                 for (let routeError of routeErrors) {
                     routeError.timestamp = routeError.timestamp.substring(0, 19).replace("T", " ");
                 }
                 this.$data.routeErrors = routeErrors;
+            } catch (error) {
+                errorUtils.showError(error, "Get route errors");
             }
         },
         deleteItem(item) {
@@ -86,12 +90,12 @@ export default {
         async deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                let response = await dataUtils.deleteRoute(callbackData.item.id);
-                if (response.name !== undefined && response.name == "Error") {
-                    this.$root.$emit('error', "Delete route failed.");
-                } else {
-                    this.getRoutes();
+                try {
+                    await dataUtils.deleteRoute(callbackData.item.id);
+                } catch (error) {
+                    errorUtils.showError(error, "Delete route");
                 }
+                this.getRoutes();
             }
         },
         editItem(item) {

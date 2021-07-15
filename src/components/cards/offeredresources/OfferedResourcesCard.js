@@ -1,5 +1,6 @@
 import DashboardCard from "@/components/cards/dashboardcard/DashboardCard.vue";
 import dataUtils from "../../../utils/dataUtils";
+import errorUtils from "../../../utils/errorUtils";
 
 
 export default {
@@ -39,7 +40,7 @@ export default {
                 }
                 this.$forceUpdate();
             } catch (error) {
-                console.log("Error on getOfferedResourcesStats(): ", error);
+                errorUtils.showError(error, "Get resource statistics");
             }
         },
         getTotalSize(totalSize) {

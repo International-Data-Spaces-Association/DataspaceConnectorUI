@@ -1,6 +1,7 @@
 import AddBrokerDialog from "@/pages/brokers/dialog/AddBrokerDialog.vue";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import dataUtils from "../../utils/dataUtils";
+import errorUtils from "../../utils/errorUtils";
 
 
 export default {
@@ -34,31 +35,25 @@ export default {
     },
     methods: {
         async getBrokers() {
-            let response = await dataUtils.getBrokers();
-
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get brokers failed.");
-            } else {
+            this.$root.$emit('showBusyIndicator', false);
+            try {
+                let response = (await dataUtils.getBrokers())._embedded.brokers;
                 this.$data.brokers = [];
                 for (var broker of response) {
                     this.$data.brokers.push({
                         broker: broker,
-                        title: broker[1]["title"],
-                        url: broker[1]["brokerUri"],
-                        registerStatus: this.toRegisterStatusClass(broker[1]["brokerRegistrationStatus"])
+                        id: dataUtils.getIdOfConnectorResponse(broker),
+                        title: broker.title,
+                        url: broker.location,
+                        registerStatus: dataUtils.toRegisterStatusClass(broker.status)
                     });
                 }
+            } catch (error) {
+                errorUtils.showError(error, "Get brokers");
+            }
+            this.$forceUpdate();
+            this.$root.$emit('showBusyIndicator', false);
 
-                this.$forceUpdate();
-                this.$root.$emit('showBusyIndicator', false);
-            }
-        },
-        toRegisterStatusClass(brokerStatus) {
-            let statusClass = "notRegisteredAtBroker";
-            if (brokerStatus == "REGISTERED") {
-                statusClass = "registeredAtBroker";
-            }
-            return statusClass;
         },
         brokerSaved() {
             this.getBrokers();
@@ -77,35 +72,36 @@ export default {
         deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                this.deleteBroker(callbackData.item.broker[1]["brokerUri"]);
+                this.deleteBroker(callbackData.item.id);
             }
         },
         async deleteBroker(brokerId) {
-            let response = await dataUtils.deleteBroker(brokerId);
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Delete broker failed.");
+            try {
+                await dataUtils.deleteBroker(brokerId);
+            } catch (error) {
+                errorUtils.showError(error, "Delete broker");
             }
             this.getBrokers();
         },
         editItem(item) {
             this.$refs.addBrokerDialog.edit(item.broker);
         },
-        registerUnregister(item) {
+        async registerUnregister(item) {
             this.$root.$emit('showBusyIndicator', true);
             if (item.registerStatus == "notRegisteredAtBroker") {
-                dataUtils.registerConnectorAtBroker(item.url).then(() => {
-                    this.getBrokers();
-                }).catch(error => {
-                    console.log("Error on registerConnectorAtBroker: ", error);
-                    this.getBrokers();
-                });
+                try {
+                    await dataUtils.registerConnectorAtBroker(item.url);
+                } catch (error) {
+                    errorUtils.showError(error, "Register connector at broker");
+                }
+                this.getBrokers();
             } else {
-                dataUtils.unregisterConnectorAtBroker(item.url).then(() => {
-                    this.getBrokers();
-                }).catch(error => {
-                    console.log("Error on unregisterConnectorAtBroker: ", error);
-                    this.getBrokers();
-                });
+                try {
+                    await dataUtils.unregisterConnectorAtBroker(item.url);
+                } catch (error) {
+                    errorUtils.showError(error, "Unregister connector at broker");
+                }
+                this.getBrokers();
             }
         }
     }

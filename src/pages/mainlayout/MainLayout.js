@@ -1,6 +1,7 @@
 import NavigationMenu from "@/components/navigationmenu/NavigationMenu.vue";
 import InfoBox from "@/components/infobox/InfoBox.vue";
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "@/utils/errorUtils";
 
 // import BrokersPage from "@/pages/brokers/BrokersPage.vue";
 
@@ -26,6 +27,7 @@ export default {
         }
     },
     mounted: function () {
+        errorUtils.setVueRoot(this.$root);
         if (process.env.VUE_APP_UI_TITLE !== undefined && process.env.VUE_APP_UI_TITLE != "#UI_TITLE#") {
             this.$data.uiTitle = process.env.VUE_APP_UI_TITLE;
         }
@@ -41,8 +43,12 @@ export default {
     },
     methods: {
         async setTitleFromConnector() {
-            let connectorData = (await dataUtils.getConnectorSettings());
-            this.$data.uiTitle = connectorData.title;
+            try {
+                let connectorData = (await dataUtils.getConnectorConfiguration());
+                this.$data.uiTitle = connectorData.title;
+            } catch (error) {
+                errorUtils.showError(error, "Get connector settings");
+            }
         }
     }
 };

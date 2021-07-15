@@ -4,8 +4,7 @@ export default {
     components: {},
     data() {
         return {
-            pattern: "USAGE_NOTIFICATION",
-            contractJson: "",
+            description: "",
             value: null,
             urlRule: validationUtils.getUrlRequiredRule(),
             valid: false,
@@ -27,8 +26,13 @@ export default {
             this.$data.value = contract["ids:permission"][0]["ids:postDuty"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
             this.tfChange();
         },
+        setPolicyByDescription(policyDescription) {
+            this.$data.value = policyDescription.url;
+            this.tfChange();
+        },
         tfChange() {
-            this.$data.contractJson = {
+            this.$data.description = {
+                "type": "USAGE_NOTIFICATION",
                 "url": this.$data.value
             };
         },

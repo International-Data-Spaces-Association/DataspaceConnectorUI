@@ -1,4 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "@/utils/errorUtils";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import ResourceDetailsDialog from "./resourcedetailsdialog/ResourceDetailsDialog.vue";
 
@@ -12,20 +13,16 @@ export default {
         return {
             search: '',
             headers: [{
+                text: 'Creation date',
+                value: 'creationDate',
+                width: 135
+            }, {
                 text: 'Title',
                 value: 'title'
             },
             {
-                text: 'Description',
-                value: 'description'
-            },
-            {
-                text: 'Type',
-                value: 'fileType'
-            }, 
-            {
-                text: 'Policy',
-                value: 'policyName'
+                text: 'Keywords',
+                value: 'keywords'
             },
             {
                 text: 'Brokers',
@@ -43,8 +40,8 @@ export default {
             filteredResources: [],
             filterResourceType: null,
             fileTypes: ["All"],
-            sortBy: 'title',
-            sortDesc: false,
+            sortBy: 'creationDate',
+            sortDesc: true,
         };
     },
     mounted: function () {
@@ -53,21 +50,21 @@ export default {
     methods: {
         async getResources() {
             this.$root.$emit('showBusyIndicator', true);
-            let response = await dataUtils.getResources();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get resources failed.");
-            } else {
+            try {
+                let response = await dataUtils.getResources();
                 this.$data.resources = response;
                 this.$data.fileTypes = ["All"];
                 for (let resource of this.$data.resources) {
                     this.$data.fileTypes.push(resource.fileType);
-                    let brokers = await dataUtils.getResourceRegistrationStatus(resource.id);
+                    let brokers = await dataUtils.getBrokersOfResource(resource.id);
                     resource.brokers = brokers.map(x => x.brokerId);
                 }
-                this.filterChanged();
-                this.$forceUpdate();
-                this.$root.$emit('showBusyIndicator', false);
+            } catch (error) {
+                errorUtils.showError(error, "Get resources");
             }
+            this.filterChanged();
+            this.$forceUpdate();
+            this.$root.$emit('showBusyIndicator', false);
         },
         filterChanged() {
             if (this.$data.filterResourceType == null | this.$data.filterResourceType == "All") {
@@ -95,30 +92,21 @@ export default {
                 let resourceId = callbackData.item.id;
                 this.$root.$emit('showBusyIndicator', true);
 
-                let response = await dataUtils.getResourceRegistrationStatus(resourceId);
-                if (response.name !== undefined && response.name == "Error") {
-                    this.$root.$emit('error', "Get resource registration status failed.");
-                } else {
-                    let brokerUris = [];
-                    for (let status of response) {
-                        brokerUris.push(status.brokerId);
-                    }
-                    response = await dataUtils.deleteResource(resourceId);
-                    if (response.name !== undefined && response.name == "Error") {
-                        this.$root.$emit('error', "Delete resource failed.");
-                    } else {
-                        response = await dataUtils.updateResourceAtBrokers(brokerUris, resourceId);
-                        this.getResources();
-                        this.$root.$emit('showBusyIndicator', false);
-                    }
+                try {
+                    await dataUtils.deleteResource(resourceId);
+                } catch (error) {
+                    errorUtils.showError(error, "Delete resource");
                 }
+
+                this.getResources();
+                this.$root.$emit('showBusyIndicator', false);
             }
         },
         editItem(item) {
             this.$router.push('editresource?id=' + item.id);
         },
         showItem(item) {
-            this.$refs.resourceDetailsDialog.show(item);
+            this.$refs.resourceDetailsDialog.show(item.id);
         }
     },
 };

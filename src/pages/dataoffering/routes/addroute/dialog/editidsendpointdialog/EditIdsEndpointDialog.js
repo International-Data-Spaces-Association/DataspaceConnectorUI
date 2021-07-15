@@ -35,16 +35,13 @@ export default {
                 resource = clientDataModel.createResource(-1);
             } else {
                 this.$data.title = "Edit IDS Endpoint";
-                resource = clientDataModel.createResource(-1, node.title, node.description,
-                    node.language, node.keywords, node.version, node.standardlicense, node.publisher, node.contractJson,
-                    node.sourceType, node.filetype, node.bytesize);
-                resource.brokerList = node.brokerList;
+                resource = node.resource;
             }
 
-            this.$refs.addResourcePage.set(resource);
+            this.$refs.addResourcePage.set(resource, false);
             this.$data.dialog = true;
         },
-        saved(title, description, language, keywords, version, standardlicense, publisher, pattern, contractJson, filetype, bytesize, brokerList) {
+        saved(title, description, language, keywords, version, standardlicense, publisher, policyDescription, filetype, bytesize, brokerList) {
             let isNew = false;
             if (this.$data.node == null) {
                 isNew = true;
@@ -60,20 +57,21 @@ export default {
 
             }
 
-            this.$data.node.title = title;
-            this.$data.node.description = description;
-            this.$data.node.language = language;
-            this.$data.node.keywords = keywords;
-            this.$data.node.version = version;
-            this.$data.node.standardlicense = standardlicense;
-            this.$data.node.publisher = publisher;
-            this.$data.node.pattern = pattern;
-            this.$data.node.contractJson = contractJson;
+            let resource = {};
+            resource.title = title;
+            resource.description = description;
+            resource.language = language;
+            resource.keywords = keywords;
+            resource.version = version;
+            resource.standardlicense = standardlicense;
+            resource.publisher = publisher;
+            resource.policyDescription = policyDescription;
             // TODO remove sourceType when API changed.
-            this.$data.node.sourceType = "LOCAL";
-            this.$data.node.filetype = filetype;
-            this.$data.node.bytesize = bytesize;
-            this.$data.node.brokerList = brokerList;
+            resource.sourceType = "LOCAL";
+            resource.filetype = filetype;
+            resource.bytesize = bytesize;
+            resource.brokerList = brokerList;
+            this.$data.node.resource = resource;
 
             if (isNew) {
                 this.$emit('newIdsEndpointNodeSaved', this.$data.node);
