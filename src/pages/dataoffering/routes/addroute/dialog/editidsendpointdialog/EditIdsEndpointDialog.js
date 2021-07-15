@@ -38,7 +38,7 @@ export default {
                 resource = node.resource;
             }
 
-            this.$refs.addResourcePage.set(resource);
+            this.$refs.addResourcePage.set(resource, false);
             this.$data.dialog = true;
         },
         saved(title, description, language, keywords, version, standardlicense, publisher, policyDescription, filetype, bytesize, brokerList) {

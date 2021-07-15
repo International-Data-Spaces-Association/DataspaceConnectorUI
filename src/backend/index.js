@@ -8,7 +8,6 @@ import bodyParser from "body-parser";
 const app = express();
 const port = 8083;
 let connectorUrl = "https://localhost:8080"
-let configManagerUrl = "http://localhost:8081";
 let auth = {
     username: 'admin',
     password: 'password'
@@ -25,10 +24,6 @@ if (process.env.CONNECTOR_URL !== undefined) {
     connectorUrl = process.env.CONNECTOR_URL;
 }
 
-console.log("CONFIGMANAGER_URL", process.env.CONFIGMANAGER_URL);
-if (process.env.CONFIGMANAGER_URL !== undefined) {
-    configManagerUrl = process.env.CONFIGMANAGER_URL;
-}
 
 app.use(cors());
 app.use(bodyParser.urlencoded({
@@ -114,9 +109,8 @@ app.post('/', (req, res) => {
         }
         i++;
     }
-    let url = req.body.toConnector ? connectorUrl : configManagerUrl;
     if (req.body.type == "POST") {
-        post(url + call, req.body.body).then(response => {
+        post(connectorUrl + call, req.body.body).then(response => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {
@@ -129,7 +123,7 @@ app.post('/', (req, res) => {
 
         });
     } else if (req.body.type == "PUT") {
-        put(url + call, req.body.body).then(response => {
+        put(connectorUrl + call, req.body.body).then(response => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {
@@ -141,7 +135,7 @@ app.post('/', (req, res) => {
             }
         });
     } else if (req.body.type == "GET") {
-        get(url + call).then(response => {
+        get(connectorUrl + call).then(response => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {
@@ -153,7 +147,7 @@ app.post('/', (req, res) => {
             }
         });
     } else if (req.body.type == "DELETE") {
-        del(url + call).then(response => {
+        del(connectorUrl + call).then(response => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {

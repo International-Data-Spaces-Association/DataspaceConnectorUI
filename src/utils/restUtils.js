@@ -15,10 +15,6 @@ export default {
         });
     },
 
-    async call(type, url, params, body) {
-        return await this.callAndCheckError(false, type, url, params, body);
-    },
-
     async callConnector(type, url, params, body) {
         return await this.callAndCheckError(true, type, url, params, body);
     },

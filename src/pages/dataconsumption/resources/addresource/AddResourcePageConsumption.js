@@ -8,19 +8,23 @@ export default {
     data() {
         return {
             headers: [{
+                text: 'Creation date',
+                value: 'creationDate',
+                width: 135
+            }, {
                 text: 'Title',
                 value: 'title'
             },
             {
-                text: 'Description',
-                value: 'description'
+                text: 'Keywords',
+                value: 'keywords'
             },
             {
                 text: 'Publisher',
                 value: 'publisher'
             }, {
                 text: 'License',
-                value: 'standardlicense'
+                value: 'standardLicense'
             },
             {
                 text: '',
@@ -29,6 +33,8 @@ export default {
                 align: 'right'
             }
             ],
+            sortBy: 'creationDate',
+            sortDesc: true,
             recipientId: "",
             receivedResources: []
         };
@@ -39,18 +45,13 @@ export default {
     methods: {
         async receiveResources() {
             this.$root.$emit('showBusyIndicator', true);
-            this.$data.receivedResources = [];
-            let resources = (await dataUtils.receiveResources(this.$data.recipientId)).data;
-            for (let resource of resources) {
-                this.$data.receivedResources.push(resource[1]);
-            }
+            this.$data.receivedResources = await dataUtils.receiveResources(this.$data.recipientId);
             this.$root.$emit('showBusyIndicator', false);
         },
         async showItem(item) {
             this.$root.$emit('showBusyIndicator', true);
-            let resource = (await dataUtils.receiveResource(this.$data.recipientId, item.resourceId));
             this.$root.$emit('showBusyIndicator', false);
-            this.$refs.resourceDetailsDialog.show(resource);
+            this.$refs.resourceDetailsDialog.showResource(item);
         }
     },
 };

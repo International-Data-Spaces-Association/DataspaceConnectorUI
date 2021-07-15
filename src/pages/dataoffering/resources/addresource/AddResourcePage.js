@@ -24,7 +24,8 @@ export default {
             representationRequiredAttributes: null,
             fileAttributes: null,
             fileRequiredAttributes: null,
-            readonly: false
+            readonly: false,
+            onlyMetaData: false
         };
     },
     mounted: function () {
@@ -61,13 +62,14 @@ export default {
             }
         },
         async loadResource(id) {
+            this.$data.onlyMetaData = false;
             this.$data.active_tab = 0;
             this.$root.$emit('showBusyIndicator', true);
             try {
                 let response = await dataUtils.getResource(id);
                 this.$data.currentResource = response;
                 this.$data.isNewResource = false;
-                this.$refs.metaDataPage.loadResource(this.$data.currentResource);
+                this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
                 this.$refs.policyPage.loadResource(this.$data.currentResource);
                 this.$refs.representationPage.loadResource(this.$data.currentResource);
                 this.$refs.brokersPage.loadResource(this.$data.currentResource);
@@ -77,13 +79,16 @@ export default {
             this.$root.$emit('showBusyIndicator', false);
             this.$forceUpdate();
         },
-        set(resource) {
+        set(resource, onlyMetaData) {
             this.$data.currentResource = resource;
+            this.$data.onlyMetaData = onlyMetaData;
             this.$data.isNewResource = false;
-            this.$refs.metaDataPage.loadResource(this.$data.currentResource);
-            this.$refs.policyPage.loadResource(this.$data.currentResource);
-            this.$refs.representationPage.loadResource(this.$data.currentResource);
-            this.$refs.brokersPage.loadResource(this.$data.currentResource);
+            this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
+            if (!onlyMetaData) {
+                this.$refs.policyPage.loadResource(this.$data.currentResource);
+                this.$refs.representationPage.loadResource(this.$data.currentResource);
+                this.$refs.brokersPage.loadResource(this.$data.currentResource);
+            }
             this.$data.active_tab = 0;
         },
         setReadOnly(readonly) {

@@ -20,7 +20,8 @@ export default {
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
             urlRule: validationUtils.getUrlRequiredRule(),
-            readonly: false
+            readonly: false,
+            onlyMetaData: false
         };
     },
     mounted: function () {
@@ -37,7 +38,8 @@ export default {
         nextPage() {
             this.$emit('nextPage');
         },
-        loadResource(resource) {
+        loadResource(resource, onlyMetaData) {
+            this.$data.onlyMetaData = onlyMetaData;
             if (resource.title == "") {
                 this.$refs.form.reset();
             } else {

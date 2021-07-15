@@ -15,7 +15,8 @@
             <v-select label="Language" v-model="language" :items="languageItems" item-text="displayName"
                 item-value="originalName" :rules="defaultRule" required :readonly="readonly">
             </v-select>
-            <v-btn color="primary" @click.native="nextPage" :disabled="(!readonly && !valid)">Next</v-btn>
+            <v-btn color="primary" @click.native="nextPage" :disabled="(!readonly && !valid)" v-show="!onlyMetaData">
+                Next</v-btn>
         </v-form>
     </v-col>
 </v-row>

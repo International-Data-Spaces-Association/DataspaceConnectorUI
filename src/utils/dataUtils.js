@@ -758,32 +758,46 @@ export default {
         return response;
     },
 
-    receiveResources(recipientId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "recipientId": recipientId
-            }
-            restUtils.call("POST", "/api/ui/request/description", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in receiveResources(): ", error);
-                resolve(error);
-            });
-        });
-    },
+    async receiveResources(recipientId) {
+        let recources = [];
+        let params = {
+            "recipient": recipientId
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+        if (response["ids:resourceCatalog"] !== undefined) {
+            for (let catalog of response["ids:resourceCatalog"]) {
+                params = {
+                    "recipient": recipientId,
+                    "elementId": catalog["@id"]
+                }
+                response = await restUtils.callConnector("POST", "/api/ids/description", params);
+                if (response["ids:offeredResource"] !== undefined) {
+                    for (let resource of response["ids:offeredResource"]) {
+                        let id = resource["@id"].substring(resource["@id"].lastIndexOf("/"), resource["@id"].length);
+                        let creationDate = resource["ids:created"]["@value"];
+                        let title = resource["ids:title"][0]["@value"];
+                        let description = resource["ids:description"][0]["@value"];
+                        let language = resource["ids:language"][0]["@id"].replace("https://w3id.org/idsa/code/", "");
+                        let keywords = [];
+                        let idsKeywords = resource["ids:keyword"];
+                        for (let idsKeyword of idsKeywords) {
+                            keywords.push(idsKeyword["@value"]);
+                        }
+                        let version = resource["ids:version"];
+                        let standardLicense = resource["ids:standardLicense"]["@id"];
+                        let publisher = resource["ids:publisher"]["@id"];
+                        let fileType = null;
+                        if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
+                            fileType = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
+                        }
 
-    receiveResource(recipientId, requestedResourceId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "recipientId": recipientId,
-                "requestedResourceId": requestedResourceId
-            };
-            restUtils.call("POST", "/api/ui/request/description", params).then(response => {
-                resolve(clientDataModel.convertIdsResource(response.data));
-            }).catch(error => {
-                console.log("Error in receiveResource(): ", error);
-                resolve(error);
-            });
-        });
+                        recources.push(clientDataModel.createResource(id, creationDate, title, description, language, keywords, version, standardLicense,
+                            publisher, fileType, "", null));
+                    }
+                }
+            }
+        }
+
+        return recources;
     }
 }
