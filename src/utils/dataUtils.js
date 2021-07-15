@@ -540,37 +540,6 @@ export default {
             await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.id + "\"");
 
             await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
-
-            //     let params = {
-            //         "resourceId": resourceId,
-            //         "title": title,
-            //         "description": description,
-            //         "language": language,
-            //         "keyword": keyword,
-            //         "standardlicense": standardlicense,
-            //         "publisher": publisher
-            //     }
-
-            //     await restUtils.call("PUT", "/api/ui/resource", params);
-
-            //     params = {
-            //         "resourceId": resourceId,
-            //         "pattern": pattern
-            //     }
-            //     await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson);
-
-            //     // TODO remove sourceType when API changed.
-            //     params = {
-            //         "resourceId": resourceId,
-            //         "representationId": representationId,
-            //         "endpointId": genericEndpoint["@id"],
-            //         "language": language,
-            //         "filenameExtension": filetype,
-            //         "sourceType": "LOCAL"
-            //     }
-            //     await restUtils.call("PUT", "/api/ui/resource/representation", params);
-
-            //     await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
         } catch (error) {
             errorUtils.showError(error, "Save resource");
         }
@@ -671,21 +640,6 @@ export default {
         for (let brokerUri of brokerUris) {
             await this.updateResourceAtBroker(brokerUri, resourceId);
         }
-    },
-
-    getEndpointInfo(routeId, endpointId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "routeId": routeId,
-                "endpointId": endpointId
-            }
-            restUtils.call("GET", "/api/ui/approute/step/endpoint/info", params).then(response => {
-                resolve(response.data)
-            }).catch(error => {
-                console.log("Error in getEndpointInfo(): ", error);
-                resolve(error);
-            });
-        });
     },
 
     async getResourceOfArtifact(artifactId) {
