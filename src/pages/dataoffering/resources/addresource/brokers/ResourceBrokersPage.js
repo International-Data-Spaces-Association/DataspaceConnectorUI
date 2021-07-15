@@ -40,7 +40,7 @@ export default {
         },
         async getBrokers() {
             try {
-                let response = (await dataUtils.getBrokers())._embedded.brokerViewList;
+                let response = (await dataUtils.getBrokers())._embedded.brokers;
                 this.$data.brokers = [];
                 for (let broker of response) {
                     if (broker.status == "Registered") {

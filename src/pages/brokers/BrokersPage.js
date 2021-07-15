@@ -37,7 +37,7 @@ export default {
         async getBrokers() {
             this.$root.$emit('showBusyIndicator', false);
             try {
-                let response = (await dataUtils.getBrokers())._embedded.brokerViewList;
+                let response = (await dataUtils.getBrokers())._embedded.brokers;
                 this.$data.brokers = [];
                 for (var broker of response) {
                     this.$data.brokers.push({

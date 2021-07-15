@@ -219,7 +219,7 @@ export default {
     },
 
     async getBrokersOfResource(resourceId) {
-        return (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/brokers"))._embedded.brokerViewList;
+        return (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/brokers"))._embedded.brokers;
     },
 
     async updateResourceAtBroker(brokerUri, resourceId) {
