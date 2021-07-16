@@ -46,14 +46,14 @@ export default {
     getUrlRequiredRule() {
         return [
             v => !!v || 'This data is required',
-            v => /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed',
+            v => /^[h][t][t][p][s]{0,1}[:][/][/][^ ]+$/.test(v.trim()) || 'Only URIs (http://... or https://...) allowed',
         ];
     },
 
     getUrlNotRequiredRule() {
         return [
             v => {
-                if (v) return /^[h][t][t][p][s]{0,1}[:][/][/].*$/.test(v) || 'Only URIs (http://... or https://...) allowed'
+                if (v) return /^[h][t][t][p][s]{0,1}[:][/][/][^ ]+$/.test(v.trim()) || 'Only URIs (http://... or https://...) allowed'
                 else return true;
             }
         ];
