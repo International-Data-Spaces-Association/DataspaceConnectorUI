@@ -267,7 +267,6 @@ export default {
                 "location": url,
                 "title": title
             });
-            await this.registerConnectorAtBroker(url);
         } catch (error) {
             errorUtils.showError(error, "Update broker");
         }
