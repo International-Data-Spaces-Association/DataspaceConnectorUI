@@ -99,7 +99,7 @@ export default {
             }
         },
         editItem(item) {
-            this.$router.push('editroute?routeId=' + item.id);
+            this.$router.push('showroute?routeId=' + item.id);
         }
     }
 };

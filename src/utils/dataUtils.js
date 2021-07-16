@@ -356,18 +356,6 @@ export default {
         await restUtils.callConnector("DELETE", "/api/routes/" + id);
     },
 
-    async getApps() {
-        let apps = [];
-        let idsApps = (await restUtils.callConnector("GET", "/api/apps"))._embedded.apps;
-        if (idsApps !== undefined) {
-            for (let idsApp of idsApps) {
-                apps.push(clientDataModel.convertIdsApp(idsApp));
-            }
-        }
-
-        return apps;
-    },
-
     async getEndpointList(node) {
         let endpointList = [];
         if (node.type == "backendnode") {
@@ -383,11 +371,6 @@ export default {
     async getGenericEndpoint(id) {
         let idsGenericEndpoint = await await restUtils.callConnector("GET", "/api/endpoints/" + id);
         return clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint);
-    },
-
-    async getApp(id) {
-        let app = await await restUtils.callConnector("GET", "/api/apps/" + id);
-        return clientDataModel.convertIdsApp(app);
     },
 
     getAppIdOfEndpointId() {

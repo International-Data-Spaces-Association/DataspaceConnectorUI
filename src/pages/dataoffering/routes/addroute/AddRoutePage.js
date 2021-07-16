@@ -41,8 +41,6 @@ export default {
                 errorUtils.showError(error, "Get backend connections");
             }
             this.$data.backendConnections = response;
-            response = await dataUtils.getApps();
-            this.$data.apps = response;
             this.$data.saveMessage = "";
             this.validateRoute();
             if (this.$route.query.routeId === undefined) {
@@ -214,23 +212,24 @@ export default {
             return x;
         },
         async addApp(id, x, y) {
-            if (x === undefined) {
-                x = this.getXForNewNode();
-            }
-            if (y === undefined) {
-                y = 150;
-            }
-            var app = await dataUtils.getApp(id);
-            this.$refs.chart.add({
-                id: +new Date(),
-                x: x,
-                y: y,
-                name: 'App',
-                type: 'appnode',
-                text: app.title,
-                objectId: id,
-            });
-            this.validateRoute();
+            console.log(">>> addApp: ", id, x, y);
+            // if (x === undefined) {
+            //     x = this.getXForNewNode();
+            // }
+            // if (y === undefined) {
+            //     y = 150;
+            // }
+            // var app = await dataUtils.getApp(id);
+            // this.$refs.chart.add({
+            //     id: +new Date(),
+            //     x: x,
+            //     y: y,
+            //     name: 'App',
+            //     type: 'appnode',
+            //     text: app.title,
+            //     objectId: id,
+            // });
+            // this.validateRoute();
         },
         showAddIdsEndpointDialog() {
             this.$refs.editIDSEndpointDialog.show(null);

@@ -53,8 +53,8 @@ export default {
                     component: AddRoutePage,
                     subpages: []
                 }, {
-                    path: "editroute",
-                    name: "Edit Route",
+                    path: "showroute",
+                    name: "Show Route",
                     component: AddRoutePage,
                     subpages: []
                 }]
