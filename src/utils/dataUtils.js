@@ -721,7 +721,7 @@ export default {
             "logLevel": loglevel,
             "deployMode": deployMode,
             "truststoreSettings": {
-                "name": trustStoreUrl,
+                "location": trustStoreUrl,
                 "password": trustStorePassword
             },
             "proxySettings": {
