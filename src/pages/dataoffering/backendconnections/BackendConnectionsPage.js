@@ -63,10 +63,7 @@ export default {
         },
         async deleteBackendConnection(id, dataSourceId) {
             try {
-                let response = (await dataUtils.deleteGenericEndpoint(id, dataSourceId));
-                if (response.name !== undefined && response.name == "Error") {
-                    this.$root.$emit('error', "Delete backend connection failed.");
-                }
+                await dataUtils.deleteGenericEndpoint(id, dataSourceId);
             }
             catch (error) {
                 console.log("Error on deleteBackendConnection(): ", error);
