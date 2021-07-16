@@ -210,7 +210,7 @@ export default {
     async unregisterConnectorAtBroker(brokerUri) {
         try {
             let params = {
-                "recipient ": brokerUri
+                "recipient": brokerUri
             };
             await restUtils.callConnector("POST", "/api/ids/connector/unavailable", params);
         } catch (error) {
