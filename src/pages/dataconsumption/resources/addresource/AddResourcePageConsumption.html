@@ -2,9 +2,11 @@
     <div>
         <v-row no-gutters class="receiveResources-div">
             <v-col cols="12" md="11" sm="12">
-                <v-text-field label="Recipient ID " v-model="recipientId"> </v-text-field>
-                <v-btn color="primary" @click.native="receiveResources">Receive Resources
-                </v-btn>
+                <v-form v-model="valid" ref="form">
+                    <v-text-field label="Recipient URL" v-model="recipientId" :rules="urlRule"> </v-text-field>
+                    <v-btn color="primary" @click.native="receiveResources" :disabled="!valid">Receive Resources
+                    </v-btn>
+                </v-form>
             </v-col>
         </v-row>
         <v-row no-gutters>

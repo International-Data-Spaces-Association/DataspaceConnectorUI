@@ -1,5 +1,7 @@
 import dataUtils from "../../../../utils/dataUtils";
 import ResourceDetailsDialog from "@/pages/dataoffering/resources/resourcedetailsdialog/ResourceDetailsDialog.vue";
+import errorUtils from "../../../../utils/errorUtils";
+import validationUtils from "@/utils/validationUtils";
 
 export default {
     components: {
@@ -36,7 +38,9 @@ export default {
             sortBy: 'creationDate',
             sortDesc: true,
             recipientId: "",
-            receivedResources: []
+            receivedResources: [],
+            valid: false,
+            urlRule: validationUtils.getUrlRequiredRule()
         };
     },
     mounted: function () {
@@ -45,7 +49,11 @@ export default {
     methods: {
         async receiveResources() {
             this.$root.$emit('showBusyIndicator', true);
-            this.$data.receivedResources = await dataUtils.receiveResources(this.$data.recipientId);
+            try {
+                this.$data.receivedResources = await dataUtils.receiveResources(this.$data.recipientId);
+            } catch (error) {
+                errorUtils.showError(error, "Receive resources");
+            }
             this.$root.$emit('showBusyIndicator', false);
         },
         async showItem(item) {
