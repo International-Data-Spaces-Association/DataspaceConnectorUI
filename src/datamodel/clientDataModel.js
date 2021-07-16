@@ -353,7 +353,7 @@ export default {
             }
             logLevel = idsConfiguration.logLevel;
             connectorDeployMode = idsConfiguration.deployMode;
-            trustStoreUrl = idsConfiguration.trustStore.name;
+            trustStoreUrl = idsConfiguration.trustStore.location;
             keyStoreUrl = idsConfiguration.keyStore.location;
         }
 
