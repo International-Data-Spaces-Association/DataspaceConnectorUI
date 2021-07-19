@@ -104,7 +104,7 @@ export default {
                 //     await this.addApp(appId, x, y);
                 // }
             } else if (endpoint.type == "CONNECTOR") {
-                if (!this.nodeExists(endpoint.id)) {
+                if (!this.nodeExists(endpoint.id) && output !== undefined) {
                     let artifactId = dataUtils.getIdOfConnectorResponse(output);
                     let idsResource = await dataUtils.getResourceOfArtifact(artifactId);
                     await this.addIdsEndpoint(endpoint.id, x, y, dataUtils.getIdOfConnectorResponse(idsResource));
