@@ -161,7 +161,7 @@ export default {
         let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
         let rule = undefined;
         let policyName = undefined;
-        let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contract;
+        let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contracts;
         let ruleId = undefined;
         if (contracts.length > 0) {
             let contract = contracts[0];
@@ -299,15 +299,15 @@ export default {
 
         response = await restUtils.callConnector("POST", "/api/datasources", null, {
             "authentication": {
-                "username": username,
-                "password": password
+                "key": username,
+                "value": password
             },
             "type": sourceType
         });
         let dataSourceId = this.getIdOfConnectorResponse(response);
 
         // dataSourceId is needed with double quotes at start and end for this API call
-        await restUtils.callConnector("PUT", "/api/endpoints/" + genericEndpointId + "/datasource", null, "\"" + dataSourceId + "\"");
+        await restUtils.callConnector("PUT", "/api/endpoints/" + genericEndpointId + "/datasource/" + dataSourceId);
     },
 
     async updateGenericEndpoint(id, dataSourceId, url, username, password, sourceType) {
@@ -318,8 +318,8 @@ export default {
 
         await restUtils.callConnector("PUT", "/api/datasources/" + dataSourceId, null, {
             "authentication": {
-                "username": username,
-                "password": password
+                "key": username,
+                "value": password
             },
             "type": sourceType
         });

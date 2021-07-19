@@ -53,7 +53,7 @@ export default {
                 let response = await dataUtils.getRoutes();
                 this.$data.routes = [];
                 for (let route of response) {
-                    if (route.routeType == "Route") {
+                    if (route.additional.routeType == "Route") {
                         this.$data.routes.push({
                             id: dataUtils.getIdOfConnectorResponse(route),
                             description: route.description

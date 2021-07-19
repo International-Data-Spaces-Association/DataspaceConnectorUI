@@ -5,6 +5,7 @@ import https from "https";
 import fs from "fs";
 import bodyParser from "body-parser";
 
+const DEBUG = true;
 const app = express();
 const port = 8083;
 let connectorUrl = "https://localhost:8080"
@@ -32,8 +33,10 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 function post(url, data) {
-    console.log(">>> POST " + url);
-    console.log(">>> DATA: ", data);
+    if (DEBUG) {
+        console.log(">>> POST " + url);
+        console.log(">>> DATA: ", data);
+    }
     return axios.post(url, data, {
         headers: { 'content-type': 'application/json' },
         auth,
@@ -42,8 +45,10 @@ function post(url, data) {
 }
 
 function put(url, data) {
-    console.log(">>> PUT " + url);
-    console.log(">>> DATA: ", data);
+    if (DEBUG) {
+        console.log(">>> PUT " + url);
+        console.log(">>> DATA: ", data);
+    }
     return axios.put(url, data, {
         headers: { 'content-type': 'application/json' },
         auth,
@@ -52,7 +57,9 @@ function put(url, data) {
 }
 
 function get(url) {
-    console.log(">>> GET " + url);
+    if (DEBUG) {
+        console.log(">>> GET " + url);
+    }
     return axios.get(url, {
         headers: { 'content-type': 'application/json' },
         auth,
@@ -61,7 +68,9 @@ function get(url) {
 }
 
 function del(url) {
-    console.log(">>> DELETE " + url);
+    if (DEBUG) {
+        console.log(">>> DELETE " + url);
+    }
     return axios.delete(url, {
         headers: { 'content-type': 'application/json' },
         auth,
