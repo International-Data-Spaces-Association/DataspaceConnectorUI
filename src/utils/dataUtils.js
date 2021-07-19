@@ -332,8 +332,12 @@ export default {
     },
 
     async deleteResource(id) {
+        // TODO delete at brokers
         // let brokers = this.getBrokersOfResource(id);
-        return await restUtils.callConnector("DELETE", "/api/offers/" + id);
+        let resource = await this.getResource(id);
+        await restUtils.callConnector("DELETE", "/api/offers/" + resource.id);
+        await restUtils.callConnector("DELETE", "/api/representations/" + resource.representationId);
+        await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
     },
 
     async getRoute(id) {
@@ -349,10 +353,6 @@ export default {
     },
 
     async deleteRoute(id) {
-        let routeSteps = await this.getRouteSteps(id);
-        for (let routeStep of routeSteps) {
-            await restUtils.callConnector("DELETE", "/api/routes/" + this.getIdOfConnectorResponse(routeStep));
-        }
         await restUtils.callConnector("DELETE", "/api/routes/" + id);
     },
 
