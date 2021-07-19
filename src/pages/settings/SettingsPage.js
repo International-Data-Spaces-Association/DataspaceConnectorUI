@@ -118,7 +118,7 @@ export default {
                     this.$data.trustStoreUrl, this.$data.trustStorePassword, this.$data.keyStoreUrl, this.$data.keyStorePassword);
             }
             catch (error) {
-                errorUtils.showError(error, "Get connector settings");
+                errorUtils.showError(error, "Save connector settings");
                 hasError = true;
             }
 
