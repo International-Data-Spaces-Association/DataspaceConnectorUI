@@ -42,6 +42,7 @@ const OPERATOR_TYPE_TO_SYMBOL = {
 
 
 let languages = null;
+let defaultCatalogId = null;
 let connectorUrl = "https://localhost:8080"
 console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
 if (process.env.CONNECTOR_URL !== undefined) {
@@ -430,6 +431,22 @@ export default {
         return url.substring(url.lastIndexOf("/") + 1, url.length);
     },
 
+    async getDefaultCatalogId() {
+        if (defaultCatalogId == null) {
+            let catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+            if (catalogs.length > 0) {
+                defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
+            } else {
+                await restUtils.callConnector("POST", "/api/catalogs", null, {
+                    "title": "Default catalog"
+                });
+                catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+                defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
+            }
+        }
+        return defaultCatalogId;
+    },
+
     async createResource(title, description, language, keyword, standardlicense, publisher, policyDescription,
         filetype, brokerUris, genericEndpoint) {
         try {
@@ -444,6 +461,9 @@ export default {
             }));
 
             let resourceId = this.getIdOfConnectorResponse(response);
+            let catalogId = await this.getDefaultCatalogId();
+            response = await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+
             response = await restUtils.callConnector("POST", "/api/contracts", null, {});
             let contractId = this.getIdOfConnectorResponse(response);
 
@@ -728,8 +748,8 @@ export default {
                 "location": proxyUrl,
                 "exclusions": proxyNoProxy,
                 "authentication": {
-                    "username": proxyUsername,
-                    "password": proxyPassword
+                    "key": proxyUsername,
+                    "value": proxyPassword
                 }
             },
             "keystoreSettings": {

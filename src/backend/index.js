@@ -5,7 +5,7 @@ import https from "https";
 import fs from "fs";
 import bodyParser from "body-parser";
 
-const DEBUG = true;
+const DEBUG = false;
 const app = express();
 const port = 8083;
 let connectorUrl = "https://localhost:8080"
