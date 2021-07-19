@@ -23,7 +23,7 @@ export default {
             this.$emit('nextPage');
         },
         setPolicy(contract) {
-            this.$data.value = contract["ids:permission"][0]["ids:postDuty"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
+            this.$data.value = contract["ids:postDuty"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
             this.tfChange();
         },
         setPolicyByDescription(policyDescription) {
