@@ -530,6 +530,8 @@ export default {
             let routeId = this.getIdOfConnectorResponse(response);
             response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, endpointId, 220, 150, artifactId);
 
+            this.addRouteStartAndEnd(routeId, genericEndpoint.id, endpointId);
+
             await this.updateResourceAtBrokers(brokerUris, resourceId);
 
         } catch (error) {
@@ -645,6 +647,8 @@ export default {
 
             response = await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, endpointId, destinationNode.x, destinationNode.y, artifactId);
 
+            this.addRouteStartAndEnd(routeId, startId, endpointId);
+
             await this.updateResourceAtBrokers(brokerUris, resourceId);
 
         } catch (error) {
@@ -705,6 +709,11 @@ export default {
 
     async getRoutes() {
         return (await restUtils.callConnector("GET", "/api/routes"))._embedded.routes;
+    },
+
+    async addRouteStartAndEnd(routeId, startId, endId) {
+        await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + startId + "\"");
+        await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/end", null, "\"" + endId + "\"");
     },
 
     async createNewRoute(description) {
