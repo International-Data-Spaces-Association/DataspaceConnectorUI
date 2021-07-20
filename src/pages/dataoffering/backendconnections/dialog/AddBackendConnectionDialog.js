@@ -65,11 +65,11 @@ export default {
                 this.$emit('backendConnectionSaved');
             }
         },
-        edit(endpoint) {
+        async edit(endpoint) {
             this.$data.title = "Edit Backend Connection"
             this.$data.currentEndpoint = endpoint;
             this.$data.url = endpoint.accessUrl;
-            this.$data.sourceType = endpoint.sourceType;
+            this.$data.sourceType = (await dataUtils.getDataSource(endpoint.dataSourceId)).type;
             this.$data.username = endpoint.username;
             this.$data.password = endpoint.password;
             this.$data.dialog = true;

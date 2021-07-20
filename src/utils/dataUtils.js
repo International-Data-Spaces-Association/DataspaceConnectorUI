@@ -277,6 +277,10 @@ export default {
         return await restUtils.callConnector("DELETE", "/api/brokers/" + brokerId);
     },
 
+    async getDataSource(id) {
+        return await restUtils.callConnector("GET", "/api/datasources/" + id);
+    },
+
     async getGenericEndpoints() {
         let genericEndpoints = [];
         let idsEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.endpoints;
@@ -427,7 +431,11 @@ export default {
     },
 
     getIdOfConnectorResponse(response) {
-        let url = response._links.self.href;
+        return this.getIdOfLink(response, "self");
+    },
+
+    getIdOfLink(response, linkName) {
+        let url = response._links.[linkName].href;
         return url.substring(url.lastIndexOf("/") + 1, url.length);
     },
 

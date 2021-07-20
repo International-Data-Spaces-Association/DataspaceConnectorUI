@@ -15,9 +15,6 @@ export default {
             headers: [{
                 text: 'URL',
                 value: 'accessUrl'
-            }, {
-                text: 'Type',
-                value: 'sourceType'
             },
             {
                 text: '',
