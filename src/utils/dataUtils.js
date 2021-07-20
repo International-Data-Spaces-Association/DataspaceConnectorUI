@@ -733,7 +733,7 @@ export default {
 
     async changeConnectorConfiguration(id, title, description, curator, maintainer, proxyUrl, proxyNoProxy, proxyUsername,
         proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword) {
-        await restUtils.callConnector("PUT", "/api/configurations/" + id, null, {
+        let config = {
             "title": title,
             "description": description,
             "curator": curator,
@@ -741,22 +741,36 @@ export default {
             "logLevel": loglevel,
             "deployMode": deployMode,
             "truststoreSettings": {
-                "location": trustStoreUrl,
-                "password": trustStorePassword
+                "location": trustStoreUrl
             },
             "proxySettings": {
                 "location": proxyUrl,
-                "exclusions": proxyNoProxy,
-                "authentication": {
-                    "key": proxyUsername,
-                    "value": proxyPassword
-                }
+                "exclusions": proxyNoProxy
             },
             "keystoreSettings": {
-                "location": keyStoreUrl,
-                "password": keyStorePassword
+                "location": keyStoreUrl
             }
-        });
+        };
+        config.proxySettings.authentication = {};
+        if (proxyUsername != null) {
+            if (config.proxySettings.authentication == undefined) {
+                config.proxySettings.authentication = {};
+            }
+            config.proxySettings.authentication.key = proxyUsername;
+        }
+        if (proxyPassword != null) {
+            if (config.proxySettings.authentication == undefined) {
+                config.proxySettings.authentication = {};
+            }
+            config.proxySettings.authentication.value = proxyPassword;
+        }
+        if (trustStorePassword != null) {
+            config.truststoreSettings.password = trustStorePassword;
+        }
+        if (keyStorePassword != null) {
+            config.keystoreSettings.password = keyStorePassword;
+        }
+        await restUtils.callConnector("PUT", "/api/configurations/" + id, null, config);
     },
 
     async getConnectorDeployModes() {

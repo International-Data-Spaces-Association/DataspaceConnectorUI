@@ -37,7 +37,11 @@ export default {
             urlRule: validationUtils.getUrlNotRequiredRule(),
             urlListRule: validationUtils.getUrlListRule(),
             versionRule: validationUtils.getVersionRule(),
-            saveMessage: ""
+            saveMessage: "",
+            trustStorePasswordOriginal: "",
+            keyStorePasswordOriginal: "",
+            proxyUsernameOriginal: "",
+            proxyPasswordOriginal: ""
         };
     },
     mounted: function () {
@@ -75,7 +79,9 @@ export default {
                 let noProxyArray = configuration.noProxyArray;
                 this.$data.proxyAuthenticationNeeded = username != "" || password != "";
                 this.$data.proxyUsername = username;
+                this.$data.proxyUsernameOriginal = username;
                 this.$data.proxyPassword = password;
+                this.$data.proxyPasswordOriginal = password;
                 let noProxy = dataUtils.arrayToCommaSeperatedString(noProxyArray);
                 this.$data.proxyNoProxy = noProxy;
                 this.$data.logLevel = configuration.logLevel;
@@ -83,8 +89,10 @@ export default {
                 this.$data.connectorDeployMode = configuration.connectorDeployMode;
                 this.$data.trustStoreUrl = configuration.trustStoreUrl;
                 this.$data.trustStorePassword = configuration.trustStorePassword;
+                this.$data.trustStorePasswordOriginal = configuration.trustStorePassword;
                 this.$data.keyStoreUrl = configuration.keyStoreUrl;
                 this.$data.keyStorePassword = configuration.keyStorePassword;
+                this.$data.keyStorePasswordOriginal = configuration.keyStorePassword;
             }
             catch (error) {
                 errorUtils.showError(error, "Get connector settings");
@@ -97,8 +105,8 @@ export default {
             this.$data.saveMessage = "";
             this.$root.$emit('showBusyIndicator', true);
 
-            let proxyUsername = null;
-            let proxyPassword = null;
+            let proxyUsername = "";
+            let proxyPassword = "";
             if (this.$data.proxyAuthenticationNeeded) {
                 if (this.$data.proxyUsername.trim() != "") {
                     proxyUsername = this.$data.proxyUsername;
@@ -107,15 +115,32 @@ export default {
                     proxyPassword = this.$data.proxyPassword;
                 }
             }
+            if (proxyUsername.trim() == this.$data.proxyUsernameOriginal.trim()) {
+                proxyUsername = null;
+            }
+            if (proxyPassword.trim() == this.$data.proxyPasswordOriginal.trim()) {
+                proxyPassword = null;
+            }
             let noProxy = [];
             if (this.$data.proxyNoProxy != null && this.$data.proxyNoProxy.trim() != "") {
                 noProxy = this.$data.proxyNoProxy.replace(/ /g, "").split(",");
             }
+
+            let trustStorePassword = this.$data.trustStorePassword;
+            if (trustStorePassword.trim() == this.$data.trustStorePasswordOriginal.trim()) {
+                trustStorePassword = null;
+            }
+
+            let keyStorePassword = this.$data.keyStorePassword;
+            if (keyStorePassword.trim() == this.$data.keyStorePasswordOriginal.trim()) {
+                keyStorePassword = null;
+            }
+
             try {
                 await dataUtils.changeConnectorConfiguration(this.$data.configId, this.$data.connectorTitle,
                     this.$data.connectorDescription, this.$data.connectorCurator, this.$data.connectorMaintainer,
                     this.$data.proxyUrl, noProxy, proxyUsername, proxyPassword, this.$data.logLevel, this.$data.connectorDeployMode,
-                    this.$data.trustStoreUrl, this.$data.trustStorePassword, this.$data.keyStoreUrl, this.$data.keyStorePassword);
+                    this.$data.trustStoreUrl, trustStorePassword, this.$data.keyStoreUrl, keyStorePassword);
             }
             catch (error) {
                 errorUtils.showError(error, "Save connector settings");
