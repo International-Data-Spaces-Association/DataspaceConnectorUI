@@ -1,6 +1,6 @@
 <div>
     <v-form v-model="valid" ref="form">
-        <v-row no-gutters>
+        <v-row class="settings-row" no-gutters>
             <v-col cols="12" md="2">
                 Connector
             </v-col>
@@ -11,7 +11,7 @@
                 <v-text-field label="Maintainer" v-model="connectorMaintainer" :rules="urlRule"> </v-text-field>
             </v-col>
         </v-row>
-        <v-row no-gutters class="settings-connector-status">
+        <v-row no-gutters class="settings-row settings-connector-status">
             <v-col cols="12" md="2">
                 Connector endpoint
             </v-col>
@@ -19,7 +19,7 @@
                 {{ connectorEndpoint }}
             </v-col>
         </v-row>
-        <v-row no-gutters class="settings-connector-status">
+        <v-row no-gutters class="settings-row settings-connector-status">
             <v-col cols="12" md="2">
                 Inbound model version
             </v-col>
@@ -27,7 +27,7 @@
                 {{ connectorInboundModelVersion }}
             </v-col>
         </v-row>
-        <v-row no-gutters class="settings-connector-status">
+        <v-row no-gutters class="settings-row settings-connector-status">
             <v-col cols="12" md="2">
                 Outbound model version
             </v-col>
@@ -35,7 +35,7 @@
                 {{ connectorOutboundModelVersion }}
             </v-col>
         </v-row>
-        <v-row no-gutters class="settings-connector-status">
+        <v-row no-gutters class="settings-row settings-connector-status">
             <v-col cols="12" md="2">
                 Connector version
             </v-col>
@@ -43,7 +43,7 @@
                 {{ connectorVersion }}
             </v-col>
         </v-row>
-        <v-row no-gutters>
+        <v-row class="settings-row" no-gutters>
             <v-col cols="12" md="2">
                 Proxy
             </v-col>
@@ -62,27 +62,23 @@
                 </v-textarea>
             </v-col>
         </v-row>
-        <v-row no-gutters>
+        <v-row class="settings-row" no-gutters>
             <v-col cols="12" md="2">
                 LogLevel
             </v-col>
             <v-col cols="12" md="9">
-                <v-select label="Log Level" v-model="logLevel" :items="logLevels" item-text="displayName"
-                    item-value="displayName">
-                </v-select>
+                {{ logLevel }}
             </v-col>
         </v-row>
-        <v-row no-gutters>
+        <v-row class="settings-row" no-gutters>
             <v-col cols="12" md="2">
                 Connector DeployMode
             </v-col>
             <v-col cols="12" md="9">
-                <v-select label="Connector Deploy Mode" v-model="connectorDeployMode" :items="connectorDeployModes"
-                    item-text="displayName" item-value="displayName">
-                </v-select>
+                {{ connectorDeployMode }}
             </v-col>
         </v-row>
-        <v-row no-gutters>
+        <v-row class="settings-row" no-gutters>
             <v-col cols="12" md="2">
                 TrustStore
             </v-col>
@@ -94,7 +90,7 @@
                     'mdi-eye-off'" @click:append="showPasswordTrustStore = !showPasswordTrustStore"> </v-text-field>
             </v-col>
         </v-row>
-        <v-row no-gutters>
+        <v-row class="settings-row" no-gutters>
             <v-col cols="12" md="2">
                 KeyStore
             </v-col>
@@ -106,7 +102,7 @@
             </v-col>
         </v-row>
     </v-form>
-    <v-row no-gutters>
+    <v-row class="settings-row" no-gutters>
         <v-col cols="12" md="12" class="save-settings-col">
             <v-btn color="primary" @click.native="saveSettings" :disabled="!valid" class="save-settings-button">Save
             </v-btn>

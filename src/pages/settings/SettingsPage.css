@@ -2,6 +2,10 @@
     display: none;
 }
 
+.settings-row {
+    margin-bottom: 30px;
+}
+
 .settings-connector-status {
     margin-bottom: 30px;
 }

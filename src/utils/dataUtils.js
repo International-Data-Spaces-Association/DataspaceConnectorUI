@@ -773,25 +773,16 @@ export default {
             },
             "proxySettings": {
                 "location": proxyUrl,
-                "exclusions": proxyNoProxy
+                "exclusions": proxyNoProxy,
+                "authentication": {
+                    "key": proxyUsername,
+                    "value": proxyPassword
+                }
             },
             "keystoreSettings": {
                 "location": keyStoreUrl
             }
         };
-        config.proxySettings.authentication = {};
-        if (proxyUsername != null) {
-            if (config.proxySettings.authentication == undefined) {
-                config.proxySettings.authentication = {};
-            }
-            config.proxySettings.authentication.key = proxyUsername;
-        }
-        if (proxyPassword != null) {
-            if (config.proxySettings.authentication == undefined) {
-                config.proxySettings.authentication = {};
-            }
-            config.proxySettings.authentication.value = proxyPassword;
-        }
         if (trustStorePassword != null) {
             config.truststoreSettings.password = trustStorePassword;
         }
