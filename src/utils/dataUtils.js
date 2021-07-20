@@ -185,7 +185,9 @@ export default {
                 artifactId = this.getIdOfConnectorResponse(artifacts[0]);
             }
         }
-        return clientDataModel.convertIdsResource(resource, representation, policyName, JSON.parse(rule.value), artifactId, ruleId);
+        let brokers = await this.getBrokersOfResource(resourceId);
+        let brokerUris = brokers.map(x => x.location);
+        return clientDataModel.convertIdsResource(resource, representation, policyName, JSON.parse(rule.value), artifactId, ruleId, brokerUris);
     },
 
     async getLanguages() {
@@ -198,6 +200,7 @@ export default {
     },
 
     async registerConnectorAtBroker(brokerUri) {
+        await this.initDefaultCatalog();
         try {
             let params = {
                 "recipient": brokerUri
@@ -336,8 +339,14 @@ export default {
     },
 
     async deleteResource(id) {
-        // TODO delete at brokers
-        // let brokers = this.getBrokersOfResource(id);
+        try {
+            let brokers = await this.getBrokersOfResource(id);
+            for (let broker of brokers) {
+                await this.deleteResourceAtBroker(broker.location, id);
+            }
+        } catch (error) {
+            errorUtils.showError(error, "Remove resource from broker");
+        }
         let resource = await this.getResource(id);
         await restUtils.callConnector("DELETE", "/api/offers/" + resource.id);
         await restUtils.callConnector("DELETE", "/api/representations/" + resource.representationId);
@@ -453,6 +462,17 @@ export default {
             }
         }
         return defaultCatalogId;
+    },
+
+    async initDefaultCatalog() {
+        let catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+        if (catalogs.length == 0) {
+            await restUtils.callConnector("POST", "/api/catalogs", null, {
+                "title": "Default catalog"
+            });
+            catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+            defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
+        }
     },
 
     async createResource(title, description, language, keyword, standardlicense, publisher, policyDescription,

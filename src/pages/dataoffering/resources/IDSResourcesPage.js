@@ -26,7 +26,7 @@ export default {
             },
             {
                 text: 'Brokers',
-                value: 'brokers'
+                value: 'brokerNames'
             },
             {
                 text: '',
@@ -57,7 +57,7 @@ export default {
                 for (let resource of this.$data.resources) {
                     this.$data.fileTypes.push(resource.fileType);
                     let brokers = await dataUtils.getBrokersOfResource(resource.id);
-                    resource.brokers = brokers.map(x => x.brokerId);
+                    resource.brokerNames = brokers.map(x => x.title);
                 }
             } catch (error) {
                 errorUtils.showError(error, "Get resources");

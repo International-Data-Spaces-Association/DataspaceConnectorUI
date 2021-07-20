@@ -64,7 +64,7 @@ export default {
             this.$data.selected = [];
             if (resource.id == -1) {
                 if (resource.brokerList !== undefined) {
-                    for (let brokerUri of resource.brokerList) {
+                    for (let brokerUri of resource.brokerUris) {
                         let broker = this.getBroker(brokerUri);
                         this.$data.selected.push(broker);
                         this.$data.lastSelected.push({
@@ -73,9 +73,8 @@ export default {
                     }
                 }
             } else {
-                let brokers = await dataUtils.getBrokersOfResource(resource.id);
-                for (let status of brokers) {
-                    let broker = this.getBroker(status.brokerId);
+                for (let brokerUri of resource.brokerUris) {
+                    let broker = this.getBroker(brokerUri);
                     this.$data.selected.push(broker);
                     this.$data.lastSelected.push({
                         url: status.brokerId
