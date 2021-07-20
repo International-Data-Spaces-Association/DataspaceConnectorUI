@@ -77,7 +77,7 @@ export default {
                     let broker = this.getBroker(brokerUri);
                     this.$data.selected.push(broker);
                     this.$data.lastSelected.push({
-                        url: status.brokerId
+                        url: brokerUri
                     });
                 }
 
@@ -93,23 +93,12 @@ export default {
             }
             return broker;
         },
-        getBrokerNewList() {
-            let brokerNewList = [];
+        getSelectedBrokerList() {
+            let selectedList = [];
             for (let sel of this.$data.selected) {
-                let newSelected = true;
-                for (let lastSel of this.$data.lastSelected) {
-                    if (sel.url == lastSel.url) {
-                        newSelected = false;
-                        break;
-                    }
-                }
-                if (newSelected) {
-                    brokerNewList.push(sel.url);
-                }
+                selectedList.push(sel.url);
             }
-
-
-            return brokerNewList;
+            return selectedList;
         },
         getBrokerDeleteList() {
             let brokerDeleteList = [];

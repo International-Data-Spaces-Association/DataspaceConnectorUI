@@ -111,7 +111,7 @@ export default {
             var publisher = this.$refs.metaDataPage.publisher;
             var policyDescription = this.$refs.policyPage.getDescription();
             var filetype = this.$refs.representationPage.filetype;
-            var brokerList = this.$refs.brokersPage.getBrokerNewList()
+            var brokerList = this.$refs.brokersPage.getSelectedBrokerList()
             let brokerDeleteList = this.$refs.brokersPage.getBrokerDeleteList();
 
             if (this.fromRoutePage == 'true') {
