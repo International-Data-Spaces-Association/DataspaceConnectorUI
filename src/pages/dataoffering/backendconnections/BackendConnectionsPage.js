@@ -1,6 +1,7 @@
 import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/dialog/AddBackendConnectionDialog.vue";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "@/utils/errorUtils";
 
 
 export default {
@@ -13,7 +14,7 @@ export default {
             search: '',
             headers: [{
                 text: 'URL',
-                value: 'url'
+                value: 'accessUrl'
             },
             {
                 text: '',
@@ -27,22 +28,21 @@ export default {
         };
     },
     mounted: function () {
-        this.getBackendConnections();
+        this.getGenericEndpoints();
     },
     methods: {
-        async getBackendConnections() {
-            let response = await dataUtils.getBackendConnections();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get backend connections failed.");
-            } else {
-                this.$data.backendConnections = response;
+        async getGenericEndpoints() {
+            try {
+                this.$data.backendConnections = await dataUtils.getGenericEndpoints();
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
+            } catch (error) {
+                errorUtils.showError(error, "Get backend connections");
             }
         },
         backendConnectionSaved() {
-            this.getBackendConnections();
-        },        
+            this.getGenericEndpoints();
+        },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Backend Connection";
             this.$refs.confirmationDialog.text = "Are you sure you want to delete the Backend Connection '" + item.url + "'?";
@@ -55,24 +55,21 @@ export default {
         deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                this.deleteBackendConnection(callbackData.item.endpoint["@id"]);
+                this.deleteBackendConnection(callbackData.item.id, callbackData.item.dataSourceId);
             }
         },
-        async deleteBackendConnection(id) {
+        async deleteBackendConnection(id, dataSourceId) {
             try {
-                let response = (await dataUtils.deleteBackendConnection(id));
-                if (response.name !== undefined && response.name == "Error") {
-                    this.$root.$emit('error', "Delete backend connection failed.");
-                }
+                await dataUtils.deleteGenericEndpoint(id, dataSourceId);
             }
             catch (error) {
                 console.log("Error on deleteBackendConnection(): ", error);
                 this.$root.$emit('error', "Delete backend connection failed.");
             }
-            this.getBackendConnections();
+            this.getGenericEndpoints();
         },
         editItem(item) {
-            this.$refs.addBackendConnectionDialog.edit(item.endpoint);
+            this.$refs.addBackendConnectionDialog.edit(item);
         }
     }
 };

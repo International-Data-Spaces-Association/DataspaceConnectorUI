@@ -1,5 +1,7 @@
 import ComponentGroup from "@/components/componentgroup/ComponentGroup.vue";
 import DataUtils from "@/utils/dataUtils";
+import dataUtils from "../../../../../utils/dataUtils";
+import errorUtils from "../../../../../utils/errorUtils";
 import validationUtils from "../../../../../utils/validationUtils";
 
 export default {
@@ -13,14 +15,13 @@ export default {
             keywords: "",
             publisher: "",
             standardlicense: "",
-            version: "",
             language: "",
             languageItems: [],
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
-            versionRule: validationUtils.getVersionRequiredRule(),
             urlRule: validationUtils.getUrlRequiredRule(),
-            readonly: false
+            readonly: false,
+            onlyMetaData: false
         };
     },
     mounted: function () {
@@ -28,20 +29,24 @@ export default {
     },
     methods: {
         async loadLanguages() {
-            this.$data.languageItems = (await DataUtils.getLanguages());
+            try {
+                this.$data.languageItems = (await DataUtils.getLanguages());
+            } catch (error) {
+                errorUtils.showError(error, "Get languages");
+            }
         },
         nextPage() {
             this.$emit('nextPage');
         },
-        loadResource(resource) {
+        loadResource(resource, onlyMetaData) {
+            this.$data.onlyMetaData = onlyMetaData;
             if (resource.title == "") {
                 this.$refs.form.reset();
             } else {
                 this.$data.title = resource.title;
                 this.$data.description = resource.description;
-                this.$data.language = resource.language.substring(resource.language.lastIndexOf("/")+1);
-                this.$data.keywords = resource.keywords;
-                this.$data.version = resource.version;
+                this.$data.language = resource.language.substring(resource.language.lastIndexOf("/") + 1);
+                this.$data.keywords = dataUtils.arrayToCommaSeperatedString(resource.keywords);
                 this.$data.standardlicense = resource.standardLicense;
                 this.$data.publisher = resource.publisher;
             }

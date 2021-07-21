@@ -2,8 +2,9 @@ export default {
     components: {},
     data() {
         return {
-            pattern: "PROHIBIT_ACCESS",
-            contractJson: "",
+            description: {
+                "type": "PROHIBIT_ACCESS"
+            },
             visibleclass: "",
             readonly: false
         };
@@ -18,6 +19,9 @@ export default {
             this.$emit('nextPage');
         },
         setPolicy() {
+            // nothing to do.
+        },
+        setPolicyByDescription() {
             // nothing to do.
         }
     }

@@ -5,8 +5,7 @@ export default {
     components: {},
     data() {
         return {
-            pattern: "USAGE_DURING_INTERVAL",
-            contractJson: "",
+            description: "",
             usageDuringIntervalFromMenu: false,
             usageDuringIntervalFromValue: null,
             usageDuringIntervalToMenu: false,
@@ -25,19 +24,25 @@ export default {
             this.$emit('previousPage')
         },
         nextPage() {
-            this.createContractJson();
+            this.createDescription();
             this.$emit('nextPage')
         },
         setPolicy(contract) {
             // TODO correct timezone conversion
-            this.$data.usageDuringIntervalFromValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
-            this.$data.usageDuringIntervalToValue = contract["ids:permission"][0]["ids:constraint"][1]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
-            this.createContractJson();
+            this.$data.usageDuringIntervalFromValue = contract["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
+            this.$data.usageDuringIntervalToValue = contract["ids:constraint"][1]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
+            this.createDescription();
         },
-        createContractJson() {
-            this.$data.contractJson = {
-                "fromDate": this.$data.usageDuringIntervalFromValue + "T00:00:00Z",
-                "toDate": this.$data.usageDuringIntervalToValue + "T00:00:00Z"
+        setPolicyByDescription(policyDescription) {
+            this.$data.usageDuringIntervalFromValue = policyDescription.start.replace("T00:00:00Z", "");
+            this.$data.usageDuringIntervalToValue = policyDescription.end.replace("T00:00:00Z", "");
+            this.createDescription();
+        },
+        createDescription() {
+            this.$data.description = {
+                "type": "USAGE_DURING_INTERVAL",
+                "start": this.$data.usageDuringIntervalFromValue + "T00:00:00Z",
+                "end": this.$data.usageDuringIntervalToValue + "T00:00:00Z"
             };
         }
     }

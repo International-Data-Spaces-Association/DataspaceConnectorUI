@@ -1,6 +1,7 @@
 import moment from 'moment';
 import clientDataModel from "@/datamodel/clientDataModel";
 import restUtils from "./restUtils";
+import errorUtils from './errorUtils';
 
 const POLICY_N_TIMES_USAGE = "N Times Usage";
 const POLICY_DURATION_USAGE = "Duration Usage";
@@ -22,6 +23,17 @@ const POLICY_DESCRIPTION_TO_NAME = {
     "usage-notification": POLICY_USAGE_NOTIFICATION
 };
 
+const POLICY_TYPE_TO_DISPLAY_NAME = {
+    "PROVIDE_ACCESS": POLICY_PROVIDE_ACCESS,
+    "PROHIBIT_ACCESS": POLICY_PROHIBIT_ACCESS,
+    "N_TIMES_USAGE": POLICY_N_TIMES_USAGE,
+    "DURATION_USAGE": POLICY_DURATION_USAGE,
+    "USAGE_DURING_INTERVAL": POLICY_USAGE_DURING_INTERVAL,
+    "USAGE_UNTIL_DELETION": POLICY_USAGE_UNTIL_DELETION,
+    "USAGE_LOGGING": POLICY_USAGE_LOGGING,
+    "USAGE_NOTIFICATION": POLICY_USAGE_NOTIFICATION
+}
+
 const OPERATOR_TYPE_TO_SYMBOL = {
     "https://w3id.org/idsa/code/EQ": "=",
     "https://w3id.org/idsa/code/LTEQ": "<=",
@@ -30,9 +42,12 @@ const OPERATOR_TYPE_TO_SYMBOL = {
 
 
 let languages = null;
-let apps = null;
-let backendConnections = null;
-let connectorAddress = null;
+let defaultCatalogId = null;
+let connectorUrl = "https://localhost:8080"
+console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
+if (process.env.CONNECTOR_URL !== undefined) {
+    connectorUrl = process.env.CONNECTOR_URL;
+}
 
 export default {
     POLICY_PROVIDE_ACCESS,
@@ -43,12 +58,16 @@ export default {
     POLICY_USAGE_UNTIL_DELETION,
     POLICY_USAGE_LOGGING,
 
-    escape(text) {
-        return encodeURIComponent(text);
-    },
-
     getPolicyNames() {
         return Object.values(POLICY_DESCRIPTION_TO_NAME);
+    },
+
+    getPolicyTypes() {
+        return Object.keys(POLICY_TYPE_TO_DISPLAY_NAME);
+    },
+
+    getPolicyDisplayName(type) {
+        return POLICY_TYPE_TO_DISPLAY_NAME[type];
     },
 
     getValue(data, name) {
@@ -82,399 +101,301 @@ export default {
         return type;
     },
 
-    getOfferedResourcesStats() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/resources").then(response => {
-                if (response.data.name !== undefined && response.data.name == "Error") {
-                    resolve(response.data);
-                } else {
-                    let resources = response.data;
-                    let totalSize = 0;
-                    for (let resource of resources) {
-                        if (resource["ids:representation"] !== undefined) {
-                            if (resource["ids:representation"][0]["ids:instance"] !== undefined) {
-                                totalSize += resource["ids:representation"][0]["ids:instance"][0]["ids:byteSize"];
-                            }
-                        }
-                    }
-                    resolve({
-                        totalNumber: resources.length,
-                        totalSize: totalSize
-                    });
-                }
-            }).catch(error => {
-                resolve(error);
-            });
-        });
-    },
-
-    getResources() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/resources").then(response => {
-                let resources = [];
-                if (response.data.name !== undefined && response.data.name == "Error") {
-                    resolve(response.data);
-                } else {
-
-                    for (let idsResource of response.data) {
-                        resources.push(clientDataModel.convertIdsResource(idsResource));
-                    }
-                    resolve(resources);
-                }
-            }).catch(error => {
-                console.log(error);
-                resolve(error);
-            });
-        });
-    },
-
-    getResource(id) {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/resource", {
-                "resourceId": id
-            }).then(response => {
-                resolve(clientDataModel.convertIdsResource(response.data));
-            }).catch(error => {
-                console.log("Error in loadResource(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    getLanguages() {
-        return new Promise(function (resolve) {
-            if (languages == null) {
-                restUtils.call("GET", "/api/ui/enum/Language").then(response => {
-                    languages = response.data;
-                    resolve(languages);
-                }).catch(error => {
-                    console.log("Error in loadData(): ", error);
-                    resolve(error);
-                });
-            } else {
-                resolve(languages);
+    arrayToCommaSeperatedString(arr) {
+        let str = "";
+        let count = 0;
+        for (let el of arr) {
+            if (count > 0) {
+                str += ", ";
             }
-        });
+            str += el;
+            count++;
+        }
+        return str
     },
 
-    registerConnectorAtBroker(brokerUri) {
-        return new Promise(function (resolve) {
-            let params = {
-                "brokerUri": brokerUri
-            };
-            restUtils.call("POST", "/api/ui/broker/register", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in registerConnectorAtBroker(): ", error);
-                resolve(error);
-            });
-        });
+    commaSeperatedStringToArray(str) {
+        return str.replace(/ /g, "").split(",");
     },
 
-    unregisterConnectorAtBroker(brokerUri) {
-        return new Promise(function (resolve) {
-            let params = {
-                "brokerUri": brokerUri
-            };
-            restUtils.call("POST", "/api/ui/broker/unregister", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in unregisterConnectorAtBroker(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    getResourceRegistrationStatus(resourceId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "resourceId": resourceId
-            }
-            restUtils.call("GET", "/api/ui/broker/resource/information", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getResourceRegistrationStatus(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    updateResourceAtBroker(brokerUri, resourceId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "brokerUri": brokerUri,
-                "resourceId": resourceId
-            };
-            restUtils.call("POST", "/api/ui/broker/update/resource", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in updateResourceAtBroker(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    deleteResourceAtBroker(brokerUri, resourceId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "brokerUri": brokerUri,
-                "resourceId": resourceId
-            };
-            restUtils.call("POST", "/api/ui/broker/delete/resource", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in deleteResourceAtBroker(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    getBrokers() {
-        return new Promise(function (resolve) {
-            let brokers = [];
-            restUtils.call("GET", "/api/ui/brokers").then(response => {
-                brokers = response.data;
-                resolve(brokers);
-            }).catch(error => {
-                console.log("Error in getBrokers(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    getBackendConnections() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/generic/endpoints").then(response => {
-                if (response.data.name !== undefined && response.data.name == "Error") {
-                    resolve(response.data);
-                } else {
-                    backendConnections = [];
-                    let genericEndpoints = response.data;
-
-                    for (let genericEndpoint of genericEndpoints) {
-                        backendConnections.push(this.genericEndpointToBackendConnection(genericEndpoint));
-                    }
-                    resolve(backendConnections);
-                }
-            }).catch(error => {
-                console.log("Error in getBackendConnections(): ", error);
-                resolve(error);
-            });
-        }.bind(this));
-    },
-
-    genericEndpointToBackendConnection(genericEndpoint) {
+    async getOfferedResourcesStats() {
+        let totalNumber = 0;
+        let totalSize = 0;
+        let response = await restUtils.callConnector("GET", "/api/offers");
+        totalNumber = response.page.totalElements;
+        response = await restUtils.callConnector("GET", "/api/artifacts");
+        let artifacts = response._embedded.artifacts;
+        for (let artifact of artifacts) {
+            totalSize += artifact.byteSize;
+        }
         return {
-            id: genericEndpoint["@id"],
-            endpoint: genericEndpoint,
-            url: genericEndpoint["ids:accessURL"] ? genericEndpoint["ids:accessURL"]["@id"] : "http://"
+            totalNumber: totalNumber,
+            totalSize: totalSize
         };
     },
 
-    async createBroker(url, title, vueRoot) {
-        let params = {
-            "brokerUri": url,
-            "title": title
-        };
-        let response = await restUtils.call("POST", "/api/ui/broker", params);
-        if (response.name !== undefined && response.name == "Error") {
-            vueRoot.$emit('error', "Save broker failed.");
-        } else {
-            response = await this.registerConnectorAtBroker(url);
-            if (response.name !== undefined && response.name == "Error") {
-                vueRoot.$emit('error', "Register connector at broker failed.");
+    async getOfferedResourcesFileTypes() {
+        let response = await restUtils.callConnector("GET", "/api/representations");
+        let representations = response._embedded.representations;
+        let fileTypes = [];
+        for (let representation of representations) {
+            let type = representation.mediaType;
+            if (fileTypes[type] === undefined) {
+                fileTypes[type] = 1;
+            } else {
+                fileTypes[type] = fileTypes[type] + 1;
             }
+        }
+        return fileTypes;
+    },
+
+    async getResources() {
+        let response = (await restUtils.callConnector("GET", "/api/offers"))["_embedded"].resources;
+        let resources = [];
+        for (let idsResource of response) {
+            resources.push(clientDataModel.convertIdsResource(idsResource));
+        }
+        return resources;
+    },
+
+    async getResource(resourceId) {
+        let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
+        let rule = undefined;
+        let policyName = undefined;
+        let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contracts;
+        let ruleId = undefined;
+        if (contracts.length > 0) {
+            let contract = contracts[0];
+            let contractId = this.getIdOfConnectorResponse(contract);
+            let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
+            if (rules.length > 0) {
+                rule = rules[0];
+                ruleId = this.getIdOfConnectorResponse(rule);
+                policyName = (await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
+            }
+        }
+        let representations = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/representations"))["_embedded"].representations;
+        let representation = undefined;
+        let artifactId = undefined;
+        if (representations.length > 0) {
+            representation = representations[0];
+            let representationId = this.getIdOfConnectorResponse(representation);
+            let artifacts = (await restUtils.callConnector("GET", "/api/representations/" + representationId + "/artifacts"))["_embedded"].artifacts;
+            if (artifacts.length > 0) {
+                artifactId = this.getIdOfConnectorResponse(artifacts[0]);
+            }
+        }
+        let brokers = await this.getBrokersOfResource(resourceId);
+        let brokerUris = brokers.map(x => x.location);
+        return clientDataModel.convertIdsResource(resource, representation, policyName, JSON.parse(rule.value), artifactId, ruleId, brokerUris);
+    },
+
+    async getLanguages() {
+        if (languages == null) {
+            let languages = (await restUtils.callConnector("GET", "/api/configmanager/enum/Language"));
+            return languages;
+        } else {
+            return languages;
         }
     },
 
-    async updateBroker(url, title, vueRoot) {
-        let params = {
-            "brokerUri": url,
-            "title": title
-        };
-        let response = await restUtils.call("PUT", "/api/ui/broker", params);
-        if (response.name !== undefined && response.name == "Error") {
-            vueRoot.$emit('error', "Update broker failed.");
-        } else {
-            response = await this.registerConnectorAtBroker(url);
-            if (response.name !== undefined && response.name == "Error") {
-                vueRoot.$emit('error', "Register connector at broker failed.");
-            }
+    async registerConnectorAtBroker(brokerUri) {
+        await this.initDefaultCatalog();
+        try {
+            let params = {
+                "recipient": brokerUri
+            };
+            await restUtils.callConnector("POST", "/api/ids/connector/update", params);
+        } catch (error) {
+            errorUtils.showError(error, "Register connector at broker");
         }
     },
 
-    deleteBroker(brokerId) {
-        return new Promise(function (resolve) {
+    async unregisterConnectorAtBroker(brokerUri) {
+        try {
             let params = {
-                "brokerUri": brokerId
+                "recipient": brokerUri
             };
-            restUtils.call("DELETE", "/api/ui/broker", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in deleteBroker(): ", error);
-                resolve(error);
-            });
-        });
+            await restUtils.callConnector("POST", "/api/ids/connector/unavailable", params);
+        } catch (error) {
+            errorUtils.showError(error, "Unregister connector at broker");
+        }
     },
 
-    createBackendConnection(url, username, password, sourceType) {
-        return new Promise(function (resolve) {
-            let params = {
-                "accessURL": url,
-                "username": username,
-                "password": password,
-                "sourceType": sourceType
-            };
-            restUtils.call("POST", "/api/ui/generic/endpoint", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in saveBackendConnection(): ", error);
-                resolve(error);
-            });
-        });
+    async getBrokersOfResource(resourceId) {
+        return (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/brokers"))._embedded.brokers;
     },
 
-    updateBackendConnection(id, url, username, password, sourceType) {
-        return new Promise(function (resolve) {
-            let params = {
-                "id": id,
-                "accessURL": url,
-                "username": username,
-                "password": password,
-                "sourceType": sourceType
-            };
-            restUtils.call("PUT", "/api/ui/generic/endpoint", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in saveBackendConnection(): ", error);
-                resolve(error);
-            });
-        });
+    async updateResourceAtBroker(brokerUri, resourceId) {
+        let params = {
+            "recipient": brokerUri,
+            "resourceId": resourceId
+        };
+        await restUtils.callConnector("POST", "/api/ids/resource/update", params);
     },
 
-    deleteResource(id) {
-        return new Promise(function (resolve) {
-            let params = {
-                "resourceId": id
-            };
-            restUtils.call("DELETE", "/api/ui/resource", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log(error);
-                resolve(error);
-            });
-        });
+    async deleteResourceAtBroker(brokerUri, resourceId) {
+        let params = {
+            "recipient": brokerUri,
+            "resourceId": resourceId
+        };
+        await restUtils.callConnector("POST", "/api/ids/resource/unavailable", params);
     },
 
-    getRoute(id) {
-        return new Promise(function (resolve) {
-            let params = {
-                "routeId": id
-            };
-            restUtils.call("GET", "/api/ui/approute", params).then(response => {
-                resolve(response.data)
-            }).catch(error => {
-                console.log("Error in getRoute(): ", error);
-                resolve(error);
-            });
-        });
+    toRegisterStatusClass(brokerStatus) {
+        let statusClass = "notRegisteredAtBroker";
+        if (brokerStatus == "Registered") {
+            statusClass = "registeredAtBroker";
+        }
+        return statusClass;
     },
 
-    deleteRoute(id) {
-        return new Promise(function (resolve) {
-            let params = {
-                "routeId": id
-            };
-            restUtils.call("DELETE", "/api/ui/approute", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log(error);
-                resolve(error);
-            });
-        });
+    async getBrokers() {
+        return await restUtils.callConnector("GET", "/api/brokers");
     },
 
-    deleteBackendConnection(id) {
-        return new Promise(function (resolve) {
-            let params = {
-                "endpointId": id
-            };
-            restUtils.call("DELETE", "/api/ui/generic/endpoint", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in deleteBackendConnection(): ", error);
-                resolve(error);
+    async createBroker(url, title) {
+        try {
+            await restUtils.callConnector("POST", "/api/brokers", null, {
+                "location": url,
+                "title": title
             });
-        });
+        } catch (error) {
+            errorUtils.showError(error, "Create broker");
+        }
     },
 
-    getApps() {
-        return new Promise(function (resolve) {
-            apps = [];
-            restUtils.call("GET", "/api/ui/apps").then(response => {
-                let appsResponse = response.data;
-                for (let app of appsResponse) {
-                    apps.push(app[1]);
+    async updateBroker(id, url, title) {
+        try {
+            await restUtils.callConnector("PUT", "/api/brokers/" + id, null, {
+                "location": url,
+                "title": title
+            });
+        } catch (error) {
+            errorUtils.showError(error, "Update broker");
+        }
+    },
+
+    async deleteBroker(brokerId) {
+        return await restUtils.callConnector("DELETE", "/api/brokers/" + brokerId);
+    },
+
+    async getDataSource(id) {
+        return await restUtils.callConnector("GET", "/api/datasources/" + id);
+    },
+
+    async getGenericEndpoints() {
+        let genericEndpoints = [];
+        let idsEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.endpoints;
+        if (idsEndpoints !== undefined) {
+            for (let idsEndpoint of idsEndpoints) {
+                if (idsEndpoint.type == "GENERIC") {
+                    genericEndpoints.push(clientDataModel.convertIdsGenericEndpoint(idsEndpoint));
                 }
-                resolve(apps);
-            }).catch(error => {
-                console.log("Error in getApps(): ", error);
-                resolve(error);
-            });
+            }
+        }
+
+        return genericEndpoints;
+    },
+
+    async createGenericEndpoint(url, username, password, sourceType) {
+        let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
+            "location": url,
+            "type": "GENERIC"
+        });
+        let genericEndpointId = this.getIdOfConnectorResponse(response);
+
+        response = await restUtils.callConnector("POST", "/api/datasources", null, {
+            "authentication": {
+                "key": username,
+                "value": password
+            },
+            "type": sourceType
+        });
+        let dataSourceId = this.getIdOfConnectorResponse(response);
+
+        // dataSourceId is needed with double quotes at start and end for this API call
+        await restUtils.callConnector("PUT", "/api/endpoints/" + genericEndpointId + "/datasource/" + dataSourceId);
+    },
+
+    async updateGenericEndpoint(id, dataSourceId, url, username, password, sourceType) {
+        await restUtils.callConnector("PUT", "/api/endpoints/" + id, null, {
+            "location": url,
+            "type": "GENERIC"
+        });
+
+        await restUtils.callConnector("PUT", "/api/datasources/" + dataSourceId, null, {
+            "authentication": {
+                "key": username,
+                "value": password
+            },
+            "type": sourceType
         });
     },
 
-    getEndpointList(node, endpointType) {
+    async deleteGenericEndpoint(id, dataSourceId) {
+        await restUtils.callConnector("DELETE", "/api/endpoints/" + id);
+        await restUtils.callConnector("DELETE", "/api/datasources/" + dataSourceId);
+    },
+
+    async deleteResource(id) {
+        try {
+            let brokers = await this.getBrokersOfResource(id);
+            for (let broker of brokers) {
+                await this.deleteResourceAtBroker(broker.location, id);
+            }
+        } catch (error) {
+            errorUtils.showError(error, "Remove resource from broker");
+        }
+        let resource = await this.getResource(id);
+        await restUtils.callConnector("DELETE", "/api/offers/" + resource.id);
+        await restUtils.callConnector("DELETE", "/api/representations/" + resource.representationId);
+        await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
+    },
+
+    async getRoute(id) {
+        return await restUtils.callConnector("GET", "/api/routes/" + id);
+    },
+
+    async getRouteSteps(id) {
+        return (await restUtils.callConnector("GET", "/api/routes/" + id + "/steps"))._embedded.routes;
+    },
+
+    async getRouteOutput(id) {
+        return (await restUtils.callConnector("GET", "/api/routes/" + id + "/outputs"))._embedded.artifacts;
+    },
+
+    async deleteRoute(id) {
+        await restUtils.callConnector("DELETE", "/api/routes/" + id);
+    },
+
+    async getEndpointList(node) {
         let endpointList = [];
         if (node.type == "backendnode") {
-            let endpoint = this.getBackendConnection(node.objectId).endpoint;
+            let endpoint = await this.getGenericEndpoint(node.objectId);
             endpointList.push(endpoint);
         } else if (node.type == "appnode") {
-            let appEndpoints = this.getApp(node.objectId).appEndpointList[1];
-            for (let appEndpoint of appEndpoints) {
-                if (appEndpoint[1].endpoint["ids:appEndpointType"]["@id"] == endpointType) {
-                    endpointList.push(appEndpoint[1].endpoint);
-                }
-            }
+            let endpoint = await this.getApp(node.objectId);
+            endpointList.push(endpoint);
         }
         return endpointList;
     },
 
-    getBackendConnection(id) {
-        let result = null;
-        for (let backendConnection of backendConnections) {
-            if (id == backendConnection.id) {
-                result = backendConnection;
-                break;
-            }
-        }
-        if (result == null) {
-            console.log("Backend connection with ID ", id, " not found.");
-        }
-        return result;
+    async getGenericEndpoint(id) {
+        let idsGenericEndpoint = await await restUtils.callConnector("GET", "/api/endpoints/" + id);
+        return clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint);
     },
 
-    getApp(id) {
+    getAppIdOfEndpointId() {
         let result = null;
-        for (let app of apps) {
-            if (id == app.id) {
-                result = app;
-                break;
-            }
-        }
-        return result;
-    },
-
-    getAppIdOfEndpointId(endpointId) {
-        let result = null;
-        for (let app of apps) {
-            for (let appEndpoint of app.appEndpointList[1]) {
-                if (endpointId == appEndpoint[1].endpoint["@id"]) {
-                    result = app.id;
-                    break;
-                }
-            }
-        }
+        // for (let app of apps) {
+        //     for (let appEndpoint of app.appEndpointList[1]) {
+        //         if (endpointId == appEndpoint[1].endpoint["@id"]) {
+        //             result = app.id;
+        //             break;
+        //         }
+        //     }
+        // }
         return result;
     },
 
@@ -505,136 +426,154 @@ export default {
     },
 
     async getConnectorAddress() {
-        let address = "";
-        if (connectorAddress == null) {
-            let response = (await restUtils.call("GET", "/api/ui/configmodel")).data;
-            if (response["ids:connectorDescription"] !== undefined && response["ids:connectorDescription"]["ids:hasDefaultEndpoint"] !== undefined
-                && response["ids:connectorDescription"]["ids:hasDefaultEndpoint"]["ids:accessURL"] !== undefined) {
-                address = response["ids:connectorDescription"]["ids:hasDefaultEndpoint"]["ids:accessURL"]["@id"].replace("/api/ids/data", "");
-                connectorAddress = address;
-            }
-        } else {
-            address = connectorAddress;
-        }
-        return address;
+        return connectorUrl;
     },
 
-    async createConnectorEndpoint(resourceUUID) {
+    async createConnectorEndpoint(artifactId) {
         let connectorAddress = (await this.getConnectorAddress());
-        let accessUrl = connectorAddress + "/admin/api/resources/" + resourceUUID + "/data";
-        return new Promise(function (resolve) {
-            let params = {
-                "accessUrl": accessUrl
-            }
-            restUtils.call("POST", "/api/ui/connector/endpoint", params).then((response) => {
-                resolve(response.data.connectorEndpointId);
-            }).catch(error => {
-                console.log("Error in createConnectorEndpoint(): ", error);
-                resolve(error);
-            });
+        let accessUrl = connectorAddress + "/api/artifacts/" + artifactId + "/data";
+
+        return await restUtils.callConnector("POST", "/api/endpoints", null, {
+            "location": accessUrl,
+            "type": "CONNECTOR"
         });
     },
 
-    async createResource(title, description, language, keyword, version, standardlicense, publisher, pattern, contractJson,
-        filetype, bytesize, brokerUris, genericEndpointId, vueRoot) {
-        let params = {
-            "title": title,
-            "description": description,
-            "language": language,
-            "keyword": keyword,
-            "version": version,
-            "standardlicense": standardlicense,
-            "publisher": publisher
-        }
-        let response = (await restUtils.call("POST", "/api/ui/resource", params)).data;
-        if (response.name !== undefined && response.name == "Error") {
-            vueRoot.$emit('error', "Save resource failed.");
-        } else {
-            let resourceUUID = response.connectorResponse;
-            let resourceId = response.resourceID;
-            params = {
-                "resourceId": resourceId,
-                "pattern": pattern
-            }
-            response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson)).data;
-            if (response.name !== undefined && response.name == "Error") {
-                vueRoot.$emit('error', "Save resource contract failed.");
-            }
-            // TODO remove sourceType when API changed.
-            params = {
-                "resourceId": resourceId,
-                "endpointId": genericEndpointId,
-                "language": language,
-                "sourceType": "LOCAL",
-                "filenameExtension": filetype,
-                "bytesize": bytesize
-            }
-            response = (await restUtils.call("POST", "/api/ui/resource/representation", params)).data;
-            if (response.name !== undefined && response.name == "Error") {
-                vueRoot.$emit('error', "Save resource representation failed.");
-            }
-            response = (await this.createConnectorEndpoint(resourceUUID));
-            if (response.name !== undefined && response.name == "Error") {
-                vueRoot.$emit('error', "Save connector endpoint failed.");
+    getIdOfConnectorResponse(response) {
+        return this.getIdOfLink(response, "self");
+    },
+
+    getIdOfLink(response, linkName) {
+        let url = response._links.[linkName].href;
+        return url.substring(url.lastIndexOf("/") + 1, url.length);
+    },
+
+    async getDefaultCatalogId() {
+        if (defaultCatalogId == null) {
+            let catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+            if (catalogs.length > 0) {
+                defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
             } else {
-                let endpointId = response;
-                response = (await this.createNewRoute(this.getCurrentDate() + " - " + title));
-                if (response.name !== undefined && response.name == "Error") {
-                    vueRoot.$emit('error', "Save route failed.");
-                } else {
-                    let routeId = response;
-                    response = (await this.createSubRoute(routeId, genericEndpointId, 20, 150,
-                        endpointId, 220, 150, resourceId));
-                    if (response.name !== undefined && response.name == "Error") {
-                        vueRoot.$emit('error', "Save route step failed.");
-                    } else {
-                        await this.updateResourceAtBrokers(brokerUris, resourceId);
-                    }
-                }
+                await restUtils.callConnector("POST", "/api/catalogs", null, {
+                    "title": "Default catalog"
+                });
+                catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+                defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
             }
+        }
+        return defaultCatalogId;
+    },
+
+    async initDefaultCatalog() {
+        let catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+        if (catalogs.length == 0) {
+            await restUtils.callConnector("POST", "/api/catalogs", null, {
+                "title": "Default catalog"
+            });
+            catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+            defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
         }
     },
 
-    async editResource(resourceId, representationId, title, description, language, keyword, version, standardlicense, publisher, pattern, contractJson,
-        filetype, bytesize, brokerUris, brokerDeleteUris, genericEndpointId, vueRoot) {
-        let params = {
-            "resourceId": resourceId,
-            "title": title,
-            "description": description,
-            "language": language,
-            "keyword": keyword,
-            "version": version,
-            "standardlicense": standardlicense,
-            "publisher": publisher
-        }
-
-        let response = (await restUtils.call("PUT", "/api/ui/resource", params));
-        if (response.name !== undefined && response.name == "Error") {
-            vueRoot.$emit('error', "Save resource failed.");
-        } else {
-            params = {
-                "resourceId": resourceId,
-                "pattern": pattern
-            }
-            response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson));
-            if (response.name !== undefined && response.name == "Error") {
-                vueRoot.$emit('error', "Save resource contract failed.");
-            }
-            // TODO remove sourceType when API changed.
-            params = {
-                "resourceId": resourceId,
-                "representationId": representationId,
-                "endpointId": genericEndpointId,
+    async createResource(title, description, language, keyword, standardlicense, publisher, policyDescription,
+        filetype, brokerUris, genericEndpoint) {
+        try {
+            // TODO Sovereign, EndpointDocumentation
+            let response = (await restUtils.callConnector("POST", "/api/offers", null, {
+                "title": title,
+                "description": description,
+                "keywords": keyword,
+                "publisher": publisher,
                 "language": language,
-                "filenameExtension": filetype,
-                "bytesize": bytesize,
-                "sourceType": "LOCAL"
-            }
-            response = (await restUtils.call("PUT", "/api/ui/resource/representation", params));
-            if (response.name !== undefined && response.name == "Error") {
-                vueRoot.$emit('error', "Save resource representation failed.");
-            }
+                "license": standardlicense
+            }));
+
+            let resourceId = this.getIdOfConnectorResponse(response);
+            let catalogId = await this.getDefaultCatalogId();
+            response = await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+
+            response = await restUtils.callConnector("POST", "/api/contracts", null, {});
+            let contractId = this.getIdOfConnectorResponse(response);
+
+            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+
+            response = await restUtils.callConnector("POST", "/api/rules", null, {
+                "value": JSON.stringify(ruleJson)
+            });
+
+            let ruleId = this.getIdOfConnectorResponse(response);
+            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]);
+
+            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
+
+            response = await restUtils.callConnector("POST", "/api/representations", null, {
+                "language": language,
+                "mediaType": filetype,
+            });
+            let representationId = this.getIdOfConnectorResponse(response);
+
+            response = await restUtils.callConnector("POST", "/api/artifacts", null, {
+                "accessUrl": genericEndpoint.accessUrl,
+                "username": genericEndpoint.username,
+                "password": genericEndpoint.password
+            });
+            let artifactId = this.getIdOfConnectorResponse(response);
+
+            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/representations", null, [representationId]);
+
+            response = await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]);
+
+            response = await this.createConnectorEndpoint(artifactId);
+            let endpointId = this.getIdOfConnectorResponse(response);
+
+            response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
+            let routeId = this.getIdOfConnectorResponse(response);
+            response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, endpointId, 220, 150, artifactId);
+
+            this.addRouteStartAndEnd(routeId, genericEndpoint.id, endpointId);
+
+            await this.updateResourceAtBrokers(brokerUris, resourceId);
+
+        } catch (error) {
+            errorUtils.showError(error, "Save resource");
+        }
+    },
+
+    async editResource(resourceId, representationId, title, description, language, keyword, standardlicense, publisher, policyDescription,
+        filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
+        try {
+            await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
+                "title": title,
+                "description": description,
+                "keywords": keyword,
+                "publisher": publisher,
+                "language": language,
+                "license": standardlicense
+            });
+
+            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+            await restUtils.callConnector("PUT", "/api/rules/" + ruleId, null, {
+                "value": JSON.stringify(ruleJson)
+            });
+
+            await restUtils.callConnector("PUT", "/api/representations/" + representationId, null, {
+                "language": language,
+                "mediaType": filetype,
+            });
+
+            await restUtils.callConnector("PUT", "/api/artifacts/" + artifactId, null, {
+                "accessUrl": genericEndpoint.accessUrl,
+                "username": genericEndpoint.username,
+                "password": genericEndpoint.password
+            });
+
+            let route = await this.getRouteWithEnd(artifactId);
+            let routeId = this.getIdOfConnectorResponse(route);
+            await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.id + "\"");
+
             await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
+        } catch (error) {
+            errorUtils.showError(error, "Save resource");
         }
     },
 
@@ -647,59 +586,88 @@ export default {
         }
     },
 
-    async createResourceIdsEndpointAndAddSubRoute(title, description, language, keyword, version, standardlicense,
-        publisher, pattern, contractJson, filetype, bytesize, brokerUris, genericEndpointId, routeId, startId, startCoordinateX,
-        startCoordinateY, endCoordinateX, endCoordinateY, vueRoot) {
-        let error = false;
-        let params = {
-            "title": title,
-            "description": description,
-            "language": language,
-            "keyword": keyword,
-            "version": version,
-            "standardlicense": standardlicense,
-            "publisher": publisher
-        };
-        let response = (await restUtils.call("POST", "/api/ui/resource", params));
-        if (response.name !== undefined && response.name == "Error") {
-            error = true;
-            vueRoot.$emit('error', "Save resource contract failed.");
-        } else {
-            let resourceUUID = response.data.connectorResponse;
-            let resourceId = response.data.resourceID;
-            params = {
-                "resourceId": resourceId,
-                "pattern": pattern
-            };
-            response = (await restUtils.call("PUT", "/api/ui/resource/contract/update", params, contractJson));
-            if (response.name !== undefined && response.name == "Error") {
-                error = true;
-                vueRoot.$emit('error', "Save resource contract failed.");
-            }
-            // TODO remove sourceType when API changed.
-            params = {
-                "resourceId": resourceId,
-                "endpointId": genericEndpointId,
+    async createResourceIdsEndpointAndAddSubRoute(sourceNode, destinationNode, genericEndpoint, routeId, startId) {
+        let hasError = false;
+        let resource = destinationNode.resource;
+        let title = resource.title;
+        let description = resource.description;
+        let language = resource.language;
+        let keywords = resource.keywords;
+        let standardlicense = resource.standardlicense;
+        let publisher = resource.publisher;
+        let policyDescription = resource.policyDescription;
+        let filetype = resource.filetype;
+        let brokerUris = resource.brokerList;
+
+        try {
+            // TODO Sovereign, EndpointDocumentation
+            let response = (await restUtils.callConnector("POST", "/api/offers", null, {
+                "title": title,
+                "description": description,
+                "keywords": keywords,
+                "publisher": publisher,
                 "language": language,
-                "sourceType": "LOCAL",
-                "filenameExtension": filetype,
-                "bytesize": bytesize
-            };
-            response = (await restUtils.call("POST", "/api/ui/resource/representation", params));
-            if (response.name !== undefined && response.name == "Error") {
-                error = true;
-                vueRoot.$emit('error', "Save resource representation failed.");
-            }
-            let endpointId = (await this.createConnectorEndpoint(resourceUUID));
-            response = await this.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
-                endpointId, endCoordinateX, endCoordinateY, resourceId);
-            if (response.name !== undefined && response.name == "Error") {
-                vueRoot.$emit('error', "Save route step failed.");
-            } else {
-                await this.updateResourceAtBrokers(brokerUris, resourceId);
-            }
+                "license": standardlicense
+            }));
+
+            let resourceId = this.getIdOfConnectorResponse(response);
+            response = await restUtils.callConnector("POST", "/api/contracts", null, {});
+            let contractId = this.getIdOfConnectorResponse(response);
+
+            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+
+            response = await restUtils.callConnector("POST", "/api/rules", null, {
+                "value": JSON.stringify(ruleJson)
+            });
+
+            let ruleId = this.getIdOfConnectorResponse(response);
+            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]);
+
+            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
+
+            response = await restUtils.callConnector("POST", "/api/representations", null, {
+                "language": language,
+                "mediaType": filetype,
+            });
+            let representationId = this.getIdOfConnectorResponse(response);
+
+            response = await restUtils.callConnector("POST", "/api/artifacts", null, {
+                "accessUrl": genericEndpoint.accessUrl,
+                "username": genericEndpoint.username,
+                "password": genericEndpoint.password
+            });
+            let artifactId = this.getIdOfConnectorResponse(response);
+
+            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/representations", null, [representationId]);
+
+            response = await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]);
+
+            response = await this.createConnectorEndpoint(artifactId);
+            let endpointId = this.getIdOfConnectorResponse(response);
+
+            response = await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, endpointId, destinationNode.x, destinationNode.y, artifactId);
+
+            this.addRouteStartAndEnd(routeId, startId, endpointId);
+
+            await this.updateResourceAtBrokers(brokerUris, resourceId);
+
+        } catch (error) {
+            errorUtils.showError(error, "Save Route");
+            hasError = true;
         }
-        return error;
+
+
+        //     let endpointId = (await this.createConnectorEndpoint(resourceUUID));
+        //     response = await this.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
+        //         endpointId, endCoordinateX, endCoordinateY, resourceId);
+
+        //     await this.updateResourceAtBrokers(brokerUris, resourceId);
+        // } catch (error) {
+        //     hasError = true;
+        //     errorUtils.showError(error, "Create IDS endpoint");
+        // }
+
+        return hasError;
     },
 
     async updateResourceAtBrokers(brokerUris, resourceId) {
@@ -708,233 +676,176 @@ export default {
         }
     },
 
-    getEndpointInfo(routeId, endpointId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "routeId": routeId,
-                "endpointId": endpointId
+    async getResourceOfArtifact(artifactId) {
+        let resource = undefined;
+        let representations = (await restUtils.callConnector("GET", "/api/artifacts/" + artifactId + "/representations"))._embedded.representations;
+        if (representations.length > 0) {
+            let representationId = this.getIdOfConnectorResponse(representations[0]);
+            let resources = (await restUtils.callConnector("GET", "/api/representations/" + representationId + "/offers"))._embedded.resources;
+            if (resources.length > 0) {
+                resource = resources[0];
             }
-            restUtils.call("GET", "/api/ui/approute/step/endpoint/info", params).then(response => {
-                resolve(response.data)
-            }).catch(error => {
-                console.log("Error in getEndpointInfo(): ", error);
-                resolve(error);
-            });
-        });
+        }
+        return resource;
     },
 
-    getRoutes() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/approutes").then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getRoutes(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    getRouteErrors() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/route/error").then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getRouteErrors(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    createNewRoute(description) {
-        return new Promise(function (resolve) {
-            let params = {
-                "description": description
+    async getRouteWithEnd(artifactId) {
+        let routeWithEnd = null;
+        let response = await this.getRoutes();
+        for (let route of response) {
+            if (route.end !== undefined && route.end != null) {
+                if (route.end.location.includes(artifactId)) {
+                    routeWithEnd = route;
+                    break;
+                }
             }
-            restUtils.call("POST", "/api/ui/approute", params).then(response => {
-                resolve(response.data.id);
-            }).catch(error => {
-                console.log("Error in createNewRoute(): ", error);
-                resolve(error);
-            });
+        }
+        return routeWithEnd;
+    },
+
+    async getRouteErrors() {
+        return await restUtils.callConnector("GET", "/api/configmanager/route/error");
+    },
+
+    async getRoutes() {
+        return (await restUtils.callConnector("GET", "/api/routes"))._embedded.routes;
+    },
+
+    async addRouteStartAndEnd(routeId, startId, endId) {
+        await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + startId + "\"");
+        await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/end", null, "\"" + endId + "\"");
+    },
+
+    async createNewRoute(description) {
+        return await restUtils.callConnector("POST", "/api/routes", null, {
+            "description": description,
+            "routeType": "Route",
+            "deploy": "Camel"
         });
     },
 
-    createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, resourceId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "routeId": routeId,
-                "startId": startId,
+    async createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, artifactId) {
+        let hasError = false;
+        try {
+            let response = await restUtils.callConnector("POST", "/api/routes", null, {
+                "routeType": "Subroute",
+                "deploy": "Camel",
                 "startCoordinateX": startCoordinateX,
                 "startCoordinateY": startCoordinateY,
-                "endId": endId,
                 "endCoordinateX": endCoordinateX,
-                "endCoordinateY": endCoordinateY,
-                "resourceId": resourceId
+                "endCoordinateY": endCoordinateY
+            });
+            let subRouteId = this.getIdOfConnectorResponse(response);
+            await restUtils.callConnector("POST", "/api/routes/" + routeId + "/steps", null, [subRouteId]);
+            await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/start", null, "\"" + startId + "\"");
+            await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/end", null, "\"" + endId + "\"");
+            await restUtils.callConnector("POST", "/api/routes/" + subRouteId + "/outputs", null, [artifactId]);
+
+        } catch (error) {
+            errorUtils.showError(error, "Save Route");
+            hasError = true;
+        }
+        return hasError;
+    },
+
+    async getDeployMethods() {
+        let response = await restUtils.callConnector("GET", "/api/configmanager/enum/deployMethod");
+        return response;
+
+    },
+
+    async getLogLevels() {
+        let response = await restUtils.callConnector("GET", "/api/configmanager/enum/logLevel");
+        return response;
+    },
+
+    async getConnectorConfiguration() {
+        let configurations = (await restUtils.callConnector("GET", "/api/configurations"))._embedded.configurations;
+        let configuration = undefined;
+        if (configurations !== undefined && configurations.length > 0) {
+            configuration = configurations[0];
+        }
+        return clientDataModel.convertIdsConfiguration(configuration);
+    },
+
+    async changeConnectorConfiguration(id, title, description, curator, maintainer, proxyUrl, proxyNoProxy, proxyUsername,
+        proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword) {
+        let config = {
+            "title": title,
+            "description": description,
+            "curator": curator,
+            "maintainer": maintainer,
+            "logLevel": loglevel,
+            "deployMode": deployMode,
+            "truststoreSettings": {
+                "location": trustStoreUrl
+            },
+            "proxySettings": {
+                "location": proxyUrl,
+                "exclusions": proxyNoProxy,
+                "authentication": {
+                    "key": proxyUsername,
+                    "value": proxyPassword
+                }
+            },
+            "keystoreSettings": {
+                "location": keyStoreUrl
             }
-            restUtils.call("POST", "/api/ui/approute/step", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in createSubRoute(): ", error);
-                resolve(error);
-            });
-        });
-
+        };
+        if (trustStorePassword != null) {
+            config.truststoreSettings.password = trustStorePassword;
+        }
+        if (keyStorePassword != null) {
+            config.keystoreSettings.password = keyStorePassword;
+        }
+        await restUtils.callConnector("PUT", "/api/configurations/" + id, null, config);
     },
 
-    getDeployMethods() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/enum/deployMethod").then((response) => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getDeployMethods(): ", error);
-                resolve(error);
-            });
-        });
-
+    async getConnectorDeployModes() {
+        let response = await restUtils.callConnector("GET", "/api/configmanager/enum/connectorDeployMode");
+        return response;
     },
 
-    getDeployMethod() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/route/deploymethod").then((response) => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getDeployMethod(): ", error);
-                resolve(error);
-            });
-        });
-    },
+    async receiveResources(recipientId) {
+        let recources = [];
+        let params = {
+            "recipient": recipientId
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+        if (response["ids:resourceCatalog"] !== undefined) {
+            for (let catalog of response["ids:resourceCatalog"]) {
+                params = {
+                    "recipient": recipientId,
+                    "elementId": catalog["@id"]
+                }
+                response = await restUtils.callConnector("POST", "/api/ids/description", params);
+                if (response["ids:offeredResource"] !== undefined) {
+                    for (let resource of response["ids:offeredResource"]) {
+                        let id = resource["@id"].substring(resource["@id"].lastIndexOf("/"), resource["@id"].length);
+                        let creationDate = resource["ids:created"]["@value"];
+                        let title = resource["ids:title"][0]["@value"];
+                        let description = resource["ids:description"][0]["@value"];
+                        let language = resource["ids:language"][0]["@id"].replace("https://w3id.org/idsa/code/", "");
+                        let keywords = [];
+                        let idsKeywords = resource["ids:keyword"];
+                        for (let idsKeyword of idsKeywords) {
+                            keywords.push(idsKeyword["@value"]);
+                        }
+                        let version = resource["ids:version"];
+                        let standardLicense = resource["ids:standardLicense"]["@id"];
+                        let publisher = resource["ids:publisher"]["@id"];
+                        let fileType = null;
+                        if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
+                            fileType = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
+                        }
 
-    changeDeployMethod(deployMethod) {
-        return new Promise(function (resolve) {
-            let params = {
-                "deployMethod": deployMethod
-            };
-            restUtils.call("PUT", "/api/ui/route/deploymethod", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in changeDeployMethod(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    getLogLevels() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/enum/logLevel").then((response) => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getLogLevels(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    getConfigModel() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/configmodel").then((response) => {
-                resolve(clientDataModel.convertIdsConfigModel(response.data));
-            }).catch(error => {
-                console.log("Error in getConfigModel(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    changeConfigModel(logLevel, connectorDeployMode,
-        trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword, proxyUrl, proxyNoProxy, username, password) {
-        return new Promise(function (resolve) {
-            let params = {
-                "loglevel": logLevel,
-                "connectorDeployMode": connectorDeployMode,
-                "trustStore": trustStoreUrl,
-                "trustStorePassword": trustStorePassword,
-                "keyStore": keyStoreUrl,
-                "keyStorePassword": keyStorePassword,
-                "proxyUri": proxyUrl,
-                "noProxyUri": proxyNoProxy,
-                "username": username,
-                "password": password
-            };
-            restUtils.call("PUT", "/api/ui/configmodel", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in changeConfigModel(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    getConnectorSettings() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/connector").then((response) => {
-                resolve(clientDataModel.convertIdsConnector(response.data));
-            }).catch(error => {
-                console.log("Error in getConnectorSettings(): ", error);
-                resolve();
-            });
-        });
-    },
-
-    changeConnectorSettings(connectorTitle, connectorDescription,
-        connectorEndpoint, connectorVersion, connectorCurator,
-        connectorMaintainer, connectorInboundModelVersion, connectorOutboundModelVersion) {
-        return new Promise(function (resolve) {
-            let params = {
-                "title": connectorTitle,
-                "description": connectorDescription,
-                "version": connectorVersion,
-                "curator": connectorCurator,
-                "endpoint": connectorEndpoint,
-                "maintainer": connectorMaintainer,
-                "inboundModelVersion": connectorInboundModelVersion,
-                "outboundModelVersion": connectorOutboundModelVersion
-            };
-            restUtils.call("PUT", "/api/ui/connector", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in changeConnectorSettings(): ", error);
-                resolve(error);
-            });
-        });
-    },
-
-    getConnectorDeployModes() {
-        return new Promise(function (resolve) {
-            restUtils.call("GET", "/api/ui/enum/connectorDeployMode").then((response) => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in getConnectorDeployModes(): " + error);
-                resolve(error);
-            });
-        });
-    },
-
-    receiveResources(recipientId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "recipientId": recipientId
+                        recources.push(clientDataModel.createResource(id, creationDate, title, description, language, keywords, version, standardLicense,
+                            publisher, fileType, "", null));
+                    }
+                }
             }
-            restUtils.call("POST", "/api/ui/request/description", params).then(response => {
-                resolve(response.data);
-            }).catch(error => {
-                console.log("Error in receiveResources(): ", error);
-                resolve(error);
-            });
-        });
-    },
+        }
 
-    receiveResource(recipientId, requestedResourceId) {
-        return new Promise(function (resolve) {
-            let params = {
-                "recipientId": recipientId,
-                "requestedResourceId": requestedResourceId
-            };
-            restUtils.call("POST", "/api/ui/request/description", params).then(response => {
-                resolve(clientDataModel.convertIdsResource(response.data));
-            }).catch(error => {
-                console.log("Error in receiveResource(): ", error);
-                resolve(error);
-            });
-        });
+        return recources;
     }
 }

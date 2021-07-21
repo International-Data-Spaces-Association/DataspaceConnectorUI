@@ -2,8 +2,9 @@ export default {
     components: {},
     data() {
         return {
-            pattern: "USAGE_LOGGING",
-            contractJson: "",
+            description: {
+                "type": "USAGE_LOGGING"
+            },
             visibleclass: "",
             readonly: false
         };
@@ -19,6 +20,9 @@ export default {
         },
         setPolicy() {
             // nothing to do.
-        }
+        },
+        setPolicyByDescription() {
+            // nothing to do.
+        },
     }
 };

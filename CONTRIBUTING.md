@@ -1,4 +1,4 @@
-# Contributing to the IDS ConfigManager UI
+# Contributing to the DataSpaceConnector UI
 
 The following is a set of guidelines for contributing to The Dataspace Connector. This is an ongoing project of the  [Human Machine Systems](https://www.fkie.fraunhofer.de/en/departments/mms.html) department of the [Fraunhofer FKIE](https://www.fkie.fraunhofer.de/en.html) hosted on [GitHub](https://github.com/fkie/???). You are very welcome to contribute to this project when you find a bug, want to suggest an improvement, or have an idea for a useful feature. For this, always create an issue and a corresponding pull request, and follow our style guides as described below.
 

@@ -1,4 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "../../../../../utils/errorUtils";
 
 export default {
     components: {},
@@ -38,29 +39,32 @@ export default {
             this.getBrokers();
         },
         async getBrokers() {
-            let response = await dataUtils.getBrokers();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get brokers failed.");
-            } else {
+            try {
+                let response = (await dataUtils.getBrokers())._embedded.brokers;
                 this.$data.brokers = [];
                 for (let broker of response) {
-                    if (broker[1]["brokerRegistrationStatus"] == "REGISTERED") {
+                    if (broker.status == "Registered") {
                         this.$data.brokers.push({
                             broker: broker,
-                            title: broker[1]["title"],
-                            url: broker[1]["brokerUri"]
+                            id: dataUtils.getIdOfConnectorResponse(broker),
+                            title: broker.title,
+                            url: broker.location,
+                            registerStatus: dataUtils.toRegisterStatusClass(broker.status)
                         });
                     }
                 }
-                this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
-                this.$forceUpdate();
+            } catch (error) {
+                errorUtils.showError(error, "Get brokers");
             }
+            this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
+            this.$forceUpdate();
+
         },
-        loadResource(resource) {
+        async loadResource(resource) {
             this.$data.selected = [];
             if (resource.id == -1) {
                 if (resource.brokerList !== undefined) {
-                    for (let brokerUri of resource.brokerList) {
+                    for (let brokerUri of resource.brokerUris) {
                         let broker = this.getBroker(brokerUri);
                         this.$data.selected.push(broker);
                         this.$data.lastSelected.push({
@@ -69,15 +73,14 @@ export default {
                     }
                 }
             } else {
-                dataUtils.getResourceRegistrationStatus(resource.id).then(data => {
-                    for (let status of data) {
-                        let broker = this.getBroker(status.brokerId);
-                        this.$data.selected.push(broker);
-                        this.$data.lastSelected.push({
-                            url: status.brokerId
-                        });
-                    }
-                });
+                for (let brokerUri of resource.brokerUris) {
+                    let broker = this.getBroker(brokerUri);
+                    this.$data.selected.push(broker);
+                    this.$data.lastSelected.push({
+                        url: brokerUri
+                    });
+                }
+
             }
         },
         getBroker(brokerUri) {
@@ -90,23 +93,12 @@ export default {
             }
             return broker;
         },
-        getBrokerNewList() {
-            let brokerNewList = [];
+        getSelectedBrokerList() {
+            let selectedList = [];
             for (let sel of this.$data.selected) {
-                let newSelected = true;
-                for (let lastSel of this.$data.lastSelected) {
-                    if (sel.url == lastSel.url) {
-                        newSelected = false;
-                        break;
-                    }
-                }
-                if (newSelected) {
-                    brokerNewList.push(sel.url);
-                }
+                selectedList.push(sel.url);
             }
-
-
-            return brokerNewList;
+            return selectedList;
         },
         getBrokerDeleteList() {
             let brokerDeleteList = [];

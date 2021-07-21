@@ -2,7 +2,9 @@ import AddResourceFilePage from "@/pages/dataoffering/resources/addresource/file
 import AddResourceDatabasePage from "@/pages/dataoffering/resources/addresource/database/AddResourceDatabasePage.vue";
 import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/dialog/AddBackendConnectionDialog.vue";
 import dataUtils from "@/utils/dataUtils";
+import errorUtils from "@/utils/errorUtils";
 import validationUtils from "../../../../../utils/validationUtils";
+import clientDataModel from "../../../../../datamodel/clientDataModel";
 
 export default {
     components: {
@@ -16,7 +18,7 @@ export default {
             search: '',
             headers: [{
                 text: 'URL',
-                value: 'url'
+                value: 'accessUrl'
             }],
             backendConnections: [],
             sourceType: "",
@@ -29,7 +31,6 @@ export default {
             readonly: false,
             newBackendConnection: false,
             filetype: "",
-            bytesize: ""
         };
     },
     watch: {
@@ -41,11 +42,11 @@ export default {
         }
     },
     mounted: function () {
-        this.getBackendConnections();
+        this.getGenericEndpoints();
     },
     methods: {
         gotVisible() {
-            this.getBackendConnections();
+            this.getGenericEndpoints();
         },
         previousPage() {
             this.$emit('previousPage')
@@ -55,13 +56,11 @@ export default {
         },
         backendConnectionSaved() {
             this.$data.newBackendConnection = true;
-            this.getBackendConnections();
+            this.getGenericEndpoints();
         },
-        async getBackendConnections() {
-            let response = await dataUtils.getBackendConnections();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get backend connections failed.");
-            } else {
+        async getGenericEndpoints() {
+            try {
+                let response = await dataUtils.getGenericEndpoints();
                 this.$data.backendConnections = response;
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
@@ -69,36 +68,28 @@ export default {
                     this.$data.newBackendConnection = false;
                     this.$root.$emit('showBusyIndicator', false);
                 }
+            } catch (error) {
+                errorUtils.showError(error, "Get backend connections");
             }
         },
         async loadResource(resource) {
-            if (resource.fileType === undefined && resource.bytesize === undefined) {
+            if (resource.fileType === undefined) {
                 this.$refs.form.reset();
             } else {
                 if (resource.fileType !== undefined) {
                     this.$data.filetype = resource.fileType;
                 }
-                if (resource.bytesize !== undefined) {
-                    this.$data.bytesize = resource.bytesize;
-                }
             }
 
             this.$data.selected = [];
-            let response = await dataUtils.getRoutes();
-            if (response.name !== undefined && response.name == "Error") {
-                this.$root.$emit('error', "Get routes failed.");
-            } else {
-                for (let route of response) {
-                    if (route["ids:hasSubRoute"] !== undefined) {
-                        for (let step of route["ids:hasSubRoute"]) {
-                            if (step["ids:appRouteOutput"] !== undefined) {
-                                if (step["ids:appRouteOutput"][0]["@id"] == resource.id) {
-                                    this.$data.selected.push(dataUtils.genericEndpointToBackendConnection(route["ids:appRouteStart"][0]));
-                                }
-                            }
-                        }
-                    }
-                }
+            try {
+                let route = await dataUtils.getRouteWithEnd(resource.artifactId);
+                let ge = route.start;
+                let dataSource = ge.dataSource;
+                this.$data.selected.push(clientDataModel.createGenericEndpoint(ge.id, ge.location, dataSource.type,
+                    dataSource.id, dataSource.authentication.username, dataSource.authentication.password, ge.type));
+            } catch (error) {
+                errorUtils.showError(error, "Get resource route");
             }
         }
     }

@@ -2,15 +2,17 @@
     <div>
         <v-row no-gutters class="receiveResources-div">
             <v-col cols="12" md="11" sm="12">
-                <v-text-field label="Recipient ID " v-model="recipientId"> </v-text-field>
-                <v-btn color="primary" @click.native="receiveResources">Receive Resources
-                </v-btn>
+                <v-form v-model="valid" ref="form">
+                    <v-text-field label="Recipient URL" v-model="recipientId" :rules="urlRule"> </v-text-field>
+                    <v-btn color="primary" @click.native="receiveResources" :disabled="!valid">Receive Resources
+                    </v-btn>
+                </v-form>
             </v-col>
         </v-row>
         <v-row no-gutters>
             <v-col cols="12" md="11" sm="12">
-                <v-data-table :headers="headers" :items="receivedResources" :items-per-page="5"
-                    no-data-text="No resources available">
+                <v-data-table :headers="headers" :items="receivedResources" :items-per-page="5" :sort-by.sync="sortBy"
+                    :sort-desc.sync="sortDesc" no-data-text="No resources available">
                     <template v-slot:item.actions="{ item }">
                         <v-icon class="mr-2" @click="showItem(item)">
                             mdi-eye

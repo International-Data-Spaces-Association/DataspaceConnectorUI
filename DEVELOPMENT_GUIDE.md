@@ -73,7 +73,7 @@ Here you can place assets (images, fonts, ...) that you like to use for the UI.
 
 ------------
 ### `src/backend/`
-This is the code of the UI backend. It is just a small node express server to receive API call from the UI and forward those call to the configmanager. This is needed because of the Same-Origin-Policy.
+This is the code of the UI backend. It is just a small node express server to receive API call from the UI and forward those call to the DataSpaceConnector. This is needed because of the Same-Origin-Policy.
 
 ------------
 ### `src/components/`
@@ -82,7 +82,7 @@ Reusable custom vue components.
 ------------
 ### `src/datamodel/`
 
-Client data model. Data received from the configmanager at API calls is converted into simple objects (UI data model).
+Client data model. Data received from the DataSpaceConnector at API calls is converted into simple objects (UI data model).
 
 ------------
 ### `src/pages/`
@@ -112,4 +112,4 @@ Set colors of current theme.
 ------------
 ### `src/utils/`
 Utility scripts that can be used in all vue components.
-The most important is `dataUtils.js` where all API calls to the configmanager are defined.
+The most important is `dataUtils.js` where all API calls to the DataSpaceConnector are defined.

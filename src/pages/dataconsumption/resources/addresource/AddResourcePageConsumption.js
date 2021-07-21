@@ -1,5 +1,7 @@
 import dataUtils from "../../../../utils/dataUtils";
 import ResourceDetailsDialog from "@/pages/dataoffering/resources/resourcedetailsdialog/ResourceDetailsDialog.vue";
+import errorUtils from "../../../../utils/errorUtils";
+import validationUtils from "@/utils/validationUtils";
 
 export default {
     components: {
@@ -8,19 +10,23 @@ export default {
     data() {
         return {
             headers: [{
+                text: 'Creation date',
+                value: 'creationDate',
+                width: 135
+            }, {
                 text: 'Title',
                 value: 'title'
             },
             {
-                text: 'Description',
-                value: 'description'
+                text: 'Keywords',
+                value: 'keywords'
             },
             {
                 text: 'Publisher',
                 value: 'publisher'
             }, {
                 text: 'License',
-                value: 'standardlicense'
+                value: 'standardLicense'
             },
             {
                 text: '',
@@ -29,8 +35,12 @@ export default {
                 align: 'right'
             }
             ],
+            sortBy: 'creationDate',
+            sortDesc: true,
             recipientId: "",
-            receivedResources: []
+            receivedResources: [],
+            valid: false,
+            urlRule: validationUtils.getUrlRequiredRule()
         };
     },
     mounted: function () {
@@ -39,18 +49,17 @@ export default {
     methods: {
         async receiveResources() {
             this.$root.$emit('showBusyIndicator', true);
-            this.$data.receivedResources = [];
-            let resources = (await dataUtils.receiveResources(this.$data.recipientId)).data;
-            for (let resource of resources) {
-                this.$data.receivedResources.push(resource[1]);
+            try {
+                this.$data.receivedResources = await dataUtils.receiveResources(this.$data.recipientId);
+            } catch (error) {
+                errorUtils.showError(error, "Receive resources");
             }
             this.$root.$emit('showBusyIndicator', false);
         },
         async showItem(item) {
             this.$root.$emit('showBusyIndicator', true);
-            let resource = (await dataUtils.receiveResource(this.$data.recipientId, item.resourceId));
             this.$root.$emit('showBusyIndicator', false);
-            this.$refs.resourceDetailsDialog.show(resource);
+            this.$refs.resourceDetailsDialog.showResource(item);
         }
     },
 };

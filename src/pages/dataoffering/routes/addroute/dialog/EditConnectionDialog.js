@@ -23,19 +23,19 @@ export default {
     },
     mounted: function () { },
     methods: {
-        show(connection, nodes, isNewConnection) {
+        async show(connection, nodes, isNewConnection) {
             let autoSetInput = false;
             let autoSetOutput = false;
             this.$data.isNewConnection = isNewConnection;
             this.$data.connection = connection;
             this.$data.sourceNode = dataUtils.getNode(connection.source.id, nodes);
             this.$data.destinationNode = dataUtils.getNode(connection.destination.id, nodes);
-            let sourceEndpoints = dataUtils.getEndpointList(this.$data.sourceNode, "https://w3id.org/idsa/code/OUTPUT_ENDPOINT");
+            let sourceEndpoints = await dataUtils.getEndpointList(this.$data.sourceNode);
             this.$data.outputs = [];
             for (let endpoint of sourceEndpoints) {
                 this.$data.outputs.push(this.getItem(endpoint));
             }
-            let destEndpoints = dataUtils.getEndpointList(this.$data.destinationNode, "https://w3id.org/idsa/code/INPUT_ENDPOINT");
+            let destEndpoints = await dataUtils.getEndpointList(this.$data.destinationNode);
             this.$data.inputs = [];
             for (let endpoint of destEndpoints) {
                 this.$data.inputs.push(this.getItem(endpoint));
@@ -79,15 +79,15 @@ export default {
         },
         getItem(endpoint) {
             let item = null;
-            if (endpoint["@type"] == "ids:GenericEndpoint") {
+            if (endpoint.type == "GENERIC") {
                 item = {
-                    id: endpoint["@id"],
-                    text: endpoint["ids:accessURL"]["@id"]
+                    id: endpoint.id,
+                    text: endpoint.accessUrl
                 };
-            } else if (endpoint["@type"] == "ids:AppEndpoint") {
+            } else if (endpoint.type == "APP") {
                 item = {
-                    id: endpoint["@id"],
-                    text: endpoint["ids:accessURL"]
+                    id: endpoint.id,
+                    text: endpoint.title
                 };
             }
             return item;

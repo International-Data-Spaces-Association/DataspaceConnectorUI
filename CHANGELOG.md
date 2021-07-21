@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
-(Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector, this way the major version of DSC, CM and UI indicates compatibility)
+(Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
+
+## [8.0.0] - 2021-07-21
+
+### Added
+- Columns "Creation date" & "keywords" in resource table
+
+### Changes
+- All API calls changed to DSC API
+- Resources are added to a default catalog
+- Settings: Loglevel & Connector Deploy Mode read-only
+
+### Removed
+- Column "description" in resource table
+
+### Fixes
+- Correct URL validation
 
 ## [7.1.0] - 2021-06-29
 

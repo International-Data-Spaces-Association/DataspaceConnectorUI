@@ -21,10 +21,15 @@ export default {
             this.$data.valid = this.$data.selected.length > 0;
         }
     },
-    mounted: function () {},
+    mounted: function () { },
     methods: {
-        show(resource) {
-            this.$refs.addResourcePage.set(resource);
+        show(resourceId) {
+            this.$refs.addResourcePage.loadResource(resourceId);
+            this.$refs.addResourcePage.setReadOnly(true);
+            this.$data.dialog = true;
+        },
+        showResource(resource) {
+            this.$refs.addResourcePage.set(resource, true);
             this.$refs.addResourcePage.setReadOnly(true);
             this.$data.dialog = true;
         }
