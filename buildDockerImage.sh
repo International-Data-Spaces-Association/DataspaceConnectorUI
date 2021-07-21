@@ -1,2 +1,2 @@
 #!/bin/sh
-sudo docker build -t configmanager-ui .
+sudo docker build -t dataspaceconnector-ui .

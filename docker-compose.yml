@@ -1,13 +1,13 @@
 version: '3.5'
 
 services:
-    configmanager-ui:
-        image: configmanager-ui
+    dataspaceconnector-ui:
+        image: dataspaceconnector-ui
         network_mode: host
         environment:
-            - CONFIGMANAGER_URL=http://localhost:8081
+            - CONNECTOR_URL=http://localhost:8080
             - UI_BACKEND_URL=http://localhost:80
-            - UI_TITLE=IDS Configuration Manager
+            - UI_TITLE=DataSpaceConnector UI
         ports:
             - "8080:8080"
             - "8081:8081"

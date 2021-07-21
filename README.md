@@ -57,12 +57,12 @@ Run docker image:
 sudo docker-compose up
 ```
 
-### Change host & port of IDS Configurationmanager & UI backend on docker start
+### Change host & port of DataSpaceConnector & UI backend on docker start
 
 Change in `docker-compose.yml`:
 ```bash
 environment:
-     - CONFIGMANAGER_URL=http://localhost:8081
+     - CONNECTOR_URL=http://localhost:8080
      - UI_BACKEND_URL=http://localhost:80
 ```
 
