@@ -22,7 +22,7 @@ git clone https://github.com/International-Data-Spaces-Association/DataspaceConn
 
 Dataspace Connector UI:
 ```bash 
-git clone https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI.git
+git clone -b develop https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI.git
 ```
 
   
