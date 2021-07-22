@@ -6,6 +6,10 @@ The following illustration visualizes the interaction of the [Dataspace Connecto
 
 ![Overall architecture](https://github.com/International-Data-Spaces-Association/DataspaceConnector/blob/main/docs/assets/images/dsc_architecture.png)
 
+## Requirements
+* Install and start [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector)
+* Install [Node.js v.14](https://nodejs.org/en/download/)
+
 ## Installation
 
 Use the package manager [npm](https://nodejs.org/en/download/) in root directory to install DataspaceConnector UI:
@@ -15,9 +19,6 @@ npm install --no-audit
 ```
 
 ## Usage
-
-### Requirements
-* Install and start [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector)
 
 ### Start Dataspace Connector UI
 Use the package manager [npm](https://nodejs.org/en/download/) in root directory to start Dataspace Connector UI:
