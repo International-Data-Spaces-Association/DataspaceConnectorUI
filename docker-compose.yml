@@ -5,11 +5,9 @@ services:
         image: dataspaceconnector-ui
         network_mode: host
         environment:
-            - CONNECTOR_URL=http://localhost:8080
+            - CONNECTOR_URL=https://localhost:8080
             - UI_BACKEND_URL=http://localhost:8083
-            - UI_TITLE=DataSpaceConnector UI
+            - UI_TITLE=Dataspace Connector UI
         ports:
-            - "8080:8080"
-            - "8081:8081"
             - "8082:8082"
             - "8083:8083"

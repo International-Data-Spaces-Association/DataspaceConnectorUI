@@ -1,14 +1,14 @@
-## IDS Configurationmanager UI
+## Dataspace Connector UI
 
-User interface for the [IDS Configurationmanager](https://github.com/FraunhoferISST/IDS-Configurationmanager).
+User interface for the [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector).
 
-The following illustration visualizes the interaction of [Dataspace Connector](https://github.com/FraunhoferISST/DataspaceConnector), [IDS Framework](https://github.com/FraunhoferISST/IDS-Connector-Framework), [Configuration Manager](https://github.com/FraunhoferISST/IDS-Configurationmanager), and GUI. All components have a defined API that allows individual components to be removed or replaced. The connector can be deployed standalone and can be connected to existing backend systems. Configuration Manager and GUI facilitate the operation and configuration of the connector. If desired, the Dataspace Connector may be replaced by another connector implementation, either integrating the framework or not.
+The following illustration visualizes the interaction of the [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector), the [IDS Messaging Services](https://github.com/International-Data-Spaces-Association/IDS-Messaging-Services), the Configuration Manager, and it’s GUI. All components have a defined API that allows individual components to be removed or replaced. The Dataspace Connector can be deployed standalone and can be connected to existing backend systems. Configuration Manager and GUI facilitate the operation and configuration of the connector. If desired, the Dataspace Connector may be replaced by another connector implementation, either integrating the IDS Messaging Services or not.
 
-![Overall architecture](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI/blob/develop/images/overall-architecture.png?raw=true)
+![Overall architecture](https://github.com/International-Data-Spaces-Association/DataspaceConnector/blob/main/docs/assets/images/dsc_architecture.png)
 
 ## Installation
 
-Use the package manager [npm](https://nodejs.org/en/download/) in root directory to install Configurationmanager UI:
+Use the package manager [npm](https://nodejs.org/en/download/) in root directory to install DataspaceConnector UI:
 
 ```bash
 npm install --no-audit
@@ -17,11 +17,10 @@ npm install --no-audit
 ## Usage
 
 ### Requirements
-* Install and start [IDS DataSpaceConnector](https://github.com/FraunhoferISST/DataspaceConnector)
-* Install and start [IDS Configurationmanager](https://github.com/FraunhoferISST/IDS-Configurationmanager)
+* Install and start [Dataspace Connector](https://github.com/International-Data-Spaces-Association/DataspaceConnector)
 
-### Start IDS Configurationmanager UI
-Use the package manager [npm](https://nodejs.org/en/download/) in root directory to start Configurationmanager UI:
+### Start Dataspace Connector UI
+Use the package manager [npm](https://nodejs.org/en/download/) in root directory to start Dataspace Connector UI:
 ```bash
 npm start
 ```
@@ -34,12 +33,11 @@ Change `package.json` in root directory:
 "serve": "vue-cli-service serve --open --port [PORT]"
 ```
 
-### Change IDS Configurationmanager host & port
+### Change Dataspace Connector host & port
 
 Change in `src/backend/index.js`:
 ```bash
-const configModelHost = "localhost";
-const configModelPort = 8081;
+let connectorUrl = "https://localhost:8080"
 ```
 
 ### Change theme
@@ -57,27 +55,22 @@ Run docker image:
 sudo docker-compose up
 ```
 
-### Change host & port of DataSpaceConnector & UI backend on docker start
+### Change host & port of Dataspace Connector & UI backend on docker start
 
 Change in `docker-compose.yml`:
 ```bash
 environment:
-     - CONNECTOR_URL=http://localhost:8080
-     - UI_BACKEND_URL=http://localhost:80
+          - CONNECTOR_URL=https://localhost:8080
+          - UI_BACKEND_URL=http://localhost:8083
 ```
 
 ## Development
 
-Please read the [development guide](https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI/blob/develop/DEVELOPMENT_GUIDE.md).
+Please read the [development guide](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI/blob/develop/DEVELOPMENT_GUIDE.md).
 
 ## Contributing
 
-Please read through our [contributing guidelines](https://github.com/fkie/ids-configmanager-ui/blob/master/CONTRIBUTING.md).
-
-## Versioning
-
-[IDS Configurationmanager](https://github.com/FraunhoferISST/IDS-Configurationmanager) and the UI versioning skipped major version 1, 2 and 3 to match versioning of [IDS DataSpaceConnector](https://github.com/FraunhoferISST/DataspaceConnector).
-This way the major version of DSC, CM and UI indicates compatibility.
+Please read through our [contributing guidelines](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI/blob/develop/CONTRIBUTING.md).
 
 ### Contact
 
