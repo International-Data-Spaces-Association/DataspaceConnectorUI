@@ -15,45 +15,28 @@
 
 ## Clone Repositories
 
-DataSpaceConnector:
+Dataspace Connector:
 ```bash 
 git clone https://github.com/International-Data-Spaces-Association/DataspaceConnector.git
 ```
 
-IDS-ConfigurationManager:
+Dataspace Connector UI:
 ```bash 
-git clone https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager.git
-```
-
-IDS-ConfigurationManager-UI:
-```bash 
-git clone https://github.com/International-Data-Spaces-Association/IDS-ConfigurationManager-UI.git
+git clone https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI.git
 ```
 
   
 
-## Build & run DataSpaceConnector
+## Build & run Dataspace Connector
 
 In root directory of project:
 ```bash 
 mvn clean package
 cd target/
-java -jar dataspace-connector-xy.jar
+java -Dfile.encoding=utf-8 -jar dataspace-connector-xy.jar
 ```
   
-
-## Build & run IDS-ConfigurationManager
-
-In root directory of project:
-```bash 
-mvn clean package
-cd target/
-java -jar configurationmanager-xy.jar
-```
-
-  
-
-## Build & run IDS-ConfigurationManager-UI
+## Build & run Dataspace Connector UI
 
 In root directory of project:
 ```bash 
