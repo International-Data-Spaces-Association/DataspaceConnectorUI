@@ -11,7 +11,7 @@
 
 *  [Node 14.+](https://nodejs.org)
 
-  
+*  [Visual Studio Code](https://code.visualstudio.com/) (Recommended IDE)
 
 ## Clone Repositories
 
