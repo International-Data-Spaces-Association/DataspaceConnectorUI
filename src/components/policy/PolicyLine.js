@@ -55,6 +55,9 @@ export default {
         },
         isValid() {
             return this.$refs[this.$data.policyDisplayName].valid;
+        },
+        getDescription() {
+            return this.$refs[this.$data.policyDisplayName].description;
         }
     }
 }

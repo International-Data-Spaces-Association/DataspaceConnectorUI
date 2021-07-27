@@ -481,7 +481,7 @@ export default {
         }
     },
 
-    async createResource(title, description, language, keyword, standardlicense, publisher, policyDescription,
+    async createResource(title, description, language, keyword, standardlicense, publisher, policyDescriptions,
         filetype, brokerUris, genericEndpoint) {
         try {
             // TODO Sovereign, EndpointDocumentation
@@ -501,16 +501,15 @@ export default {
             response = await restUtils.callConnector("POST", "/api/contracts", null, {});
             let contractId = this.getIdOfConnectorResponse(response);
 
-            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
-
-            response = await restUtils.callConnector("POST", "/api/rules", null, {
-                "value": JSON.stringify(ruleJson)
-            });
-
-            let ruleId = this.getIdOfConnectorResponse(response);
+            for (let policyDescription of policyDescriptions) {
+                let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+                response = await restUtils.callConnector("POST", "/api/rules", null, {
+                    "value": JSON.stringify(ruleJson)
+                });
+                let ruleId = this.getIdOfConnectorResponse(response);
+                response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
+            }
             response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]);
-
-            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
 
             response = await restUtils.callConnector("POST", "/api/representations", null, {
                 "language": language,

@@ -40,8 +40,12 @@ export default {
                 }
             }
         },
-        getDescription() {
-            return this.$refs[this.$data.policyDisplayName].description;
+        getDescriptions() {
+            let descriptions = [];
+            for (let policyLine of this.$data.policyLines) {
+                descriptions.push(this.$refs[policyLine][0].getDescription());
+            }
+            return descriptions;
         },
         previousPage() {
             this.$emit('previousPage')
