@@ -1,4 +1,4 @@
-import validationUtils from "../../../../../../../utils/validationUtils";
+import validationUtils from "@/utils/validationUtils";
 
 export default {
     // TODO ui components to select time

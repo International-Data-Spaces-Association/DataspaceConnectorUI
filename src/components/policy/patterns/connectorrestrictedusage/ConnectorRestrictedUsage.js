@@ -1,4 +1,4 @@
-import validationUtils from "../../../../../../../utils/validationUtils";
+import validationUtils from "@/utils/validationUtils";
 
 export default {
     components: {},

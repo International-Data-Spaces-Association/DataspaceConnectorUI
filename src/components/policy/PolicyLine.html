@@ -1,0 +1,35 @@
+<div class="policy-line-div">
+    <v-row no-gutters>
+        <v-col cols="12" md="10">
+            <v-select label="Policy Pattern" v-model="policyDisplayName"
+                :items="['Provide Access', 'Prohibit Access', 'N Times Usage', 'Duration Usage', 'Usage During Interval',
+'Usage Until Deletion', 'Usage Logging', 'Usage Notification', 'Connector Restricted Usage', 'Security Profile Restricted Usage']" :readonly="readonly">
+            </v-select>
+            <div>
+                <n-times-usage ref="N Times Usage" :readonly="readonly">
+                </n-times-usage>
+                <duration-usage ref="Duration Usage" :readonly="readonly">
+                </duration-usage>
+                <usage-during-interval ref="Usage During Interval" :readonly="readonly">
+                </usage-during-interval>
+                <provide-access ref="Provide Access" :readonly="readonly">
+                </provide-access>
+                <prohibit-access ref="Prohibit Access" :readonly="readonly">
+                </prohibit-access>
+                <usage-until-deletion ref="Usage Until Deletion" :readonly="readonly">
+                </usage-until-deletion>
+                <usage-logging ref="Usage Logging" :readonly="readonly">
+                </usage-logging>
+                <usage-notification ref="Usage Notification" :readonly="readonly">
+                </usage-notification>
+                <connector-restricted-usage ref="Connector Restricted Usage" :readonly="readonly">
+                </connector-restricted-usage>
+                <security-profile-restricted-usage ref="Security Profile Restricted Usage" :readonly="readonly">
+                </security-profile-restricted-usage>
+            </div>
+        </v-col>
+        <v-col cols="12" md="2" class="policy-line-remove-col">
+            <v-btn fab outlined class="policy-line-remove-button" @click.native="removePolicy">X</v-btn>
+        </v-col>
+    </v-row>
+</div>

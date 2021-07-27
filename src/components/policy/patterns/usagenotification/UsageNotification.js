@@ -1,4 +1,4 @@
-import validationUtils from "../../../../../../../utils/validationUtils";
+import validationUtils from "@/utils/validationUtils";
 
 export default {
     components: {},
@@ -6,9 +6,8 @@ export default {
         return {
             description: "",
             value: null,
-            profiles: ["idsc:TRUST_SECURITY_PROFILE", "idsc:BASE_SECURITY_PROFILE", "idsc:TRUST_PLUS_SECURITY_PROFILE"],
+            urlRule: validationUtils.getUrlRequiredRule(),
             valid: false,
-            defaultRule: validationUtils.getRequiredRule(),
             visibleclass: "",
             readonly: false
         };
@@ -24,7 +23,7 @@ export default {
             this.$emit('nextPage');
         },
         setPolicy(contract) {
-            this.$data.value = contract["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("https://w3id.org/idsa/code/", "idsc:");
+            this.$data.value = contract["ids:postDuty"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"];
             this.tfChange();
         },
         setPolicyByDescription(policyDescription) {
@@ -33,8 +32,8 @@ export default {
         },
         tfChange() {
             this.$data.description = {
-                "type": "SECURITY_PROFILE_RESTRICTED_USAGE",
-                "profile": this.$data.value
+                "type": "USAGE_NOTIFICATION",
+                "url": this.$data.value
             };
         },
     }

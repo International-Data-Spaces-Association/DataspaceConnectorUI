@@ -1,51 +1,21 @@
 import dataUtils from "@/utils/dataUtils";
-import NTimesUsage from "./patterns/ntimesusage/NTimesUsage.vue";
-import DurationUsage from "./patterns/durationusage/DurationUsage.vue";
-import UsageDuringInterval from "./patterns/usageduringinterval/UsageDuringInterval.vue";
-import ProvideAccess from "./patterns/provideaccess/ProvideAccess.vue";
-import ProhibitAccess from "./patterns/prohibitaccess/ProhibitAccess.vue";
-import UsageUntilDeletion from "./patterns/usageuntildeletion/UsageUntilDeletion.vue";
-import UsageLogging from "./patterns/usagelogging/UsageLogging.vue";
-import UsageNotification from "./patterns/usagenotification/UsageNotification.vue";
-import ConnectorRestrictedUsage from "./patterns/connectorrestrictedusage/ConnectorRestrictedUsage.vue";
-import SecurityProfileRestrictedUsage from "./patterns/securityprofilerestrictedusage/SecurityProfileRestrictedUsage.vue";
-
+import PolicyLine from "@/components/policy/PolicyLine.vue";
 
 export default {
     components: {
-        NTimesUsage,
-        DurationUsage,
-        UsageDuringInterval,
-        ProvideAccess,
-        ProhibitAccess,
-        UsageUntilDeletion,
-        UsageLogging,
-        UsageNotification,
-        ConnectorRestrictedUsage,
-        SecurityProfileRestrictedUsage
+        PolicyLine
     },
     data() {
         return {
             policyType: null,
-            policyDisplayName: null,
-            readonly: false
+            readonly: false,
+            valid: true,
+            policyLines: []
         };
     },
     mounted: function () {
-        this.$data.policyDisplayName = dataUtils.POLICY_PROVIDE_ACCESS;
         this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
-    },
-    watch: {
-        policyDisplayName: function () {
-            for (let name of dataUtils.getPolicyNames()) {
-                if (name == this.$data.policyDisplayName) {
-                    this.$refs[name].visibleclass = "";
-                    this.$refs[name].readonly = this.$data.readonly;
-                } else {
-                    this.$refs[name].visibleclass = "invisible-policy";
-                }
-            }
-        }
+        this.$data.policyLines.push(Date.now());
     },
     methods: {
         gotVisible() {
@@ -78,6 +48,16 @@ export default {
         },
         nextPage() {
             this.$emit('nextPage')
+        },
+        addPolicy() {
+            this.$data.policyLines.push(Date.now());
+        },
+        removePolicy(name) {
+            console.log(">>> REMOVE: ", name);
+            let index = this.$data.policyLines.indexOf(name);
+            if (index > -1) {
+                this.$data.policyLines.splice(index, 1);
+            }
         }
     }
 };

@@ -5,3 +5,8 @@
 .invisible-policy {
     display: none;
 }
+
+.policy-page-add-button {
+    margin-bottom: 20px;
+    font-size: 26px !important;
+}
