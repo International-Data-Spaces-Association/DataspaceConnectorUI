@@ -3,6 +3,7 @@ import validationUtils from "@/utils/validationUtils";
 export default {
     // TODO ui components to select time
     components: {},
+    props: ["readonly"],
     data() {
         return {
             description: "",
@@ -14,8 +15,7 @@ export default {
             deleteAtValue: null,
             defaultRule: validationUtils.getRequiredRule(),
             valid: false,
-            visibleclass: "",
-            readonly: false
+            visibleclass: ""
         };
     },
     mounted: function () {
@@ -27,13 +27,6 @@ export default {
         }
     },
     methods: {
-        previousPage() {
-            this.$emit('previousPage')
-        },
-        nextPage() {
-            this.createDescription();
-            this.$emit('nextPage')
-        },
         setPolicy(contract) {
             // TODO correct timezone conversion
             this.$data.startValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");

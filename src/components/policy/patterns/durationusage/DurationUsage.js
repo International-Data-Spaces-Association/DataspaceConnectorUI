@@ -2,14 +2,14 @@ import validationUtils from "@/utils/validationUtils";
 
 export default {
     components: {},
+    props: ["readonly"],
     data() {
         return {
             description: "",
             durationUsageValue: null,
             numberRule: validationUtils.getNumberRequiredRule(),
             valid: false,
-            visibleclass: "",
-            readonly: false
+            visibleclass: ""
         };
     },
     mounted: function () {
@@ -21,12 +21,6 @@ export default {
         }
     },
     methods: {
-        previousPage() {
-            this.$emit('previousPage');
-        },
-        nextPage() {
-            this.$emit('nextPage');
-        },
         setPolicy(contract) {
             this.$data.durationUsageValue = contract["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("PT", "").replace("H", "");
             this.durationUsageTfChange();

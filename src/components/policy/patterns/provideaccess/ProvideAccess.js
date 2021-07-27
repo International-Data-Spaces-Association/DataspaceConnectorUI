@@ -1,24 +1,18 @@
 export default {
     components: {},
+    props: ["readonly"],
     data() {
         return {
             description: {
                 "type": "PROVIDE_ACCESS"
             },
             visibleclass: "",
-            readonly: false,
             valid: true
         };
     },
     mounted: function () {
     },
     methods: {
-        previousPage() {
-            this.$emit('previousPage');
-        },
-        nextPage() {
-            this.$emit('nextPage');
-        },
         setPolicy() {
             // nothing to do.
         },

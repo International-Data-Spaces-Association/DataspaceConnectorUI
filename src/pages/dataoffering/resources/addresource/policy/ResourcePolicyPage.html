@@ -1,8 +1,9 @@
 <div>
     <v-row no-gutters>
         <v-col cols="12" md="11">
-            <policy-line v-for="policyLine in policyLines" v-bind:key="policyLine" :name="policyLine" :ref="policyLine"
-                @removePolicy="removePolicy" @validationChanged="validationChanged">
+            <policy-line v-for="policyLine in policyLines" v-bind:key="policyLine.name" :name="policyLine.name"
+                :ruleJson="policyLine.ruleJson" :policyName="policyLine.policyName" :ref="policyLine.name"
+                :readonly="readonly" @removePolicy="removePolicy" @validationChanged="validationChanged">
             </policy-line>
         </v-col>
     </v-row>

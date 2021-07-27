@@ -1,23 +1,17 @@
 export default {
     components: {},
+    props: ["readonly"],
     data() {
         return {
             description: {
                 "type": "USAGE_LOGGING"
             },
-            visibleclass: "",
-            readonly: false
+            visibleclass: ""
         };
     },
     mounted: function () {
     },
     methods: {
-        previousPage() {
-            this.$emit('previousPage');
-        },
-        nextPage() {
-            this.$emit('nextPage');
-        },
         setPolicy() {
             // nothing to do.
         },

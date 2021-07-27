@@ -2,6 +2,7 @@ import validationUtils from "@/utils/validationUtils";
 
 export default {
     components: {},
+    props: ["readonly"],
     data() {
         return {
             description: "",
@@ -9,8 +10,7 @@ export default {
             profiles: ["idsc:TRUST_SECURITY_PROFILE", "idsc:BASE_SECURITY_PROFILE", "idsc:TRUST_PLUS_SECURITY_PROFILE"],
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
-            visibleclass: "",
-            readonly: false
+            visibleclass: ""
         };
     },
     mounted: function () {
@@ -22,12 +22,6 @@ export default {
         }
     },
     methods: {
-        previousPage() {
-            this.$emit('previousPage');
-        },
-        nextPage() {
-            this.$emit('nextPage');
-        },
         setPolicy(contract) {
             this.$data.value = contract["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("https://w3id.org/idsa/code/", "idsc:");
             this.tfChange();

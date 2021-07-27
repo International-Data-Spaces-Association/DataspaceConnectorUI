@@ -34,7 +34,8 @@
             </div>
         </v-col>
         <v-col cols="12" md="2" class="policy-line-remove-col">
-            <v-btn fab outlined class="policy-line-remove-button" @click.native="removePolicy">X</v-btn>
+            <v-btn fab outlined class="policy-line-remove-button" @click.native="removePolicy" v-show="!readonly">X
+            </v-btn>
         </v-col>
     </v-row>
 </div>

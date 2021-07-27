@@ -23,13 +23,13 @@ export default {
         ConnectorRestrictedUsage,
         SecurityProfileRestrictedUsage
     },
-    props: ["name"],
+    props: ["name", "ruleJson", "policyName", "readonly"],
     watch: {
         policyDisplayName: function () {
             for (let name of dataUtils.getPolicyNames()) {
                 if (name == this.$data.policyDisplayName) {
                     this.$refs[name].visibleclass = "";
-                    this.$refs[name].readonly = this.$data.readonly;
+                    // this.$refs[name].readonly = this.$data.readonly;
                 } else {
                     this.$refs[name].visibleclass = "invisible-policy";
                 }
@@ -40,13 +40,26 @@ export default {
     data() {
         return {
             policyDisplayName: null,
-            readonly: false
         }
     },
     mounted: function () {
         this.$data.policyDisplayName = dataUtils.POLICY_PROVIDE_ACCESS;
+        this.setPolicy();
     },
     methods: {
+        setPolicy() {
+            console.log(">>> SET POLICY: ", this.policyName);
+            if (this.policyName === undefined || this.policyName == "") {
+                this.$refs[dataUtils.getPolicyNames()[0]].setPolicy(this.ruleJson);
+            } else {
+                this.$data.policyDisplayName = dataUtils.getPolicyDisplayName(this.policyName);
+                if (this.ruleJson == "") {
+                    // this.$refs[this.$data.policyDisplayName].setPolicyByDescription(policyDescription);
+                } else {
+                    this.$refs[this.$data.policyDisplayName].setPolicy(this.ruleJson);
+                }
+            }
+        },
         removePolicy() {
             this.$emit('removePolicy', this.name);
         },

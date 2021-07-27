@@ -15,11 +15,11 @@ const POLICY_CONNECTOR_RESTRICTED_USAGE = "Connector Restricted Usage";
 const POLICY_SECURITY_PROFILE_RESTRICTED_USAGE = "Security Profile Restricted Usage";
 
 const POLICY_DESCRIPTION_TO_NAME = {
+    "provide-access": POLICY_PROVIDE_ACCESS,
+    "prohibit-access": POLICY_PROHIBIT_ACCESS,
     "n-times-usage": POLICY_N_TIMES_USAGE,
     "duration-usage": POLICY_DURATION_USAGE,
     "usage-during-interval": POLICY_USAGE_DURING_INTERVAL,
-    "provide-access": POLICY_PROVIDE_ACCESS,
-    "prohibit-access": POLICY_PROHIBIT_ACCESS,
     "usage-until-deletion": POLICY_USAGE_UNTIL_DELETION,
     "usage-logging": POLICY_USAGE_LOGGING,
     "usage-notification": POLICY_USAGE_NOTIFICATION,
@@ -166,18 +166,16 @@ export default {
 
     async getResource(resourceId) {
         let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
-        let rule = undefined;
-        let policyName = undefined;
+        let policyNames = [];
+        let ruleJsons = [];
         let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contracts;
-        let ruleId = undefined;
         if (contracts.length > 0) {
             let contract = contracts[0];
             let contractId = this.getIdOfConnectorResponse(contract);
             let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
-            if (rules.length > 0) {
-                rule = rules[0];
-                ruleId = this.getIdOfConnectorResponse(rule);
-                policyName = (await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
+            for (let rule of rules) {
+                policyNames.push(await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
+                ruleJsons.push(JSON.parse(rule.value));
             }
         }
         let representations = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/representations"))["_embedded"].representations;
@@ -193,7 +191,7 @@ export default {
         }
         let brokers = await this.getBrokersOfResource(resourceId);
         let brokerUris = brokers.map(x => x.location);
-        return clientDataModel.convertIdsResource(resource, representation, policyName, JSON.parse(rule.value), artifactId, ruleId, brokerUris);
+        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleJsons, artifactId, brokerUris);
     },
 
     async getLanguages() {

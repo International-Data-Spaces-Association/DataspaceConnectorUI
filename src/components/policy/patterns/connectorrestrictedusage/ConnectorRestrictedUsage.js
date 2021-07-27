@@ -2,14 +2,14 @@ import validationUtils from "@/utils/validationUtils";
 
 export default {
     components: {},
+    props: ["readonly"],
     data() {
         return {
             description: "",
             value: null,
             urlRule: validationUtils.getUrlRequiredRule(),
             valid: false,
-            visibleclass: "",
-            readonly: false
+            visibleclass: ""
         };
     },
     mounted: function () {
@@ -21,12 +21,6 @@ export default {
         }
     },
     methods: {
-        previousPage() {
-            this.$emit('previousPage');
-        },
-        nextPage() {
-            this.$emit('nextPage');
-        },
         setPolicy(contract) {
             this.$data.value = contract["ids:constraint"][0]["ids:rightOperand"]["@value"];
             this.tfChange();
