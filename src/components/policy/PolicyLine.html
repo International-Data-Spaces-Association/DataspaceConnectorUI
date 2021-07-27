@@ -6,25 +6,30 @@
 'Usage Until Deletion', 'Usage Logging', 'Usage Notification', 'Connector Restricted Usage', 'Security Profile Restricted Usage']" :readonly="readonly">
             </v-select>
             <div>
-                <n-times-usage ref="N Times Usage" :readonly="readonly">
+                <n-times-usage ref="N Times Usage" :readonly="readonly" @validationChanged="validationChanged">
                 </n-times-usage>
-                <duration-usage ref="Duration Usage" :readonly="readonly">
+                <duration-usage ref="Duration Usage" :readonly="readonly" @validationChanged="validationChanged">
                 </duration-usage>
-                <usage-during-interval ref="Usage During Interval" :readonly="readonly">
+                <usage-during-interval ref="Usage During Interval" :readonly="readonly"
+                    @validationChanged="validationChanged">
                 </usage-during-interval>
-                <provide-access ref="Provide Access" :readonly="readonly">
+                <provide-access ref="Provide Access" :readonly="readonly" @validationChanged="validationChanged">
                 </provide-access>
-                <prohibit-access ref="Prohibit Access" :readonly="readonly">
+                <prohibit-access ref="Prohibit Access" :readonly="readonly" @validationChanged="validationChanged">
                 </prohibit-access>
-                <usage-until-deletion ref="Usage Until Deletion" :readonly="readonly">
+                <usage-until-deletion ref="Usage Until Deletion" :readonly="readonly"
+                    @validationChanged="validationChanged">
                 </usage-until-deletion>
-                <usage-logging ref="Usage Logging" :readonly="readonly">
+                <usage-logging ref="Usage Logging" :readonly="readonly" @validationChanged="validationChanged">
                 </usage-logging>
-                <usage-notification ref="Usage Notification" :readonly="readonly">
+                <usage-notification ref="Usage Notification" :readonly="readonly"
+                    @validationChanged="validationChanged">
                 </usage-notification>
-                <connector-restricted-usage ref="Connector Restricted Usage" :readonly="readonly">
+                <connector-restricted-usage ref="Connector Restricted Usage" :readonly="readonly"
+                    @validationChanged="validationChanged">
                 </connector-restricted-usage>
-                <security-profile-restricted-usage ref="Security Profile Restricted Usage" :readonly="readonly">
+                <security-profile-restricted-usage ref="Security Profile Restricted Usage" :readonly="readonly"
+                    @validationChanged="validationChanged">
                 </security-profile-restricted-usage>
             </div>
         </v-col>

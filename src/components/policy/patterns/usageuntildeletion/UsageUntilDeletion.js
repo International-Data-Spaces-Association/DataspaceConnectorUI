@@ -13,13 +13,18 @@ export default {
             deleteAtMenu: false,
             deleteAtValue: null,
             defaultRule: validationUtils.getRequiredRule(),
-            usageDuringIntervalValid: false,
+            valid: false,
             visibleclass: "",
             readonly: false
         };
     },
     mounted: function () {
 
+    },
+    watch: {
+        valid: function () {
+            this.$emit('validationChanged');
+        }
     },
     methods: {
         previousPage() {

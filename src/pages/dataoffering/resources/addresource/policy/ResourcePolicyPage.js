@@ -53,10 +53,15 @@ export default {
             this.$data.policyLines.push(Date.now());
         },
         removePolicy(name) {
-            console.log(">>> REMOVE: ", name);
             let index = this.$data.policyLines.indexOf(name);
             if (index > -1) {
                 this.$data.policyLines.splice(index, 1);
+            }
+            this.validationChanged();
+        },
+        validationChanged() {
+            for (let policyLine of this.$data.policyLines) {
+                this.$data.valid = this.$refs[policyLine][0].isValid();
             }
         }
     }

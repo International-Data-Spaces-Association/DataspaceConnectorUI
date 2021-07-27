@@ -1,14 +1,14 @@
 <div>
     <v-row no-gutters>
         <v-col cols="12" md="11">
-            <policy-line v-for="policyLine in policyLines" v-bind:key="policyLine" :name="policyLine"
-                @removePolicy="removePolicy">
+            <policy-line v-for="policyLine in policyLines" v-bind:key="policyLine" :name="policyLine" :ref="policyLine"
+                @removePolicy="removePolicy" @validationChanged="validationChanged">
             </policy-line>
         </v-col>
     </v-row>
     <v-row no-gutters>
         <v-col cols="12" md="11">
-            <v-btn color="primary" fab small class="policy-page-add-button" @click.native="addPolicy">+</v-btn>
+            <v-btn color="primary" small class="policy-page-add-button" @click.native="addPolicy">+</v-btn>
         </v-col>
     </v-row>
     <v-row no-gutters>

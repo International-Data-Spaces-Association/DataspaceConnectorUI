@@ -6,7 +6,8 @@ export default {
                 "type": "PROVIDE_ACCESS"
             },
             visibleclass: "",
-            readonly: false
+            readonly: false,
+            valid: true
         };
     },
     mounted: function () {

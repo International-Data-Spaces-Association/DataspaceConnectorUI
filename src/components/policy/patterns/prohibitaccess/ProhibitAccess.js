@@ -6,7 +6,8 @@ export default {
                 "type": "PROHIBIT_ACCESS"
             },
             visibleclass: "",
-            readonly: false
+            readonly: false,
+            valid: true
         };
     },
     mounted: function () {

@@ -9,13 +9,18 @@ export default {
             defaultRule: validationUtils.getRequiredRule(),
             numberRule: validationUtils.getNumberRequiredRule(),
             urlRule: validationUtils.getUrlRequiredRule(),
-            nTimesUsageValid: false,
+            valid: false,
             visibleclass: "",
             readonly: false
         };
     },
     mounted: function () {
 
+    },
+    watch: {
+        valid: function () {
+            this.$emit('validationChanged');
+        }
     },
     methods: {
         previousPage() {

@@ -7,13 +7,18 @@ export default {
             description: "",
             durationUsageValue: null,
             numberRule: validationUtils.getNumberRequiredRule(),
-            durationValid: false,
+            valid: false,
             visibleclass: "",
             readonly: false
         };
     },
     mounted: function () {
 
+    },
+    watch: {
+        valid: function () {
+            this.$emit('validationChanged');
+        }
     },
     methods: {
         previousPage() {

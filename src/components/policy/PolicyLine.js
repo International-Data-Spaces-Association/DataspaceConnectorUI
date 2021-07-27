@@ -34,6 +34,7 @@ export default {
                     this.$refs[name].visibleclass = "invisible-policy";
                 }
             }
+            this.$emit('validationChanged', this.name);
         }
     },
     data() {
@@ -48,6 +49,12 @@ export default {
     methods: {
         removePolicy() {
             this.$emit('removePolicy', this.name);
+        },
+        validationChanged() {
+            this.$emit('validationChanged', this.name);
+        },
+        isValid() {
+            return this.$refs[this.$data.policyDisplayName].valid;
         }
     }
 }

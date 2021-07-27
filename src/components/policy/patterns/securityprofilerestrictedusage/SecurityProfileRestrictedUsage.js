@@ -16,6 +16,11 @@ export default {
     mounted: function () {
 
     },
+    watch: {
+        valid: function () {
+            this.$emit('validationChanged');
+        }
+    },
     methods: {
         previousPage() {
             this.$emit('previousPage');
