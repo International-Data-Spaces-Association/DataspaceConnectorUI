@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [8.1.0] - 2021-07-28
+
+### Added
+- New policies "Connector Restricted Usage" & "Security Profile Restricted Usage"
+
+### Fixes
+- Configuration: Rename connectorEndpoint to defaultEndpoint
+- UI backend: CORS fix
+
 ## [8.0.0] - 2021-07-21
 
 ### Added

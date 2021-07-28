@@ -7,6 +7,8 @@ import ProhibitAccess from "./patterns/prohibitaccess/ProhibitAccess.vue";
 import UsageUntilDeletion from "./patterns/usageuntildeletion/UsageUntilDeletion.vue";
 import UsageLogging from "./patterns/usagelogging/UsageLogging.vue";
 import UsageNotification from "./patterns/usagenotification/UsageNotification.vue";
+import ConnectorRestrictedUsage from "./patterns/connectorrestrictedusage/ConnectorRestrictedUsage.vue";
+import SecurityProfileRestrictedUsage from "./patterns/securityprofilerestrictedusage/SecurityProfileRestrictedUsage.vue";
 
 
 export default {
@@ -18,7 +20,9 @@ export default {
         ProhibitAccess,
         UsageUntilDeletion,
         UsageLogging,
-        UsageNotification
+        UsageNotification,
+        ConnectorRestrictedUsage,
+        SecurityProfileRestrictedUsage
     },
     data() {
         return {

@@ -27,7 +27,7 @@ export default {
             showPasswordKeyStore: false,
             connectorTitle: "",
             connectorDescription: "",
-            connectorEndpoint: "",
+            defaultEndpoint: "",
             connectorVersion: "",
             connectorCurator: "",
             connectorMaintainer: "",
@@ -69,7 +69,7 @@ export default {
                 this.$data.connectorDescription = configuration.description;
                 this.$data.connectorCurator = configuration.curator;
                 this.$data.connectorMaintainer = configuration.maintainer;
-                this.$data.connectorEndpoint = configuration.endpoint;
+                this.$data.defaultEndpoint = configuration.endpoint;
                 this.$data.connectorInboundModelVersion = configuration.inboundModelVersion;
                 this.$data.connectorOutboundModelVersion = configuration.outboundModelVersion;
                 this.$data.connectorVersion = configuration.version;

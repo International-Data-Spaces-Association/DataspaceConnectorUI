@@ -1,7 +1,8 @@
 <v-row no-gutters>
     <v-col cols="12" md="11">
-        <v-select label="Policy Pattern" v-model="policyDisplayName" :items="['Provide Access', 'Prohibit Access', 'N Times Usage', 'Duration Usage', 'Usage During Interval',
-            'Usage Until Deletion', 'Usage Logging', 'Usage Notification']" :readonly="readonly">
+        <v-select label="Policy Pattern" v-model="policyDisplayName"
+            :items="['Provide Access', 'Prohibit Access', 'N Times Usage', 'Duration Usage', 'Usage During Interval',
+            'Usage Until Deletion', 'Usage Logging', 'Usage Notification', 'Connector Restricted Usage', 'Security Profile Restricted Usage']" :readonly="readonly">
         </v-select>
         <div>
             <n-times-usage @previousPage="previousPage" @nextPage="nextPage" ref="N Times Usage" :readonly="readonly">
@@ -24,6 +25,12 @@
             <usage-notification @previousPage="previousPage" @nextPage="nextPage" ref="Usage Notification"
                 :readonly="readonly">
             </usage-notification>
+            <connector-restricted-usage @previousPage="previousPage" @nextPage="nextPage"
+                ref="Connector Restricted Usage" :readonly="readonly">
+            </connector-restricted-usage>
+            <security-profile-restricted-usage @previousPage="previousPage" @nextPage="nextPage"
+                ref="Security Profile Restricted Usage" :readonly="readonly">
+            </security-profile-restricted-usage>
         </div>
     </v-col>
 </v-row>

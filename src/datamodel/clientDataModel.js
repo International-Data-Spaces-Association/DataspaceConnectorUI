@@ -329,7 +329,7 @@ export default {
             id = dataUtils.getIdOfConnectorResponse(idsConfiguration);
             title = idsConfiguration.title;
             description = idsConfiguration.description;
-            endpoint = idsConfiguration.connectorEndpoint;
+            endpoint = idsConfiguration.defaultEndpoint;
             version = idsConfiguration.version;
             curator = idsConfiguration.curator;
             maintainer = idsConfiguration.maintainer;
