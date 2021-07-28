@@ -26,7 +26,7 @@ if (process.env.CONNECTOR_URL !== undefined) {
 }
 
 
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
 app.use(bodyParser.urlencoded({
     extended: true
 }));
