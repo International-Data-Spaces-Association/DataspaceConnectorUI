@@ -23,19 +23,15 @@ export default {
             this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
         },
         loadResource(resource) {
-            console.log(">>> PolicyPage.loadResource: ", resource);
-            // if (resource.contract === undefined) {
-            //     this.$data.policyDisplayName = dataUtils.POLICY_PROVIDE_ACCESS;
-            // } else {
-            //     this.setPolicy(resource.contract, resource.policyName, resource.policyDescription);
-            // }
             this.$data.policyLines = [];
             for (let i = 0; i < resource.policyNames.length; i++) {
-                this.$data.policyLines.push({
+                let policyLine = {
                     "name": Date.now() + i,
+                    "ruleId": resource.ruleIds[i],
                     "ruleJson": resource.ruleJsons[i],
                     "policyName": resource.policyNames[i]
-                });
+                };
+                this.$data.policyLines.push(policyLine);
             }
         },
         getDescriptions() {

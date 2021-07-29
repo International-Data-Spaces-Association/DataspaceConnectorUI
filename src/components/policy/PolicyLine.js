@@ -48,7 +48,6 @@ export default {
     },
     methods: {
         setPolicy() {
-            console.log(">>> SET POLICY: ", this.policyName);
             if (this.policyName === undefined || this.policyName == "") {
                 this.$refs[dataUtils.getPolicyNames()[0]].setPolicy(this.ruleJson);
             } else {

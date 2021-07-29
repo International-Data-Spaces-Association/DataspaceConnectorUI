@@ -167,6 +167,7 @@ export default {
     async getResource(resourceId) {
         let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
         let policyNames = [];
+        let ruleIds = [];
         let ruleJsons = [];
         let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contracts;
         if (contracts.length > 0) {
@@ -175,6 +176,7 @@ export default {
             let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
             for (let rule of rules) {
                 policyNames.push(await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
+                ruleIds.push(this.getIdOfConnectorResponse(rule));
                 ruleJsons.push(JSON.parse(rule.value));
             }
         }
@@ -191,7 +193,7 @@ export default {
         }
         let brokers = await this.getBrokersOfResource(resourceId);
         let brokerUris = brokers.map(x => x.location);
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleJsons, artifactId, brokerUris);
+        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris);
     },
 
     async getLanguages() {
@@ -542,8 +544,8 @@ export default {
         }
     },
 
-    async editResource(resourceId, representationId, title, description, language, keyword, standardlicense, publisher, policyDescription,
-        filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
+    async editResource(resourceId, representationId, title, description, language, keyword, standardlicense, publisher,
+        policyDescriptions, filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
                 "title": title,
@@ -554,10 +556,29 @@ export default {
                 "license": standardlicense
             });
 
-            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
-            await restUtils.callConnector("PUT", "/api/rules/" + ruleId, null, {
-                "value": JSON.stringify(ruleJson)
-            });
+            // Delete all rules and create new ones. Rules that have not been edited in the UI are also deleted and recreated. 
+            // Implementing the detection of a change to an existing rule would have been complicated (Pattern can change, only value can change, ...)
+
+            let contractId = -1;
+            let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contracts;
+            if (contracts.length > 0) {
+                let contract = contracts[0];
+                contractId = this.getIdOfConnectorResponse(contract);
+                let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
+                for (let rule of rules) {
+                    await restUtils.callConnector("DELETE", "/api/rules/" + this.getIdOfConnectorResponse(rule));
+                }
+            }
+
+            for (let policyDescription of policyDescriptions) {
+                let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+                let response = await restUtils.callConnector("POST", "/api/rules", null, {
+                    "value": JSON.stringify(ruleJson)
+                });
+                let ruleId = this.getIdOfConnectorResponse(response);
+                response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
+            }
+            //
 
             await restUtils.callConnector("PUT", "/api/representations/" + representationId, null, {
                 "language": language,

@@ -12,11 +12,14 @@
 }
 
 .policy-line-remove-button {
-    font-size: 14px!important;
     width: 25px!important;
     height: 25px!important;
     background-color: var(--v-text1-base);
     border: 1px solid var(--v-text1-base);
+}
+
+.policy-line-remove-button .v-icon {
+    font-size: 17px!important;
 }
 
 .policy-line-remove-button:hover {

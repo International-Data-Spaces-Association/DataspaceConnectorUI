@@ -9,7 +9,8 @@
     </v-row>
     <v-row no-gutters>
         <v-col cols="12" md="11">
-            <v-btn color="primary" small class="policy-page-add-button" @click.native="addPolicy">+</v-btn>
+            <v-btn color="primary" small class="policy-page-add-button" @click.native="addPolicy" v-show="!readonly">+
+            </v-btn>
         </v-col>
     </v-row>
     <v-row no-gutters>

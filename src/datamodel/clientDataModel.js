@@ -2,7 +2,7 @@ import dataUtils from "@/utils/dataUtils";
 
 export default {
     createResource(id, creationDate, title, description, language, keywords, version, standardLicense,
-        publisher, fileType, policyNames, ruleJsons, artifactId, representationId, brokerUris) {
+        publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris) {
         let resource = {};
         if (id === undefined) {
             resource.id = "";
@@ -58,6 +58,11 @@ export default {
             resource.policyNames = [];
         } else {
             resource.policyNames = policyNames;
+        }
+        if (ruleIds === undefined) {
+            resource.ruleIds = [];
+        } else {
+            resource.ruleIds = ruleIds;
         }
         if (ruleJsons === undefined) {
             resource.ruleJsons = [];
@@ -276,7 +281,7 @@ export default {
         return this.createApp(id, idsApp.title, idsApp.description, "APP");
     },
 
-    convertIdsResource(idsResource, representation, policyNames, ruleJsons, artifactId, brokerUris) {
+    convertIdsResource(idsResource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris) {
         let title = idsResource.title;
         if (title.includes("\"@en")) {
             title = idsResource.title.substring(1, idsResource.title.lastIndexOf("\""));
@@ -294,7 +299,7 @@ export default {
 
         return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.keywords,
-            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, ruleJsons, artifactId, representationId, brokerUris);
+            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris);
     },
 
 
