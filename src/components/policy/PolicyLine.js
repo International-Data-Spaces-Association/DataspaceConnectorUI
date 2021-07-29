@@ -23,7 +23,7 @@ export default {
         ConnectorRestrictedUsage,
         SecurityProfileRestrictedUsage
     },
-    props: ["name", "ruleJson", "policyName", "readonly"],
+    props: ["name", "ruleJson", "policyName", "readonly", "policyDescription"],
     watch: {
         policyDisplayName: function () {
             for (let name of dataUtils.getPolicyNames()) {
@@ -48,13 +48,14 @@ export default {
     },
     methods: {
         setPolicy() {
-            if (this.policyName === undefined || this.policyName == "") {
+            if ((this.policyName === undefined || this.policyName == "") && this.policyDescription === undefined) {
                 this.$refs[dataUtils.getPolicyNames()[0]].setPolicy(this.ruleJson);
             } else {
-                this.$data.policyDisplayName = dataUtils.getPolicyDisplayName(this.policyName);
-                if (this.ruleJson == "") {
-                    // this.$refs[this.$data.policyDisplayName].setPolicyByDescription(policyDescription);
+                if (this.ruleJson === undefined) {
+                    this.$data.policyDisplayName = dataUtils.getPolicyDisplayName(this.policyDescription.type);
+                    this.$refs[this.$data.policyDisplayName].setPolicyByDescription(this.policyDescription);
                 } else {
+                    this.$data.policyDisplayName = dataUtils.getPolicyDisplayName(this.policyName);
                     this.$refs[this.$data.policyDisplayName].setPolicy(this.ruleJson);
                 }
             }

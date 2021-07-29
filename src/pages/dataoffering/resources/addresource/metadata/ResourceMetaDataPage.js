@@ -47,7 +47,7 @@ export default {
                 this.$data.description = resource.description;
                 this.$data.language = resource.language.substring(resource.language.lastIndexOf("/") + 1);
                 this.$data.keywords = dataUtils.arrayToCommaSeperatedString(resource.keywords);
-                this.$data.standardlicense = resource.standardLicense;
+                this.$data.standardlicense = resource.standardlicense;
                 this.$data.publisher = resource.publisher;
             }
         }

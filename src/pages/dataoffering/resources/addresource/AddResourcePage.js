@@ -121,7 +121,7 @@ export default {
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
-                    await dataUtils.createResource(title, description, language, keywords, standardlicense, publisher,
+                    await dataUtils.createResourceWithMinimalRoute(title, description, language, keywords, standardlicense, publisher,
                         policyDescriptions, filetype, brokerList, genericEndpoint);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);

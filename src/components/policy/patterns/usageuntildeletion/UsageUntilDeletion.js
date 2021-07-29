@@ -24,14 +24,23 @@ export default {
     watch: {
         valid: function () {
             this.$emit('validationChanged');
+        },
+        startValue: function () {
+            this.createDescription();
+        },
+        endValue: function () {
+            this.createDescription();
+        },
+        deleteAtValue: function () {
+            this.createDescription();
         }
     },
     methods: {
         setPolicy(contract) {
             // TODO correct timezone conversion
-            this.$data.startValue = contract["ids:permission"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
-            this.$data.endValue = contract["ids:permission"][0]["ids:constraint"][1]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
-            this.$data.deleteAtValue = contract["ids:permission"][0]["ids:postDuty"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
+            this.$data.startValue = contract["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
+            this.$data.endValue = contract["ids:constraint"][1]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
+            this.$data.deleteAtValue = contract["ids:postDuty"][0]["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("T00:00:00Z", "");
             this.createDescription();
         },
         setPolicyByDescription(policyDescription) {

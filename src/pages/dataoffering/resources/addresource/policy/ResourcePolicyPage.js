@@ -24,14 +24,32 @@ export default {
         },
         loadResource(resource) {
             this.$data.policyLines = [];
-            for (let i = 0; i < resource.policyNames.length; i++) {
-                let policyLine = {
-                    "name": Date.now() + i,
-                    "ruleId": resource.ruleIds[i],
-                    "ruleJson": resource.ruleJsons[i],
-                    "policyName": resource.policyNames[i]
-                };
-                this.$data.policyLines.push(policyLine);
+            if (resource.id == -1) {
+                // resource.id == -1 means this is a new IDS Endpoint node at the route page.
+                // For this new node one policy line is added, so the user can save the first click on "+".
+                this.$data.policyLines.push({
+                    "name": Date.now()
+                });
+            } else {
+                if (resource.policyNames !== undefined) {
+                    for (let i = 0; i < resource.policyNames.length; i++) {
+                        let policyLine = {
+                            "name": Date.now() + i,
+                            "ruleId": resource.ruleIds[i],
+                            "ruleJson": resource.ruleJsons[i],
+                            "policyName": resource.policyNames[i]
+                        };
+                        this.$data.policyLines.push(policyLine);
+                    }
+                } else if (resource.policyDescriptions !== undefined) {
+                    for (let i = 0; i < resource.policyDescriptions.length; i++) {
+                        let policyLine = {
+                            "name": Date.now() + i,
+                            "policyDescription": resource.policyDescriptions[i]
+                        };
+                        this.$data.policyLines.push(policyLine);
+                    }
+                }
             }
         },
         getDescriptions() {

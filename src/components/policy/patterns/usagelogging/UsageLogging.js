@@ -6,7 +6,8 @@ export default {
             description: {
                 "type": "USAGE_LOGGING"
             },
-            visibleclass: ""
+            visibleclass: "",
+            valid: true
         };
     },
     mounted: function () {

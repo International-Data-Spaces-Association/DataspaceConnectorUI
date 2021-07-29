@@ -41,7 +41,7 @@ export default {
             this.$refs.addResourcePage.set(resource, false);
             this.$data.dialog = true;
         },
-        saved(title, description, language, keywords, version, standardlicense, publisher, policyDescription, filetype, bytesize, brokerList) {
+        saved(title, description, language, keywords, version, standardlicense, publisher, policyDescriptions, filetype, bytesize, brokerList) {
             let isNew = false;
             if (this.$data.node == null) {
                 isNew = true;
@@ -65,12 +65,10 @@ export default {
             resource.version = version;
             resource.standardlicense = standardlicense;
             resource.publisher = publisher;
-            resource.policyDescription = policyDescription;
-            // TODO remove sourceType when API changed.
-            resource.sourceType = "LOCAL";
-            resource.filetype = filetype;
+            resource.policyDescriptions = policyDescriptions;
+            resource.fileType = filetype;
             resource.bytesize = bytesize;
-            resource.brokerList = brokerList;
+            resource.brokerUris = brokerList;
             this.$data.node.resource = resource;
 
             if (isNew) {

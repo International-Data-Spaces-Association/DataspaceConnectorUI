@@ -1,7 +1,7 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, creationDate, title, description, language, keywords, version, standardLicense,
+    createResource(id, creationDate, title, description, language, keywords, version, standardlicense,
         publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris) {
         let resource = {};
         if (id === undefined) {
@@ -39,10 +39,10 @@ export default {
         } else {
             resource.version = version;
         }
-        if (standardLicense === undefined) {
-            resource.standardLicense = "";
+        if (standardlicense === undefined) {
+            resource.standardlicense = "";
         } else {
-            resource.standardLicense = standardLicense;
+            resource.standardlicense = standardlicense;
         }
         if (publisher === undefined) {
             resource.publisher = "";
