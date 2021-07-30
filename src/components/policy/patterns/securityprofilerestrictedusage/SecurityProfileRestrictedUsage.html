@@ -1,0 +1,9 @@
+<v-form v-model="valid" :class="visibleclass">
+    <v-row no-gutters>
+        <v-col cols="12" md="6">
+            <v-select label="Profile" v-model="value" :items="profiles" @change="tfChange" :rules="defaultRule" required
+                :readonly="readonly">
+            </v-select>
+        </v-col>
+    </v-row>
+</v-form>

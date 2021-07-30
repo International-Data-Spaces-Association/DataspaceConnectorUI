@@ -1,0 +1,42 @@
+<div class="policy-line-div">
+    <v-row no-gutters>
+        <v-col cols="12" md="10">
+            <v-select label="Policy Pattern" v-model="policyDisplayName"
+                :items="['Provide Access', 'Prohibit Access', 'N Times Usage', 'Duration Usage', 'Usage During Interval',
+'Usage Until Deletion', 'Usage Logging', 'Usage Notification', 'Connector Restricted Usage', 'Security Profile Restricted Usage']" :readonly="readonly">
+            </v-select>
+            <div>
+                <n-times-usage ref="N Times Usage" :readonly="readonly" @validationChanged="validationChanged">
+                </n-times-usage>
+                <duration-usage ref="Duration Usage" :readonly="readonly" @validationChanged="validationChanged">
+                </duration-usage>
+                <usage-during-interval ref="Usage During Interval" :readonly="readonly"
+                    @validationChanged="validationChanged">
+                </usage-during-interval>
+                <provide-access ref="Provide Access" :readonly="readonly" @validationChanged="validationChanged">
+                </provide-access>
+                <prohibit-access ref="Prohibit Access" :readonly="readonly" @validationChanged="validationChanged">
+                </prohibit-access>
+                <usage-until-deletion ref="Usage Until Deletion" :readonly="readonly"
+                    @validationChanged="validationChanged">
+                </usage-until-deletion>
+                <usage-logging ref="Usage Logging" :readonly="readonly" @validationChanged="validationChanged">
+                </usage-logging>
+                <usage-notification ref="Usage Notification" :readonly="readonly"
+                    @validationChanged="validationChanged">
+                </usage-notification>
+                <connector-restricted-usage ref="Connector Restricted Usage" :readonly="readonly"
+                    @validationChanged="validationChanged">
+                </connector-restricted-usage>
+                <security-profile-restricted-usage ref="Security Profile Restricted Usage" :readonly="readonly"
+                    @validationChanged="validationChanged">
+                </security-profile-restricted-usage>
+            </div>
+        </v-col>
+        <v-col cols="12" md="2" class="policy-line-remove-col">
+            <v-btn fab outlined class="policy-line-remove-button" @click.native="removePolicy" v-show="!readonly">
+                <v-icon>mdi-close</v-icon>
+            </v-btn>
+        </v-col>
+    </v-row>
+</div>

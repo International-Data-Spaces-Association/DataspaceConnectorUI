@@ -15,11 +15,11 @@ const POLICY_CONNECTOR_RESTRICTED_USAGE = "Connector Restricted Usage";
 const POLICY_SECURITY_PROFILE_RESTRICTED_USAGE = "Security Profile Restricted Usage";
 
 const POLICY_DESCRIPTION_TO_NAME = {
+    "provide-access": POLICY_PROVIDE_ACCESS,
+    "prohibit-access": POLICY_PROHIBIT_ACCESS,
     "n-times-usage": POLICY_N_TIMES_USAGE,
     "duration-usage": POLICY_DURATION_USAGE,
     "usage-during-interval": POLICY_USAGE_DURING_INTERVAL,
-    "provide-access": POLICY_PROVIDE_ACCESS,
-    "prohibit-access": POLICY_PROHIBIT_ACCESS,
     "usage-until-deletion": POLICY_USAGE_UNTIL_DELETION,
     "usage-logging": POLICY_USAGE_LOGGING,
     "usage-notification": POLICY_USAGE_NOTIFICATION,
@@ -166,18 +166,18 @@ export default {
 
     async getResource(resourceId) {
         let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
-        let rule = undefined;
-        let policyName = undefined;
+        let policyNames = [];
+        let ruleIds = [];
+        let ruleJsons = [];
         let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contracts;
-        let ruleId = undefined;
         if (contracts.length > 0) {
             let contract = contracts[0];
             let contractId = this.getIdOfConnectorResponse(contract);
             let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
-            if (rules.length > 0) {
-                rule = rules[0];
-                ruleId = this.getIdOfConnectorResponse(rule);
-                policyName = (await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
+            for (let rule of rules) {
+                policyNames.push(await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
+                ruleIds.push(this.getIdOfConnectorResponse(rule));
+                ruleJsons.push(JSON.parse(rule.value));
             }
         }
         let representations = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/representations"))["_embedded"].representations;
@@ -193,7 +193,7 @@ export default {
         }
         let brokers = await this.getBrokersOfResource(resourceId);
         let brokerUris = brokers.map(x => x.location);
-        return clientDataModel.convertIdsResource(resource, representation, policyName, JSON.parse(rule.value), artifactId, ruleId, brokerUris);
+        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris);
     },
 
     async getLanguages() {
@@ -481,86 +481,113 @@ export default {
         }
     },
 
-    async createResource(title, description, language, keyword, standardlicense, publisher, policyDescription,
+    async createResourceWithMinimalRoute(title, description, language, keywords, standardlicense, publisher, policyDescriptions,
         filetype, brokerUris, genericEndpoint) {
         try {
-            // TODO Sovereign, EndpointDocumentation
-            let response = (await restUtils.callConnector("POST", "/api/offers", null, {
-                "title": title,
-                "description": description,
-                "keywords": keyword,
-                "publisher": publisher,
-                "language": language,
-                "license": standardlicense
-            }));
-
-            let resourceId = this.getIdOfConnectorResponse(response);
-            let catalogId = await this.getDefaultCatalogId();
-            response = await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
-
-            response = await restUtils.callConnector("POST", "/api/contracts", null, {});
-            let contractId = this.getIdOfConnectorResponse(response);
-
-            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
-
-            response = await restUtils.callConnector("POST", "/api/rules", null, {
-                "value": JSON.stringify(ruleJson)
-            });
-
-            let ruleId = this.getIdOfConnectorResponse(response);
-            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]);
-
-            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
-
-            response = await restUtils.callConnector("POST", "/api/representations", null, {
-                "language": language,
-                "mediaType": filetype,
-            });
-            let representationId = this.getIdOfConnectorResponse(response);
-
-            response = await restUtils.callConnector("POST", "/api/artifacts", null, {
-                "accessUrl": genericEndpoint.accessUrl,
-                "username": genericEndpoint.username,
-                "password": genericEndpoint.password
-            });
-            let artifactId = this.getIdOfConnectorResponse(response);
-
-            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/representations", null, [representationId]);
-
-            response = await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]);
-
-            response = await this.createConnectorEndpoint(artifactId);
-            let endpointId = this.getIdOfConnectorResponse(response);
-
-            response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
+            let resourceResponse = await this.createResource(title, description, language, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
             let routeId = this.getIdOfConnectorResponse(response);
-            response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, endpointId, 220, 150, artifactId);
+            response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, resourceResponse.endpointId, 220, 150, resourceResponse.artifactId);
 
-            this.addRouteStartAndEnd(routeId, genericEndpoint.id, endpointId);
+            this.addRouteStartAndEnd(routeId, genericEndpoint.id, resourceResponse.endpointId);
 
-            await this.updateResourceAtBrokers(brokerUris, resourceId);
+            await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
 
         } catch (error) {
             errorUtils.showError(error, "Save resource");
         }
     },
 
-    async editResource(resourceId, representationId, title, description, language, keyword, standardlicense, publisher, policyDescription,
-        filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
+    async createResource(title, description, language, keywords, standardlicense, publisher, policyDescriptions,
+        filetype, genericEndpoint) {
+        // TODO Sovereign, EndpointDocumentation
+        let response = (await restUtils.callConnector("POST", "/api/offers", null, {
+            "title": title,
+            "description": description,
+            "keywords": keywords,
+            "publisher": publisher,
+            "language": language,
+            "license": standardlicense
+        }));
+
+        let resourceId = this.getIdOfConnectorResponse(response);
+        let catalogId = await this.getDefaultCatalogId();
+        response = await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+
+        response = await restUtils.callConnector("POST", "/api/contracts", null, {});
+        let contractId = this.getIdOfConnectorResponse(response);
+
+        for (let policyDescription of policyDescriptions) {
+            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+            response = await restUtils.callConnector("POST", "/api/rules", null, {
+                "value": JSON.stringify(ruleJson)
+            });
+            let ruleId = this.getIdOfConnectorResponse(response);
+            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
+        }
+        response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]);
+
+        response = await restUtils.callConnector("POST", "/api/representations", null, {
+            "language": language,
+            "mediaType": filetype,
+        });
+        let representationId = this.getIdOfConnectorResponse(response);
+
+        response = await restUtils.callConnector("POST", "/api/artifacts", null, {
+            "accessUrl": genericEndpoint.accessUrl,
+            "username": genericEndpoint.username,
+            "password": genericEndpoint.password
+        });
+        let artifactId = this.getIdOfConnectorResponse(response);
+
+        response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/representations", null, [representationId]);
+
+        response = await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]);
+
+        response = await this.createConnectorEndpoint(artifactId);
+        let endpointId = this.getIdOfConnectorResponse(response);
+        return {
+            "resourceId": resourceId,
+            "artifactId": artifactId,
+            "endpointId": endpointId
+        };
+    },
+
+    async editResource(resourceId, representationId, title, description, language, keywords, standardlicense, publisher,
+        policyDescriptions, filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
                 "title": title,
                 "description": description,
-                "keywords": keyword,
+                "keywords": keywords,
                 "publisher": publisher,
                 "language": language,
                 "license": standardlicense
             });
 
-            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
-            await restUtils.callConnector("PUT", "/api/rules/" + ruleId, null, {
-                "value": JSON.stringify(ruleJson)
-            });
+            // Delete all rules and create new ones. Rules that have not been edited in the UI are also deleted and recreated. 
+            // Implementing the detection of a change to an existing rule would have been complicated (Pattern can change, only value can change, ...)
+
+            let contractId = -1;
+            let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contracts;
+            if (contracts.length > 0) {
+                let contract = contracts[0];
+                contractId = this.getIdOfConnectorResponse(contract);
+                let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
+                for (let rule of rules) {
+                    await restUtils.callConnector("DELETE", "/api/rules/" + this.getIdOfConnectorResponse(rule));
+                }
+            }
+
+            for (let policyDescription of policyDescriptions) {
+                let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+                let response = await restUtils.callConnector("POST", "/api/rules", null, {
+                    "value": JSON.stringify(ruleJson)
+                });
+                let ruleId = this.getIdOfConnectorResponse(response);
+                response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
+            }
+            //
 
             await restUtils.callConnector("PUT", "/api/representations/" + representationId, null, {
                 "language": language,
@@ -601,77 +628,19 @@ export default {
         let keywords = resource.keywords;
         let standardlicense = resource.standardlicense;
         let publisher = resource.publisher;
-        let policyDescription = resource.policyDescription;
-        let filetype = resource.filetype;
-        let brokerUris = resource.brokerList;
+        let policyDescriptions = resource.policyDescriptions;
+        let filetype = resource.fileType;
+        let brokerUris = resource.brokerUris;
 
         try {
-            // TODO Sovereign, EndpointDocumentation
-            let response = (await restUtils.callConnector("POST", "/api/offers", null, {
-                "title": title,
-                "description": description,
-                "keywords": keywords,
-                "publisher": publisher,
-                "language": language,
-                "license": standardlicense
-            }));
-
-            let resourceId = this.getIdOfConnectorResponse(response);
-            response = await restUtils.callConnector("POST", "/api/contracts", null, {});
-            let contractId = this.getIdOfConnectorResponse(response);
-
-            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
-
-            response = await restUtils.callConnector("POST", "/api/rules", null, {
-                "value": JSON.stringify(ruleJson)
-            });
-
-            let ruleId = this.getIdOfConnectorResponse(response);
-            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]);
-
-            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
-
-            response = await restUtils.callConnector("POST", "/api/representations", null, {
-                "language": language,
-                "mediaType": filetype,
-            });
-            let representationId = this.getIdOfConnectorResponse(response);
-
-            response = await restUtils.callConnector("POST", "/api/artifacts", null, {
-                "accessUrl": genericEndpoint.accessUrl,
-                "username": genericEndpoint.username,
-                "password": genericEndpoint.password
-            });
-            let artifactId = this.getIdOfConnectorResponse(response);
-
-            response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/representations", null, [representationId]);
-
-            response = await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]);
-
-            response = await this.createConnectorEndpoint(artifactId);
-            let endpointId = this.getIdOfConnectorResponse(response);
-
-            response = await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, endpointId, destinationNode.x, destinationNode.y, artifactId);
-
-            this.addRouteStartAndEnd(routeId, startId, endpointId);
-
-            await this.updateResourceAtBrokers(brokerUris, resourceId);
-
+            let resourceResponse = await this.createResource(title, description, language, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, resourceResponse.endpointId, destinationNode.x, destinationNode.y, resourceResponse.artifactId);
+            this.addRouteStartAndEnd(routeId, startId, resourceResponse.endpointId);
+            await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
         } catch (error) {
             errorUtils.showError(error, "Save Route");
             hasError = true;
         }
-
-
-        //     let endpointId = (await this.createConnectorEndpoint(resourceUUID));
-        //     response = await this.createSubRoute(routeId, startId, startCoordinateX, startCoordinateY,
-        //         endpointId, endCoordinateX, endCoordinateY, resourceId);
-
-        //     await this.updateResourceAtBrokers(brokerUris, resourceId);
-        // } catch (error) {
-        //     hasError = true;
-        //     errorUtils.showError(error, "Create IDS endpoint");
-        // }
 
         return hasError;
     },
@@ -838,14 +807,14 @@ export default {
                             keywords.push(idsKeyword["@value"]);
                         }
                         let version = resource["ids:version"];
-                        let standardLicense = resource["ids:standardLicense"]["@id"];
+                        let standardlicense = resource["ids:standardLicense"]["@id"];
                         let publisher = resource["ids:publisher"]["@id"];
                         let fileType = null;
                         if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
                             fileType = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
                         }
 
-                        recources.push(clientDataModel.createResource(id, creationDate, title, description, language, keywords, version, standardLicense,
+                        recources.push(clientDataModel.createResource(id, creationDate, title, description, language, keywords, version, standardlicense,
                             publisher, fileType, "", null));
                     }
                 }

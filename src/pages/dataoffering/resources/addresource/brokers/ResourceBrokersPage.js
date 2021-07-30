@@ -62,8 +62,8 @@ export default {
         },
         async loadResource(resource) {
             this.$data.selected = [];
-            if (resource.id == -1) {
-                if (resource.brokerList !== undefined) {
+            if (resource.id === undefined || resource.id == -1) {
+                if (resource.brokerUris !== undefined) {
                     for (let brokerUri of resource.brokerUris) {
                         let broker = this.getBroker(brokerUri);
                         this.$data.selected.push(broker);

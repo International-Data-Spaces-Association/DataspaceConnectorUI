@@ -1,0 +1,55 @@
+<v-form v-model="valid" :class="visibleclass">
+    <v-row no-gutters>
+        <v-col cols="12" md="3">
+            <!-- <v-text-field label="From" v-model="usageDuringIntervalFromValue" @change="usageDuringIntervalTfChange"
+                 :rules="defaultRule" required>
+             </v-text-field> -->
+            <v-menu v-model="startMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
+                offset-y min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                    <v-text-field v-model="startValue" label="Start" prepend-icon="mdi-calendar" readonly
+                        :rules="defaultRule" v-bind="attrs" v-on="on">
+                    </v-text-field>
+                </template>
+                <v-date-picker v-model="startValue" @input="startMenu = false" :readonly="readonly">
+                </v-date-picker>
+            </v-menu>
+        </v-col>
+        <v-col cols="12" md="1">
+
+        </v-col>
+        <v-col cols="12" md="3">
+            <!-- <v-text-field label="To" v-model="usageDuringIntervalToValue" @change="usageDuringIntervalTfChange"
+                 :rules="defaultRule" required>
+             </v-text-field> -->
+            <v-menu v-model="endMenu" :close-on-content-click="false" :nudge-right="40" transition="scale-transition"
+                offset-y min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                    <v-text-field v-model="endValue" label="End" prepend-icon="mdi-calendar" readonly
+                        :rules="defaultRule" v-bind="attrs" v-on="on">
+                    </v-text-field>
+                </template>
+                <v-date-picker v-model="endValue" @input="endMenu = false" :readonly="readonly">
+                </v-date-picker>
+            </v-menu>
+        </v-col>
+        <v-col cols="12" md="1">
+
+        </v-col>
+        <v-col cols="12" md="3">
+            <!-- <v-text-field label="To" v-model="usageDuringIntervalToValue" @change="usageDuringIntervalTfChange"
+                 :rules="defaultRule" required>
+             </v-text-field> -->
+            <v-menu v-model="deleteAtMenu" :close-on-content-click="false" :nudge-right="40"
+                transition="scale-transition" offset-y min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                    <v-text-field v-model="deleteAtValue" label="Delete at" prepend-icon="mdi-calendar" readonly
+                        :rules="defaultRule" v-bind="attrs" v-on="on">
+                    </v-text-field>
+                </template>
+                <v-date-picker v-model="deleteAtValue" @input="deleteAtMenu = false" :readonly="readonly">
+                </v-date-picker>
+            </v-menu>
+        </v-col>
+    </v-row>
+</v-form>

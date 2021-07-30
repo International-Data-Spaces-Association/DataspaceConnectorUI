@@ -1,0 +1,28 @@
+.policy-line-div {
+    /* border: 1px solid black;  */
+    background-color: var(--v-primaryhighlight-base);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.policy-line-remove-col {
+    justify-content: flex-end;
+    display: flex;
+}
+
+.policy-line-remove-button {
+    width: 25px!important;
+    height: 25px!important;
+    background-color: var(--v-text1-base);
+    border: 1px solid var(--v-text1-base);
+}
+
+.policy-line-remove-button .v-icon {
+    font-size: 17px!important;
+}
+
+.policy-line-remove-button:hover {
+    background-color: var(--v-text1-lighten3);
+    border: 1px solid var(--v-text1-lighten3);
+}
