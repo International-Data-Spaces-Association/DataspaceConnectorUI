@@ -25,6 +25,7 @@ if (process.env.CONNECTOR_URL !== undefined) {
     connectorUrl = process.env.CONNECTOR_URL;
 }
 
+app.use(express.static('../../dist'));
 
 app.use(cors({ credentials: true, origin: true }));
 app.use(bodyParser.urlencoded({
