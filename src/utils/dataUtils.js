@@ -499,7 +499,7 @@ export default {
     },
 
     async createResource(title, description, language, keywords, standardlicense, publisher, policyDescriptions,
-        filetype, genericEndpoint) {
+        filetype) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
             "title": title,
@@ -534,9 +534,10 @@ export default {
         let representationId = this.getIdOfConnectorResponse(response);
 
         response = await restUtils.callConnector("POST", "/api/artifacts", null, {
-            "accessUrl": genericEndpoint.accessUrl,
-            "username": genericEndpoint.username,
-            "password": genericEndpoint.password
+            // "accessUrl": genericEndpoint.accessUrl,
+            // "username": genericEndpoint.username,
+            // "password": genericEndpoint.password
+            "value": ""
         });
         let artifactId = this.getIdOfConnectorResponse(response);
 
