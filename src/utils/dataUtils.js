@@ -802,7 +802,7 @@ export default {
             }
         }
 
-        return recources;
+        return resources;
     },
 
     async receiveCatalogs(recipientId) {
@@ -834,6 +834,15 @@ export default {
             }
         }
         return resources;
+    },
+
+    async receiveIdsResourceCatalog(recipientId, catalogId) {
+        let params = {
+            "recipient": recipientId,
+            "elementId": catalogId
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+        return response;
     }
 }
 

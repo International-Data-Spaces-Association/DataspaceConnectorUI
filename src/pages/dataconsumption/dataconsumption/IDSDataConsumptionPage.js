@@ -13,6 +13,8 @@ export default {
             receivedCatalogs: [],
             selectedCatalog: "",
             resourcesInSelectedCatalog: [],
+            idsResourceCatalog: {},
+            selectedRepresentations: [],
             valid: false,
             urlRule: validationUtils.getUrlRequiredRule(),
             headers: [{
@@ -73,9 +75,18 @@ export default {
             this.$root.$emit('showBusyIndicator', false);
         },
 
-        selectCatalog(catalog) {
-            this.selectedCatalog = catalog;
-            this.receiveResources(catalog)
+        selectCatalog(catalogId) {
+            this.selectedCatalog = catalogId;
+            this.receiveResources(catalogId)
+            this.getIdsResourceCatalog(catalogId)
+        },
+
+        async getIdsResourceCatalog(catalogId) {
+            try {
+                this.$data.idsResourceCatalog = await dataUtils.receiveIdsResourceCatalog(this.$data.recipientId, catalogId);
+            } catch (error) {
+                errorUtils.showError(error, "Receive Resources in Catalog");
+            }
         },
 
         async showItem(item) {
@@ -88,6 +99,17 @@ export default {
             this.$root.$emit('showBusyIndicator', true);
             this.$root.$emit('showBusyIndicator', false);
             this.$refs.resourceDetailsDialog.showResource(item);
+        },
+
+        showRepresentations(item) {
+
+            this.$data.idsResourceCatalog["ids:offeredResource"].forEach(element => {
+                if ( element["@id"].substring(element["@id"].lastIndexOf("/"), element["@id"].length) == item.id ) {
+                    this.$data.selectedRepresentations = element["ids:representation"];
+                }
+            }); 
+
         }
-    },
+
+    }
 };

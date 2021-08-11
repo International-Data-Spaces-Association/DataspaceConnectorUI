@@ -17,9 +17,9 @@
                 </v-form>
                 <div>
                     <h3 id="select-catalog" v-if="receivedCatalogs.length > 0">Select catalog:</h3>
-                    <div v-for="catalog in receivedCatalogs">
-                        <v-btn color="secondary" @click="selectCatalog(catalog)">
-                            {{ catalog }}
+                    <div v-for="catalogId in receivedCatalogs">
+                        <v-btn color="secondary" @click="selectCatalog(catalogId)">
+                            {{ catalogId }}
                         </v-btn>
                         <div v-for="filetype in resourcesInSelectedCatalog.filetype">{{ filetype }}</div>
                     </div>
@@ -27,20 +27,28 @@
                 <div v-if="resourcesInSelectedCatalog.length > 0">
                     <v-row no-gutters>
                         <v-col cols="12" md="11" sm="12">
-                            <v-data-table :headers="headers" :items="resourcesInSelectedCatalog" :items-per-page="5" :sort-by.sync="sortBy"
-                                :sort-desc.sync="sortDesc" no-data-text="No resources available">
-                                <template @click="selectElement(item)" v-slot:item.actions="{ item }">
-                                    <v-icon class="mr-2" @click="showContract(item)">
-                                        mdi-lock-open
-                                    </v-icon>
-                                    <v-icon class="mr-2" @click="showItem(item)">
-                                        mdi-eye
-                                    </v-icon>
-                                </template>
-                            </v-data-table>
+                            <div>
+                                <v-data-table :headers="headers" :items="resourcesInSelectedCatalog" :items-per-page="5" :sort-by.sync="sortBy"
+                                    :sort-desc.sync="sortDesc" no-data-text="No resources available">
+                                    <template @click="selectElement(item)" v-slot:item.actions="{ item }">
+                                        <v-icon class="mr-2" @click="showRepresentations(item)">
+                                            mdi-file-find
+                                        </v-icon>
+                                        <v-icon class="mr-2" @click="showContract(item)">
+                                            mdi-lock-open
+                                        </v-icon>
+                                        <v-icon class="mr-2" @click="showItem(item)">
+                                            mdi-eye
+                                        </v-icon>
+                                    </template>
+                                </v-data-table>
+                            </div>
                         </v-col>
                     </v-row>
-                    </div>
+                </div>
+                <div v-if="selectedRepresentations.length > 0">
+                    <h3>Select Representation</h3>
+                </div>
             </v-tab-item>
             <v-tab-item>
                 <div>
