@@ -15,6 +15,8 @@ export default {
             resourcesInSelectedCatalog: [],
             idsResourceCatalog: {},
             selectedRepresentations: [],
+            selectedRepresentation: {},
+            selectedArtifacts: [],
             valid: false,
             urlRule: validationUtils.getUrlRequiredRule(),
             headers: [{
@@ -109,6 +111,15 @@ export default {
                 }
             }); 
 
+        },
+
+        selectRepresentation(representation) {
+            this.$data.selectedRepresentation = representation;
+            this.getArtifacts(representation);
+        },
+
+        getArtifacts(representation) {
+            this.$data.selectedArtifacts = representation["ids:instance"];
         }
 
     }

@@ -25,6 +25,7 @@
                     </div>
                 </div>
                 <div v-if="resourcesInSelectedCatalog.length > 0">
+                    <h3 id="label-resources">Resources:</h3>
                     <v-row no-gutters>
                         <v-col cols="12" md="11" sm="12">
                             <div>
@@ -47,7 +48,22 @@
                     </v-row>
                 </div>
                 <div v-if="selectedRepresentations.length > 0">
-                    <h3>Select Representation</h3>
+                    <h3>Select Representation:</h3>
+                    <div v-for="representation in selectedRepresentations">
+                        <v-btn color="secondary" @click="selectRepresentation(representation)">
+                            {{ representation['@id'] }}
+                        </v-btn>
+                        <div v-for="filetype in resourcesInSelectedCatalog.filetype">{{ filetype }}</div>
+                    </div>
+                </div>
+                <div v-if="selectedArtifacts.length > 0">
+                    <h3>Artifacts:</h3>
+                    <div v-for="artifact in selectedArtifacts">
+                        <v-btn color="secondary">
+                            {{ artifact['@id'] }}
+                        </v-btn>
+                        <div v-for="filetype in resourcesInSelectedCatalog.filetype">{{ filetype }}</div>
+                    </div>
                 </div>
             </v-tab-item>
             <v-tab-item>
