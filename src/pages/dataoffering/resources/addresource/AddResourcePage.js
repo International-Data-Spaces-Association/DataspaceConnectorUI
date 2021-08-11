@@ -109,7 +109,7 @@ export default {
             var keywords = dataUtils.commaSeperatedStringToArray(this.$refs.metaDataPage.keywords);
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
-            var policyDescription = this.$refs.policyPage.getDescription();
+            var policyDescriptions = this.$refs.policyPage.getDescriptions();
             var filetype = this.$refs.representationPage.filetype;
             var brokerList = this.$refs.brokersPage.getSelectedBrokerList()
             let brokerDeleteList = this.$refs.brokersPage.getBrokerDeleteList();
@@ -117,17 +117,17 @@ export default {
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
                 this.$emit("saved", title, description, language, keywords, 0, standardlicense, publisher,
-                    policyDescription, filetype, 0, brokerList);
+                    policyDescriptions, filetype, 0, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
-                    await dataUtils.createResource(title, description, language, keywords, standardlicense, publisher,
-                        policyDescription, filetype, brokerList, genericEndpoint);
+                    await dataUtils.createResourceWithMinimalRoute(title, description, language, keywords, standardlicense, publisher,
+                        policyDescriptions, filetype, brokerList, genericEndpoint);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
-                        title, description, language, keywords, standardlicense, publisher, policyDescription,
+                        title, description, language, keywords, standardlicense, publisher, policyDescriptions,
                         filetype, brokerList, brokerDeleteList, genericEndpoint, this.$data.currentResource.ruleId,
                         this.$data.currentResource.artifactId);
                     this.$router.push('idresourcesoffering');

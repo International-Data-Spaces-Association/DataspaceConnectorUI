@@ -1,0 +1,9 @@
+<v-form v-model="valid" :class="visibleclass">
+    <v-row no-gutters>
+        <v-col cols="12" md="4">
+            <v-text-field label="Duration (in h)" v-model="durationUsageValue" @change="durationUsageTfChange"
+                :rules="numberRule" required :readonly="readonly">
+            </v-text-field>
+        </v-col>
+    </v-row>
+</v-form>

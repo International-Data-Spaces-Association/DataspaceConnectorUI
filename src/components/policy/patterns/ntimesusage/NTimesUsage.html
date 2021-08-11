@@ -1,0 +1,10 @@
+<v-form v-model="valid" ref="form" :class="visibleclass">
+    <v-row no-gutters>
+        <div class="div-operator">≤</div>
+        <v-col cols="12" md="5">
+            <v-text-field label="Number" v-model="nTimesUsageValue" @change="nTimesUsageTfChange" :rules="numberRule"
+                required :readonly="readonly">
+            </v-text-field>
+        </v-col>
+    </v-row>
+</v-form>

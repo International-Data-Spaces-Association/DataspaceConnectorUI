@@ -26,7 +26,7 @@ export default {
                 value: 'publisher'
             }, {
                 text: 'License',
-                value: 'standardLicense'
+                value: 'standardlicense'
             },
             {
                 text: '',

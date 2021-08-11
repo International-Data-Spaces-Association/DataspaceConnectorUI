@@ -1,0 +1,39 @@
+<v-form v-model="valid" :class="visibleclass">
+    <v-row no-gutters>
+        <v-col cols="12" md="4">
+            <!-- <v-text-field label="From" v-model="usageDuringIntervalFromValue" @change="usageDuringIntervalTfChange"
+                 :rules="defaultRule" required>
+             </v-text-field> -->
+            <v-menu v-model="usageDuringIntervalFromMenu" :close-on-content-click="false" :nudge-right="40"
+                transition="scale-transition" offset-y min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                    <v-text-field v-model="usageDuringIntervalFromValue" label="From" prepend-icon="mdi-calendar"
+                        readonly :rules="defaultRule" v-bind="attrs" v-on="on">
+                    </v-text-field>
+                </template>
+                <v-date-picker v-model="usageDuringIntervalFromValue" @input="usageDuringIntervalFromMenu = false"
+                    :readonly="readonly">
+                </v-date-picker>
+            </v-menu>
+        </v-col>
+        <v-col cols="12" md="1">
+
+        </v-col>
+        <v-col cols="12" md="4">
+            <!-- <v-text-field label="To" v-model="usageDuringIntervalToValue" @change="usageDuringIntervalTfChange"
+                 :rules="defaultRule" required>
+             </v-text-field> -->
+            <v-menu v-model="usageDuringIntervalToMenu" :close-on-content-click="false" :nudge-right="40"
+                transition="scale-transition" offset-y min-width="auto">
+                <template v-slot:activator="{ on, attrs }">
+                    <v-text-field v-model="usageDuringIntervalToValue" label="To" prepend-icon="mdi-calendar" readonly
+                        :rules="defaultRule" v-bind="attrs" v-on="on">
+                    </v-text-field>
+                </template>
+                <v-date-picker v-model="usageDuringIntervalToValue" @input="usageDuringIntervalToMenu = false"
+                    :readonly="readonly">
+                </v-date-picker>
+            </v-menu>
+        </v-col>
+    </v-row>
+</v-form>

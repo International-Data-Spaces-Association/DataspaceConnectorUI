@@ -1,83 +1,92 @@
-import dataUtils from "@/utils/dataUtils";
-import NTimesUsage from "./patterns/ntimesusage/NTimesUsage.vue";
-import DurationUsage from "./patterns/durationusage/DurationUsage.vue";
-import UsageDuringInterval from "./patterns/usageduringinterval/UsageDuringInterval.vue";
-import ProvideAccess from "./patterns/provideaccess/ProvideAccess.vue";
-import ProhibitAccess from "./patterns/prohibitaccess/ProhibitAccess.vue";
-import UsageUntilDeletion from "./patterns/usageuntildeletion/UsageUntilDeletion.vue";
-import UsageLogging from "./patterns/usagelogging/UsageLogging.vue";
-import UsageNotification from "./patterns/usagenotification/UsageNotification.vue";
-import ConnectorRestrictedUsage from "./patterns/connectorrestrictedusage/ConnectorRestrictedUsage.vue";
-import SecurityProfileRestrictedUsage from "./patterns/securityprofilerestrictedusage/SecurityProfileRestrictedUsage.vue";
-
+import PolicyLine from "@/components/policy/PolicyLine.vue";
 
 export default {
     components: {
-        NTimesUsage,
-        DurationUsage,
-        UsageDuringInterval,
-        ProvideAccess,
-        ProhibitAccess,
-        UsageUntilDeletion,
-        UsageLogging,
-        UsageNotification,
-        ConnectorRestrictedUsage,
-        SecurityProfileRestrictedUsage
+        PolicyLine
     },
     data() {
         return {
             policyType: null,
-            policyDisplayName: null,
-            readonly: false
+            readonly: false,
+            valid: true,
+            policyLines: []
         };
     },
     mounted: function () {
-        this.$data.policyDisplayName = dataUtils.POLICY_PROVIDE_ACCESS;
         this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
-    },
-    watch: {
-        policyDisplayName: function () {
-            for (let name of dataUtils.getPolicyNames()) {
-                if (name == this.$data.policyDisplayName) {
-                    this.$refs[name].visibleclass = "";
-                    this.$refs[name].readonly = this.$data.readonly;
-                } else {
-                    this.$refs[name].visibleclass = "invisible-policy";
-                }
-            }
-        }
+        this.$data.policyLines.push({
+            "name": Date.now()
+        });
     },
     methods: {
         gotVisible() {
             this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
         },
         loadResource(resource) {
-            if (resource.contract === undefined) {
-                this.$data.policyDisplayName = dataUtils.POLICY_PROVIDE_ACCESS;
+            this.$data.policyLines = [];
+            if (resource.id == -1) {
+                // resource.id == -1 means this is a new IDS Endpoint node at the route page.
+                // For this new node one policy line is added, so the user can save the first click on "+".
+                this.$data.policyLines.push({
+                    "name": Date.now()
+                });
             } else {
-                this.setPolicy(resource.contract, resource.policyName, resource.policyDescription);
-            }
-        },
-        setPolicy(contract, policyType, policyDescription) {
-            if (policyType == "") {
-                this.$refs[dataUtils.getPolicyNames()[0]].setPolicy(contract);
-            } else {
-                this.$data.policyDisplayName = dataUtils.getPolicyDisplayName(policyType);
-                if (contract == "") {
-                    this.$refs[this.$data.policyDisplayName].setPolicyByDescription(policyDescription);
-                } else {
-                    this.$refs[this.$data.policyDisplayName].setPolicy(contract);
+                if (resource.policyNames !== undefined) {
+                    for (let i = 0; i < resource.policyNames.length; i++) {
+                        let policyLine = {
+                            "name": Date.now() + i,
+                            "ruleId": resource.ruleIds[i],
+                            "ruleJson": resource.ruleJsons[i],
+                            "policyName": resource.policyNames[i]
+                        };
+                        this.$data.policyLines.push(policyLine);
+                    }
+                } else if (resource.policyDescriptions !== undefined) {
+                    for (let i = 0; i < resource.policyDescriptions.length; i++) {
+                        let policyLine = {
+                            "name": Date.now() + i,
+                            "policyDescription": resource.policyDescriptions[i]
+                        };
+                        this.$data.policyLines.push(policyLine);
+                    }
                 }
             }
         },
-        getDescription() {
-            return this.$refs[this.$data.policyDisplayName].description;
+        getDescriptions() {
+            let descriptions = [];
+            for (let policyLine of this.$data.policyLines) {
+                descriptions.push(this.$refs[policyLine.name][0].getDescription());
+            }
+            return descriptions;
         },
         previousPage() {
             this.$emit('previousPage')
         },
         nextPage() {
             this.$emit('nextPage')
+        },
+        addPolicy() {
+            this.$data.policyLines.push({
+                "name": Date.now()
+            });
+        },
+        removePolicy(name) {
+            let index = -1;
+            for (let i = 0; i < this.$data.policyLines.length; i++) {
+                if (this.$data.policyLines[i].name == name) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index > -1) {
+                this.$data.policyLines.splice(index, 1);
+            }
+            this.validationChanged();
+        },
+        validationChanged() {
+            for (let policyLine of this.$data.policyLines) {
+                this.$data.valid = this.$refs[policyLine.name][0].isValid();
+            }
         }
     }
 };

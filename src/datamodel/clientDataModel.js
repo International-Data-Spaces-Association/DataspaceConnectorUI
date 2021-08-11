@@ -1,8 +1,8 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, creationDate, title, description, language, keywords, version, standardLicense,
-        publisher, fileType, policyName, contract, artifactId, representationId, ruleId, brokerUris) {
+    createResource(id, creationDate, title, description, language, keywords, version, standardlicense,
+        publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris) {
         let resource = {};
         if (id === undefined) {
             resource.id = "";
@@ -39,10 +39,10 @@ export default {
         } else {
             resource.version = version;
         }
-        if (standardLicense === undefined) {
-            resource.standardLicense = "";
+        if (standardlicense === undefined) {
+            resource.standardlicense = "";
         } else {
-            resource.standardLicense = standardLicense;
+            resource.standardlicense = standardlicense;
         }
         if (publisher === undefined) {
             resource.publisher = "";
@@ -54,15 +54,20 @@ export default {
         } else {
             resource.fileType = fileType;
         }
-        if (policyName === undefined) {
-            resource.policyName = "";
+        if (policyNames === undefined) {
+            resource.policyNames = [];
         } else {
-            resource.policyName = policyName;
+            resource.policyNames = policyNames;
         }
-        if (contract === undefined) {
-            resource.contract = "";
+        if (ruleIds === undefined) {
+            resource.ruleIds = [];
         } else {
-            resource.contract = contract;
+            resource.ruleIds = ruleIds;
+        }
+        if (ruleJsons === undefined) {
+            resource.ruleJsons = [];
+        } else {
+            resource.ruleJsons = ruleJsons;
         }
         if (artifactId === undefined) {
             resource.artifactId = "";
@@ -73,11 +78,6 @@ export default {
             resource.representationId = "";
         } else {
             resource.representationId = representationId;
-        }
-        if (ruleId === undefined) {
-            resource.ruleId = "";
-        } else {
-            resource.ruleId = ruleId;
         }
         if (brokerUris === undefined) {
             resource.brokerUris = [];
@@ -281,7 +281,7 @@ export default {
         return this.createApp(id, idsApp.title, idsApp.description, "APP");
     },
 
-    convertIdsResource(idsResource, representation, policyName, contract, artifactId, ruleId, brokerUris) {
+    convertIdsResource(idsResource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris) {
         let title = idsResource.title;
         if (title.includes("\"@en")) {
             title = idsResource.title.substring(1, idsResource.title.lastIndexOf("\""));
@@ -299,7 +299,7 @@ export default {
 
         return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.keywords,
-            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyName, contract, artifactId, representationId, ruleId, brokerUris);
+            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris);
     },
 
 
