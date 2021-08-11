@@ -55,6 +55,7 @@ Run docker image:
 ```bash
 sudo docker-compose up
 ```
+Access: [localhost:8083](http://localhost:8083) 
 
 ### Change host & port of Dataspace Connector & UI backend on docker start
 
@@ -62,7 +63,6 @@ Change in `docker-compose.yml`:
 ```bash
 environment:
           - CONNECTOR_URL=https://localhost:8080
-          - UI_BACKEND_URL=http://localhost:8083
 ```
 
 ## Development

@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [8.3.0] - 2021-08-13
+
+### Changes
+- Prebuild user interface for docker image
+
+### Fixes
+- Create artifact with value:'' on resource creation
+
 ## [8.2.0] - 2021-07-30
 
 ### Added
