@@ -782,7 +782,7 @@ export default {
     },
 
     async receiveResources(recipientId) {
-        let recources = [];
+        let resources = [];
         let params = {
             "recipient": recipientId
         }
@@ -796,31 +796,68 @@ export default {
                 response = await restUtils.callConnector("POST", "/api/ids/description", params);
                 if (response["ids:offeredResource"] !== undefined) {
                     for (let resource of response["ids:offeredResource"]) {
-                        let id = resource["@id"].substring(resource["@id"].lastIndexOf("/"), resource["@id"].length);
-                        let creationDate = resource["ids:created"]["@value"];
-                        let title = resource["ids:title"][0]["@value"];
-                        let description = resource["ids:description"][0]["@value"];
-                        let language = resource["ids:language"][0]["@id"].replace("https://w3id.org/idsa/code/", "");
-                        let keywords = [];
-                        let idsKeywords = resource["ids:keyword"];
-                        for (let idsKeyword of idsKeywords) {
-                            keywords.push(idsKeyword["@value"]);
-                        }
-                        let version = resource["ids:version"];
-                        let standardlicense = resource["ids:standardLicense"]["@id"];
-                        let publisher = resource["ids:publisher"]["@id"];
-                        let fileType = null;
-                        if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
-                            fileType = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
-                        }
-
-                        recources.push(clientDataModel.createResource(id, creationDate, title, description, language, keywords, version, standardlicense,
-                            publisher, fileType, "", null));
+                        addToLocalResources(resource, resources);
                     }
                 }
             }
         }
 
         return recources;
+    },
+
+    async receiveCatalogs(recipientId) {
+        let catalogs = [];
+        let params = {
+            "recipient": recipientId
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+        if (response["ids:resourceCatalog"] !== undefined) {
+            for (let catalog of response["ids:resourceCatalog"]) {
+                let id = catalog["@id"].substring(catalog["@id"]/*.lastIndexOf("/"), catalog["@id"].length*/);
+                catalogs.push(id);
+            }
+        }
+
+        return catalogs;
+    },
+
+    async receiveResourcesInCatalog(recipientId, catalogID) {
+        let resources = [];
+        let params = {
+            "recipient": recipientId,
+            "elementId": catalogID
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+        if (response["ids:offeredResource"] !== undefined) {
+            for (let resource of response["ids:offeredResource"]) {
+                addToLocalResources(resource, resources);
+            }
+        }
+        return resources;
+    }
+}
+
+function addToLocalResources(resource, resources) {
+    {
+        let id = resource["@id"].substring(resource["@id"].lastIndexOf("/"), resource["@id"].length);
+        let creationDate = resource["ids:created"]["@value"];
+        let title = resource["ids:title"][0]["@value"];
+        let description = resource["ids:description"][0]["@value"];
+        let language = resource["ids:language"][0]["@id"].replace("https://w3id.org/idsa/code/", "");
+        let keywords = [];
+        let idsKeywords = resource["ids:keyword"];
+        for (let idsKeyword of idsKeywords) {
+            keywords.push(idsKeyword["@value"]);
+        }
+        let version = resource["ids:version"];
+        let standardlicense = resource["ids:standardLicense"]["@id"];
+        let publisher = resource["ids:publisher"]["@id"];
+        let fileType = null;
+        if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
+            fileType = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
+        }
+
+        resources.push(clientDataModel.createResource(id, creationDate, title, description, language, keywords, version, standardlicense,
+            publisher, fileType, "", null));
     }
 }

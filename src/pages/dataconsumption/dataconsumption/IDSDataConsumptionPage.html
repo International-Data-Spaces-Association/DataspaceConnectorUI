@@ -1,0 +1,64 @@
+<div class="content data-consumption-page">
+    <p>
+        data consumption page
+    </p>
+    <div>
+        <v-tabs>
+            <v-tab>Enter Connector URL</v-tab>
+            <v-tab>Browse Resources</v-tab>
+            <v-tab>tab 3</v-tab>
+            <v-tab>tab 4</v-tab>
+            <v-tab>tab 5</v-tab>
+            <v-tab-item>
+                <v-form v-model="valid" ref="form">
+                    <v-text-field label="Recipient URL" v-model="recipientId" :rules="urlRule"> </v-text-field>
+                    <v-btn id="btn-show-catalogs" color="primary" @click.native="receiveCatalogs" :disabled="!valid">Show available Catalogs
+                    </v-btn>
+                </v-form>
+                <div>
+                    <h3 id="select-catalog" v-if="receivedCatalogs.length > 0">Select catalog:</h3>
+                    <div v-for="catalog in receivedCatalogs">
+                        <v-btn color="secondary" @click="selectCatalog(catalog)">
+                            {{ catalog }}
+                        </v-btn>
+                        <div v-for="filetype in resourcesInSelectedCatalog.filetype">{{ filetype }}</div>
+                    </div>
+                </div>
+                <div v-if="resourcesInSelectedCatalog.length > 0">
+                    <v-row no-gutters>
+                        <v-col cols="12" md="11" sm="12">
+                            <v-data-table :headers="headers" :items="resourcesInSelectedCatalog" :items-per-page="5" :sort-by.sync="sortBy"
+                                :sort-desc.sync="sortDesc" no-data-text="No resources available">
+                                <template @click="selectElement(item)" v-slot:item.actions="{ item }">
+                                    <v-icon class="mr-2" @click="showContract(item)">
+                                        mdi-lock-open
+                                    </v-icon>
+                                    <v-icon class="mr-2" @click="showItem(item)">
+                                        mdi-eye
+                                    </v-icon>
+                                </template>
+                            </v-data-table>
+                        </v-col>
+                    </v-row>
+                    </div>
+            </v-tab-item>
+            <v-tab-item>
+                <div>
+                    <v-row no-gutters>
+                        <v-col cols="12" md="11" sm="12">
+                            <v-data-table :headers="headers" :items="resourcesInSelectedCatalog" :items-per-page="5" :sort-by.sync="sortBy"
+                                :sort-desc.sync="sortDesc" no-data-text="No resources available">
+                                <template v-slot:item.actions="{ item }">
+                                    <v-icon class="mr-2" @click="showItem(item)">
+                                        mdi-eye
+                                    </v-icon>
+                                </template>
+                            </v-data-table>
+                        </v-col>
+                    </v-row>
+                    </div>
+            </v-tab-item>
+        </v-tabs>
+    </div>
+    <resource-details-dialog ref="resourceDetailsDialog"></resource-details-dialog>
+</div>

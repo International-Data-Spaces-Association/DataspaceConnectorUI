@@ -3,6 +3,7 @@ import IDSResourcesPage from "@/pages/dataoffering/resources/IDSResourcesPage.vu
 import AddResourcePage from "@/pages/dataoffering/resources/addresource/AddResourcePage.vue";
 import RoutesPage from "@/pages/dataoffering/routes/RoutesPage.vue";
 import AddRoutePage from "@/pages/dataoffering/routes/addroute/AddRoutePage.vue";
+import IDSDataConsumptionPage from "@/pages/dataconsumption/dataconsumption/IDSDataConsumptionPage.vue";
 import IDSResourcesPageConsumption from "@/pages/dataconsumption/resources/IDSResourcesPageConsumption.vue";
 import AddResourcePageConsumption from "@/pages/dataconsumption/resources/addresource/AddResourcePageConsumption.vue";
 import BrokersPage from "@/pages/brokers/BrokersPage.vue";
@@ -65,6 +66,12 @@ export default {
             icon: "icon-dataconsumption",
             component: null,
             subpages: [{
+                path: "idsdataconsumption",
+                name: "IDS Data (Consumption)",
+                component: IDSDataConsumptionPage,
+                subpages: []
+            },
+                {
                 path: "idresourcesconsumption",
                 name: "IDS Resources (Consumption)",
                 component: IDSResourcesPageConsumption,
