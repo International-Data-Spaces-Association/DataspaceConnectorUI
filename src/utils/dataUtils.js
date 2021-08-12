@@ -862,6 +862,24 @@ export default {
         let response = await restUtils.callConnector("POST", "/api/ids/description", params);
         return response;
     } */
+
+    async receiveContract(recipientId, resourceId, contractOffer, artifact, download) {
+        let params = {
+            "recipient": recipientId,
+            "resourceIds": resourceId,
+            "artifactIds": artifact["@id"],
+            "download": download
+        }
+        
+        let body = contractOffer[0]["ids:permission"];
+        
+        body = JSON.stringify( body );
+        
+        body = body.substring(0, body.length - 2) + ", \"ids:target\":\"" + artifact["@id"] + "\"" + "}]";
+        
+        let response = await restUtils.callConnector("POST", "/api/ids/contract", params, body);
+        return response;
+    }
 }
 
 function addToLocalResources(resource, resources) {

@@ -86,7 +86,10 @@
                                           </v-card-title>
                                   
                                           <v-card-text>
-                                          {{ selectedResource }}
+                                                <h4>Rule:</h4>
+                                                    {{ selectedResource["ids:contractOffer"] }}
+                                                <h4>License:</h4>
+                                                    {{ selectedResource["ids:standardLicense"]["@id"] }}
                                           </v-card-text>
                                   
                                           <v-divider></v-divider>
@@ -96,7 +99,7 @@
                                             <v-btn
                                               color="green"
                                               text
-                                              @click="dialog = false; clickAcceptContract()"
+                                              @click="dialog = false; clickAcceptContract(item)"
                                             >
                                               <p id="btn-accept">accept</p>
                                             </v-btn>
@@ -116,6 +119,10 @@
                             </template>
                     </v-data-table>
                 </div>
+                <div v-if="requestContractResponse['confirmed'] == true">
+                    <h3>{{ selectedIdsArtifact["@id"] }}/data </h3>
+                </div>
+           
             </v-tab-item>
 <!--             <v-tab-item>
                 <div>

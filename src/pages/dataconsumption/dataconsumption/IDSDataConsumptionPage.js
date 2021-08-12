@@ -20,6 +20,7 @@ export default {
             selectedArtifacts: [],
             selectedIdsArtifact: {},
             idsContractOffer: {},
+            requestContractResponse: {},
             dialog: false,
             valid: false,
             urlRule: validationUtils.getUrlRequiredRule(),
@@ -142,8 +143,10 @@ export default {
         }, */
 
         async requestContract(){
+            let download = "false";
             try {
-                this.$data.requestContractResponse = await dataUtils.receiveContract(this.$data.recipientId, this.$data.selectedResource["ids:contractOffer"][0], this.$data.selectedIdsArtifact);
+                this.$data.requestContractResponse = await dataUtils.receiveContract(this.$data.recipientId, 
+                    this.$data.selectedResource["@id"], this.$data.selectedResource["ids:contractOffer"], this.$data.selectedIdsArtifact, download);
             } catch (error) {
                 errorUtils.showError(error, "Receive Contract");
             }
@@ -169,7 +172,8 @@ export default {
             this.$data.selectedArtifacts = representation["ids:instance"];
         },
 
-        clickAcceptContract() {
+        clickAcceptContract(artifact) {
+            this.$data.selectedIdsArtifact = artifact;
             this.requestContract();
         }
 
