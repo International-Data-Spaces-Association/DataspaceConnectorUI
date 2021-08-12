@@ -10,3 +10,11 @@
 #label-resources {
     margin-top: 50px;
 }
+#btn-accept {
+    color: green;
+    align-self: center;
+}
+#btn-decline {
+    color: red;
+    align-self: center;
+}

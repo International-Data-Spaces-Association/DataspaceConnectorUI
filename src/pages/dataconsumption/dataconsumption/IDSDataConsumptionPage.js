@@ -14,9 +14,13 @@ export default {
             selectedCatalog: "",
             resourcesInSelectedCatalog: [],
             idsResourceCatalog: {},
+            selectedResource: {},
             selectedRepresentations: [],
             selectedRepresentation: {},
             selectedArtifacts: [],
+            selectedIdsArtifact: {},
+            idsContractOffer: {},
+            dialog: false,
             valid: false,
             urlRule: validationUtils.getUrlRequiredRule(),
             headers: [{
@@ -37,6 +41,26 @@ export default {
             }, {
                 text: 'License',
                 value: 'standardlicense'
+            },
+            {
+                text: '',
+                value: 'actions',
+                sortable: false,
+                align: 'right'
+            }
+            ],
+            headersArtifacts: [{
+                text: 'Creation date',
+                value: 'ids:creationDate.@value',
+                width: 135
+            },
+            {
+                text: 'File Name',
+                value: 'ids:fileName'
+            },
+            {
+                text: 'Byte Size',
+                value: 'ids:byteSize'
             },
             {
                 text: '',
@@ -97,10 +121,32 @@ export default {
             this.$refs.resourceDetailsDialog.showResource(item);
         },
 
-        async showContract(item) {
+/*         async getContractOffer(artifact) {
             this.$root.$emit('showBusyIndicator', true);
             this.$root.$emit('showBusyIndicator', false);
-            this.$refs.resourceDetailsDialog.showResource(item);
+            try{
+                this.$data.selectedIdsArtifact = await dataUtils.receiveIdsArtifact(this.$data.recipientId, artifact["@id"])
+            } catch (error) {
+                errorUtils.showError(error, "Receive Artifact");
+            }
+
+            try{
+                this.$data.idsContractOffer = await dataUtils.receiveIdsContractOffer(this.$data.recipientId, artifact["@id"])
+            } catch (error) {
+                errorUtils.showError(error, "Receive Contract Offer");
+            }
+        }, */
+
+/*         showContract(artifact) {
+            this.$data.selectedResource["ids:contractOffer"][0];
+        }, */
+
+        async requestContract(){
+            try {
+                this.$data.requestContractResponse = await dataUtils.receiveContract(this.$data.recipientId, this.$data.selectedResource["ids:contractOffer"][0], this.$data.selectedIdsArtifact);
+            } catch (error) {
+                errorUtils.showError(error, "Receive Contract");
+            }
         },
 
         showRepresentations(item) {
@@ -108,6 +154,7 @@ export default {
             this.$data.idsResourceCatalog["ids:offeredResource"].forEach(element => {
                 if ( element["@id"].substring(element["@id"].lastIndexOf("/"), element["@id"].length) == item.id ) {
                     this.$data.selectedRepresentations = element["ids:representation"];
+                    this.$data.selectedResource = element;
                 }
             }); 
 
@@ -120,6 +167,10 @@ export default {
 
         getArtifacts(representation) {
             this.$data.selectedArtifacts = representation["ids:instance"];
+        },
+
+        clickAcceptContract() {
+            this.requestContract();
         }
 
     }

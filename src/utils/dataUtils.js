@@ -843,7 +843,25 @@ export default {
         }
         let response = await restUtils.callConnector("POST", "/api/ids/description", params);
         return response;
-    }
+    },
+
+/*     async receiveIdsArtifact(recipientId, artifactId) {
+        let params = {
+            "recipient": recipientId,
+            "elementId": artifactId
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+        return response;
+    },
+
+    async receiveIdsContractOffer(recipientId, artifactId) {
+        let params = {
+            "recipient": recipientId,
+            "elementId": artifactId
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+        return response;
+    } */
 }
 
 function addToLocalResources(resource, resources) {
