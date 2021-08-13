@@ -21,9 +21,10 @@ export default {
             selectedIdsArtifact: {},
             idsContractOffer: {},
             requestContractResponse: {},
+            downloadLink: "",
             dialog: false,
             valid: false,
-            urlRule: validationUtils.getUrlRequiredRule(),
+            providerUrlRule: validationUtils.getProviderUrlRequiredRule(),
             headers: [{
                 text: 'Creation date',
                 value: 'creationDate',
@@ -74,9 +75,9 @@ export default {
             sortDesc: true
         };
     },
-//    mounted: function () {
-//
-//    },
+    //    mounted: function () {
+    //
+    //    },
     methods: {
         getConnectorSelfDescription() {
             // this.$root.$emit('showBusyIndicator', true);
@@ -92,7 +93,7 @@ export default {
             this.$root.$emit('showBusyIndicator', false);
         },
 
-        async receiveResources(catalogID){
+        async receiveResources(catalogID) {
             this.$root.$emit('showBusyIndicator', true);
             try {
                 this.$data.resourcesInSelectedCatalog = await dataUtils.receiveResourcesInCatalog(this.$data.recipientId, catalogID);
@@ -122,30 +123,30 @@ export default {
             this.$refs.resourceDetailsDialog.showResource(item);
         },
 
-/*         async getContractOffer(artifact) {
-            this.$root.$emit('showBusyIndicator', true);
-            this.$root.$emit('showBusyIndicator', false);
-            try{
-                this.$data.selectedIdsArtifact = await dataUtils.receiveIdsArtifact(this.$data.recipientId, artifact["@id"])
-            } catch (error) {
-                errorUtils.showError(error, "Receive Artifact");
-            }
+        /*         async getContractOffer(artifact) {
+                    this.$root.$emit('showBusyIndicator', true);
+                    this.$root.$emit('showBusyIndicator', false);
+                    try{
+                        this.$data.selectedIdsArtifact = await dataUtils.receiveIdsArtifact(this.$data.recipientId, artifact["@id"])
+                    } catch (error) {
+                        errorUtils.showError(error, "Receive Artifact");
+                    }
+        
+                    try{
+                        this.$data.idsContractOffer = await dataUtils.receiveIdsContractOffer(this.$data.recipientId, artifact["@id"])
+                    } catch (error) {
+                        errorUtils.showError(error, "Receive Contract Offer");
+                    }
+                }, */
 
-            try{
-                this.$data.idsContractOffer = await dataUtils.receiveIdsContractOffer(this.$data.recipientId, artifact["@id"])
-            } catch (error) {
-                errorUtils.showError(error, "Receive Contract Offer");
-            }
-        }, */
+        /*         showContract(artifact) {
+                    this.$data.selectedResource["ids:contractOffer"][0];
+                }, */
 
-/*         showContract(artifact) {
-            this.$data.selectedResource["ids:contractOffer"][0];
-        }, */
-
-        async requestContract(){
+        async requestContract() {
             let download = "false";
             try {
-                this.$data.requestContractResponse = await dataUtils.receiveContract(this.$data.recipientId, 
+                this.$data.requestContractResponse = await dataUtils.receiveContract(this.$data.recipientId,
                     this.$data.selectedResource["@id"], this.$data.selectedResource["ids:contractOffer"], this.$data.selectedIdsArtifact, download);
             } catch (error) {
                 errorUtils.showError(error, "Receive Contract");
@@ -155,11 +156,11 @@ export default {
         showRepresentations(item) {
 
             this.$data.idsResourceCatalog["ids:offeredResource"].forEach(element => {
-                if ( element["@id"].substring(element["@id"].lastIndexOf("/"), element["@id"].length) == item.id ) {
+                if (element["@id"].substring(element["@id"].lastIndexOf("/"), element["@id"].length) == item.id) {
                     this.$data.selectedRepresentations = element["ids:representation"];
                     this.$data.selectedResource = element;
                 }
-            }); 
+            });
 
         },
 
@@ -174,6 +175,7 @@ export default {
 
         clickAcceptContract(artifact) {
             this.$data.selectedIdsArtifact = artifact;
+            this.$data.downloadLink = artifact["@id"] + "/data";
             this.requestContract();
         }
 
