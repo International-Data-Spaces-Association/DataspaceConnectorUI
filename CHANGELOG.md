@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [8.3.0] - 2021-08-13
 
+### Added
+- Data Consumption: Receive catalogs/resources, contract agreement, artifact download
+
 ### Changes
 - Prebuild user interface for docker image
 
