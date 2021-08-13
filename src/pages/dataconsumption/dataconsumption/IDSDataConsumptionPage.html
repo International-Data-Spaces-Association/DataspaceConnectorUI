@@ -71,9 +71,12 @@
                                             </v-card-title>
 
                                             <v-card-text>
-                                                <h4>Rule:</h4>
-                                                {{ selectedResource["ids:contractOffer"] }}
-                                                <h4>License:</h4>
+                                                <h4 class="data-consumption-page-dialog-title">Rules:</h4>
+                                                <policy-line
+                                                    v-for='rule in selectedResource["ids:contractOffer"][0]["ids:permission"]'
+                                                    :ruleJson="rule" :policyName="rule.type" :readonly=true>
+                                                </policy-line>
+                                                <h4 class="data-consumption-page-dialog-title">License:</h4>
                                                 {{ selectedResource["ids:standardLicense"]["@id"] }}
                                             </v-card-text>
 
@@ -99,7 +102,8 @@
                 </div>
                 <div v-if="requestContractResponse['confirmed'] == true">
                     <h3 class="data-consumption-page-title">Download:</h3>
-                    <v-btn color="secondary" :href="downloadLink" target="_blank">{{ selectedIdsArtifact["@id"] }}/data
+                    <v-btn color="secondary" :href="downloadLink" target="_blank">{{
+                        selectedIdsArtifact["@id"] }}/data
                     </v-btn>
                 </div>
             </v-col>

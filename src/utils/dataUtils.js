@@ -92,6 +92,17 @@ export default {
         return POLICY_DESCRIPTION_TO_NAME[type];
     },
 
+    convertPolicyNameToType(name) {
+        let type = null;
+        for (let key in POLICY_TYPE_TO_DISPLAY_NAME) {
+            if (name == POLICY_TYPE_TO_DISPLAY_NAME[key]) {
+                type = key;
+                break;
+            }
+        }
+        return type;
+    },
+
     convertOperatorTypeToSymbol(type) {
         return OPERATOR_TYPE_TO_SYMBOL[type];
     },
@@ -846,23 +857,23 @@ export default {
         return response;
     },
 
-/*     async receiveIdsArtifact(recipientId, artifactId) {
-        let params = {
-            "recipient": recipientId,
-            "elementId": artifactId
-        }
-        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
-        return response;
-    },
-
-    async receiveIdsContractOffer(recipientId, artifactId) {
-        let params = {
-            "recipient": recipientId,
-            "elementId": artifactId
-        }
-        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
-        return response;
-    } */
+    /*     async receiveIdsArtifact(recipientId, artifactId) {
+            let params = {
+                "recipient": recipientId,
+                "elementId": artifactId
+            }
+            let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+            return response;
+        },
+    
+        async receiveIdsContractOffer(recipientId, artifactId) {
+            let params = {
+                "recipient": recipientId,
+                "elementId": artifactId
+            }
+            let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+            return response;
+        } */
 
     async receiveContract(recipientId, resourceId, contractOffer, artifact, download) {
         let params = {
@@ -871,15 +882,11 @@ export default {
             "artifactIds": artifact["@id"],
             "download": download
         }
-        
-        let body = contractOffer[0]["ids:permission"];
-        
-        body = JSON.stringify( body );
-        
-        body = body.substring(0, body.length - 2) + ", \"ids:target\":\"" + artifact["@id"] + "\"" + "}]";
-        
-        let response = await restUtils.callConnector("POST", "/api/ids/contract", params, body);
-        return response;
+
+        for (let body of contractOffer[0]["ids:permission"]) {
+            body["ids:target"] = artifact["@id"];
+        }
+        return await restUtils.callConnector("POST", "/api/ids/contract", params, contractOffer[0]["ids:permission"]);
     }
 }
 

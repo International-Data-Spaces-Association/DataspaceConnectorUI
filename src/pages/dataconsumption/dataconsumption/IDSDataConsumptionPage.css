@@ -11,6 +11,9 @@
 .data-consumption-page-title {
     margin-top: 50px;
 }
+.data-consumption-page-dialog-title {
+    margin-top: 10px;
+}
 #btn-accept {
     color: green;
     align-self: center;

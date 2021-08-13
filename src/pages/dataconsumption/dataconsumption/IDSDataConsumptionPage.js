@@ -2,10 +2,13 @@ import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 import validationUtils from "@/utils/validationUtils";
 import ResourceDetailsDialog from "@/pages/dataoffering/resources/resourcedetailsdialog/ResourceDetailsDialog.vue";
+import PolicyLine from "@/components/policy/PolicyLine.vue";
+
 
 export default {
     components: {
-        ResourceDetailsDialog
+        ResourceDetailsDialog,
+        PolicyLine
     },
     data() {
         return {
@@ -159,10 +162,16 @@ export default {
                 if (element["@id"].substring(element["@id"].lastIndexOf("/"), element["@id"].length) == item.id) {
                     this.$data.selectedRepresentations = element["ids:representation"];
                     this.$data.selectedResource = element;
+                    for (let ruleJson of this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"]) {
+                        let ruleDescription = ruleJson["ids:description"][0]["@value"];
+                        let ruleName = dataUtils.convertDescriptionToPolicyName(ruleDescription);
+                        ruleJson.type = dataUtils.convertPolicyNameToType(ruleName);
+                    }
                 }
             });
 
         },
+
 
         selectRepresentation(representation) {
             this.$data.selectedRepresentation = representation;
