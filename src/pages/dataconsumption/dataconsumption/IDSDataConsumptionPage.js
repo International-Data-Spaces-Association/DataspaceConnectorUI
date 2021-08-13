@@ -124,10 +124,10 @@ export default {
             this.$root.$emit('showBusyIndicator', false);
         },
 
-        selectCatalog(catalogId) {
+        async selectCatalog(catalogId) {
             this.selectedCatalog = catalogId;
-            this.receiveResources(catalogId)
-            this.getIdsResourceCatalog(catalogId)
+            await this.receiveResources(catalogId);
+            await this.getIdsResourceCatalog(catalogId);
         },
 
         async getIdsResourceCatalog(catalogId) {
