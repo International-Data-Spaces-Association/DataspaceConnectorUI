@@ -904,7 +904,7 @@ export default {
             "subscriber": configuration.id,
             "pushData": true
         }
-        body = JSON.stringify( body );
+        body = JSON.stringify(body);
 
         let response = await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
         return response;
