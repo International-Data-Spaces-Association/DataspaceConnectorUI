@@ -880,6 +880,27 @@ export default {
         
         let response = await restUtils.callConnector("POST", "/api/ids/contract", params, body);
         return response;
+    },
+
+    async subscribeToResource(recipientId, resoureceId) {
+        let params = {
+            "recipient": recipientId,
+        }
+
+        let configuration = await this.getConnectorConfiguration();
+
+        let body = {
+            "title": "default",
+            "description": "Notify on update",
+            "target": resoureceId,
+            "location": configuration.endpoint,
+            "subscriber": configuration.id,
+            "pushData": true
+        }
+        body = JSON.stringify( body );
+
+        let response = await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
+        return response;
     }
 }
 
