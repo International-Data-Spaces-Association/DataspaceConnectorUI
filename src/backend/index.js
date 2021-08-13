@@ -4,7 +4,9 @@ import axios from "axios";
 import https from "https";
 import fs from "fs";
 import bodyParser from "body-parser";
+import path from "path";
 
+const vuePath = path.resolve() + '/../../dist';
 const DEBUG = false;
 const app = express();
 const port = 8083;
@@ -24,6 +26,8 @@ console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
 if (process.env.CONNECTOR_URL !== undefined) {
     connectorUrl = process.env.CONNECTOR_URL;
 }
+
+app.use(express.static(vuePath));
 
 
 app.use(cors({ credentials: true, origin: true }));
@@ -106,6 +110,10 @@ function serializer(replacer, cycleReplacer) {
         return replacer == null ? value : replacer.call(this, key, value)
     }
 }
+
+app.get('/', function (req, res) {
+    res.sendFile(vuePath + "index.html");
+});
 
 app.post('/', (req, res) => {
     let call = req.body.url;

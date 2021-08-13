@@ -1,0 +1,31 @@
+#btn-show-catalogs {
+    margin-top: 10px;
+    margin-bottom: 50px;
+}
+#select-catalog {
+    margin-bottom: 30px;
+}
+#select-representation {
+    margin-bottom: 30 px;
+}
+.data-consumption-page-title {
+    margin-top: 50px;
+}
+.data-consumption-page-dialog-title {
+    margin-top: 10px;
+}
+#btn-accept {
+    color: green;
+    align-self: center;
+}
+#btn-decline {
+    color: red;
+    align-self: center;
+}
+.data-consumption-page-row {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.data-consumption-page-catalog-button {
+    margin-top: 5px;
+}

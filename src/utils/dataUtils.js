@@ -92,6 +92,17 @@ export default {
         return POLICY_DESCRIPTION_TO_NAME[type];
     },
 
+    convertPolicyNameToType(name) {
+        let type = null;
+        for (let key in POLICY_TYPE_TO_DISPLAY_NAME) {
+            if (name == POLICY_TYPE_TO_DISPLAY_NAME[key]) {
+                type = key;
+                break;
+            }
+        }
+        return type;
+    },
+
     convertOperatorTypeToSymbol(type) {
         return OPERATOR_TYPE_TO_SYMBOL[type];
     },
@@ -499,7 +510,7 @@ export default {
     },
 
     async createResource(title, description, language, keywords, standardlicense, publisher, policyDescriptions,
-        filetype, genericEndpoint) {
+        filetype) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
             "title": title,
@@ -534,9 +545,10 @@ export default {
         let representationId = this.getIdOfConnectorResponse(response);
 
         response = await restUtils.callConnector("POST", "/api/artifacts", null, {
-            "accessUrl": genericEndpoint.accessUrl,
-            "username": genericEndpoint.username,
-            "password": genericEndpoint.password
+            // "accessUrl": genericEndpoint.accessUrl,
+            // "username": genericEndpoint.username,
+            // "password": genericEndpoint.password
+            "value": ""
         });
         let artifactId = this.getIdOfConnectorResponse(response);
 
@@ -782,7 +794,7 @@ export default {
     },
 
     async receiveResources(recipientId) {
-        let recources = [];
+        let resources = [];
         let params = {
             "recipient": recipientId
         }
@@ -796,31 +808,130 @@ export default {
                 response = await restUtils.callConnector("POST", "/api/ids/description", params);
                 if (response["ids:offeredResource"] !== undefined) {
                     for (let resource of response["ids:offeredResource"]) {
-                        let id = resource["@id"].substring(resource["@id"].lastIndexOf("/"), resource["@id"].length);
-                        let creationDate = resource["ids:created"]["@value"];
-                        let title = resource["ids:title"][0]["@value"];
-                        let description = resource["ids:description"][0]["@value"];
-                        let language = resource["ids:language"][0]["@id"].replace("https://w3id.org/idsa/code/", "");
-                        let keywords = [];
-                        let idsKeywords = resource["ids:keyword"];
-                        for (let idsKeyword of idsKeywords) {
-                            keywords.push(idsKeyword["@value"]);
-                        }
-                        let version = resource["ids:version"];
-                        let standardlicense = resource["ids:standardLicense"]["@id"];
-                        let publisher = resource["ids:publisher"]["@id"];
-                        let fileType = null;
-                        if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
-                            fileType = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
-                        }
-
-                        recources.push(clientDataModel.createResource(id, creationDate, title, description, language, keywords, version, standardlicense,
-                            publisher, fileType, "", null));
+                        addToLocalResources(resource, resources);
                     }
                 }
             }
         }
 
-        return recources;
+        return resources;
+    },
+
+    async receiveCatalogs(recipientId) {
+        let catalogs = [];
+        let params = {
+            "recipient": recipientId
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+        if (response["ids:resourceCatalog"] !== undefined) {
+            for (let catalog of response["ids:resourceCatalog"]) {
+                let id = catalog["@id"].substring(catalog["@id"]/*.lastIndexOf("/"), catalog["@id"].length*/);
+                catalogs.push(id);
+            }
+        }
+
+        return catalogs;
+    },
+
+    async receiveResourcesInCatalog(recipientId, catalogID) {
+        let resources = [];
+        let params = {
+            "recipient": recipientId,
+            "elementId": catalogID
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+        if (response["ids:offeredResource"] !== undefined) {
+            for (let resource of response["ids:offeredResource"]) {
+                addToLocalResources(resource, resources);
+            }
+        }
+        return resources;
+    },
+
+    async receiveIdsResourceCatalog(recipientId, catalogId) {
+        let params = {
+            "recipient": recipientId,
+            "elementId": catalogId
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+        return response;
+    },
+
+    /*     async receiveIdsArtifact(recipientId, artifactId) {
+            let params = {
+                "recipient": recipientId,
+                "elementId": artifactId
+            }
+            let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+            return response;
+        },
+    
+        async receiveIdsContractOffer(recipientId, artifactId) {
+            let params = {
+                "recipient": recipientId,
+                "elementId": artifactId
+            }
+            let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+            return response;
+        } */
+
+    async receiveContract(recipientId, resourceId, contractOffer, artifact, download) {
+        let params = {
+            "recipient": recipientId,
+            "resourceIds": resourceId,
+            "artifactIds": artifact["@id"],
+            "download": download
+        }
+
+        for (let body of contractOffer[0]["ids:permission"]) {
+            body["ids:target"] = artifact["@id"];
+        }
+        return await restUtils.callConnector("POST", "/api/ids/contract", params, contractOffer[0]["ids:permission"]);
+    },
+
+    async subscribeToResource(recipientId, resoureceId) {
+        let params = {
+            "recipient": recipientId,
+        }
+
+        let configuration = await this.getConnectorConfiguration();
+
+        let body = {
+            "title": "default",
+            "description": "Notify on update",
+            "target": resoureceId,
+            "location": configuration.endpoint,
+            "subscriber": configuration.id,
+            "pushData": true
+        }
+        body = JSON.stringify(body);
+
+        let response = await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
+        return response;
+    }
+}
+
+function addToLocalResources(resource, resources) {
+    {
+        let id = resource["@id"].substring(resource["@id"].lastIndexOf("/"), resource["@id"].length);
+        let creationDate = resource["ids:created"]["@value"];
+        let title = resource["ids:title"][0]["@value"];
+        let description = resource["ids:description"][0]["@value"];
+        let language = resource["ids:language"][0]["@id"].replace("https://w3id.org/idsa/code/", "");
+        let keywords = [];
+        let idsKeywords = resource["ids:keyword"];
+        for (let idsKeyword of idsKeywords) {
+            keywords.push(idsKeyword["@value"]);
+        }
+        let version = resource["ids:version"];
+        let standardlicense = resource["ids:standardLicense"]["@id"];
+        let publisher = resource["ids:publisher"]["@id"];
+        let fileType = null;
+        if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
+            fileType = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
+        }
+
+        resources.push(clientDataModel.createResource(id, creationDate, title, description, language, keywords, version, standardlicense,
+            publisher, fileType, "", null));
     }
 }

@@ -3,8 +3,8 @@ import IDSResourcesPage from "@/pages/dataoffering/resources/IDSResourcesPage.vu
 import AddResourcePage from "@/pages/dataoffering/resources/addresource/AddResourcePage.vue";
 import RoutesPage from "@/pages/dataoffering/routes/RoutesPage.vue";
 import AddRoutePage from "@/pages/dataoffering/routes/addroute/AddRoutePage.vue";
+import IDSDataConsumptionPage from "@/pages/dataconsumption/dataconsumption/IDSDataConsumptionPage.vue";
 import IDSResourcesPageConsumption from "@/pages/dataconsumption/resources/IDSResourcesPageConsumption.vue";
-import AddResourcePageConsumption from "@/pages/dataconsumption/resources/addresource/AddResourcePageConsumption.vue";
 import BrokersPage from "@/pages/brokers/BrokersPage.vue";
 import AppsPage from "@/pages/apps/AppsPage.vue";
 import SettingsPage from "@/pages/settings/SettingsPage.vue";
@@ -69,14 +69,14 @@ export default {
                 name: "IDS Resources (Consumption)",
                 component: IDSResourcesPageConsumption,
                 subpages: [{
-                    path: "addresourceconsumption",
-                    name: "Add Resource (Consumption)",
-                    component: AddResourcePageConsumption,
+                    path: "receiveresourcesconsumption",
+                    name: "Receive Resources (Consumption)",
+                    component: IDSDataConsumptionPage,
                     subpages: []
                 }, {
                     path: "editresource",
                     name: "Edit Resource",
-                    component: AddResourcePageConsumption,
+                    component: IDSDataConsumptionPage,
                     subpages: []
                 }]
             }, {
