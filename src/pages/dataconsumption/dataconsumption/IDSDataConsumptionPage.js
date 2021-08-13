@@ -156,6 +156,14 @@ export default {
             }
         },
 
+        async subscribeToResource() {
+            try {
+                this.$data.subscribeToResourceResponse = await dataUtils.subscribeToResource(this.$data.recipientId, this.$data.selectedResource["@id"]);
+            } catch (error) {
+                errorUtils.showError(error, "subscribe to Resource");
+            }
+        },
+
         showRepresentations(item) {
 
             this.$data.idsResourceCatalog["ids:offeredResource"].forEach(element => {
@@ -186,6 +194,7 @@ export default {
             this.$data.selectedIdsArtifact = artifact;
             this.$data.downloadLink = artifact["@id"] + "/data";
             this.requestContract();
+            this.subscribeToResource();
         }
 
     }
