@@ -14,6 +14,7 @@ export default {
         return {
             recipientId: "",
             receivedCatalogs: [],
+            noCatalogsFound: false,
             selectedCatalog: "",
             resourcesInSelectedCatalog: [],
             idsResourceCatalog: {},
@@ -86,13 +87,30 @@ export default {
             // this.$root.$emit('showBusyIndicator', true);
             // TODO Get resources 
         },
+        clear() {
+            this.$data.receivedCatalogs = [];
+            this.$data.noCatalogsFound = false;
+            this.$data.selectedCatalog = "";
+            this.$data.resourcesInSelectedCatalog = [];
+            this.$data.idsResourceCatalog = {};
+            this.$data.selectedResource = {};
+            this.$data.selectedRepresentations = [];
+            this.$data.selectedRepresentation = {};
+            this.$data.selectedArtifacts = [];
+            this.$data.selectedIdsArtifact = {};
+            this.$data.idsContractOffer = {};
+            this.$data.requestContractResponse = {};
+            this.$data.downloadLink = "";
+        },
         async receiveCatalogs() {
             this.$root.$emit('showBusyIndicator', true);
+            this.clear();
             try {
                 this.$data.receivedCatalogs = await dataUtils.receiveCatalogs(this.$data.recipientId);
             } catch (error) {
                 errorUtils.showError(error, "Receive Catalogs");
             }
+            this.$data.noCatalogsFound = this.$data.receivedCatalogs.length == 0;
             this.$root.$emit('showBusyIndicator', false);
         },
 

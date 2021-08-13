@@ -11,13 +11,15 @@
                     </v-btn>
                 </v-form>
                 <div>
-                    <h3 id="select-catalog" v-if="receivedCatalogs.length > 0">Select catalog:</h3>
+                    <h3 id="select-catalog" v-if="receivedCatalogs.length > 0">Select
+                        catalog:</h3>
                     <div v-for="catalogId in receivedCatalogs">
                         <v-btn color="secondary" @click="selectCatalog(catalogId)">
                             {{ catalogId }}
                         </v-btn>
                         <div v-for="filetype in resourcesInSelectedCatalog.filetype">{{ filetype }}</div>
                     </div>
+                    <h3 id="select-catalog" v-if="noCatalogsFound">No catalogs found.</h3>
                 </div>
                 <div v-if="resourcesInSelectedCatalog.length > 0">
                     <h3 class="data-consumption-page-title">Resources:</h3>
