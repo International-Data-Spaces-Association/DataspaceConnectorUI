@@ -6,5 +6,5 @@ RUN npm install --no-audit --unsafe-perm
 RUN npm run-script build
 RUN npm prune --production
 RUN rm -r .git
-EXPOSE 8083
+RUN sed -i "s@http://localhost:8083@@g" dist/js/*.js
 ENTRYPOINT ["./entryPoint.sh"]
