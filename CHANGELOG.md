@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [8.3.1] - 2021-08-16
+
+### Fixes
+- Docker run: API calls to "/" instead of "localhost:8083"
+
 ## [8.3.0] - 2021-08-13
 
 ### Added
