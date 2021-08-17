@@ -50,13 +50,6 @@ export default {
         ];
     },
 
-    getProviderUrlRequiredRule() {
-        return [
-            v => !!v || 'This data is required',
-            v => /^[h][t][t][p][s]{0,1}[:][/][/][^ ]+[/]api[/]ids[/]data$/.test(v == null ? v : v.trim()) || 'Only Provider-URIs (Start: http:// or https://, End: "/api/ids/data") allowed',
-        ];
-    },
-
     getUrlNotRequiredRule() {
         return [
             v => {

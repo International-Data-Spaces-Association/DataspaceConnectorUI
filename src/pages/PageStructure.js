@@ -69,8 +69,8 @@ export default {
                 name: "IDS Resources (Consumption)",
                 component: IDSResourcesPageConsumption,
                 subpages: [{
-                    path: "receiveresourcesconsumption",
-                    name: "Receive Resources (Consumption)",
+                    path: "requestresourceconsumption",
+                    name: "Request Resource (Consumption)",
                     component: IDSDataConsumptionPage,
                     subpages: []
                 }, {

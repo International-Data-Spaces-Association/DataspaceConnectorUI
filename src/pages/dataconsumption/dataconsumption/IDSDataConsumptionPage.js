@@ -28,7 +28,7 @@ export default {
             downloadLink: "",
             dialog: false,
             valid: false,
-            providerUrlRule: validationUtils.getProviderUrlRequiredRule(),
+            providerUrlRule: validationUtils.getUrlRequiredRule(),
             headers: [{
                 text: 'Creation date',
                 value: 'creationDate',
@@ -108,7 +108,7 @@ export default {
             try {
                 this.$data.receivedCatalogs = await dataUtils.receiveCatalogs(this.$data.recipientId);
             } catch (error) {
-                errorUtils.showError(error, "Receive Catalogs");
+                errorUtils.showError(error, "Request Catalogs");
             }
             this.$data.noCatalogsFound = this.$data.receivedCatalogs.length == 0;
             this.$root.$emit('showBusyIndicator', false);
@@ -119,7 +119,7 @@ export default {
             try {
                 this.$data.resourcesInSelectedCatalog = await dataUtils.receiveResourcesInCatalog(this.$data.recipientId, catalogID);
             } catch (error) {
-                errorUtils.showError(error, "Receive Resources in Catalog");
+                errorUtils.showError(error, "Request Resources in Catalog");
             }
             this.$root.$emit('showBusyIndicator', false);
         },
@@ -134,7 +134,7 @@ export default {
             try {
                 this.$data.idsResourceCatalog = await dataUtils.receiveIdsResourceCatalog(this.$data.recipientId, catalogId);
             } catch (error) {
-                errorUtils.showError(error, "Receive Resources in Catalog");
+                errorUtils.showError(error, "Request Resources in Catalog");
             }
         },
 
@@ -150,13 +150,13 @@ export default {
                     try{
                         this.$data.selectedIdsArtifact = await dataUtils.receiveIdsArtifact(this.$data.recipientId, artifact["@id"])
                     } catch (error) {
-                        errorUtils.showError(error, "Receive Artifact");
+                        errorUtils.showError(error, "Request Artifact");
                     }
         
                     try{
                         this.$data.idsContractOffer = await dataUtils.receiveIdsContractOffer(this.$data.recipientId, artifact["@id"])
                     } catch (error) {
-                        errorUtils.showError(error, "Receive Contract Offer");
+                        errorUtils.showError(error, "Request Contract Offer");
                     }
                 }, */
 
@@ -170,7 +170,7 @@ export default {
                 this.$data.requestContractResponse = await dataUtils.receiveContract(this.$data.recipientId,
                     this.$data.selectedResource["@id"], this.$data.selectedResource["ids:contractOffer"], this.$data.selectedIdsArtifact, download);
             } catch (error) {
-                errorUtils.showError(error, "Receive Contract");
+                errorUtils.showError(error, "Request Contract");
             }
         },
 
