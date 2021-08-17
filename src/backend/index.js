@@ -22,9 +22,16 @@ let httpsAgent = new https.Agent({
     //ca: fs.readFileSync('dsc.crt')
 });
 
-console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
 if (process.env.CONNECTOR_URL !== undefined) {
     connectorUrl = process.env.CONNECTOR_URL;
+}
+
+if (process.env.CONNECTOR_USER !== undefined) {
+    auth.username = process.env.CONNECTOR_USER;
+}
+
+if (process.env.CONNECTOR_PASSWORD !== undefined) {
+    auth.password = process.env.CONNECTOR_PASSWORD;
 }
 
 app.use(express.static(vuePath));
