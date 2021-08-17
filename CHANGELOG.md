@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [8.3.2] - 2021-08-17
+
+### Fixes
+- Connector username/password configurable via Docker environment variables (CONNECTOR_USER/CONNECTOR_PASSWORD)
+
 ## [8.3.1] - 2021-08-16
 
 ### Fixes
