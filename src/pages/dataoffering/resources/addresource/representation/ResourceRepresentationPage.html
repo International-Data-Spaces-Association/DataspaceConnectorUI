@@ -1,5 +1,5 @@
 <div>
-  <div v-if="fromRoutePage === undefined"
+  <div v-if="fromRoutePage === undefined && !hideBackendConnections"
     style="height: min-content; width: max-content; border-style: dashed; margin-top: 20px; padding: 10px; color: #239b7e; margin-bottom: 30px;">
     <v-row v-if="fromRoutePage === undefined && !readonly" no-gutters>
       <v-col cols="12" md="6" sm="12">

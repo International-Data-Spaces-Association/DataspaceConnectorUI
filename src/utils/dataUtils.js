@@ -175,6 +175,15 @@ export default {
         return resources;
     },
 
+    async getRequestedResources() {
+        let response = (await restUtils.callConnector("GET", "/api/requests"))["_embedded"].resources;
+        let resources = [];
+        for (let idsResource of response) {
+            resources.push(clientDataModel.convertIdsResource(idsResource));
+        }
+        return resources;
+    },
+
     async getResource(resourceId) {
         let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
         let policyNames = [];
@@ -205,6 +214,44 @@ export default {
         let brokers = await this.getBrokersOfResource(resourceId);
         let brokerUris = brokers.map(x => x.location);
         return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris);
+    },
+
+    async getRequestedResource(resourceId) {
+        let resource = await restUtils.callConnector("GET", "/api/requests/" + resourceId);
+        let policyNames = [];
+        let ruleIds = [];
+        let ruleJsons = [];
+        let contracts = (await restUtils.callConnector("GET", "/api/requests/" + resourceId + "/contracts"))["_embedded"].contracts;
+        if (contracts.length > 0) {
+            let contract = contracts[0];
+            let contractId = this.getIdOfConnectorResponse(contract);
+            let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
+            for (let rule of rules) {
+                policyNames.push(await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
+                ruleIds.push(this.getIdOfConnectorResponse(rule));
+                ruleJsons.push(JSON.parse(rule.value));
+            }
+        }
+        let representations = (await restUtils.callConnector("GET", "/api/requests/" + resourceId + "/representations"))["_embedded"].representations;
+        let representation = undefined;
+        let artifactId = undefined;
+        if (representations.length > 0) {
+            representation = representations[0];
+            let representationId = this.getIdOfConnectorResponse(representation);
+            let artifacts = (await restUtils.callConnector("GET", "/api/representations/" + representationId + "/artifacts"))["_embedded"].artifacts;
+            if (artifacts.length > 0) {
+                artifactId = this.getIdOfConnectorResponse(artifacts[0]);
+            }
+        }
+        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId);
+    },
+
+    async getPolicyNameByPattern(pattern) {
+        return await restUtils.callConnector("POST", "/api/examples/validation", null, pattern);
+    },
+
+    async getArtifactAgreements(artifactId) {
+        return (await restUtils.callConnector("GET", "/api/artifacts/" + artifactId + "/agreements"))["_embedded"].agreements;
     },
 
     async getLanguages() {

@@ -25,7 +25,8 @@ export default {
             fileAttributes: null,
             fileRequiredAttributes: null,
             readonly: false,
-            onlyMetaData: false
+            onlyMetaData: false,
+            hideBrokers: false
         };
     },
     mounted: function () {
@@ -63,6 +64,7 @@ export default {
         },
         async loadResource(id) {
             this.$data.onlyMetaData = false;
+            this.$data.hideBrokers = false;
             this.$data.active_tab = 0;
             this.$root.$emit('showBusyIndicator', true);
             try {
@@ -71,7 +73,26 @@ export default {
                 this.$data.isNewResource = false;
                 this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
                 this.$refs.policyPage.loadResource(this.$data.currentResource);
-                this.$refs.representationPage.loadResource(this.$data.currentResource);
+                this.$refs.representationPage.loadResource(this.$data.currentResource, false);
+                this.$refs.brokersPage.loadResource(this.$data.currentResource);
+            } catch (error) {
+                errorUtils.showError(error, "Get resource");
+            }
+            this.$root.$emit('showBusyIndicator', false);
+            this.$forceUpdate();
+        },
+        async loadRequestedResource(id) {
+            this.$data.onlyMetaData = false;
+            this.$data.hideBrokers = true;
+            this.$data.active_tab = 0;
+            this.$root.$emit('showBusyIndicator', true);
+            try {
+                let response = await dataUtils.getRequestedResource(id);
+                this.$data.currentResource = response;
+                this.$data.isNewResource = false;
+                this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
+                await this.$refs.policyPage.loadRequestedResource(this.$data.currentResource);
+                this.$refs.representationPage.loadResource(this.$data.currentResource, true);
                 this.$refs.brokersPage.loadResource(this.$data.currentResource);
             } catch (error) {
                 errorUtils.showError(error, "Get resource");
@@ -86,7 +107,7 @@ export default {
             this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
             if (!onlyMetaData) {
                 this.$refs.policyPage.loadResource(this.$data.currentResource);
-                this.$refs.representationPage.loadResource(this.$data.currentResource);
+                this.$refs.representationPage.loadResource(this.$data.currentResource, false);
                 this.$refs.brokersPage.loadResource(this.$data.currentResource);
             }
             this.$data.active_tab = 0;

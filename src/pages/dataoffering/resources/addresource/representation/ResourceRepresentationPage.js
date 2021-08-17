@@ -31,6 +31,7 @@ export default {
             readonly: false,
             newBackendConnection: false,
             filetype: "",
+            hideBackendConnections: false
         };
     },
     watch: {
@@ -72,7 +73,8 @@ export default {
                 errorUtils.showError(error, "Get backend connections");
             }
         },
-        async loadResource(resource) {
+        async loadResource(resource, hideBackendConnections) {
+            this.$data.hideBackendConnections = hideBackendConnections;
             if (resource.fileType === undefined) {
                 this.$refs.form.reset();
             } else {
@@ -82,7 +84,7 @@ export default {
             }
 
             this.$data.selected = [];
-            if (resource.artifactId !== undefined && resource.artifactId != "") {
+            if (!hideBackendConnections && resource.artifactId !== undefined && resource.artifactId != "") {
                 try {
                     let route = await dataUtils.getRouteWithEnd(resource.artifactId);
                     let ge = route.start;
