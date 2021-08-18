@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Data Consumption: Show list of requested resources
 - Backend Connections: API-Key authentication
+- Resources: Set payment method
 
 ### Fixes
 - Data Consumption: Show download link to artifact of own connector
