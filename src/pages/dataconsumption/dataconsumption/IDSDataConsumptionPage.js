@@ -121,6 +121,15 @@ export default {
             } catch (error) {
                 errorUtils.showError(error, "Request Resources in Catalog");
             }
+            this.$data.idsResourceCatalog = {};
+            this.$data.selectedResource = {};
+            this.$data.selectedRepresentations = [];
+            this.$data.selectedRepresentation = {};
+            this.$data.selectedArtifacts = [];
+            this.$data.selectedIdsArtifact = {};
+            this.$data.idsContractOffer = {};
+            this.$data.requestContractResponse = {};
+            this.$data.downloadLink = "";
             this.$root.$emit('showBusyIndicator', false);
         },
 
@@ -197,7 +206,12 @@ export default {
                     }
                 }
             });
-
+            this.$data.selectedRepresentation = {};
+            this.$data.selectedArtifacts = [];
+            this.$data.selectedIdsArtifact = {};
+            this.$data.idsContractOffer = {};
+            this.$data.requestContractResponse = {};
+            this.$data.downloadLink = "";
         },
 
 
