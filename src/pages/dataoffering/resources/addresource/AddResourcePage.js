@@ -127,6 +127,7 @@ export default {
             var title = this.$refs.metaDataPage.title;
             var description = this.$refs.metaDataPage.description;
             var language = this.$refs.metaDataPage.language;
+            var paymentMethod = this.$refs.metaDataPage.paymentMethod;
             var keywords = dataUtils.commaSeperatedStringToArray(this.$refs.metaDataPage.keywords);
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
@@ -137,18 +138,18 @@ export default {
 
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
-                this.$emit("saved", title, description, language, keywords, 0, standardlicense, publisher,
+                this.$emit("saved", title, description, language, paymentMethod, keywords, 0, standardlicense, publisher,
                     policyDescriptions, filetype, 0, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
-                    await dataUtils.createResourceWithMinimalRoute(title, description, language, keywords, standardlicense, publisher,
+                    await dataUtils.createResourceWithMinimalRoute(title, description, language, paymentMethod, keywords, standardlicense, publisher,
                         policyDescriptions, filetype, brokerList, genericEndpoint);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
-                        title, description, language, keywords, standardlicense, publisher, policyDescriptions,
+                        title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
                         filetype, brokerList, brokerDeleteList, genericEndpoint, this.$data.currentResource.ruleId,
                         this.$data.currentResource.artifactId);
                     this.$router.push('idresourcesoffering');

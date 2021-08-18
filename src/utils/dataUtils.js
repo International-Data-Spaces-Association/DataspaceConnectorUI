@@ -46,6 +46,12 @@ const OPERATOR_TYPE_TO_SYMBOL = {
     "https://w3id.org/idsa/code/LT": "<",
 };
 
+const IDS_PAYMENT_METHOD_TO_NAME = {
+    "https://w3id.org/idsa/code/NEGOTIATION_BASIS": "negotiationBasis",
+    "https://w3id.org/idsa/code/FREE": "free",
+    "https://w3id.org/idsa/code/FIXED_PRICE": "fixedPrice",
+    "https://w3id.org/idsa/code/UNDEFINED": "undefined"
+};
 
 let languages = null;
 let defaultCatalogId = null;
@@ -74,6 +80,10 @@ export default {
 
     getPolicyDisplayName(type) {
         return POLICY_TYPE_TO_DISPLAY_NAME[type];
+    },
+
+    getPaymentMethodName(idsName) {
+        return IDS_PAYMENT_METHOD_TO_NAME[idsName];
     },
 
     getValue(data, name) {
@@ -557,10 +567,10 @@ export default {
         }
     },
 
-    async createResourceWithMinimalRoute(title, description, language, keywords, standardlicense, publisher, policyDescriptions,
+    async createResourceWithMinimalRoute(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
         filetype, brokerUris, genericEndpoint) {
         try {
-            let resourceResponse = await this.createResource(title, description, language, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let resourceResponse = await this.createResource(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
             let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
             let routeId = this.getIdOfConnectorResponse(response);
             response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, resourceResponse.endpointId, 220, 150, resourceResponse.artifactId);
@@ -574,7 +584,7 @@ export default {
         }
     },
 
-    async createResource(title, description, language, keywords, standardlicense, publisher, policyDescriptions,
+    async createResource(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
         filetype) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
@@ -583,6 +593,7 @@ export default {
             "keywords": keywords,
             "publisher": publisher,
             "language": language,
+            "paymentMethod": paymentMethod,
             "license": standardlicense
         }));
 
@@ -630,7 +641,7 @@ export default {
         };
     },
 
-    async editResource(resourceId, representationId, title, description, language, keywords, standardlicense, publisher,
+    async editResource(resourceId, representationId, title, description, language, paymentMethod, keywords, standardlicense, publisher,
         policyDescriptions, filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
@@ -639,6 +650,7 @@ export default {
                 "keywords": keywords,
                 "publisher": publisher,
                 "language": language,
+                "paymentMethod": paymentMethod,
                 "license": standardlicense
             });
 
@@ -702,6 +714,7 @@ export default {
         let title = resource.title;
         let description = resource.description;
         let language = resource.language;
+        let paymentMethod = resource.paymentMethod;
         let keywords = resource.keywords;
         let standardlicense = resource.standardlicense;
         let publisher = resource.publisher;
@@ -710,7 +723,7 @@ export default {
         let brokerUris = resource.brokerUris;
 
         try {
-            let resourceResponse = await this.createResource(title, description, language, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let resourceResponse = await this.createResource(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
             await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, resourceResponse.endpointId, destinationNode.x, destinationNode.y, resourceResponse.artifactId);
             this.addRouteStartAndEnd(routeId, startId, resourceResponse.endpointId);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
@@ -873,7 +886,7 @@ export default {
                 response = await restUtils.callConnector("POST", "/api/ids/description", params);
                 if (response["ids:offeredResource"] !== undefined) {
                     for (let resource of response["ids:offeredResource"]) {
-                        addToLocalResources(resource, resources);
+                        this.addToLocalResources(resource, resources);
                     }
                 }
             }
@@ -907,7 +920,7 @@ export default {
         let response = await restUtils.callConnector("POST", "/api/ids/description", params);
         if (response["ids:offeredResource"] !== undefined) {
             for (let resource of response["ids:offeredResource"]) {
-                addToLocalResources(resource, resources);
+                this.addToLocalResources(resource, resources);
             }
         }
         return resources;
@@ -973,16 +986,18 @@ export default {
 
         let response = await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
         return response;
-    }
-}
+    },
 
-function addToLocalResources(resource, resources) {
-    {
+    addToLocalResources(resource, resources) {
         let id = resource["@id"].substring(resource["@id"].lastIndexOf("/"), resource["@id"].length);
         let creationDate = resource["ids:created"]["@value"];
         let title = resource["ids:title"][0]["@value"];
         let description = resource["ids:description"][0]["@value"];
         let language = resource["ids:language"][0]["@id"].replace("https://w3id.org/idsa/code/", "");
+        let paymentMethod = "undefined";
+        if (resource["ids:paymentModality"][0] != null) {
+            paymentMethod = this.getPaymentMethodName(resource["ids:paymentModality"][0]["@id"]);
+        }
         let keywords = [];
         let idsKeywords = resource["ids:keyword"];
         for (let idsKeyword of idsKeywords) {
@@ -996,7 +1011,9 @@ function addToLocalResources(resource, resources) {
             fileType = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
         }
 
-        resources.push(clientDataModel.createResource(id, creationDate, title, description, language, keywords, version, standardlicense,
+        resources.push(clientDataModel.createResource(id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
             publisher, fileType, "", null));
     }
 }
+
+

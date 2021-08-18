@@ -1,7 +1,7 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, creationDate, title, description, language, keywords, version, standardlicense,
+    createResource(id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
         publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris) {
         let resource = {};
         if (id === undefined) {
@@ -28,6 +28,11 @@ export default {
             resource.language = "";
         } else {
             resource.language = language;
+        }
+        if (paymentMethod === undefined) {
+            resource.paymentMethod = "";
+        } else {
+            resource.paymentMethod = paymentMethod;
         }
         if (keywords === undefined) {
             resource.keywords = "";
@@ -305,7 +310,7 @@ export default {
         }
 
         return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
-            idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.keywords,
+            idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.paymentModality, idsResource.keywords,
             idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris);
     },
 
