@@ -366,18 +366,26 @@ export default {
         return genericEndpoints;
     },
 
-    async createGenericEndpoint(url, username, password, sourceType) {
+    async createGenericEndpoint(url, username, password, apiKey, sourceType) {
         let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
             "location": url,
             "type": "GENERIC"
         });
         let genericEndpointId = this.getIdOfConnectorResponse(response);
 
-        response = await restUtils.callConnector("POST", "/api/datasources", null, {
-            "authentication": {
+        let authentication = null;
+        if (username != null) {
+            authentication = {
                 "key": username,
                 "value": password
-            },
+            };
+        } else {
+            authentication = {
+                "value": apiKey
+            };
+        }
+        response = await restUtils.callConnector("POST", "/api/datasources", null, {
+            "authentication": authentication,
             "type": sourceType
         });
         let dataSourceId = this.getIdOfConnectorResponse(response);

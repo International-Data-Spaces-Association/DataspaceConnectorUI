@@ -195,7 +195,7 @@ export default {
         return configuration;
     },
 
-    createGenericEndpoint(id, accessUrl, dataSourceId, username, password, type) {
+    createGenericEndpoint(id, accessUrl, dataSourceId, username, password, apiKey, type) {
         let genericEndpoint = {};
 
         if (id === undefined) {
@@ -228,6 +228,12 @@ export default {
             genericEndpoint.password = password;
         }
 
+        if (apiKey === undefined) {
+            genericEndpoint.apiKey = "";
+        } else {
+            genericEndpoint.apiKey = apiKey;
+        }
+
         if (type === undefined) {
             genericEndpoint.type = "";
         } else {
@@ -244,7 +250,8 @@ export default {
         let dataSourceId = dataUtils.getIdOfLink(genericEndpoint, "dataSource");
         let username = undefined;
         let password = undefined;
-        return this.createGenericEndpoint(id, accessUrl, dataSourceId, username, password, genericEndpoint.type);
+        let apiKey = undefined;
+        return this.createGenericEndpoint(id, accessUrl, dataSourceId, username, password, apiKey, genericEndpoint.type);
     },
 
     createApp(id, title, description, type) {
