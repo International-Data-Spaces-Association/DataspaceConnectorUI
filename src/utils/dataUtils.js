@@ -254,6 +254,10 @@ export default {
         return (await restUtils.callConnector("GET", "/api/artifacts/" + artifactId + "/agreements"))["_embedded"].agreements;
     },
 
+    async getAgreementArtifacts(agreementId) {
+        return (await restUtils.callConnector("GET", "/api/agreements/" + agreementId + "/artifacts"))["_embedded"].artifacts;
+    },
+
     async getLanguages() {
         if (languages == null) {
             let languages = (await restUtils.callConnector("GET", "/api/configmanager/enum/Language"));
@@ -510,6 +514,12 @@ export default {
     getIdOfLink(response, linkName) {
         let url = response._links.[linkName].href;
         return url.substring(url.lastIndexOf("/") + 1, url.length);
+    },
+
+    getIdOfAgreement(agreementLink) {
+        let id = agreementLink.replace("https://localhost:8080/api/agreements/", "");
+        id = id.replace("/artifacts{?page,size}", "");
+        return id;
     },
 
     async getDefaultCatalogId() {

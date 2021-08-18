@@ -169,6 +169,8 @@ export default {
             try {
                 this.$data.requestContractResponse = await dataUtils.receiveContract(this.$data.recipientId,
                     this.$data.selectedResource["@id"], this.$data.selectedResource["ids:contractOffer"], this.$data.selectedIdsArtifact, download);
+                let agreementId = await dataUtils.getIdOfAgreement(this.$data.requestContractResponse._links.artifacts.href);
+                this.$data.downloadLink = (await dataUtils.getAgreementArtifacts(agreementId))[0]._links.data.href;
             } catch (error) {
                 errorUtils.showError(error, "Request Contract");
             }
@@ -210,7 +212,6 @@ export default {
 
         clickAcceptContract(artifact) {
             this.$data.selectedIdsArtifact = artifact;
-            this.$data.downloadLink = artifact["@id"] + "/data";
             this.requestContract();
             this.subscribeToResource();
         }

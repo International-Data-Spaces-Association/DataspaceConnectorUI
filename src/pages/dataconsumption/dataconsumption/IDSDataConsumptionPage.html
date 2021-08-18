@@ -104,8 +104,8 @@
                 </div>
                 <div v-if="requestContractResponse['confirmed'] == true">
                     <h3 class="data-consumption-page-title">Download:</h3>
-                    <v-btn color="secondary" :href="downloadLink" target="_blank">{{
-                        selectedIdsArtifact["@id"] }}/data
+                    <v-btn color="secondary" :href="downloadLink" target="_blank">
+                        {{ downloadLink }}
                     </v-btn>
                 </div>
             </v-col>
