@@ -131,6 +131,7 @@ export default {
             var keywords = dataUtils.commaSeperatedStringToArray(this.$refs.metaDataPage.keywords);
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
+            var samples = this.$refs.metaDataPage.samples;
             var policyDescriptions = this.$refs.policyPage.getDescriptions();
             var filetype = this.$refs.representationPage.filetype;
             var brokerList = this.$refs.brokersPage.getSelectedBrokerList()
@@ -149,7 +150,7 @@ export default {
                     this.$root.$emit('showBusyIndicator', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
-                        title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
+                        title, description, language, paymentMethod, keywords, standardlicense, publisher, samples, policyDescriptions,
                         filetype, brokerList, brokerDeleteList, genericEndpoint, this.$data.currentResource.ruleId,
                         this.$data.currentResource.artifactId);
                     this.$router.push('idresourcesoffering');

@@ -16,6 +16,7 @@ export default {
             publisher: "",
             standardlicense: "",
             language: "",
+            samples: [],
             languageItems: [],
             paymentMethod: "undefined",
             // TODO use enum API endpoint for payment methods
@@ -56,6 +57,7 @@ export default {
                 this.$data.keywords = dataUtils.arrayToCommaSeperatedString(resource.keywords);
                 this.$data.standardlicense = resource.standardlicense;
                 this.$data.publisher = resource.publisher;
+                this.$data.samples = resource.samples;
             }
         }
     }

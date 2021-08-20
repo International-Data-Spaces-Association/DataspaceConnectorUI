@@ -32,7 +32,7 @@ export default {
             let resource;
             if (node == null) {
                 this.$data.title = "Add IDS Endpoint";
-                resource = clientDataModel.createResource(-1);
+                resource = clientDataModel.createResource("", -1);
             } else {
                 this.$data.title = "Edit IDS Endpoint";
                 resource = node.resource;

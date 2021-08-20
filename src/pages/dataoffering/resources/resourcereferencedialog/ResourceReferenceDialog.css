@@ -1,0 +1,9 @@
+.res-ref-dialog-content {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    min-height: 460px;
+}
+
+.res-ref-search-tf {
+    margin-bottom: 15px;
+}

@@ -1,0 +1,23 @@
+<v-dialog v-model="dialog" width="1000" eager>
+    <v-card>
+        <v-card-title class="headline grey lighten-2">
+            Resource References of {{ resource.title }}
+        </v-card-title>
+        <v-row no-gutters>
+            <v-col cols="12" md="12" class="res-ref-dialog-content">
+                <v-text-field class="res-ref-search-tf" v-model="search" append-icon="mdi-magnify" label="Search"
+                    single-line hide-details>
+                </v-text-field>
+                <v-data-table v-model="selected" :headers="headers" :items="resources" :items-per-page="5"
+                    :search="search" show-select item-key="id" no-data-text="No resources available">
+                </v-data-table>
+            </v-col>
+        </v-row>
+        <v-divider></v-divider>
+
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" @click.native="save">Save</v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>

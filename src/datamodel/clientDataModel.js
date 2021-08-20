@@ -1,9 +1,14 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
-        publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris) {
+    createResource(url, id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
+        publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris, samples) {
         let resource = {};
+        if (url === undefined) {
+            resource.url = "";
+        } else {
+            resource.url = url;
+        }
         if (id === undefined) {
             resource.id = "";
         } else {
@@ -88,6 +93,11 @@ export default {
             resource.brokerUris = [];
         } else {
             resource.brokerUris = brokerUris;
+        }
+        if (samples === undefined) {
+            resource.samples = [];
+        } else {
+            resource.samples = samples;
         }
         return resource;
     },
@@ -309,9 +319,9 @@ export default {
             representationId = dataUtils.getIdOfConnectorResponse(representation);
         }
 
-        return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
+        return this.createResource(idsResource._links.self.href, dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.paymentModality, idsResource.keywords,
-            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris);
+            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris, idsResource.samples);
     },
 
 

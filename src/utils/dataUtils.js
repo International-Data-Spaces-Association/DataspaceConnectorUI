@@ -641,7 +641,7 @@ export default {
         };
     },
 
-    async editResource(resourceId, representationId, title, description, language, paymentMethod, keywords, standardlicense, publisher,
+    async editResource(resourceId, representationId, title, description, language, paymentMethod, keywords, standardlicense, publisher, samples,
         policyDescriptions, filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
@@ -651,7 +651,8 @@ export default {
                 "publisher": publisher,
                 "language": language,
                 "paymentMethod": paymentMethod,
-                "license": standardlicense
+                "license": standardlicense,
+                "samples": samples
             });
 
             // Delete all rules and create new ones. Rules that have not been edited in the UI are also deleted and recreated. 
@@ -694,6 +695,23 @@ export default {
             await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.id + "\"");
 
             await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
+        } catch (error) {
+            errorUtils.showError(error, "Save resource");
+        }
+    },
+
+    async updateResourceReferences(resource, samples) {
+        try {
+            await restUtils.callConnector("PUT", "/api/offers/" + resource.id, null, {
+                "title": resource.title,
+                "description": resource.description,
+                "keywords": resource.keywords,
+                "publisher": resource.publisher,
+                "language": resource.language,
+                "paymentMethod": resource.paymentMethod,
+                "license": resource.standardlicense,
+                "samples": samples
+            });
         } catch (error) {
             errorUtils.showError(error, "Save resource");
         }
@@ -1011,7 +1029,7 @@ export default {
             fileType = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
         }
 
-        resources.push(clientDataModel.createResource(id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
+        resources.push(clientDataModel.createResource(resource["@id"], id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
             publisher, fileType, "", null));
     }
 }
