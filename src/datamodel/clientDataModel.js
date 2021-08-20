@@ -1,9 +1,14 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(id, creationDate, title, description, language, keywords, version, standardlicense,
-        publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris) {
+    createResource(url, id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
+        publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris, samples) {
         let resource = {};
+        if (url === undefined) {
+            resource.url = "";
+        } else {
+            resource.url = url;
+        }
         if (id === undefined) {
             resource.id = "";
         } else {
@@ -28,6 +33,11 @@ export default {
             resource.language = "";
         } else {
             resource.language = language;
+        }
+        if (paymentMethod === undefined) {
+            resource.paymentMethod = "";
+        } else {
+            resource.paymentMethod = paymentMethod;
         }
         if (keywords === undefined) {
             resource.keywords = "";
@@ -83,6 +93,11 @@ export default {
             resource.brokerUris = [];
         } else {
             resource.brokerUris = brokerUris;
+        }
+        if (samples === undefined) {
+            resource.samples = [];
+        } else {
+            resource.samples = samples;
         }
         return resource;
     },
@@ -195,7 +210,7 @@ export default {
         return configuration;
     },
 
-    createGenericEndpoint(id, accessUrl, dataSourceId, username, password, type) {
+    createGenericEndpoint(id, accessUrl, dataSourceId, username, password, apiKey, type) {
         let genericEndpoint = {};
 
         if (id === undefined) {
@@ -228,6 +243,12 @@ export default {
             genericEndpoint.password = password;
         }
 
+        if (apiKey === undefined) {
+            genericEndpoint.apiKey = "";
+        } else {
+            genericEndpoint.apiKey = apiKey;
+        }
+
         if (type === undefined) {
             genericEndpoint.type = "";
         } else {
@@ -244,7 +265,8 @@ export default {
         let dataSourceId = dataUtils.getIdOfLink(genericEndpoint, "dataSource");
         let username = undefined;
         let password = undefined;
-        return this.createGenericEndpoint(id, accessUrl, dataSourceId, username, password, genericEndpoint.type);
+        let apiKey = undefined;
+        return this.createGenericEndpoint(id, accessUrl, dataSourceId, username, password, apiKey, genericEndpoint.type);
     },
 
     createApp(id, title, description, type) {
@@ -297,9 +319,9 @@ export default {
             representationId = dataUtils.getIdOfConnectorResponse(representation);
         }
 
-        return this.createResource(dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
-            idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.keywords,
-            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris);
+        return this.createResource(idsResource._links.self.href, dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
+            idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.paymentModality, idsResource.keywords,
+            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris, idsResource.samples);
     },
 
 

@@ -2,12 +2,13 @@ import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import ResourceDetailsDialog from "./resourcedetailsdialog/ResourceDetailsDialog.vue";
-
+import ResourceReferenceDialog from "./resourcereferencedialog/ResourceReferenceDialog.vue";
 
 export default {
     components: {
         ConfirmationDialog,
-        ResourceDetailsDialog
+        ResourceDetailsDialog,
+        ResourceReferenceDialog
     },
     data() {
         return {
@@ -33,7 +34,7 @@ export default {
                 value: 'actions',
                 sortable: false,
                 align: 'right',
-                width: 150
+                width: 170
             }
             ],
             resources: [],
@@ -104,6 +105,9 @@ export default {
         },
         editItem(item) {
             this.$router.push('editresource?id=' + item.id);
+        },
+        editItemReferences(item) {
+            this.$refs.resourceReferenceDialog.show(item.id);
         },
         showItem(item) {
             this.$refs.resourceDetailsDialog.show(item.id);

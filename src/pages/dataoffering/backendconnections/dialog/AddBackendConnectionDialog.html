@@ -14,12 +14,22 @@
         <v-card-text>
             <v-form v-model="valid" ref="form">
                 <v-text-field ref="tfURL" label="URL" v-model="url" :rules="urlRule"> </v-text-field>
-                <v-select label="Source Type" v-model="sourceType"  :items="sourceTypes"></v-select>                
-                <v-text-field label="Username" v-model="username"> </v-text-field>
-                <v-text-field label="Password" v-model="password" :type="showPassword ? 'text' : 'password'"
-                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                    @click:append="showPassword = !showPassword">
-                </v-text-field>
+                <v-select label="Source Type" v-model="sourceType" :items="sourceTypes"></v-select>
+                <v-tabs class="pagestab" v-model="active_tab" ref="pagestab">
+                    <v-tab>Basic</v-tab>
+                    <v-tab>API-Key</v-tab>
+                    <v-tab-item :eager="true">
+                        <v-text-field label="Username" v-model="username"> </v-text-field>
+                        <v-text-field label="Password" v-model="password" :type="showPassword ? 'text' : 'password'"
+                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                            @click:append="showPassword = !showPassword">
+                        </v-text-field>
+                    </v-tab-item>
+                    <v-tab-item :eager="true">
+                        <v-text-field label="API-Key" v-model="apiKey"> </v-text-field>
+                    </v-tab-item>
+                </v-tabs>
+
             </v-form>
         </v-card-text>
 
@@ -29,7 +39,7 @@
             <v-spacer></v-spacer>
             <v-btn color="primary" @click="cancelBackendConnection">
                 Cancel
-            </v-btn>            
+            </v-btn>
             <v-btn color="primary" @click="saveBackendConnection" :disabled="!valid">
                 Save
             </v-btn>

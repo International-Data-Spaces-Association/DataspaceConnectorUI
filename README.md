@@ -57,7 +57,7 @@ sudo docker-compose up
 ```
 Access: [localhost:8083](http://localhost:8083) 
 
-### Change host/port & authentification of Dataspace Connector & UI backend on docker start
+### Change host/port & authentification of Dataspace Connector on docker start
 
 Change in `docker-compose.yml`:
 ```bash

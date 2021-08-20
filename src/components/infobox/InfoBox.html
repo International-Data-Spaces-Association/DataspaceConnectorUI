@@ -82,4 +82,10 @@
             General settings of the DataSpaceConnector.
         </v-card-text>
     </v-card-text>
+    <v-card-text v-if="currentRoute  == 'requestresourceconsumption'">
+        <v-card-text>
+            Request an IDS resource from the given connector URL.<br>
+            When requesting a Dataspace Connector the "/api/ids/data" endpoint should be used.
+        </v-card-text>
+    </v-card-text>
 </v-card>

@@ -28,6 +28,11 @@ export default {
             this.$refs.addResourcePage.setReadOnly(true);
             this.$data.dialog = true;
         },
+        showRequest(resourceId) {
+            this.$refs.addResourcePage.loadRequestedResource(resourceId);
+            this.$refs.addResourcePage.setReadOnly(true);
+            this.$data.dialog = true;
+        },
         showResource(resource) {
             this.$refs.addResourcePage.set(resource, true);
             this.$refs.addResourcePage.setReadOnly(true);

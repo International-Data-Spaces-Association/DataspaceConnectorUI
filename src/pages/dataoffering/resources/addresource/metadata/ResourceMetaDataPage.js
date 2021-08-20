@@ -16,7 +16,14 @@ export default {
             publisher: "",
             standardlicense: "",
             language: "",
+            samples: [],
             languageItems: [],
+            paymentMethod: "undefined",
+            // TODO use enum API endpoint for payment methods
+            paymentMethods: [{ "originalName": "undefined", "displayName": "Undefined" },
+            { "originalName": "fixedPrice", "displayName": "Fixed price" },
+            { "originalName": "free", "displayName": "Free" },
+            { "originalName": "negotiationBasis", "displayName": "Negotiation basis" }],
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
             urlRule: validationUtils.getUrlRequiredRule(),
@@ -46,9 +53,11 @@ export default {
                 this.$data.title = resource.title;
                 this.$data.description = resource.description;
                 this.$data.language = resource.language.substring(resource.language.lastIndexOf("/") + 1);
+                this.$data.paymentMethod = resource.paymentMethod;
                 this.$data.keywords = dataUtils.arrayToCommaSeperatedString(resource.keywords);
                 this.$data.standardlicense = resource.standardlicense;
                 this.$data.publisher = resource.publisher;
+                this.$data.samples = resource.samples;
             }
         }
     }

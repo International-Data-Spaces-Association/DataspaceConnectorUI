@@ -25,7 +25,8 @@ export default {
             fileAttributes: null,
             fileRequiredAttributes: null,
             readonly: false,
-            onlyMetaData: false
+            onlyMetaData: false,
+            hideBrokers: false
         };
     },
     mounted: function () {
@@ -63,6 +64,7 @@ export default {
         },
         async loadResource(id) {
             this.$data.onlyMetaData = false;
+            this.$data.hideBrokers = false;
             this.$data.active_tab = 0;
             this.$root.$emit('showBusyIndicator', true);
             try {
@@ -71,7 +73,26 @@ export default {
                 this.$data.isNewResource = false;
                 this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
                 this.$refs.policyPage.loadResource(this.$data.currentResource);
-                this.$refs.representationPage.loadResource(this.$data.currentResource);
+                this.$refs.representationPage.loadResource(this.$data.currentResource, false);
+                this.$refs.brokersPage.loadResource(this.$data.currentResource);
+            } catch (error) {
+                errorUtils.showError(error, "Get resource");
+            }
+            this.$root.$emit('showBusyIndicator', false);
+            this.$forceUpdate();
+        },
+        async loadRequestedResource(id) {
+            this.$data.onlyMetaData = false;
+            this.$data.hideBrokers = true;
+            this.$data.active_tab = 0;
+            this.$root.$emit('showBusyIndicator', true);
+            try {
+                let response = await dataUtils.getRequestedResource(id);
+                this.$data.currentResource = response;
+                this.$data.isNewResource = false;
+                this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
+                await this.$refs.policyPage.loadRequestedResource(this.$data.currentResource);
+                this.$refs.representationPage.loadResource(this.$data.currentResource, true);
                 this.$refs.brokersPage.loadResource(this.$data.currentResource);
             } catch (error) {
                 errorUtils.showError(error, "Get resource");
@@ -86,7 +107,7 @@ export default {
             this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
             if (!onlyMetaData) {
                 this.$refs.policyPage.loadResource(this.$data.currentResource);
-                this.$refs.representationPage.loadResource(this.$data.currentResource);
+                this.$refs.representationPage.loadResource(this.$data.currentResource, false);
                 this.$refs.brokersPage.loadResource(this.$data.currentResource);
             }
             this.$data.active_tab = 0;
@@ -106,9 +127,11 @@ export default {
             var title = this.$refs.metaDataPage.title;
             var description = this.$refs.metaDataPage.description;
             var language = this.$refs.metaDataPage.language;
+            var paymentMethod = this.$refs.metaDataPage.paymentMethod;
             var keywords = dataUtils.commaSeperatedStringToArray(this.$refs.metaDataPage.keywords);
             var standardlicense = this.$refs.metaDataPage.standardlicense;
             var publisher = this.$refs.metaDataPage.publisher;
+            var samples = this.$refs.metaDataPage.samples;
             var policyDescriptions = this.$refs.policyPage.getDescriptions();
             var filetype = this.$refs.representationPage.filetype;
             var brokerList = this.$refs.brokersPage.getSelectedBrokerList()
@@ -116,18 +139,18 @@ export default {
 
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
-                this.$emit("saved", title, description, language, keywords, 0, standardlicense, publisher,
+                this.$emit("saved", title, description, language, paymentMethod, keywords, 0, standardlicense, publisher,
                     policyDescriptions, filetype, 0, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 if (this.$data.currentResource == null) {
-                    await dataUtils.createResourceWithMinimalRoute(title, description, language, keywords, standardlicense, publisher,
+                    await dataUtils.createResourceWithMinimalRoute(title, description, language, paymentMethod, keywords, standardlicense, publisher,
                         policyDescriptions, filetype, brokerList, genericEndpoint);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
-                        title, description, language, keywords, standardlicense, publisher, policyDescriptions,
+                        title, description, language, paymentMethod, keywords, standardlicense, publisher, samples, policyDescriptions,
                         filetype, brokerList, brokerDeleteList, genericEndpoint, this.$data.currentResource.ruleId,
                         this.$data.currentResource.artifactId);
                     this.$router.push('idresourcesoffering');

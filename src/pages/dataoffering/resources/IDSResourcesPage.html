@@ -12,15 +12,38 @@
         <v-data-table :headers="headers" :items="filteredResources" :items-per-page="5" :search="search"
           :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" no-data-text="No resources available">
           <template v-slot:item.actions="{ item }">
-            <v-icon class="mr-2" @click="showItem(item)">
-              mdi-eye
-            </v-icon>
-            <v-icon class="mr-2" @click="editItem(item)">
-              mdi-pencil
-            </v-icon>
-            <v-icon @click="deleteItem(item)">
-              mdi-delete
-            </v-icon>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon class="mr-2" @click="showItem(item)" v-bind="attrs" v-on="on">
+                  mdi-eye
+                </v-icon>
+              </template>
+              <span>Show details</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon class="mr-2" @click="editItem(item)" v-bind="attrs" v-on="on">
+                  mdi-pencil
+                </v-icon>
+              </template>
+              <span>Edit resource</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon class="mr-2" @click="editItemReferences(item)" v-bind="attrs" v-on="on">
+                  mdi-arrow-right-box
+                </v-icon>
+              </template>
+              <span>Reference resources</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon @click="deleteItem(item)" v-bind="attrs" v-on="on">
+                  mdi-delete
+                </v-icon>
+              </template>
+              <span>Delete resource</span>
+            </v-tooltip>
           </template>
         </v-data-table>
       </v-col>
@@ -28,4 +51,5 @@
   </div>
   <resource-details-dialog ref="resourceDetailsDialog"></resource-details-dialog>
   <confirmation-dialog ref="confirmationDialog"></confirmation-dialog>
+  <resource-reference-dialog ref="resourceReferenceDialog"></resource-reference-dialog>
 </div>

@@ -1,34 +1,35 @@
 import dataUtils from "@/utils/dataUtils";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
+import errorUtils from "../../../utils/errorUtils";
+import ResourceDetailsDialog from "../../dataoffering/resources/resourcedetailsdialog/ResourceDetailsDialog.vue";
 
 
 export default {
     components: {
-        ConfirmationDialog
+        ConfirmationDialog,
+        ResourceDetailsDialog
     },
     data() {
         return {
             search: '',
             headers: [{
+                text: 'Creation date',
+                value: 'creationDate',
+                width: 135
+            }, {
                 text: 'Title',
                 value: 'title'
             },
             {
-                text: 'Description',
-                value: 'description'
-            },
-            {
-                text: 'Type',
-                value: 'sourceType'
-            }, {
-                text: 'Policy',
-                value: 'policyName'
+                text: 'Keywords',
+                value: 'keywords'
             },
             {
                 text: '',
                 value: 'actions',
                 sortable: false,
-                align: 'right'
+                align: 'right',
+                width: 150
             }
             ],
             resources: [],
@@ -40,9 +41,17 @@ export default {
         this.getResources();
     },
     methods: {
-        getResources() {
-            // this.$root.$emit('showBusyIndicator', true);
-            // TODO Get resources 
+        async getResources() {
+            this.$root.$emit('showBusyIndicator', true);
+            try {
+                let response = await dataUtils.getRequestedResources();
+                this.$data.resources = response;
+            } catch (error) {
+                errorUtils.showError(error, "Get resources");
+            }
+            this.filterChanged();
+            this.$forceUpdate();
+            this.$root.$emit('showBusyIndicator', false);
         },
         filterChanged() {
             if (this.$data.filterResourceType == null | this.$data.filterResourceType == "All") {
@@ -50,35 +59,14 @@ export default {
             } else {
                 this.$data.filteredResources = [];
                 for (var resource of this.$data.resources) {
-                    if (resource.type == this.$data.filterResourceType) {
+                    if (resource.fileType == this.$data.filterResourceType) {
                         this.$data.filteredResources.push(resource);
                     }
                 }
             }
         },
-        deleteItem(item) {
-            this.$refs.confirmationDialog.title = "Delete Resource";
-            this.$refs.confirmationDialog.text = "Are you sure you want to delete the resource '" + item.title + "'?";
-            this.$refs.confirmationDialog.callbackData = {
-                item: item
-            };
-            this.$refs.confirmationDialog.callback = this.deleteCallback;
-            this.$refs.confirmationDialog.dialog = true;
-        },
-        deleteCallback(choice, callbackData) {
-            if (choice == "yes") {
-                this.$root.$emit('showBusyIndicator', true);
-                dataUtils.deleteResource(callbackData.item.id, () => {
-                    this.getResources();
-                    this.$root.$emit('showBusyIndicator', false);
-                });
-            }
-        },
-        editItem(item) {
-            this.$router.push('editresource?id=' + item.id);
-        },
         showItem(item) {
-            this.$refs.resourceDetailsDialog.show(item);
+            this.$refs.resourceDetailsDialog.showRequest(item.id);
         }
     },
 };

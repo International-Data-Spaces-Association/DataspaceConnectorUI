@@ -6,6 +6,7 @@ export default {
     data() {
         return {
             dialog: false,
+            active_tab: 0,
             currentEndpoint: null,
             title: "",
             url: null,
@@ -13,6 +14,7 @@ export default {
             sourceTypes: ["Database", "REST"],
             username: null,
             password: null,
+            apiKey: null,
             showPassword: false,
             valid: false,
             urlRule: validationUtils.getUrlRequiredRule()
@@ -37,6 +39,7 @@ export default {
             this.$data.sourceType = this.$data.sourceTypes[0];
             this.$data.username = "";
             this.$data.password = "";
+            this.$data.apiKey = "";
         },
         cancelBackendConnection() {
             this.$data.dialog = false;
@@ -46,7 +49,13 @@ export default {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$data.dialog = false;
                 try {
-                    await dataUtils.createGenericEndpoint(this.$data.url, this.$data.username, this.$data.password, this.$data.sourceType);
+                    if (this.$data.active_tab == 0) {
+                        this.$data.apiKey = null;
+                    } else {
+                        this.$data.username = null;
+                        this.$data.password = null;
+                    }
+                    await dataUtils.createGenericEndpoint(this.$data.url, this.$data.username, this.$data.password, this.$data.apiKey, this.$data.sourceType);
                 } catch (error) {
                     console.log("Error on saveBackendConnection(): ", error);
                     this.$root.$emit('error', "Create backend connection failed.");
@@ -72,6 +81,7 @@ export default {
             this.$data.sourceType = (await dataUtils.getDataSource(endpoint.dataSourceId)).type;
             this.$data.username = endpoint.username;
             this.$data.password = endpoint.password;
+            this.$data.apiKey = endpoint.apiKey;
             this.$data.dialog = true;
         }
     }

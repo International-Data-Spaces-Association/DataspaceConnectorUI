@@ -1,4 +1,5 @@
 import PolicyLine from "@/components/policy/PolicyLine.vue";
+import dataUtils from "../../../../../utils/dataUtils";
 
 export default {
     components: {
@@ -49,6 +50,28 @@ export default {
                         };
                         this.$data.policyLines.push(policyLine);
                     }
+                }
+            }
+        },
+        async loadRequestedResource(resource) {
+            this.$data.policyLines = [];
+            let agreements = await dataUtils.getArtifactAgreements(resource.artifactId);
+            if (agreements.length > 0) {
+                let agreement = JSON.parse(agreements[0].value);
+                let i = 0;
+                for (let permission of agreement["ids:permission"]) {
+                    permission["@context"] = {
+                        "ids": "https://w3id.org/idsa/core/",
+                        "idsc": "https://w3id.org/idsa/code/"
+                    };
+                    let policyName = await dataUtils.getPolicyNameByPattern(JSON.stringify(permission));
+                    let policyLine = {
+                        "name": Date.now() + i,
+                        "ruleJson": permission,
+                        "policyName": policyName
+                    };
+                    this.$data.policyLines.push(policyLine);
+                    i++;
                 }
             }
         },

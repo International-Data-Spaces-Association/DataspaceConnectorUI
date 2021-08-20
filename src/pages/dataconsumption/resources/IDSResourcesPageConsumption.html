@@ -1,17 +1,9 @@
 <div class="content">
   <div>
-    <v-btn elevation="1" color="primary" class="buttontext--text addresourcebutton" to="/receiveresourcesconsumption">
-      Receive Resources
+    <v-btn elevation="1" color="primary" class="buttontext--text addresourcebutton" to="/requestresourceconsumption">
+      Request Resource
     </v-btn>
     <v-row no-gutters>
-      <v-col cols="12" md="4" sm="5">
-        <v-select label="Filter by Type" v-model="filterResourceType" @change="filterChanged"
-          :items="['All', 'File', 'Database', 'HTTP']">
-        </v-select>
-      </v-col>
-      <v-col cols="12" md="1" sm="1">
-
-      </v-col>
       <v-col cols="12" md="6" sm="6">
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
       </v-col>
@@ -24,16 +16,11 @@
             <v-icon class="mr-2" @click="showItem(item)">
               mdi-eye
             </v-icon>
-            <v-icon class="mr-2" @click="editItem(item)">
-              mdi-pencil
-            </v-icon>
-            <v-icon @click="deleteItem(item)">
-              mdi-delete
-            </v-icon>
           </template>
         </v-data-table>
       </v-col>
     </v-row>
   </div>
+  <resource-details-dialog ref="resourceDetailsDialog"></resource-details-dialog>
   <confirmation-dialog ref="confirmationDialog"></confirmation-dialog>
 </div>
