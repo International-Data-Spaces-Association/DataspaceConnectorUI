@@ -2,12 +2,13 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
-## [8.4.0] - XXX-XX-XX
+## [8.4.0] - 2021-08-20
 
 ### Added
 - Data Consumption: Show list of requested resources
 - Backend Connections: API-Key authentication
 - Resources: Set payment method
+- Resources: Set referenced resources
 
 ### Fixes
 - Data Consumption: Show download link to artifact of own connector
