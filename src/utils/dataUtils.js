@@ -328,6 +328,36 @@ export default {
         return statusClass;
     },
 
+    async getAppStores() {
+        return await restUtils.callConnector("GET", "/api/appstores");
+    },
+
+    async createAppStore(url, title) {
+        try {
+            await restUtils.callConnector("POST", "/api/appstores", null, {
+                "location": url,
+                "title": title
+            });
+        } catch (error) {
+            errorUtils.showError(error, "Create broker");
+        }
+    },
+
+    async updateAppStore(id, url, title) {
+        try {
+            await restUtils.callConnector("PUT", "/api/appstores/" + id, null, {
+                "location": url,
+                "title": title
+            });
+        } catch (error) {
+            errorUtils.showError(error, "Update broker");
+        }
+    },
+
+    async deleteAppStore(id) {
+        return await restUtils.callConnector("DELETE", "/api/appstores/" + id);
+    },
+
     async getBrokers() {
         return await restUtils.callConnector("GET", "/api/brokers");
     },
