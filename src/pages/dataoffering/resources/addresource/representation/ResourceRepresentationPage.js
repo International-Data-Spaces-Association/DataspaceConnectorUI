@@ -87,10 +87,12 @@ export default {
             if (!hideBackendConnections && resource.artifactId !== undefined && resource.artifactId != "") {
                 try {
                     let route = await dataUtils.getRouteWithEnd(resource.artifactId);
-                    let ge = route.start;
-                    let dataSource = ge.dataSource;
-                    this.$data.selected.push(clientDataModel.createGenericEndpoint(ge.id, ge.location, dataSource.type,
-                        dataSource.id, dataSource.authentication.username, dataSource.authentication.password, ge.type));
+                    if (route != null) {
+                        let ge = route.start;
+                        let dataSource = ge.dataSource;
+                        this.$data.selected.push(clientDataModel.createGenericEndpoint(ge.id, ge.location, dataSource.type,
+                            dataSource.id, dataSource.authentication.username, dataSource.authentication.password, ge.type));
+                    }
                 } catch (error) {
                     errorUtils.showError(error, "Get resource route");
                 }

@@ -721,8 +721,17 @@ export default {
             });
 
             let route = await this.getRouteWithEnd(artifactId);
-            let routeId = this.getIdOfConnectorResponse(route);
-            await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.id + "\"");
+            if (route != null) {
+                let routeId = this.getIdOfConnectorResponse(route);
+                await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.id + "\"");
+            } else {
+                response = await this.createConnectorEndpoint(artifactId);
+                let endpointId = this.getIdOfConnectorResponse(response);
+                let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
+                let routeId = this.getIdOfConnectorResponse(response);
+                response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, endpointId, 220, 150, artifactId);
+                this.addRouteStartAndEnd(routeId, genericEndpoint.id, endpointId);
+            }
 
             await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
         } catch (error) {
