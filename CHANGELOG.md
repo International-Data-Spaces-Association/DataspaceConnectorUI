@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [8.5.0] - 2021-08-20
+
+### Added
+- Create, update and delete app stores
+- Settings: Radio buttons to use/not use proxy
+
+### Fixes
+- Data consumption: wider contract dialog (fixes truncated date fields)
+- Data offering: load resource with no route
+- Data offering: block navigation menu while saving resource
+
 ## [8.4.0] - 2021-08-20
 
 ### Added
