@@ -48,18 +48,28 @@
                 Proxy
             </v-col>
             <v-col cols="12" md="9">
-                <v-text-field label="Proxy URL" v-model="proxyUrl" :rules="urlRule"> </v-text-field>
-                <v-checkbox v-model="proxyAuthenticationNeeded" label="Use authentication"></v-checkbox>
-                <div class="proxy-authentication"
-                    v-bind:class="{ visible: proxyAuthenticationNeeded, invisible: !proxyAuthenticationNeeded }">
-                    <v-text-field label="Username" v-model="proxyUsername"> </v-text-field>
-                    <v-text-field label="Password" v-model="proxyPassword" :type="showPassword ? 'text' : 'password'"
-                        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                        @click:append="showPassword = !showPassword">
-                    </v-text-field>
-                </div>
-                <v-textarea label="Do not use the proxy settings for these hosts and domains" v-model="proxyNoProxy">
-                </v-textarea>
+                <v-radio-group v-model="useProxy" class="proxy-radio-group">
+                    <v-radio label="No proxy" value="false"></v-radio>
+                    <v-radio label="Manual configuration" value="true"></v-radio>
+                </v-radio-group>
+                <v-row class="proxy-settings-row" no-gutters v-if="useProxy=='true'">
+                    <v-col cols="12" md="12">
+                        <v-text-field label="Proxy URL" v-model="proxyUrl" :rules="urlRule"> </v-text-field>
+                        <v-checkbox v-model="proxyAuthenticationNeeded" label="Use authentication"></v-checkbox>
+                        <div class="proxy-authentication"
+                            v-bind:class="{ visible: proxyAuthenticationNeeded, invisible: !proxyAuthenticationNeeded }">
+                            <v-text-field label="Username" v-model="proxyUsername"> </v-text-field>
+                            <v-text-field label="Password" v-model="proxyPassword"
+                                :type="showPassword ? 'text' : 'password'"
+                                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                @click:append="showPassword = !showPassword">
+                            </v-text-field>
+                        </div>
+                        <v-textarea label="Do not use the proxy settings for these hosts and domains"
+                            v-model="proxyNoProxy">
+                        </v-textarea>
+                    </v-col>
+                </v-row>
             </v-col>
         </v-row>
         <v-row class="settings-row" no-gutters>

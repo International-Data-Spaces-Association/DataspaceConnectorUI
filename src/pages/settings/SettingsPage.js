@@ -9,6 +9,7 @@ export default {
         return {
             configId: "",
             proxyAuthenticationNeeded: false,
+            useProxy: "false",
             proxyUrl: "",
             proxyUsername: "",
             proxyPassword: "",
@@ -73,6 +74,7 @@ export default {
                 this.$data.connectorInboundModelVersion = configuration.inboundModelVersion;
                 this.$data.connectorOutboundModelVersion = configuration.outboundModelVersion;
                 this.$data.connectorVersion = configuration.version;
+                this.$data.useProxy = configuration.useProxy.toString();
                 this.$data.proxyUrl = configuration.proxyUrl;
                 let username = configuration.proxyUsername;
                 let password = configuration.proxyPassword;
@@ -138,7 +140,7 @@ export default {
 
             try {
                 await dataUtils.changeConnectorConfiguration(this.$data.configId, this.$data.connectorTitle,
-                    this.$data.connectorDescription, this.$data.connectorCurator, this.$data.connectorMaintainer,
+                    this.$data.connectorDescription, this.$data.connectorCurator, this.$data.connectorMaintainer, this.$data.useProxy === 'true',
                     this.$data.proxyUrl, noProxy, proxyUsername, proxyPassword, this.$data.logLevel, this.$data.connectorDeployMode,
                     this.$data.trustStoreUrl, trustStorePassword, this.$data.keyStoreUrl, keyStorePassword);
             }

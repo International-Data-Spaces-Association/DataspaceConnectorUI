@@ -24,3 +24,11 @@
 .save-message {
     color: var(--v-success-base)
 }
+
+.proxy-radio-group {
+    margin-top: 0px;
+}
+
+.proxy-settings-row {
+    margin-left: 30px;;
+}

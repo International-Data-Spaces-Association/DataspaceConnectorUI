@@ -103,7 +103,7 @@ export default {
     },
 
     createConnectorConfig(id, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
-        proxyUrl, proxyUsername, proxyPassword, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
+        useProxy, proxyUrl, proxyUsername, proxyPassword, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
         keyStoreUrl, keyStorePassword) {
         let configuration = {};
         if (id === undefined) {
@@ -150,6 +150,11 @@ export default {
             configuration.outboundModelVersion = "";
         } else {
             configuration.outboundModelVersion = outboundModelVersion;
+        }
+        if (useProxy === undefined) {
+            configuration.useProxy = false;
+        } else {
+            configuration.useProxy = useProxy;
         }
         if (proxyUrl === undefined) {
             configuration.proxyUrl = "";
@@ -335,6 +340,7 @@ export default {
         let maintainer = "";
         let inboundModelVersion = "";
         let outboundModelVersion = "";
+        let useProxy = false;
         let proxyUrl = "";
         let username = "";
         let password = "";
@@ -360,6 +366,7 @@ export default {
 
 
             if (idsConfiguration.proxy !== undefined && idsConfiguration.proxy != null) {
+                useProxy = true;
                 proxyUrl = idsConfiguration.proxy.location;
                 noProxyArray = idsConfiguration.proxy.exclusions;
             }
@@ -370,7 +377,7 @@ export default {
         }
 
         return this.createConnectorConfig(id, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
-            proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
+            useProxy, proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
             keyStoreUrl, keyStorePassword);
     }
 }

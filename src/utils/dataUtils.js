@@ -881,8 +881,19 @@ export default {
         return clientDataModel.convertIdsConfiguration(configuration);
     },
 
-    async changeConnectorConfiguration(id, title, description, curator, maintainer, proxyUrl, proxyNoProxy, proxyUsername,
+    async changeConnectorConfiguration(id, title, description, curator, maintainer, useProxy, proxyUrl, proxyNoProxy, proxyUsername,
         proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword) {
+        let proxySettings = null;
+        if (useProxy) {
+            proxySettings = {
+                "location": proxyUrl,
+                "exclusions": proxyNoProxy,
+                "authentication": {
+                    "key": proxyUsername,
+                    "value": proxyPassword
+                }
+            };
+        }
         let config = {
             "title": title,
             "description": description,
@@ -893,14 +904,7 @@ export default {
             "truststoreSettings": {
                 "location": trustStoreUrl
             },
-            "proxySettings": {
-                "location": proxyUrl,
-                "exclusions": proxyNoProxy,
-                "authentication": {
-                    "key": proxyUsername,
-                    "value": proxyPassword
-                }
-            },
+            "proxySettings": proxySettings,
             "keystoreSettings": {
                 "location": keyStoreUrl
             }
