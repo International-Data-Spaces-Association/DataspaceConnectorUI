@@ -14,6 +14,7 @@ export default {
         drawer: null,
         breadcrumbs: [],
         showBusyIndicator: false,
+        blockNavigationMenu: false,
         uiTitle: "IDS Configuration Manager",
         errorSnackbar: false,
         errorText: ""
@@ -35,6 +36,9 @@ export default {
         this.$data.breadcrumbs = this.$route.meta.breadcrumb;
         this.$root.$on('showBusyIndicator', (show) => {
             this.$data.showBusyIndicator = show;
+        });
+        this.$root.$on('blockNavigationMenu', (block) => {
+            this.$data.blockNavigationMenu = block;
         });
         this.$root.$on('error', (errorText) => {
             this.$data.errorText = errorText + " (See logs for details)";

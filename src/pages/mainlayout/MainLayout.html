@@ -1,6 +1,8 @@
 <v-app id="inspire">
     <v-navigation-drawer overlay-color="white" v-model="drawer" width="324" app>
         <navigation-menu />
+        <v-overlay :value="blockNavigationMenu">
+        </v-overlay>
     </v-navigation-drawer>
 
     <v-app-bar app height="80">

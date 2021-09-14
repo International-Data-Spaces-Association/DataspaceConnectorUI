@@ -143,11 +143,13 @@ export default {
                     policyDescriptions, filetype, 0, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
+                this.$root.$emit('blockNavigationMenu', true);
                 if (this.$data.currentResource == null) {
                     await dataUtils.createResourceWithMinimalRoute(title, description, language, paymentMethod, keywords, standardlicense, publisher,
                         policyDescriptions, filetype, brokerList, genericEndpoint);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
+                    this.$root.$emit('blockNavigationMenu', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId,
                         title, description, language, paymentMethod, keywords, standardlicense, publisher, samples, policyDescriptions,
@@ -155,6 +157,7 @@ export default {
                         this.$data.currentResource.artifactId);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
+                    this.$root.$emit('blockNavigationMenu', false);
                 }
             }
         }
