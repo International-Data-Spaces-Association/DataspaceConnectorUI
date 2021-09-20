@@ -32,3 +32,15 @@
 .proxy-settings-row {
     margin-left: 30px;;
 }
+
+.version-par {
+    float: left;
+}
+
+.update-par {
+    float: left;
+    background-color: var(--v-accent-base);
+    color: white;
+    margin-left: 10px;
+    padding: 0px 10px 0px 10px;
+}

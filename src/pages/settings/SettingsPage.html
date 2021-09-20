@@ -40,7 +40,8 @@
                 Connector version
             </v-col>
             <v-col cols="12" md="9">
-                {{ connectorVersion }}
+                <p class="version-par">{{ connectorVersion }}</p>
+                <p v-if="updateAvailable" class="update-par">Update ({{updateVersion}}) available</p>
             </v-col>
         </v-row>
         <v-row class="settings-row" no-gutters>

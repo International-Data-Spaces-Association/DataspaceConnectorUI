@@ -932,6 +932,10 @@ export default {
         await restUtils.callConnector("PUT", "/api/configurations/" + id, null, config);
     },
 
+    async getConnectorUpdateInfo() {
+        return await restUtils.callConnector("GET", "/actuator/info");
+    },
+
     async getConnectorDeployModes() {
         let response = await restUtils.callConnector("GET", "/api/configmanager/enum/connectorDeployMode");
         return response;

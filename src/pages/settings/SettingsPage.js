@@ -42,7 +42,9 @@ export default {
             trustStorePasswordOriginal: "",
             keyStorePasswordOriginal: "",
             proxyUsernameOriginal: "",
-            proxyPasswordOriginal: ""
+            proxyPasswordOriginal: "",
+            updateAvailable: false,
+            updateVersion: null
         };
     },
     mounted: function () {
@@ -98,6 +100,15 @@ export default {
             }
             catch (error) {
                 errorUtils.showError(error, "Get connector settings");
+            }
+
+            try {
+                let updateInfo = await dataUtils.getConnectorUpdateInfo();
+                this.$data.updateAvailable = updateInfo.connector["connector.update"]["update.available"];
+                this.$data.updateVersion = updateInfo.connector["connector.update"]["update.version"];
+            }
+            catch (error) {
+                errorUtils.showError(error, "Get connector update info");
             }
 
             this.$root.$emit('showBusyIndicator', false);
