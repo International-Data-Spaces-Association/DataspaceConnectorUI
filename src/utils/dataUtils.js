@@ -890,17 +890,22 @@ export default {
         return clientDataModel.convertIdsConfiguration(configuration);
     },
 
-    async changeConnectorConfiguration(id, title, description, curator, maintainer, useProxy, proxyUrl, proxyNoProxy, proxyUsername,
-        proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword) {
+    async changeConnectorConfiguration(id, title, description, curator, maintainer, useProxy, proxyUrl, proxyNoProxy,
+        useAuthentication, proxyUsername, proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword,
+        keyStoreUrl, keyStorePassword) {
         let proxySettings = null;
+        let proxyAuth = null;
+        if (useAuthentication) {
+            proxyAuth = {
+                "key": proxyUsername,
+                "value": proxyPassword
+            };
+        }
         if (useProxy) {
             proxySettings = {
                 "location": proxyUrl,
                 "exclusions": proxyNoProxy,
-                "authentication": {
-                    "key": proxyUsername,
-                    "value": proxyPassword
-                }
+                "authentication": proxyAuth
             };
         }
         let config = {

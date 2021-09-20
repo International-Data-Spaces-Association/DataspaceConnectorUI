@@ -369,6 +369,10 @@ export default {
                 useProxy = true;
                 proxyUrl = idsConfiguration.proxy.location;
                 noProxyArray = idsConfiguration.proxy.exclusions;
+                if (idsConfiguration.proxy.authenticationSet) {
+                    username = "••••";
+                    password = "••••";
+                }
             }
             logLevel = idsConfiguration.logLevel;
             connectorDeployMode = idsConfiguration.deployMode;
