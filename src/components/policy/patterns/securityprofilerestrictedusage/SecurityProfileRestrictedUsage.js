@@ -1,4 +1,6 @@
 import validationUtils from "@/utils/validationUtils";
+import dataUtils from "@/utils/dataUtils";
+import errorUtils from "@/utils/errorUtils";
 
 export default {
     components: {},
@@ -14,7 +16,7 @@ export default {
         };
     },
     mounted: function () {
-
+        this.loadEnumValues();
     },
     watch: {
         valid: function () {
@@ -22,8 +24,15 @@ export default {
         }
     },
     methods: {
+        async loadEnumValues() {
+            try {
+                this.$data.profiles = await dataUtils.getSecurityProfiles();
+            } catch (error) {
+                errorUtils.showError(error, "Get security profiles");
+            }
+        },
         setPolicy(contract) {
-            this.$data.value = contract["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("https://w3id.org/idsa/code/", "idsc:");
+            this.$data.value = contract["ids:constraint"][0]["ids:rightOperand"]["@value"].replace("https://w3id.org/idsa/code/", "");
             this.tfChange();
         },
         setPolicyByDescription(policyDescription) {

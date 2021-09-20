@@ -277,6 +277,14 @@ export default {
         }
     },
 
+    async getPaymentMethods() {
+        return await restUtils.callConnector("GET", "/api/configmanager/enum/paymentmethod");
+    },
+
+    async getSecurityProfiles() {
+        return await restUtils.callConnector("GET", "/api/configmanager/enum/securityprofile");
+    },
+
     async registerConnectorAtBroker(brokerUri) {
         await this.initDefaultCatalog();
         try {
