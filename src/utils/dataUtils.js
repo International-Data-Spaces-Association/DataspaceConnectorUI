@@ -54,7 +54,6 @@ const IDS_PAYMENT_METHOD_TO_NAME = {
 };
 
 let languages = null;
-let defaultCatalogId = null;
 let connectorUrl = "https://localhost:8080"
 console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
 if (process.env.CONNECTOR_URL !== undefined) {
@@ -579,17 +578,16 @@ export default {
     },
 
     async getDefaultCatalogId() {
-        if (defaultCatalogId == null) {
-            let catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
-            if (catalogs.length > 0) {
-                defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
-            } else {
-                await restUtils.callConnector("POST", "/api/catalogs", null, {
-                    "title": "Default catalog"
-                });
-                catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
-                defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
-            }
+        let defaultCatalogId = -1;
+        let catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+        if (catalogs.length > 0) {
+            defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
+        } else {
+            await restUtils.callConnector("POST", "/api/catalogs", null, {
+                "title": "Default catalog"
+            });
+            catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+            defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
         }
         return defaultCatalogId;
     },
@@ -601,7 +599,7 @@ export default {
                 "title": "Default catalog"
             });
             catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
-            defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
+            this.getIdOfConnectorResponse(catalogs[0]);
         }
     },
 
