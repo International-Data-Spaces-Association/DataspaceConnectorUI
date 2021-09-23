@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Create, update and delete app stores
+- Add resources to catalogs
 - Settings: Radio buttons to use/not use proxy
 - Settings: Show available DSC update
 

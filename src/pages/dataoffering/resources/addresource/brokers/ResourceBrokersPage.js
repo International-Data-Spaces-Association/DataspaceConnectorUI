@@ -62,6 +62,7 @@ export default {
         },
         async loadResource(resource) {
             this.$data.selected = [];
+            this.$data.lastSelected = [];
             if (resource.id === undefined || resource.id == -1) {
                 if (resource.brokerUris !== undefined) {
                     for (let brokerUri of resource.brokerUris) {

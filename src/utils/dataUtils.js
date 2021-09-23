@@ -222,7 +222,8 @@ export default {
         }
         let brokers = await this.getBrokersOfResource(resourceId);
         let brokerUris = brokers.map(x => x.location);
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris);
+        let catalogs = await this.getCatalogsOfResource(resourceId);
+        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris, catalogs);
     },
 
     async getRequestedResource(resourceId) {
@@ -577,19 +578,30 @@ export default {
         return id;
     },
 
-    async getDefaultCatalogId() {
-        let defaultCatalogId = -1;
-        let catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
-        if (catalogs.length > 0) {
-            defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
-        } else {
-            await restUtils.callConnector("POST", "/api/catalogs", null, {
-                "title": "Default catalog"
-            });
-            catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
-            defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
-        }
-        return defaultCatalogId;
+    async getCatalogs() {
+        return (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+    },
+
+    async createCatalog(title, description) {
+        await restUtils.callConnector("POST", "/api/catalogs", null, {
+            "title": title,
+            "description": description
+        });
+    },
+
+    async updateCatalog(id, title, description) {
+        await restUtils.callConnector("PUT", "/api/catalogs/" + id, null, {
+            "title": title,
+            "description": description
+        });
+    },
+
+    async deleteCatalog(id) {
+        await restUtils.callConnector("DELETE", "/api/catalogs/" + id);
+    },
+
+    async getCatalogsOfResource(resourceId) {
+        return (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/catalogs"))._embedded.catalogs;
     },
 
     async initDefaultCatalog() {
@@ -603,10 +615,10 @@ export default {
         }
     },
 
-    async createResourceWithMinimalRoute(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
+    async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
         filetype, brokerUris, genericEndpoint) {
         try {
-            let resourceResponse = await this.createResource(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
             let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
             let routeId = this.getIdOfConnectorResponse(response);
             response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, resourceResponse.endpointId, 220, 150, resourceResponse.artifactId);
@@ -620,7 +632,7 @@ export default {
         }
     },
 
-    async createResource(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
+    async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
         filetype) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
@@ -634,8 +646,9 @@ export default {
         }));
 
         let resourceId = this.getIdOfConnectorResponse(response);
-        let catalogId = await this.getDefaultCatalogId();
-        response = await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+        for (let catalogId of catalogIds) {
+            await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+        }
 
         response = await restUtils.callConnector("POST", "/api/contracts", null, {});
         let contractId = this.getIdOfConnectorResponse(response);
@@ -677,8 +690,9 @@ export default {
         };
     },
 
-    async editResource(resourceId, representationId, title, description, language, paymentMethod, keywords, standardlicense, publisher, samples,
-        policyDescriptions, filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
+    async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
+        keywords, standardlicense, publisher, samples, policyDescriptions, filetype, brokerUris, brokerDeleteUris, genericEndpoint,
+        ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
                 "title": title,
@@ -690,6 +704,15 @@ export default {
                 "license": standardlicense,
                 "samples": samples
             });
+
+            for (let catalogId of catalogIds) {
+                await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+            }
+
+            // TODO API Call Error
+            for (let catalogId of deletedCatalogIds) {
+                await restUtils.callConnector("DELETE", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+            }
 
             // Delete all rules and create new ones. Rules that have not been edited in the UI are also deleted and recreated. 
             // Implementing the detection of a change to an existing rule would have been complicated (Pattern can change, only value can change, ...)
@@ -774,6 +797,7 @@ export default {
     async createResourceIdsEndpointAndAddSubRoute(sourceNode, destinationNode, genericEndpoint, routeId, startId) {
         let hasError = false;
         let resource = destinationNode.resource;
+        let catalogIds = resource.catalogIds;
         let title = resource.title;
         let description = resource.description;
         let language = resource.language;
@@ -786,7 +810,7 @@ export default {
         let brokerUris = resource.brokerUris;
 
         try {
-            let resourceResponse = await this.createResource(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
             await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, resourceResponse.endpointId, destinationNode.x, destinationNode.y, resourceResponse.artifactId);
             this.addRouteStartAndEnd(routeId, startId, resourceResponse.endpointId);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);

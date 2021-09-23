@@ -73,11 +73,6 @@ export default {
                     name: "Request Resource (Consumption)",
                     component: IDSDataConsumptionPage,
                     subpages: []
-                }, {
-                    path: "editresource",
-                    name: "Edit Resource",
-                    component: IDSDataConsumptionPage,
-                    subpages: []
                 }]
             }, {
                 path: "backendconnectionsconsumption",

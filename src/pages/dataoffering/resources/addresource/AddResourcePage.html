@@ -4,6 +4,7 @@
             <v-tab :disabled="!readonly">Meta data</v-tab>
             <v-tab :disabled="!readonly" v-show="!onlyMetaData">Policy</v-tab>
             <v-tab :disabled="!readonly" v-show="!onlyMetaData">Representation</v-tab>
+            <v-tab :disabled="!readonly" v-show="!onlyMetaData">Catalogs</v-tab>
             <v-tab :disabled="!readonly" v-show="!onlyMetaData & !hideBrokers">Brokers</v-tab>
             <v-tab-item :eager="true">
                 <resource-meta-data-page ref="metaDataPage" @nextPage="nextPage" :readonly="readonly">
@@ -18,6 +19,11 @@
                 <resource-representation-page ref="representationPage" :fromRoutePage="fromRoutePage"
                     :readonly="readonly" @previousPage="previousPage" @nextPage="nextPage">
                 </resource-representation-page>
+            </v-tab-item>
+            <v-tab-item :eager="true">
+                <resource-catalogs-page ref="catalogsPage" :fromRoutePage="fromRoutePage" :readonly="readonly"
+                    @previousPage="previousPage" @nextPage="nextPage">
+                </resource-catalogs-page>
             </v-tab-item>
             <v-tab-item :eager="true">
                 <resource-brokers-page ref="brokersPage" :fromRoutePage="fromRoutePage" :readonly="readonly"

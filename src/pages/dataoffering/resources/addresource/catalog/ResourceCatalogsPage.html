@@ -1,0 +1,37 @@
+<div>
+  <add-catalog-dialog ref="addCatalogDialog" @catalogSaved="catalogSaved" v-if="!readonly">
+  </add-catalog-dialog>
+  <v-row no-gutters v-if="!readonly">
+    <v-col cols="12" md="3" sm="6">
+      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details>
+      </v-text-field>
+    </v-col>
+  </v-row>
+  <v-row no-gutters v-if="!readonly">
+    <v-col cols="12" md="11" sm="12">
+      <v-data-table show-select v-model="selected" :headers="headers" :items="catalogs" :items-per-page="5"
+        :search="search" item-key="id" no-data-text="No catalogs available" :sort-by.sync="sortBy"
+        :sort-desc.sync="sortDesc">
+        <template v-slot:item.actions="{ item }">
+          <v-icon class="mr-2" @click="editItem(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon @click="deleteItem(item)">
+            mdi-delete
+          </v-icon>
+        </template>
+      </v-data-table>
+    </v-col>
+  </v-row>
+  <v-row no-gutters v-if="readonly">
+    <v-col cols="12" md="11" sm="12">
+      <v-data-table :headers="headers" :items="selected" :items-per-page="5" :search="search" item-key="id"
+        no-data-text="Not added to any catalogs" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc">
+      </v-data-table>
+    </v-col>
+  </v-row>
+  <confirmation-dialog ref="confirmationDialog"></confirmation-dialog>
+  <v-btn color="primary" @click.native="previousPage" class="prev-page-button">Back</v-btn>
+  <v-btn color="primary" @click.native="nextPage" class="prev-page-button" :disabled="!readonly && !valid">Next
+  </v-btn>
+</div>
