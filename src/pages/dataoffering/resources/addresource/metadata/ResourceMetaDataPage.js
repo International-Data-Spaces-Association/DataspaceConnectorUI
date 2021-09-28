@@ -20,10 +20,7 @@ export default {
             languageItems: [],
             paymentMethod: "undefined",
             // TODO use enum API endpoint for payment methods
-            paymentMethods: [{ "originalName": "undefined", "displayName": "Undefined" },
-            { "originalName": "fixedPrice", "displayName": "Fixed price" },
-            { "originalName": "free", "displayName": "Free" },
-            { "originalName": "negotiationBasis", "displayName": "Negotiation basis" }],
+            paymentMethods: [],
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
             urlRule: validationUtils.getUrlRequiredRule(),
@@ -41,11 +38,11 @@ export default {
             } catch (error) {
                 errorUtils.showError(error, "Get languages");
             }
-            // try {
-            //     this.$data.paymentMethods = await DataUtils.getPaymentMethods();
-            // } catch (error) {
-            //     errorUtils.showError(error, "Get payment methods");
-            // }
+            try {
+                this.$data.paymentMethods = await DataUtils.getPaymentMethods();
+            } catch (error) {
+                errorUtils.showError(error, "Get payment methods");
+            }
         },
         nextPage() {
             this.$emit('nextPage');

@@ -7,7 +7,7 @@ import bodyParser from "body-parser";
 import path from "path";
 
 const vuePath = path.resolve() + '/../../dist';
-const DEBUG = true;
+const DEBUG = false;
 const app = express();
 const port = 8083;
 let connectorUrl = "https://localhost:8080"
