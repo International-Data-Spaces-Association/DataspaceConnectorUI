@@ -8,7 +8,10 @@ export default {
         ConfirmationDialog,
         AddCatalogDialog
     },
-    props: ['fromRoutePage'],
+    props: {
+        fromRoutePage: Boolean,
+        inAddResourcesPage: Boolean
+    },
     data() {
         return {
             search: '',

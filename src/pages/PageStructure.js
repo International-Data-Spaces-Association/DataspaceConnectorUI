@@ -9,6 +9,7 @@ import BrokersPage from "@/pages/brokers/BrokersPage.vue";
 import AppStoresPage from "@/pages/appstores/AppStoresPage.vue";
 import SettingsPage from "@/pages/settings/SettingsPage.vue";
 import BackendConnectionsPage from "@/pages/dataoffering/backendconnections/BackendConnectionsPage.vue";
+import ResourceCatalogsPage from "@/pages/dataoffering/resources/addresource/catalog/ResourceCatalogsPage.vue";
 
 export default {
     getPageStructure() {
@@ -58,6 +59,11 @@ export default {
                     component: AddRoutePage,
                     subpages: []
                 }]
+            }, {
+                path: "catalogsoffering",
+                name: "Catalogs (Offering)",
+                component: ResourceCatalogsPage,
+                subpages: []
             }]
         }, {
             path: null,

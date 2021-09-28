@@ -21,8 +21,8 @@
                 </resource-representation-page>
             </v-tab-item>
             <v-tab-item :eager="true">
-                <resource-catalogs-page ref="catalogsPage" :fromRoutePage="fromRoutePage" :readonly="readonly"
-                    @previousPage="previousPage" @nextPage="nextPage">
+                <resource-catalogs-page ref="catalogsPage" :fromRoutePage="fromRoutePage" inAddResourcesPage
+                    :readonly="readonly" @previousPage="previousPage" @nextPage="nextPage">
                 </resource-catalogs-page>
             </v-tab-item>
             <v-tab-item :eager="true">
