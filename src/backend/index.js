@@ -78,11 +78,13 @@ function get(url) {
     });
 }
 
-function del(url) {
+function del(url, data) {
     if (DEBUG) {
         console.log(">>> DELETE " + url);
+        console.log(">>> DATA: ", data);
     }
     return axios.delete(url, {
+        data: data,
         headers: { 'content-type': 'application/json' },
         auth,
         httpsAgent
@@ -171,7 +173,7 @@ app.post('/', (req, res) => {
             }
         });
     } else if (req.body.type == "DELETE") {
-        del(connectorUrl + call).then(response => {
+        del(connectorUrl + call, req.body.body).then(response => {
             res.send(response.data);
         }).catch(error => {
             if (error.response === undefined) {

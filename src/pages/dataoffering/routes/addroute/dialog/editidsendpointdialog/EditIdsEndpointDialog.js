@@ -41,7 +41,7 @@ export default {
             this.$refs.addResourcePage.set(resource, false);
             this.$data.dialog = true;
         },
-        saved(title, description, language, paymentMethod, keywords, version, standardlicense, publisher, policyDescriptions, filetype, bytesize, brokerList) {
+        saved(catalogIds, title, description, language, paymentMethod, keywords, version, standardlicense, publisher, policyDescriptions, filetype, bytesize, brokerList) {
             let isNew = false;
             if (this.$data.node == null) {
                 isNew = true;
@@ -58,6 +58,7 @@ export default {
             }
 
             let resource = {};
+            resource.catalogIds = catalogIds;
             resource.title = title;
             resource.description = description;
             resource.language = language;

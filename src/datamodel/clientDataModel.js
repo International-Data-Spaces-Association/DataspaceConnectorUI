@@ -2,7 +2,7 @@ import dataUtils from "@/utils/dataUtils";
 
 export default {
     createResource(url, id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
-        publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris, samples) {
+        publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris, samples, catalogs) {
         let resource = {};
         if (url === undefined) {
             resource.url = "";
@@ -99,11 +99,16 @@ export default {
         } else {
             resource.samples = samples;
         }
+        if (catalogs === undefined) {
+            resource.catalogs = [];
+        } else {
+            resource.catalogs = catalogs;
+        }
         return resource;
     },
 
     createConnectorConfig(id, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
-        proxyUrl, proxyUsername, proxyPassword, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
+        useProxy, proxyUrl, proxyUsername, proxyPassword, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
         keyStoreUrl, keyStorePassword) {
         let configuration = {};
         if (id === undefined) {
@@ -150,6 +155,11 @@ export default {
             configuration.outboundModelVersion = "";
         } else {
             configuration.outboundModelVersion = outboundModelVersion;
+        }
+        if (useProxy === undefined) {
+            configuration.useProxy = false;
+        } else {
+            configuration.useProxy = useProxy;
         }
         if (proxyUrl === undefined) {
             configuration.proxyUrl = "";
@@ -303,7 +313,7 @@ export default {
         return this.createApp(id, idsApp.title, idsApp.description, "APP");
     },
 
-    convertIdsResource(idsResource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris) {
+    convertIdsResource(idsResource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris, catalogs) {
         let title = idsResource.title;
         if (title.includes("\"@en")) {
             title = idsResource.title.substring(1, idsResource.title.lastIndexOf("\""));
@@ -321,7 +331,8 @@ export default {
 
         return this.createResource(idsResource._links.self.href, dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.paymentModality, idsResource.keywords,
-            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris, idsResource.samples);
+            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, ruleIds, ruleJsons, artifactId, representationId, brokerUris,
+            idsResource.samples, catalogs);
     },
 
 
@@ -335,6 +346,7 @@ export default {
         let maintainer = "";
         let inboundModelVersion = "";
         let outboundModelVersion = "";
+        let useProxy = false;
         let proxyUrl = "";
         let username = "";
         let password = "";
@@ -360,8 +372,13 @@ export default {
 
 
             if (idsConfiguration.proxy !== undefined && idsConfiguration.proxy != null) {
+                useProxy = true;
                 proxyUrl = idsConfiguration.proxy.location;
                 noProxyArray = idsConfiguration.proxy.exclusions;
+                if (idsConfiguration.proxy.authenticationSet) {
+                    username = "••••";
+                    password = "••••";
+                }
             }
             logLevel = idsConfiguration.logLevel;
             connectorDeployMode = idsConfiguration.deployMode;
@@ -370,7 +387,7 @@ export default {
         }
 
         return this.createConnectorConfig(id, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
-            proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
+            useProxy, proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
             keyStoreUrl, keyStorePassword);
     }
 }

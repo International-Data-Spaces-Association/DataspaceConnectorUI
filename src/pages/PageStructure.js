@@ -6,9 +6,10 @@ import AddRoutePage from "@/pages/dataoffering/routes/addroute/AddRoutePage.vue"
 import IDSDataConsumptionPage from "@/pages/dataconsumption/dataconsumption/IDSDataConsumptionPage.vue";
 import IDSResourcesPageConsumption from "@/pages/dataconsumption/resources/IDSResourcesPageConsumption.vue";
 import BrokersPage from "@/pages/brokers/BrokersPage.vue";
-import AppsPage from "@/pages/apps/AppsPage.vue";
+import AppStoresPage from "@/pages/appstores/AppStoresPage.vue";
 import SettingsPage from "@/pages/settings/SettingsPage.vue";
 import BackendConnectionsPage from "@/pages/dataoffering/backendconnections/BackendConnectionsPage.vue";
+import ResourceCatalogsPage from "@/pages/dataoffering/resources/addresource/catalog/ResourceCatalogsPage.vue";
 
 export default {
     getPageStructure() {
@@ -58,6 +59,11 @@ export default {
                     component: AddRoutePage,
                     subpages: []
                 }]
+            }, {
+                path: "catalogsoffering",
+                name: "Catalogs (Offering)",
+                component: ResourceCatalogsPage,
+                subpages: []
             }]
         }, {
             path: null,
@@ -71,11 +77,6 @@ export default {
                 subpages: [{
                     path: "requestresourceconsumption",
                     name: "Request Resource (Consumption)",
-                    component: IDSDataConsumptionPage,
-                    subpages: []
-                }, {
-                    path: "editresource",
-                    name: "Edit Resource",
                     component: IDSDataConsumptionPage,
                     subpages: []
                 }]
@@ -95,10 +96,10 @@ export default {
             component: BrokersPage,
             subpages: []
         }, {
-            path: "apps",
-            name: "Apps",
+            path: "appstores",
+            name: "App Stores",
             icon: "icon-apps",
-            component: AppsPage,
+            component: AppStoresPage,
             subpages: []
         }, {
             path: "settings",

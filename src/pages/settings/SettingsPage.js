@@ -9,6 +9,7 @@ export default {
         return {
             configId: "",
             proxyAuthenticationNeeded: false,
+            useProxy: "false",
             proxyUrl: "",
             proxyUsername: "",
             proxyPassword: "",
@@ -41,7 +42,9 @@ export default {
             trustStorePasswordOriginal: "",
             keyStorePasswordOriginal: "",
             proxyUsernameOriginal: "",
-            proxyPasswordOriginal: ""
+            proxyPasswordOriginal: "",
+            updateAvailable: false,
+            updateVersion: null
         };
     },
     mounted: function () {
@@ -73,6 +76,7 @@ export default {
                 this.$data.connectorInboundModelVersion = configuration.inboundModelVersion;
                 this.$data.connectorOutboundModelVersion = configuration.outboundModelVersion;
                 this.$data.connectorVersion = configuration.version;
+                this.$data.useProxy = configuration.useProxy.toString();
                 this.$data.proxyUrl = configuration.proxyUrl;
                 let username = configuration.proxyUsername;
                 let password = configuration.proxyPassword;
@@ -98,6 +102,19 @@ export default {
                 errorUtils.showError(error, "Get connector settings");
             }
 
+            try {
+                let updateInfo = await dataUtils.getConnectorUpdateInfo();
+                if (updateInfo.update !== undefined) {
+                    this.$data.updateAvailable = updateInfo.update.available;
+                    this.$data.updateVersion = updateInfo.update.version;
+                } else {
+                    this.$data.updateAvailable = false;
+                }
+            }
+            catch (error) {
+                errorUtils.showError(error, "Get connector update info");
+            }
+
             this.$root.$emit('showBusyIndicator', false);
         },
         async saveSettings() {
@@ -105,6 +122,7 @@ export default {
             this.$data.saveMessage = "";
             this.$root.$emit('showBusyIndicator', true);
 
+            let useAuthentication = this.$data.proxyAuthenticationNeeded;
             let proxyUsername = "";
             let proxyPassword = "";
             if (this.$data.proxyAuthenticationNeeded) {
@@ -115,10 +133,10 @@ export default {
                     proxyPassword = this.$data.proxyPassword;
                 }
             }
-            if (proxyUsername.trim() == this.$data.proxyUsernameOriginal.trim()) {
+            if (proxyUsername.trim() == this.$data.proxyUsernameOriginal.trim() || proxyUsername.includes("•")) {
                 proxyUsername = null;
             }
-            if (proxyPassword.trim() == this.$data.proxyPasswordOriginal.trim()) {
+            if (proxyPassword.trim() == this.$data.proxyPasswordOriginal.trim() || proxyPassword.includes("•")) {
                 proxyPassword = null;
             }
             let noProxy = [];
@@ -138,8 +156,8 @@ export default {
 
             try {
                 await dataUtils.changeConnectorConfiguration(this.$data.configId, this.$data.connectorTitle,
-                    this.$data.connectorDescription, this.$data.connectorCurator, this.$data.connectorMaintainer,
-                    this.$data.proxyUrl, noProxy, proxyUsername, proxyPassword, this.$data.logLevel, this.$data.connectorDeployMode,
+                    this.$data.connectorDescription, this.$data.connectorCurator, this.$data.connectorMaintainer, this.$data.useProxy === 'true',
+                    this.$data.proxyUrl, noProxy, useAuthentication, proxyUsername, proxyPassword, this.$data.logLevel, this.$data.connectorDeployMode,
                     this.$data.trustStoreUrl, trustStorePassword, this.$data.keyStoreUrl, keyStorePassword);
             }
             catch (error) {

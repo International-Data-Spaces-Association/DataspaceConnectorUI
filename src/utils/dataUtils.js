@@ -54,7 +54,6 @@ const IDS_PAYMENT_METHOD_TO_NAME = {
 };
 
 let languages = null;
-let defaultCatalogId = null;
 let connectorUrl = "https://localhost:8080"
 console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
 if (process.env.CONNECTOR_URL !== undefined) {
@@ -223,7 +222,8 @@ export default {
         }
         let brokers = await this.getBrokersOfResource(resourceId);
         let brokerUris = brokers.map(x => x.location);
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris);
+        let catalogs = await this.getCatalogsOfResource(resourceId);
+        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris, catalogs);
     },
 
     async getRequestedResource(resourceId) {
@@ -277,6 +277,14 @@ export default {
         }
     },
 
+    async getPaymentMethods() {
+        return await restUtils.callConnector("GET", "/api/configmanager/enum/paymentmethod");
+    },
+
+    async getSecurityProfiles() {
+        return await restUtils.callConnector("GET", "/api/configmanager/enum/securityprofile");
+    },
+
     async registerConnectorAtBroker(brokerUri) {
         await this.initDefaultCatalog();
         try {
@@ -326,6 +334,36 @@ export default {
             statusClass = "registeredAtBroker";
         }
         return statusClass;
+    },
+
+    async getAppStores() {
+        return await restUtils.callConnector("GET", "/api/appstores");
+    },
+
+    async createAppStore(url, title) {
+        try {
+            await restUtils.callConnector("POST", "/api/appstores", null, {
+                "location": url,
+                "title": title
+            });
+        } catch (error) {
+            errorUtils.showError(error, "Create broker");
+        }
+    },
+
+    async updateAppStore(id, url, title) {
+        try {
+            await restUtils.callConnector("PUT", "/api/appstores/" + id, null, {
+                "location": url,
+                "title": title
+            });
+        } catch (error) {
+            errorUtils.showError(error, "Update broker");
+        }
+    },
+
+    async deleteAppStore(id) {
+        return await restUtils.callConnector("DELETE", "/api/appstores/" + id);
     },
 
     async getBrokers() {
@@ -540,20 +578,30 @@ export default {
         return id;
     },
 
-    async getDefaultCatalogId() {
-        if (defaultCatalogId == null) {
-            let catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
-            if (catalogs.length > 0) {
-                defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
-            } else {
-                await restUtils.callConnector("POST", "/api/catalogs", null, {
-                    "title": "Default catalog"
-                });
-                catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
-                defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
-            }
-        }
-        return defaultCatalogId;
+    async getCatalogs() {
+        return (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
+    },
+
+    async createCatalog(title, description) {
+        await restUtils.callConnector("POST", "/api/catalogs", null, {
+            "title": title,
+            "description": description
+        });
+    },
+
+    async updateCatalog(id, title, description) {
+        await restUtils.callConnector("PUT", "/api/catalogs/" + id, null, {
+            "title": title,
+            "description": description
+        });
+    },
+
+    async deleteCatalog(id) {
+        await restUtils.callConnector("DELETE", "/api/catalogs/" + id);
+    },
+
+    async getCatalogsOfResource(resourceId) {
+        return (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/catalogs"))._embedded.catalogs;
     },
 
     async initDefaultCatalog() {
@@ -563,14 +611,14 @@ export default {
                 "title": "Default catalog"
             });
             catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
-            defaultCatalogId = this.getIdOfConnectorResponse(catalogs[0]);
+            this.getIdOfConnectorResponse(catalogs[0]);
         }
     },
 
-    async createResourceWithMinimalRoute(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
+    async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
         filetype, brokerUris, genericEndpoint) {
         try {
-            let resourceResponse = await this.createResource(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
             let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
             let routeId = this.getIdOfConnectorResponse(response);
             response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, resourceResponse.endpointId, 220, 150, resourceResponse.artifactId);
@@ -584,7 +632,7 @@ export default {
         }
     },
 
-    async createResource(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
+    async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
         filetype) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
@@ -598,8 +646,9 @@ export default {
         }));
 
         let resourceId = this.getIdOfConnectorResponse(response);
-        let catalogId = await this.getDefaultCatalogId();
-        response = await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+        for (let catalogId of catalogIds) {
+            await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+        }
 
         response = await restUtils.callConnector("POST", "/api/contracts", null, {});
         let contractId = this.getIdOfConnectorResponse(response);
@@ -641,8 +690,9 @@ export default {
         };
     },
 
-    async editResource(resourceId, representationId, title, description, language, paymentMethod, keywords, standardlicense, publisher, samples,
-        policyDescriptions, filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
+    async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
+        keywords, standardlicense, publisher, samples, policyDescriptions, filetype, brokerUris, brokerDeleteUris, genericEndpoint,
+        ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
                 "title": title,
@@ -654,6 +704,15 @@ export default {
                 "license": standardlicense,
                 "samples": samples
             });
+
+            for (let catalogId of catalogIds) {
+                await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+            }
+
+            // TODO API Call Error
+            for (let catalogId of deletedCatalogIds) {
+                await restUtils.callConnector("DELETE", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
+            }
 
             // Delete all rules and create new ones. Rules that have not been edited in the UI are also deleted and recreated. 
             // Implementing the detection of a change to an existing rule would have been complicated (Pattern can change, only value can change, ...)
@@ -691,8 +750,17 @@ export default {
             });
 
             let route = await this.getRouteWithEnd(artifactId);
-            let routeId = this.getIdOfConnectorResponse(route);
-            await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.id + "\"");
+            if (route != null) {
+                let routeId = this.getIdOfConnectorResponse(route);
+                await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.id + "\"");
+            } else {
+                response = await this.createConnectorEndpoint(artifactId);
+                let endpointId = this.getIdOfConnectorResponse(response);
+                let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
+                let routeId = this.getIdOfConnectorResponse(response);
+                response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, endpointId, 220, 150, artifactId);
+                this.addRouteStartAndEnd(routeId, genericEndpoint.id, endpointId);
+            }
 
             await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
         } catch (error) {
@@ -729,6 +797,7 @@ export default {
     async createResourceIdsEndpointAndAddSubRoute(sourceNode, destinationNode, genericEndpoint, routeId, startId) {
         let hasError = false;
         let resource = destinationNode.resource;
+        let catalogIds = resource.catalogIds;
         let title = resource.title;
         let description = resource.description;
         let language = resource.language;
@@ -741,7 +810,7 @@ export default {
         let brokerUris = resource.brokerUris;
 
         try {
-            let resourceResponse = await this.createResource(title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
             await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, resourceResponse.endpointId, destinationNode.x, destinationNode.y, resourceResponse.artifactId);
             this.addRouteStartAndEnd(routeId, startId, resourceResponse.endpointId);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
@@ -851,8 +920,24 @@ export default {
         return clientDataModel.convertIdsConfiguration(configuration);
     },
 
-    async changeConnectorConfiguration(id, title, description, curator, maintainer, proxyUrl, proxyNoProxy, proxyUsername,
-        proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword, keyStoreUrl, keyStorePassword) {
+    async changeConnectorConfiguration(id, title, description, curator, maintainer, useProxy, proxyUrl, proxyNoProxy,
+        useAuthentication, proxyUsername, proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword,
+        keyStoreUrl, keyStorePassword) {
+        let proxySettings = null;
+        let proxyAuth = null;
+        if (useAuthentication) {
+            proxyAuth = {
+                "key": proxyUsername,
+                "value": proxyPassword
+            };
+        }
+        if (useProxy) {
+            proxySettings = {
+                "location": proxyUrl,
+                "exclusions": proxyNoProxy,
+                "authentication": proxyAuth
+            };
+        }
         let config = {
             "title": title,
             "description": description,
@@ -863,14 +948,7 @@ export default {
             "truststoreSettings": {
                 "location": trustStoreUrl
             },
-            "proxySettings": {
-                "location": proxyUrl,
-                "exclusions": proxyNoProxy,
-                "authentication": {
-                    "key": proxyUsername,
-                    "value": proxyPassword
-                }
-            },
+            "proxySettings": proxySettings,
             "keystoreSettings": {
                 "location": keyStoreUrl
             }
@@ -882,6 +960,10 @@ export default {
             config.keystoreSettings.password = keyStorePassword;
         }
         await restUtils.callConnector("PUT", "/api/configurations/" + id, null, config);
+    },
+
+    async getConnectorUpdateInfo() {
+        return await restUtils.callConnector("GET", "/actuator/info");
     },
 
     async getConnectorDeployModes() {
@@ -1013,7 +1095,7 @@ export default {
         let description = resource["ids:description"][0]["@value"];
         let language = resource["ids:language"][0]["@id"].replace("https://w3id.org/idsa/code/", "");
         let paymentMethod = "undefined";
-        if (resource["ids:paymentModality"][0] != null) {
+        if (resource["ids:paymentModality"] != undefined && resource["ids:paymentModality"][0] != null) {
             paymentMethod = this.getPaymentMethodName(resource["ids:paymentModality"][0]["@id"]);
         }
         let keywords = [];
