@@ -104,8 +104,8 @@ export default {
 
             try {
                 let updateInfo = await dataUtils.getConnectorUpdateInfo();
-                this.$data.updateAvailable = updateInfo.connector["connector.update"]["update.available"];
-                this.$data.updateVersion = updateInfo.connector["connector.update"]["update.version"];
+                this.$data.updateAvailable = updateInfo.update.available;
+                this.$data.updateVersion = updateInfo.update.version;
             }
             catch (error) {
                 errorUtils.showError(error, "Get connector update info");
