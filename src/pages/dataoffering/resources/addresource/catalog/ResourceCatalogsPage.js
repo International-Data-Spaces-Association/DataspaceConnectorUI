@@ -9,7 +9,6 @@ export default {
         AddCatalogDialog
     },
     props: {
-        fromRoutePage: Boolean,
         inAddResourcesPage: Boolean
     },
     data() {
