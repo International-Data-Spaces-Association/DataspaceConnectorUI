@@ -9,8 +9,8 @@
   </v-row>
   <v-row no-gutters v-if="!readonly">
     <v-col cols="12" md="11" sm="12">
-      <v-data-table show-select v-model="selected" :headers="headers" :items="catalogs" :items-per-page="5"
-        :search="search" item-key="id" no-data-text="No catalogs available" :sort-by.sync="sortBy"
+      <v-data-table :show-select="inAddResourcesPage" v-model="selected" :headers="headers" :items="catalogs"
+        :items-per-page="5" :search="search" item-key="id" no-data-text="No catalogs available" :sort-by.sync="sortBy"
         :sort-desc.sync="sortDesc">
         <template v-slot:item.actions="{ item }">
           <v-icon class="mr-2" @click="editItem(item)">
