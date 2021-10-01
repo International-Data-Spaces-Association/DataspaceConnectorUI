@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [8.5.1] - 2021-10-01
+
+### Fixes
+- Data consumption: show correct payment method of requested resource
+- Catalogs: show catalog checkboxes only on "Add Resource" page
+
 ## [8.5.0] - 2021-09-30
 
 ### Added
