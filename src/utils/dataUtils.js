@@ -1095,8 +1095,8 @@ export default {
         let description = resource["ids:description"][0]["@value"];
         let language = resource["ids:language"][0]["@id"].replace("https://w3id.org/idsa/code/", "");
         let paymentMethod = "undefined";
-        if (resource["ids:paymentModality"] != undefined && resource["ids:paymentModality"][0] != null) {
-            paymentMethod = this.getPaymentMethodName(resource["ids:paymentModality"][0]["@id"]);
+        if (resource["ids:paymentModality"] != undefined && resource["ids:paymentModality"]["@id"] != null) {
+            paymentMethod = this.getPaymentMethodName(resource["ids:paymentModality"]["@id"]);
         }
         let keywords = [];
         let idsKeywords = resource["ids:keyword"];
