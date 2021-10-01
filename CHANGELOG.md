@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixes
 - Data consumption: show correct payment method of requested resource
+- Catalogs: show catalog checkboxes only on "Add Resource" page
 
 ## [8.5.0] - 2021-09-30
 
