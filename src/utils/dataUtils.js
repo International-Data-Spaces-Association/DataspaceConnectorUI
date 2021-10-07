@@ -336,6 +336,10 @@ export default {
         return statusClass;
     },
 
+    async deleteApp(appId) {
+        await restUtils.callConnector("DELETE", "/api/apps/" + appId);
+    },
+
     async installApp(appStoreUrl, appUrl) {
         let params = {
             "recipient": appStoreUrl,

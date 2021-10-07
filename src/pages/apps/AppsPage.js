@@ -12,12 +12,15 @@ export default {
         return {
             search: '',
             headers: [{
-                text: 'Title',
-                value: 'title'
+                text: 'ID',
+                value: 'id'
             },
             {
                 text: 'Keywords',
                 value: 'keywords'
+            }, {
+                text: 'Publisher',
+                value: 'publisher'
             },
             {
                 text: 'App Store',
@@ -68,8 +71,8 @@ export default {
                     this.$data.apps.push({
                         app: app,
                         id: appID,
-                        title: "",
-                        keywords: app.keywords,
+                        keywords: app.keywords.join(", "),
+                        publisher: app.publisher,
                         appStore: appStore
                     });
                 }
@@ -78,7 +81,29 @@ export default {
             }
             this.$forceUpdate();
             this.$root.$emit('showBusyIndicator', false);
-
-        }
+        },
+        deleteItem(item) {
+            this.$refs.confirmationDialog.title = "Delete App";
+            this.$refs.confirmationDialog.text = "Are you sure you want to delete the App?";
+            this.$refs.confirmationDialog.callbackData = {
+                item: item
+            };
+            this.$refs.confirmationDialog.callback = this.deleteCallback;
+            this.$refs.confirmationDialog.dialog = true;
+        },
+        deleteCallback(choice, callbackData) {
+            if (choice == "yes") {
+                this.$root.$emit('showBusyIndicator', true);
+                this.deleteApp(callbackData.item.id);
+            }
+        },
+        async deleteApp(appId) {
+            try {
+                await dataUtils.deleteApp(appId);
+            } catch (error) {
+                errorUtils.showError(error, "Delete App");
+            }
+            this.getApps();
+        },
     }
 };

@@ -17,6 +17,9 @@ export default {
             }, {
                 text: 'Keywords',
                 value: 'keywords'
+            }, {
+                text: 'Publisher',
+                value: 'publisher'
             },
             {
                 text: '',
@@ -48,7 +51,8 @@ export default {
                     this.$data.apps.push({
                         "app": idsApp,
                         "title": idsApp["ids:title"][0]["@value"],
-                        "keywords": keywords.join(", ")
+                        "keywords": keywords.join(", "),
+                        "publisher": idsApp["ids:publisher"]["@id"]
                     });
                 }
             } catch (error) {

@@ -10,7 +10,7 @@
             <v-data-table v-model="selected" :headers="headers" :items="apps" :items-per-page="5" :search="search"
                 item-key="id" no-data-text="No apps available">
                 <template v-slot:item.actions="{ item }">
-                    <v-tooltip bottom>
+                    <!-- <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
                             <v-icon class="mr-2" @click="startApp(item)" v-bind="attrs" v-on="on">
                                 mdi-play
@@ -25,10 +25,10 @@
                             </v-icon>
                         </template>
                         <span>Edit app store</span>
-                    </v-tooltip>
+                    </v-tooltip> -->
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-icon @click="deleteApp(item)" v-bind="attrs" v-on="on">
+                            <v-icon @click="deleteItem(item)" v-bind="attrs" v-on="on">
                                 mdi-delete
                             </v-icon>
                         </template>
@@ -38,4 +38,5 @@
             </v-data-table>
         </v-col>
     </v-row>
+    <confirmation-dialog ref="confirmationDialog"></confirmation-dialog>
 </div>
