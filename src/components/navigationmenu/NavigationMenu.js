@@ -21,23 +21,31 @@ export default {
     getItems() {
       var items = [];
       for (let page of PageStructure.getPageStructure()) {
-        let subitems = undefined;
-        if (page.subpages !== undefined && page.subpages.length > 0) {
-          subitems = [];
-          for (let subpage of page.subpages) {
-            subitems.push({
-              icon: subpage.icon,
-              title: PageStructure.getDisplayName(subpage.name),
-              to: subpage.path
-            });
+        if (page.showInMenu === undefined || page.showInMenu == true) {
+          let subitems = undefined;
+          if (page.subpages !== undefined && page.subpages.length > 0) {
+            subitems = [];
+            for (let subpage of page.subpages) {
+              if (subpage.showInMenu === undefined || subpage.showInMenu == true) {
+                subitems.push({
+                  icon: subpage.icon,
+                  title: PageStructure.getDisplayName(subpage.name),
+                  to: subpage.path
+                });
+              }
+            }
+            if (subitems.length == 0) {
+              subitems = undefined;
+            }
           }
+
+          items.push({
+            icon: page.icon,
+            title: page.name,
+            to: page.path,
+            subitems: subitems
+          });
         }
-        items.push({
-          icon: page.icon,
-          title: page.name,
-          to: page.path,
-          subitems: subitems
-        });
       }
       return items;
     },

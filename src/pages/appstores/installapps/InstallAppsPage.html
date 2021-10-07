@@ -1,0 +1,30 @@
+<div>
+    <v-row no-gutters>
+        <v-col cols="12" md="11" sm="12">
+            <p class="query-apps-title">Install apps from {{ appStore.title }}</p>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="3" sm="6">
+            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details>
+            </v-text-field>
+        </v-col>
+    </v-row>
+    <v-row no-gutters>
+        <v-col cols="12" md="11" sm="12">
+            <v-data-table v-model="selected" :headers="headers" :items="apps" :items-per-page="5" :search="search"
+                item-key="id" no-data-text="No apps available">
+                <template v-slot:item.actions="{ item }">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-icon class="mr-2" @click="installApp(item)" v-bind="attrs" v-on="on">
+                                mdi-download
+                            </v-icon>
+                        </template>
+                        <span>Install app</span>
+                    </v-tooltip>
+                </template>
+            </v-data-table>
+        </v-col>
+    </v-row>
+</div>

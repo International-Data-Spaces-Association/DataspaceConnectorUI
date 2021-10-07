@@ -6,7 +6,9 @@ import AddRoutePage from "@/pages/dataoffering/routes/addroute/AddRoutePage.vue"
 import IDSDataConsumptionPage from "@/pages/dataconsumption/dataconsumption/IDSDataConsumptionPage.vue";
 import IDSResourcesPageConsumption from "@/pages/dataconsumption/resources/IDSResourcesPageConsumption.vue";
 import BrokersPage from "@/pages/brokers/BrokersPage.vue";
+import AppsPage from "@/pages/apps/AppsPage.vue";
 import AppStoresPage from "@/pages/appstores/AppStoresPage.vue";
+import InstallAppsPage from "@/pages/appstores/installapps/InstallAppsPage.vue";
 import SettingsPage from "@/pages/settings/SettingsPage.vue";
 import BackendConnectionsPage from "@/pages/dataoffering/backendconnections/BackendConnectionsPage.vue";
 import ResourceCatalogsPage from "@/pages/dataoffering/resources/addresource/catalog/ResourceCatalogsPage.vue";
@@ -96,11 +98,23 @@ export default {
             component: BrokersPage,
             subpages: []
         }, {
+            path: "apps",
+            name: "Apps",
+            icon: "icon-apps",
+            component: AppsPage,
+            subpages: []
+        }, {
             path: "appstores",
             name: "App Stores",
             icon: "icon-apps",
             component: AppStoresPage,
-            subpages: []
+            subpages: [{
+                path: "installapps",
+                name: "Install apps",
+                component: InstallAppsPage,
+                subpages: [],
+                showInMenu: false
+            }]
         }, {
             path: "settings",
             name: "Settings",
