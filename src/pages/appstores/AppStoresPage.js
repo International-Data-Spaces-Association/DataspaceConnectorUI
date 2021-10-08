@@ -1,7 +1,7 @@
 import AddAppStoreDialog from "@/pages/appstores/dialog/AddAppStoreDialog.vue";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
-import dataUtils from "../../utils/dataUtils";
-import errorUtils from "../../utils/errorUtils";
+import dataUtils from "@/utils/dataUtils";
+import errorUtils from "@/utils/errorUtils";
 
 
 export default {
@@ -35,9 +35,9 @@ export default {
     },
     methods: {
         async getAppStores() {
-            this.$root.$emit('showBusyIndicator', false);
+            this.$root.$emit('showBusyIndicator', true);
             try {
-                let response = (await dataUtils.getAppStores())._embedded.apps;
+                let response = (await dataUtils.getAppStores());
                 this.$data.appstores = [];
                 for (var appstore of response) {
                     this.$data.appstores.push({
@@ -85,6 +85,9 @@ export default {
         },
         editItem(item) {
             this.$refs.addAppStoreDialog.edit(item.appstore);
+        },
+        installApps(item) {
+            this.$router.push('installapps?id=' + item.id);
         }
     }
 };

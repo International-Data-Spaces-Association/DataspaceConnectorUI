@@ -336,8 +336,67 @@ export default {
         return statusClass;
     },
 
+    async deleteApp(appId) {
+        await restUtils.callConnector("DELETE", "/api/apps/" + appId);
+    },
+
+    async installApp(appStoreUrl, appUrl) {
+        let params = {
+            "recipient": appStoreUrl,
+            "appId": appUrl
+        }
+        await restUtils.callConnector("POST", "/api/ids/app", params);
+    },
+
+    async getAppsOfAppStore(appStoreUrl) {
+        let apps = [];
+        let params = {
+            "recipient": appStoreUrl
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
+
+
+        if (response["ids:resourceCatalog"] !== undefined) {
+            for (let catalog of response["ids:resourceCatalog"]) {
+                params = {
+                    "recipient": appStoreUrl,
+                    "elementId": catalog["@id"]
+                }
+                response = await restUtils.callConnector("POST", "/api/ids/description", params);
+
+                if (response["ids:offeredResource"] !== undefined) {
+                    for (let app of response["ids:offeredResource"]) {
+                        apps.push(app);
+                    }
+                }
+            }
+        }
+        return apps;
+    },
+
+    async getAppToAppStoreMap() {
+        let appToAppStoreMap = [];
+        let appStores = await this.getAppStores();
+        for (let appStore of appStores) {
+            let apps = (await restUtils.callConnector("GET", "/api/appstores/" +
+                this.getIdOfConnectorResponse(appStore) + "/apps"))._embedded.apps;
+            for (let app of apps) {
+                appToAppStoreMap[this.getIdOfConnectorResponse(app)] = appStore;
+            }
+        }
+        return appToAppStoreMap;
+    },
+
+    async getApps() {
+        return (await restUtils.callConnector("GET", "/api/apps"))._embedded.apps;
+    },
+
+    async getAppStore(id) {
+        return await restUtils.callConnector("GET", "/api/appstores/" + id);
+    },
+
     async getAppStores() {
-        return await restUtils.callConnector("GET", "/api/appstores");
+        return (await restUtils.callConnector("GET", "/api/appstores"))._embedded.apps;
     },
 
     async createAppStore(url, title) {

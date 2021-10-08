@@ -1,6 +1,4 @@
 <div>
-    <add-app-store-dialog ref="addAppStoreDialog" @appstoreSaved="appstoreSaved">
-    </add-app-store-dialog>
     <v-row no-gutters>
         <v-col cols="12" md="3" sm="6">
             <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details>
@@ -9,25 +7,25 @@
     </v-row>
     <v-row no-gutters>
         <v-col cols="12" md="11" sm="12">
-            <v-data-table v-model="selected" :headers="headers" :items="appstores" :items-per-page="5" :search="search"
-                item-key="id" no-data-text="No appstores available">
+            <v-data-table v-model="selected" :headers="headers" :items="apps" :items-per-page="5" :search="search"
+                item-key="id" no-data-text="No apps available">
                 <template v-slot:item.actions="{ item }">
-                    <v-tooltip bottom>
+                    <!-- <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-icon class="mr-2" @click="installApps(item)" v-bind="attrs" v-on="on">
-                                mdi-magnify
+                            <v-icon class="mr-2" @click="startApp(item)" v-bind="attrs" v-on="on">
+                                mdi-play
                             </v-icon>
                         </template>
                         <span>Install apps</span>
                     </v-tooltip>
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-icon class="mr-2" @click="editItem(item)" v-bind="attrs" v-on="on">
-                                mdi-pencil
+                            <v-icon class="mr-2" @click="stopApp(item)" v-bind="attrs" v-on="on">
+                                mdi-stop
                             </v-icon>
                         </template>
                         <span>Edit app store</span>
-                    </v-tooltip>
+                    </v-tooltip> -->
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
                             <v-icon @click="deleteItem(item)" v-bind="attrs" v-on="on">

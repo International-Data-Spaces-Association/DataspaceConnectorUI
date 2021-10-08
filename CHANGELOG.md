@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [8.6.0] - XXXX-XX-XX
+
+### Added
+- Install apps from App Store
+- Show installed apps on page "Apps"
+
 ## [8.5.1] - 2021-10-01
 
 ### Fixes

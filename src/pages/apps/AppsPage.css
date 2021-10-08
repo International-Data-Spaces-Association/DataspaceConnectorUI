@@ -1,0 +1,19 @@
+.addappstorebutton {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.registeredAtAppStore {
+    width: 130px;
+    background-color: var(--v-primary-base) !important;
+    margin-left: 20px;
+}
+
+.registeredAtAppStore span {
+    color: white !important;
+}
+
+.notRegisteredAtAppStore {
+    width: 130px;
+    margin-left: 20px;
+}
