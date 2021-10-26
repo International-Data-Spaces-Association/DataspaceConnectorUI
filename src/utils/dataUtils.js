@@ -663,6 +663,15 @@ export default {
         return (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/catalogs"))._embedded.catalogs;
     },
 
+    async getResourcesOfCatalog(catalogId) {
+        let response = (await restUtils.callConnector("GET", "/api/catalogs/" + catalogId + "/offers"))._embedded.resources;
+        let resources = [];
+        for (let idsResource of response) {
+            resources.push(clientDataModel.convertIdsResource(idsResource));
+        }
+        return resources;
+    },
+
     async initDefaultCatalog() {
         let catalogs = (await restUtils.callConnector("GET", "/api/catalogs"))._embedded.catalogs;
         if (catalogs.length == 0) {

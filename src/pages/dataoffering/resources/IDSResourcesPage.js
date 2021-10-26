@@ -37,47 +37,61 @@ export default {
                 width: 170
             }
             ],
+            catalogs: [],
+            catalogId: -1,
             resources: [],
-            filteredResources: [],
-            filterResourceType: null,
-            fileTypes: ["All"],
             sortBy: 'creationDate',
             sortDesc: true,
         };
     },
-    mounted: function () {
-        this.getResources();
+    mounted: async function () {
+        await this.getCatalogs();
+        await this.getResources();
     },
     methods: {
+        async getCatalogs() {
+            this.$root.$emit('showBusyIndicator', true);
+            this.$data.catalogs = [];
+            try {
+                let response = await dataUtils.getCatalogs();
+                this.$data.catalogs.push({
+                    id: -1,
+                    title: "Show all resources"
+                });
+                for (let catalog of response) {
+                    this.$data.catalogs.push({
+                        id: dataUtils.getIdOfConnectorResponse(catalog),
+                        title: catalog.title
+                    });
+                }
+            } catch (error) {
+                errorUtils.showError(error, "Get resources");
+            }
+            this.$forceUpdate();
+            this.$root.$emit('showBusyIndicator', false);
+        },
         async getResources() {
             this.$root.$emit('showBusyIndicator', true);
             try {
-                let response = await dataUtils.getResources();
+                let response;
+                if (this.$data.catalogId == -1) {
+                    response = await dataUtils.getResources();
+                } else {
+                    response = await dataUtils.getResourcesOfCatalog(this.$data.catalogId);
+                }
                 this.$data.resources = response;
-                this.$data.fileTypes = ["All"];
                 for (let resource of this.$data.resources) {
-                    this.$data.fileTypes.push(resource.fileType);
                     let brokers = await dataUtils.getBrokersOfResource(resource.id);
                     resource.brokerNames = brokers.map(x => x.title);
                 }
             } catch (error) {
                 errorUtils.showError(error, "Get resources");
             }
-            this.filterChanged();
             this.$forceUpdate();
             this.$root.$emit('showBusyIndicator', false);
         },
-        filterChanged() {
-            if (this.$data.filterResourceType == null | this.$data.filterResourceType == "All") {
-                this.$data.filteredResources = this.$data.resources;
-            } else {
-                this.$data.filteredResources = [];
-                for (var resource of this.$data.resources) {
-                    if (resource.fileType == this.$data.filterResourceType) {
-                        this.$data.filteredResources.push(resource);
-                    }
-                }
-            }
+        catalogChanged() {
+            this.getResources();
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Resource";
