@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [8.7.0] - XXXX-XX-XX
+
+### Added
+- Filter offered resources by catalog
+
 ## [8.6.0] - 2021-10-08
 
 ### Added
