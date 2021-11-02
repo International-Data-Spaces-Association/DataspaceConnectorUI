@@ -627,7 +627,7 @@ export default {
     },
 
     getIdOfLink(response, linkName) {
-        let url = response._links.[linkName].href;
+        let url = response._links[linkName].href;
         return url.substring(url.lastIndexOf("/") + 1, url.length);
     },
 
@@ -796,9 +796,10 @@ export default {
                 }
             }
 
+            let response = null;
             for (let policyDescription of policyDescriptions) {
                 let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
-                let response = await restUtils.callConnector("POST", "/api/rules", null, {
+                response = await restUtils.callConnector("POST", "/api/rules", null, {
                     "value": JSON.stringify(ruleJson)
                 });
                 let ruleId = this.getIdOfConnectorResponse(response);
