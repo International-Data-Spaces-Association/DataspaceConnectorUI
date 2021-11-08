@@ -196,11 +196,15 @@ export default {
     async getResource(resourceId) {
         let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
         let policyNames = [];
+        let contractPeriodFromValue = undefined;
+        let contractPeriodToValue = undefined;
         let ruleIds = [];
         let ruleJsons = [];
         let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contracts;
         if (contracts.length > 0) {
             let contract = contracts[0];
+            contractPeriodFromValue = contract.start;
+            contractPeriodToValue = contract.end;
             let contractId = this.getIdOfConnectorResponse(contract);
             let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
             for (let rule of rules) {
@@ -223,7 +227,7 @@ export default {
         let brokers = await this.getBrokersOfResource(resourceId);
         let brokerUris = brokers.map(x => x.location);
         let catalogs = await this.getCatalogsOfResource(resourceId);
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId, brokerUris, catalogs);
+        return clientDataModel.convertIdsResource(resource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, brokerUris, catalogs);
     },
 
     async getRequestedResource(resourceId) {
@@ -684,9 +688,10 @@ export default {
     },
 
     async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
-        filetype, brokerUris, genericEndpoint) {
+        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, genericEndpoint) {
         try {
-            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
+                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, genericEndpoint);
             let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
             let routeId = this.getIdOfConnectorResponse(response);
             response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, resourceResponse.endpointId, 220, 150, resourceResponse.artifactId);
@@ -701,7 +706,7 @@ export default {
     },
 
     async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
-        filetype) {
+        contractPeriodFromValue, contractPeriodToValue, filetype) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
             "title": title,
@@ -718,7 +723,10 @@ export default {
             await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
         }
 
-        response = await restUtils.callConnector("POST", "/api/contracts", null, {});
+        response = await restUtils.callConnector("POST", "/api/contracts", null, {
+            "start": contractPeriodFromValue,
+            "end": contractPeriodToValue
+        });
         let contractId = this.getIdOfConnectorResponse(response);
 
         for (let policyDescription of policyDescriptions) {
@@ -759,8 +767,8 @@ export default {
     },
 
     async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
-        keywords, standardlicense, publisher, samples, policyDescriptions, filetype, brokerUris, brokerDeleteUris, genericEndpoint,
-        ruleId, artifactId) {
+        keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
+        filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
                 "title": title,
@@ -804,6 +812,10 @@ export default {
                 });
                 let ruleId = this.getIdOfConnectorResponse(response);
                 response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
+                response = await restUtils.callConnector("PUT", "/api/contracts/" + contractId, null, {
+                    "start": contractPeriodFromValue,
+                    "end": contractPeriodToValue
+                });
             }
             //
 

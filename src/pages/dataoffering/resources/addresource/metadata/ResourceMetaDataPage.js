@@ -19,7 +19,6 @@ export default {
             samples: [],
             languageItems: [],
             paymentMethod: "undefined",
-            // TODO use enum API endpoint for payment methods
             paymentMethods: [],
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
