@@ -1052,30 +1052,6 @@ export default {
         return response;
     },
 
-    async receiveResources(recipientId) {
-        let resources = [];
-        let params = {
-            "recipient": recipientId
-        }
-        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
-        if (response["ids:resourceCatalog"] !== undefined) {
-            for (let catalog of response["ids:resourceCatalog"]) {
-                params = {
-                    "recipient": recipientId,
-                    "elementId": catalog["@id"]
-                }
-                response = await restUtils.callConnector("POST", "/api/ids/description", params);
-                if (response["ids:offeredResource"] !== undefined) {
-                    for (let resource of response["ids:offeredResource"]) {
-                        this.addToLocalResources(resource, resources);
-                    }
-                }
-            }
-        }
-
-        return resources;
-    },
-
     async receiveCatalogs(recipientId) {
         let catalogs = [];
         let params = {
@@ -1101,7 +1077,7 @@ export default {
         let response = await restUtils.callConnector("POST", "/api/ids/description", params);
         if (response["ids:offeredResource"] !== undefined) {
             for (let resource of response["ids:offeredResource"]) {
-                this.addToLocalResources(resource, resources);
+                this.convertToClientResource(resource, resources);
             }
         }
         return resources;
@@ -1169,7 +1145,7 @@ export default {
         return response;
     },
 
-    addToLocalResources(resource, resources) {
+    convertToClientResource(resource, resources) {
         let id = resource["@id"].substring(resource["@id"].lastIndexOf("/"), resource["@id"].length);
         let creationDate = resource["ids:created"]["@value"];
         let title = resource["ids:title"][0]["@value"];
@@ -1191,9 +1167,16 @@ export default {
         if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
             fileType = resource["ids:representation"][0]["ids:mediaType"]["ids:filenameExtension"];
         }
-
-        resources.push(clientDataModel.createResource(resource["@id"], id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
-            publisher, fileType, "", null));
+        let contractPeriodFromValue = undefined;
+        let contractPeriodToValue = undefined;
+        if (resource["ids:contractOffer"] !== undefined && resource["ids:contractOffer"].length > 0) {
+            contractPeriodFromValue = resource["ids:contractOffer"][0]["ids:contractStart"]["@value"];
+            contractPeriodToValue = resource["ids:contractOffer"][0]["ids:contractEnd"]["@value"];
+        }
+        let clientResource = clientDataModel.createResource(resource["@id"], id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
+            publisher, fileType, "", contractPeriodFromValue, contractPeriodToValue, null);
+        clientResource.idsResource = resource;
+        resources.push(clientResource);
     }
 }
 

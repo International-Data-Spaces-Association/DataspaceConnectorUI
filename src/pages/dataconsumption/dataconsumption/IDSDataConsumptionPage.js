@@ -13,11 +13,10 @@ export default {
     data() {
         return {
             recipientId: "",
-            receivedCatalogs: [],
-            noCatalogsFound: false,
             selectedCatalog: "",
-            resourcesInSelectedCatalog: [],
-            idsResourceCatalog: {},
+            catalogs: [],
+            resources: [],
+            filteredResources: [],
             selectedResource: {},
             selectedRepresentations: [],
             selectedRepresentation: {},
@@ -88,11 +87,9 @@ export default {
             // TODO Get resources 
         },
         clear() {
-            this.$data.receivedCatalogs = [];
-            this.$data.noCatalogsFound = false;
             this.$data.selectedCatalog = "";
-            this.$data.resourcesInSelectedCatalog = [];
-            this.$data.idsResourceCatalog = {};
+            this.$data.catalogs = [];
+            this.$data.resources = [];
             this.$data.selectedResource = {};
             this.$data.selectedRepresentations = [];
             this.$data.selectedRepresentation = {};
@@ -106,22 +103,16 @@ export default {
             this.$root.$emit('showBusyIndicator', true);
             this.clear();
             try {
-                this.$data.receivedCatalogs = await dataUtils.receiveCatalogs(this.$data.recipientId);
+                let receivedCatalogs = await dataUtils.receiveCatalogs(this.$data.recipientId);
+                this.$data.catalogs = [];
+                this.$data.resources = [];
+                for (let catalog of receivedCatalogs) {
+                    this.$data.catalogs.push(catalog);
+                    await this.receiveResources(catalog);
+                }
             } catch (error) {
                 errorUtils.showError(error, "Request Catalogs");
             }
-            this.$data.noCatalogsFound = this.$data.receivedCatalogs.length == 0;
-            this.$root.$emit('showBusyIndicator', false);
-        },
-
-        async receiveResources(catalogID) {
-            this.$root.$emit('showBusyIndicator', true);
-            try {
-                this.$data.resourcesInSelectedCatalog = await dataUtils.receiveResourcesInCatalog(this.$data.recipientId, catalogID);
-            } catch (error) {
-                errorUtils.showError(error, "Request Resources in Catalog");
-            }
-            this.$data.idsResourceCatalog = {};
             this.$data.selectedResource = {};
             this.$data.selectedRepresentations = [];
             this.$data.selectedRepresentation = {};
@@ -133,15 +124,12 @@ export default {
             this.$root.$emit('showBusyIndicator', false);
         },
 
-        async selectCatalog(catalogId) {
-            this.selectedCatalog = catalogId;
-            await this.receiveResources(catalogId);
-            await this.getIdsResourceCatalog(catalogId);
-        },
-
-        async getIdsResourceCatalog(catalogId) {
+        async receiveResources(catalogID) {
             try {
-                this.$data.idsResourceCatalog = await dataUtils.receiveIdsResourceCatalog(this.$data.recipientId, catalogId);
+                let resources = await dataUtils.receiveResourcesInCatalog(this.$data.recipientId, catalogID);
+                for (let resource of resources) {
+                    this.$data.resources.push(resource);
+                }
             } catch (error) {
                 errorUtils.showError(error, "Request Resources in Catalog");
             }
@@ -153,26 +141,6 @@ export default {
             this.$refs.resourceDetailsDialog.showResource(item);
         },
 
-        /*         async getContractOffer(artifact) {
-                    this.$root.$emit('showBusyIndicator', true);
-                    this.$root.$emit('showBusyIndicator', false);
-                    try{
-                        this.$data.selectedIdsArtifact = await dataUtils.receiveIdsArtifact(this.$data.recipientId, artifact["@id"])
-                    } catch (error) {
-                        errorUtils.showError(error, "Request Artifact");
-                    }
-        
-                    try{
-                        this.$data.idsContractOffer = await dataUtils.receiveIdsContractOffer(this.$data.recipientId, artifact["@id"])
-                    } catch (error) {
-                        errorUtils.showError(error, "Request Contract Offer");
-                    }
-                }, */
-
-        /*         showContract(artifact) {
-                    this.$data.selectedResource["ids:contractOffer"][0];
-                }, */
-
         async requestContract() {
             let download = "false";
             try {
@@ -180,6 +148,7 @@ export default {
                     this.$data.selectedResource["@id"], this.$data.selectedResource["ids:contractOffer"], this.$data.selectedIdsArtifact, download);
                 let agreementId = await dataUtils.getIdOfAgreement(this.$data.requestContractResponse._links.artifacts.href);
                 this.$data.downloadLink = (await dataUtils.getAgreementArtifacts(agreementId))[0]._links.data.href;
+                this.$vuetify.goTo(".data-consumption-page-bottom");
             } catch (error) {
                 errorUtils.showError(error, "Request Contract");
             }
@@ -194,11 +163,19 @@ export default {
         },
 
         showRepresentations(item) {
-
-            this.$data.idsResourceCatalog["ids:offeredResource"].forEach(element => {
-                if (element["@id"].substring(element["@id"].lastIndexOf("/"), element["@id"].length) == item.id) {
-                    this.$data.selectedRepresentations = element["ids:representation"];
-                    this.$data.selectedResource = element;
+            this.$data.resources.forEach(element => {
+                if (element.id == item.id) {
+                    let idsResource = element.idsResource;
+                    this.$data.selectedRepresentations = [];
+                    for (let representation of idsResource["ids:representation"]) {
+                        if (representation["ids:title"] !== undefined && representation["ids:title"].length > 0) {
+                            representation.display = representation["ids:title"];
+                        } else {
+                            representation.display = representation["@id"];
+                        }
+                        this.$data.selectedRepresentations.push(representation);
+                    }
+                    this.$data.selectedResource = idsResource;
                     for (let ruleJson of this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"]) {
                         let ruleDescription = ruleJson["ids:description"][0]["@value"];
                         let ruleName = dataUtils.convertDescriptionToPolicyName(ruleDescription);
@@ -212,12 +189,14 @@ export default {
             this.$data.idsContractOffer = {};
             this.$data.requestContractResponse = {};
             this.$data.downloadLink = "";
+            this.$vuetify.goTo(".data-consumption-page-bottom");
         },
 
 
         selectRepresentation(representation) {
             this.$data.selectedRepresentation = representation;
             this.getArtifacts(representation);
+            this.$vuetify.goTo(".data-consumption-page-bottom");
         },
 
         getArtifacts(representation) {

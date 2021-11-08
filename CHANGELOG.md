@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Filter offered resources by catalog
 - Set contract validity period for offered resources
+- Data Consumption: Show all resources instead of catalogs after request
 
 ## [8.6.0] - 2021-10-08
 
