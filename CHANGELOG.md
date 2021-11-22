@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 - Set contract validity period for offered resources
 - Data Consumption: Show all resources instead of catalogs after request
 
+### Fixes
+- Data Consumption: No validation on resource meta data dialog
+
 ## [8.6.0] - 2021-10-08
 
 ### Added
