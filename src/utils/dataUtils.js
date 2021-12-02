@@ -193,6 +193,30 @@ export default {
         return resources;
     },
 
+    async addConsumers(resource) {
+        let consumers = [];
+        let representations = (await restUtils.callConnector("GET", "/api/offers/" + resource.id + "/representations"))["_embedded"].representations;
+        let representation = undefined;
+        let artifactId = undefined;
+        if (representations.length > 0) {
+            representation = representations[0];
+            let representationId = this.getIdOfConnectorResponse(representation);
+            let artifacts = (await restUtils.callConnector("GET", "/api/representations/" + representationId + "/artifacts"))["_embedded"].artifacts;
+            if (artifacts.length > 0) {
+                artifactId = this.getIdOfConnectorResponse(artifacts[0]);
+                let agreements = (await restUtils.callConnector("GET", "/api/artifacts/" + artifactId + "/agreements"))["_embedded"].agreements;
+                if (agreements.length > 0) {
+                    let agreementValue = JSON.parse(agreements[0].value);
+                    console.log(">>> agreementValue: ", agreementValue);
+                    if (agreementValue["ids:consumer"] !== undefined) {
+                        consumers.push(agreementValue["ids:consumer"]["@id"]);
+                    }
+                }
+            }
+        }
+        resource.consumers = consumers;
+    },
+
     async getResource(resourceId) {
         let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
         let policyNames = [];
@@ -636,8 +660,8 @@ export default {
     },
 
     getIdOfAgreement(agreementLink) {
-        let id = agreementLink.replace("https://localhost:8080/api/agreements/", "");
-        id = id.replace("/artifacts{?page,size}", "");
+        let id = agreementLink.substring(0, agreementLink.lastIndexOf("/"));
+        id = id.substring(id.lastIndexOf("/") + 1, id.length);
         return id;
     },
 
@@ -962,7 +986,7 @@ export default {
         try {
             let response = await restUtils.callConnector("POST", "/api/routes", null, {
                 "routeType": "Subroute",
-                "deploy": "Camel",
+                "deploy": "None",
                 "startCoordinateX": startCoordinateX,
                 "startCoordinateY": startCoordinateY,
                 "endCoordinateX": endCoordinateX,

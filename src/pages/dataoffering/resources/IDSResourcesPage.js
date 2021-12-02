@@ -30,6 +30,12 @@ export default {
                 value: 'brokerNames'
             },
             {
+                text: 'Agreem.',
+                value: 'consumers.length',
+                align: 'right',
+                width: 100
+            },
+            {
                 text: '',
                 value: 'actions',
                 sortable: false,
@@ -79,11 +85,13 @@ export default {
                 } else {
                     response = await dataUtils.getResourcesOfCatalog(this.$data.catalogId);
                 }
-                this.$data.resources = response;
-                for (let resource of this.$data.resources) {
+
+                for (let resource of response) {
                     let brokers = await dataUtils.getBrokersOfResource(resource.id);
                     resource.brokerNames = brokers.map(x => x.title);
+                    await dataUtils.addConsumers(resource);
                 }
+                this.$data.resources = response;
             } catch (error) {
                 errorUtils.showError(error, "Get resources");
             }

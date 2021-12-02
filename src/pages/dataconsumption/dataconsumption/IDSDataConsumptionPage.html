@@ -6,8 +6,7 @@
                     <v-text-field label="Provider Connector URL" v-model="recipientId" :rules="providerUrlRule">
                     </v-text-field>
                     <v-btn id="btn-show-catalogs" color="primary" @click.native="receiveCatalogs" :disabled="!valid">
-                        Show
-                        available Catalogs
+                        Show available resources
                     </v-btn>
                 </v-form>
                 <div v-if="resources.length > 0">
