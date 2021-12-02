@@ -8,9 +8,11 @@ All notable changes to this project will be documented in this file.
 - Filter offered resources by catalog
 - Set contract validity period for offered resources
 - Data Consumption: Show all resources instead of catalogs after request
+- Data Offering: show number of agreements per resource
 
 ### Fixes
 - Data Consumption: No validation on resource meta data dialog
+- Data Consumption: getIdOfAgreement() fixed
 
 ## [8.6.0] - 2021-10-08
 
