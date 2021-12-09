@@ -1,0 +1,26 @@
+<v-dialog v-model="dialog" width="1000" eager>
+    <v-card>
+        <v-card-title class="headline grey lighten-2">
+            Agreements of {{ resource.title }}
+        </v-card-title>
+        <v-row no-gutters>
+            <v-col cols="12" md="12" class="res-agr-dialog-table-content">
+                <v-data-table :headers="headers" :items="agreements" :items-per-page="5" :search="search" item-key="id"
+                    no-data-text="No agreements">
+                </v-data-table>
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="12" class="res-agr-dialog-table-title">
+                Expired agreements:
+            </v-col>
+        </v-row>
+        <v-row no-gutters>
+            <v-col cols="12" md="12" class="res-agr-dialog-table-content">
+                <v-data-table :headers="headers" :items="expiredAgreements" :items-per-page="5" :search="search"
+                    item-key="id" no-data-text="No expired agreements" class="res-agr-dialog-expired-table">
+                </v-data-table>
+            </v-col>
+        </v-row>
+    </v-card>
+</v-dialog>

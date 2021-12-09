@@ -165,7 +165,7 @@ export default {
         let representations = response._embedded.representations;
         let fileTypes = [];
         for (let representation of representations) {
-            let type = representation.mediaType;
+            let type = representation.mediaType.toLowerCase();
             if (fileTypes[type] === undefined) {
                 fileTypes[type] = 1;
             } else {
@@ -193,8 +193,8 @@ export default {
         return resources;
     },
 
-    async addConsumers(resource) {
-        let consumers = [];
+    async addAgreements(resource) {
+        let resAgreements = [];
         let representations = (await restUtils.callConnector("GET", "/api/offers/" + resource.id + "/representations"))["_embedded"].representations;
         let representation = undefined;
         let artifactId = undefined;
@@ -205,16 +205,12 @@ export default {
             if (artifacts.length > 0) {
                 artifactId = this.getIdOfConnectorResponse(artifacts[0]);
                 let agreements = (await restUtils.callConnector("GET", "/api/artifacts/" + artifactId + "/agreements"))["_embedded"].agreements;
-                if (agreements.length > 0) {
-                    let agreementValue = JSON.parse(agreements[0].value);
-                    console.log(">>> agreementValue: ", agreementValue);
-                    if (agreementValue["ids:consumer"] !== undefined) {
-                        consumers.push(agreementValue["ids:consumer"]["@id"]);
-                    }
+                for (let agreement of agreements) {
+                    resAgreements.push(JSON.parse(agreement.value));
                 }
             }
         }
-        resource.consumers = consumers;
+        resource.agreements = resAgreements;
     },
 
     async getResource(resourceId) {

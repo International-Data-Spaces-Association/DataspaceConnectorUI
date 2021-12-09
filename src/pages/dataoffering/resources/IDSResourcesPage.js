@@ -3,12 +3,14 @@ import errorUtils from "@/utils/errorUtils";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import ResourceDetailsDialog from "./resourcedetailsdialog/ResourceDetailsDialog.vue";
 import ResourceReferenceDialog from "./resourcereferencedialog/ResourceReferenceDialog.vue";
+import ResourceAgreementsDialog from "./resourceagreementsdialog/ResourceAgreementsDialog.vue";
 
 export default {
     components: {
         ConfirmationDialog,
         ResourceDetailsDialog,
-        ResourceReferenceDialog
+        ResourceReferenceDialog,
+        ResourceAgreementsDialog
     },
     data() {
         return {
@@ -31,7 +33,7 @@ export default {
             },
             {
                 text: 'Agreem.',
-                value: 'consumers.length',
+                value: 'agreements',
                 align: 'right',
                 width: 100
             },
@@ -89,7 +91,7 @@ export default {
                 for (let resource of response) {
                     let brokers = await dataUtils.getBrokersOfResource(resource.id);
                     resource.brokerNames = brokers.map(x => x.title);
-                    await dataUtils.addConsumers(resource);
+                    await dataUtils.addAgreements(resource);
                 }
                 this.$data.resources = response;
             } catch (error) {
@@ -133,6 +135,9 @@ export default {
         },
         showItem(item) {
             this.$refs.resourceDetailsDialog.show(item.id);
+        },
+        showAgreements(item) {
+            this.$refs.resourceAgreementsDialog.show(item);
         }
     },
 };

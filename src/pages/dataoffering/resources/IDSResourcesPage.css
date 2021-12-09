@@ -2,3 +2,7 @@
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
+.resources-page-agreements-button {
+    cursor: pointer;
+}

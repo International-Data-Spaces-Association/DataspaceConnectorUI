@@ -18,6 +18,11 @@
       <v-col cols="12" md="11" sm="12">
         <v-data-table :headers="headers" :items="resources" :items-per-page="5" :search="search" :sort-by.sync="sortBy"
           :sort-desc.sync="sortDesc" no-data-text="No resources available">
+          <template v-slot:item.agreements="{ item }">
+            <v-chip class="resources-page-agreements-button" @click="showAgreements(item)">
+              {{ item.agreements.length }}
+            </v-chip>
+          </template>
           <template v-slot:item.actions="{ item }">
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
@@ -59,4 +64,5 @@
   <resource-details-dialog ref="resourceDetailsDialog"></resource-details-dialog>
   <confirmation-dialog ref="confirmationDialog"></confirmation-dialog>
   <resource-reference-dialog ref="resourceReferenceDialog"></resource-reference-dialog>
+  <resource-agreements-dialog ref="resourceAgreementsDialog"></resource-agreements-dialog>
 </div>
