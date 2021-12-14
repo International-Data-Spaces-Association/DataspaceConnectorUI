@@ -29,10 +29,6 @@
   color: var(--v-accent-base) !important;
 }
 
-.v-list-item {
-  min-height: 78px;
-}
-
 .v-list-group__header__append-icon  {
   margin-right: 0px!important;
 }
