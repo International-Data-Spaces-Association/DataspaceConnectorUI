@@ -3,12 +3,14 @@ import errorUtils from "@/utils/errorUtils";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import ResourceDetailsDialog from "./resourcedetailsdialog/ResourceDetailsDialog.vue";
 import ResourceReferenceDialog from "./resourcereferencedialog/ResourceReferenceDialog.vue";
+import ResourceAgreementsDialog from "./resourceagreementsdialog/ResourceAgreementsDialog.vue";
 
 export default {
     components: {
         ConfirmationDialog,
         ResourceDetailsDialog,
-        ResourceReferenceDialog
+        ResourceReferenceDialog,
+        ResourceAgreementsDialog
     },
     data() {
         return {
@@ -30,6 +32,12 @@ export default {
                 value: 'brokerNames'
             },
             {
+                text: 'Agreem.',
+                value: 'agreements',
+                align: 'right',
+                width: 100
+            },
+            {
                 text: '',
                 value: 'actions',
                 sortable: false,
@@ -37,47 +45,63 @@ export default {
                 width: 170
             }
             ],
+            catalogs: [],
+            catalogId: -1,
             resources: [],
-            filteredResources: [],
-            filterResourceType: null,
-            fileTypes: ["All"],
             sortBy: 'creationDate',
             sortDesc: true,
         };
     },
-    mounted: function () {
-        this.getResources();
+    mounted: async function () {
+        await this.getCatalogs();
+        await this.getResources();
     },
     methods: {
-        async getResources() {
+        async getCatalogs() {
             this.$root.$emit('showBusyIndicator', true);
+            this.$data.catalogs = [];
             try {
-                let response = await dataUtils.getResources();
-                this.$data.resources = response;
-                this.$data.fileTypes = ["All"];
-                for (let resource of this.$data.resources) {
-                    this.$data.fileTypes.push(resource.fileType);
-                    let brokers = await dataUtils.getBrokersOfResource(resource.id);
-                    resource.brokerNames = brokers.map(x => x.title);
+                let response = await dataUtils.getCatalogs();
+                this.$data.catalogs.push({
+                    id: -1,
+                    title: "Show all resources"
+                });
+                for (let catalog of response) {
+                    this.$data.catalogs.push({
+                        id: dataUtils.getIdOfConnectorResponse(catalog),
+                        title: catalog.title
+                    });
                 }
             } catch (error) {
                 errorUtils.showError(error, "Get resources");
             }
-            this.filterChanged();
             this.$forceUpdate();
             this.$root.$emit('showBusyIndicator', false);
         },
-        filterChanged() {
-            if (this.$data.filterResourceType == null | this.$data.filterResourceType == "All") {
-                this.$data.filteredResources = this.$data.resources;
-            } else {
-                this.$data.filteredResources = [];
-                for (var resource of this.$data.resources) {
-                    if (resource.fileType == this.$data.filterResourceType) {
-                        this.$data.filteredResources.push(resource);
-                    }
+        async getResources() {
+            this.$root.$emit('showBusyIndicator', true);
+            try {
+                let response;
+                if (this.$data.catalogId == -1) {
+                    response = await dataUtils.getResources();
+                } else {
+                    response = await dataUtils.getResourcesOfCatalog(this.$data.catalogId);
                 }
+
+                for (let resource of response) {
+                    let brokers = await dataUtils.getBrokersOfResource(resource.id);
+                    resource.brokerNames = brokers.map(x => x.title);
+                    await dataUtils.addAgreements(resource);
+                }
+                this.$data.resources = response;
+            } catch (error) {
+                errorUtils.showError(error, "Get resources");
             }
+            this.$forceUpdate();
+            this.$root.$emit('showBusyIndicator', false);
+        },
+        catalogChanged() {
+            this.getResources();
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Resource";
@@ -111,6 +135,9 @@ export default {
         },
         showItem(item) {
             this.$refs.resourceDetailsDialog.show(item.id);
+        },
+        showAgreements(item) {
+            this.$refs.resourceAgreementsDialog.show(item);
         }
     },
 };

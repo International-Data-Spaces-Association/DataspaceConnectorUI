@@ -6,26 +6,14 @@
                     <v-text-field label="Provider Connector URL" v-model="recipientId" :rules="providerUrlRule">
                     </v-text-field>
                     <v-btn id="btn-show-catalogs" color="primary" @click.native="receiveCatalogs" :disabled="!valid">
-                        Show
-                        available Catalogs
+                        Show available resources
                     </v-btn>
                 </v-form>
-                <div>
-                    <h3 id="select-catalog" v-if="receivedCatalogs.length > 0">Select
-                        catalog:</h3>
-                    <div v-for="catalogId in receivedCatalogs" class="data-consumption-page-catalog-button">
-                        <v-btn color="secondary" @click="selectCatalog(catalogId)">
-                            {{ catalogId }}
-                        </v-btn>
-                        <div v-for="filetype in resourcesInSelectedCatalog.filetype">{{ filetype }}</div>
-                    </div>
-                    <h3 id="select-catalog" v-if="noCatalogsFound">No catalogs found.</h3>
-                </div>
-                <div v-if="resourcesInSelectedCatalog.length > 0">
+                <div v-if="resources.length > 0">
                     <h3 class="data-consumption-page-title">Resources:</h3>
                     <div>
-                        <v-data-table :headers="headers" :items="resourcesInSelectedCatalog" :items-per-page="5"
-                            :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" no-data-text="No resources available">
+                        <v-data-table :headers="headers" :items="resources" :items-per-page="5" :sort-by.sync="sortBy"
+                            :sort-desc.sync="sortDesc" no-data-text="No resources available">
                             <template @click="selectElement(item)" v-slot:item.actions="{ item }">
                                 <v-icon class="mr-2" @click="showRepresentations(item)">
                                     mdi-file-find
@@ -41,9 +29,9 @@
                     <h3>Select Representation:</h3>
                     <div v-for="representation in selectedRepresentations">
                         <v-btn color="secondary" @click="selectRepresentation(representation)">
-                            {{ representation['@id'] }}
+                            {{ representation.display }}
                         </v-btn>
-                        <div v-for="filetype in resourcesInSelectedCatalog.filetype">{{ filetype }}</div>
+                        <div v-for="filetype in resources.filetype">{{ filetype }}</div>
                     </div>
                 </div>
                 <div v-if="selectedArtifacts.length > 0">
@@ -111,5 +99,6 @@
             </v-col>
         </v-row>
     </div>
+    <div class="data-consumption-page-bottom"></div>
     <resource-details-dialog ref="resourceDetailsDialog"></resource-details-dialog>
 </div>

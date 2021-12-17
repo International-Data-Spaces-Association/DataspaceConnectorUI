@@ -1,0 +1,14 @@
+.res-agr-dialog-table-content {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    min-height: 200px;
+}
+
+.res-agr-dialog-table-title {
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+}
+
+.res-agr-dialog-expired-table {
+    color: rgba(0,0,0,0.5)!important;
+}

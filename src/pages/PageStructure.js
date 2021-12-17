@@ -18,14 +18,14 @@ export default {
         return [{
             path: "dashboard",
             name: "Dashboard",
-            icon: "icon-dashboard",
+            icon: "mdi-view-dashboard",
             component: DashboardPage,
             subpages: []
         },
         {
             path: null,
             name: "Data Offering",
-            icon: "icon-dataoffering",
+            icon: "mdi-application-export",
             component: null,
             subpages: [{
                 path: "idresourcesoffering",
@@ -70,7 +70,7 @@ export default {
         }, {
             path: null,
             name: "Data Consumption",
-            icon: "icon-dataconsumption",
+            icon: "mdi-file-document-outline",
             component: null,
             subpages: [{
                 path: "idresourcesconsumption",
@@ -94,19 +94,19 @@ export default {
         }, {
             path: "brokers",
             name: "Brokers",
-            icon: "icon-brokers",
+            icon: "mdi-briefcase-variant-outline",
             component: BrokersPage,
             subpages: []
         }, {
             path: "apps",
             name: "Apps",
-            icon: "icon-apps",
+            icon: "mdi-apps",
             component: AppsPage,
             subpages: []
         }, {
             path: "appstores",
             name: "App Stores",
-            icon: "icon-apps",
+            icon: "mdi-storefront-outline",
             component: AppStoresPage,
             subpages: [{
                 path: "installapps",
@@ -118,7 +118,7 @@ export default {
         }, {
             path: "settings",
             name: "Settings",
-            icon: "icon-settings",
+            icon: "mdi-cog-outline",
             component: SettingsPage,
             subpages: []
         }

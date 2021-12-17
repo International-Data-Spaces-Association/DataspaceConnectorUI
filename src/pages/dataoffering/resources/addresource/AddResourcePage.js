@@ -130,43 +130,45 @@ export default {
             this.$refs.brokersPage.readonly = readonly;
         },
         async save() {
-            var genericEndpoint = null;
+            let genericEndpoint = null;
             if (this.$refs.representationPage.selected.length > 0) {
                 genericEndpoint = this.$refs.representationPage.selected[0];
             }
 
-            var title = this.$refs.metaDataPage.title;
-            var description = this.$refs.metaDataPage.description;
-            var language = this.$refs.metaDataPage.language;
-            var paymentMethod = this.$refs.metaDataPage.paymentMethod;
-            var keywords = dataUtils.commaSeperatedStringToArray(this.$refs.metaDataPage.keywords);
-            var standardlicense = this.$refs.metaDataPage.standardlicense;
-            var publisher = this.$refs.metaDataPage.publisher;
-            var samples = this.$refs.metaDataPage.samples;
-            var policyDescriptions = this.$refs.policyPage.getDescriptions();
-            var filetype = this.$refs.representationPage.filetype;
-            var brokerList = this.$refs.brokersPage.getSelectedBrokerList()
+            let title = this.$refs.metaDataPage.title;
+            let description = this.$refs.metaDataPage.description;
+            let language = this.$refs.metaDataPage.language;
+            let paymentMethod = this.$refs.metaDataPage.paymentMethod;
+            let keywords = dataUtils.commaSeperatedStringToArray(this.$refs.metaDataPage.keywords);
+            let standardlicense = this.$refs.metaDataPage.standardlicense;
+            let publisher = this.$refs.metaDataPage.publisher;
+            let samples = this.$refs.metaDataPage.samples;
+            let policyDescriptions = this.$refs.policyPage.getDescriptions();
+            let contractPeriodFromValue = this.$refs.policyPage.getContractPeriodFromValue();
+            let contractPeriodToValue = this.$refs.policyPage.getContractPeriodToValue();
+            let filetype = this.$refs.representationPage.filetype;
+            let brokerList = this.$refs.brokersPage.getSelectedBrokerList()
             let brokerDeleteList = this.$refs.brokersPage.getBrokerDeleteList();
-            var catalogIds = this.$refs.catalogsPage.getSelectedCatalogsList();
+            let catalogIds = this.$refs.catalogsPage.getSelectedCatalogsList();
             let deletedCatalogIds = this.$refs.catalogsPage.getCatalogsDeleteList();
 
             if (this.fromRoutePage == 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
                 this.$emit("saved", catalogIds, title, description, language, paymentMethod, keywords, 0, standardlicense, publisher,
-                    policyDescriptions, filetype, 0, brokerList);
+                    policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, 0, brokerList);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$root.$emit('blockNavigationMenu', true);
                 if (this.$data.currentResource == null) {
                     await dataUtils.createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                        policyDescriptions, filetype, brokerList, genericEndpoint);
+                        policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, brokerList, genericEndpoint);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                     this.$root.$emit('blockNavigationMenu', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId, catalogIds, deletedCatalogIds,
-                        title, description, language, paymentMethod, keywords, standardlicense, publisher, samples, policyDescriptions,
-                        filetype, brokerList, brokerDeleteList, genericEndpoint, this.$data.currentResource.ruleId,
+                        title, description, language, paymentMethod, keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue,
+                        contractPeriodToValue, filetype, brokerList, brokerDeleteList, genericEndpoint, this.$data.currentResource.ruleId,
                         this.$data.currentResource.artifactId);
                     this.$router.push('idresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);

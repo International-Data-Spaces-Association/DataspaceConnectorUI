@@ -1,24 +1,43 @@
 <v-row no-gutters>
     <v-col cols="12" md="12">
-        <v-form v-model="valid" ref="form">
-            <v-text-field label="Title" v-model="title" :rules="defaultRule" required :readonly="readonly">
+        <v-form v-if="readonly" v-model="valid" ref="form">
+            <v-text-field label="Title" v-model="title" readonly>
             </v-text-field>
-            <v-text-field label="Description" v-model="description" :rules="defaultRule" required :readonly="readonly">
+            <v-text-field label="Description" v-model="description" readonly>
             </v-text-field>
-            <v-text-field label="Publisher" v-model="publisher" :rules="urlRule" required :readonly="readonly">
+            <v-text-field label="Publisher" v-model="publisher" readonly>
             </v-text-field>
-            <v-text-field label="Keywords" v-model="keywords" :rules="defaultRule" required :readonly="readonly">
+            <v-text-field label="Keywords" v-model="keywords" readonly>
             </v-text-field>
-            <v-text-field label="Standard License" v-model="standardlicense" :rules="urlRule" required
-                :readonly="readonly">
+            <v-text-field label="Standard License" v-model="standardlicense" readonly>
             </v-text-field>
             <v-select label="Language" v-model="language" :items="languageItems" item-text="displayName"
-                item-value="originalName" :rules="defaultRule" required :readonly="readonly">
+                item-value="originalName" readonly>
             </v-select>
             <v-select label="Payment Modality" v-model="paymentMethod" :items="paymentMethods"
-                item-text="representation" item-value="displayName" :rules="defaultRule" required :readonly="readonly">
+                item-text="representation" item-value="displayName" readonly>
             </v-select>
-            <v-btn color="primary" @click.native="nextPage" :disabled="(!readonly && !valid)" v-show="!onlyMetaData">
+            <v-btn color="primary" @click.native="nextPage" v-show="!onlyMetaData">
+                Next</v-btn>
+        </v-form>
+        <v-form v-if="!readonly" v-model="valid" ref="form">
+            <v-text-field label="Title" v-model="title" :rules="defaultRule" required>
+            </v-text-field>
+            <v-text-field label="Description" v-model="description" :rules="defaultRule" required>
+            </v-text-field>
+            <v-text-field label="Publisher" v-model="publisher" :rules="urlRule" required>
+            </v-text-field>
+            <v-text-field label="Keywords" v-model="keywords" :rules="defaultRule" required>
+            </v-text-field>
+            <v-text-field label="Standard License" v-model="standardlicense" :rules="urlRule" required>
+            </v-text-field>
+            <v-select label="Language" v-model="language" :items="languageItems" item-text="displayName"
+                item-value="originalName" :rules="defaultRule" required>
+            </v-select>
+            <v-select label="Payment Modality" v-model="paymentMethod" :items="paymentMethods"
+                item-text="representation" item-value="displayName" :rules="defaultRule" required>
+            </v-select>
+            <v-btn color="primary" @click.native="nextPage" :disabled="!valid" v-show="!onlyMetaData">
                 Next</v-btn>
         </v-form>
     </v-col>

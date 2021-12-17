@@ -1,5 +1,6 @@
 import PolicyLine from "@/components/policy/PolicyLine.vue";
-import dataUtils from "../../../../../utils/dataUtils";
+import dataUtils from "@/utils/dataUtils";
+import validationUtils from "@/utils/validationUtils";
 
 export default {
     components: {
@@ -10,7 +11,13 @@ export default {
             policyType: null,
             readonly: false,
             valid: true,
-            policyLines: []
+            contractPeriodValid: false,
+            policyLines: [],
+            contractPeriodFromMenu: false,
+            contractPeriodFromValue: null,
+            contractPeriodToMenu: false,
+            contractPeriodToValue: null,
+            defaultRule: validationUtils.getRequiredRule()
         };
     },
     mounted: function () {
@@ -18,6 +25,11 @@ export default {
         this.$data.policyLines.push({
             "name": Date.now()
         });
+    },
+    watch: {
+        contractPeriodValid: function () {
+            this.validationChanged();
+        },
     },
     methods: {
         gotVisible() {
@@ -51,6 +63,8 @@ export default {
                         this.$data.policyLines.push(policyLine);
                     }
                 }
+                this.$data.contractPeriodFromValue = resource.contractPeriodFromValue;
+                this.$data.contractPeriodToValue = resource.contractPeriodToValue;
             }
         },
         async loadRequestedResource(resource) {
@@ -82,6 +96,12 @@ export default {
             }
             return descriptions;
         },
+        getContractPeriodFromValue() {
+            return this.$data.contractPeriodFromValue + "T00:00:00Z";
+        },
+        getContractPeriodToValue() {
+            return this.$data.contractPeriodToValue + "T00:00:00Z";
+        },
         previousPage() {
             this.$emit('previousPage')
         },
@@ -108,7 +128,12 @@ export default {
         },
         validationChanged() {
             for (let policyLine of this.$data.policyLines) {
-                this.$data.valid = this.$refs[policyLine.name][0].isValid();
+                if (this.$refs[policyLine.name] !== undefined) {
+                    this.$data.valid = this.$refs[policyLine.name][0].isValid() && this.$data.contractPeriodValid;
+                    if (!this.$data.valid) {
+                        break;
+                    }
+                }
             }
         }
     }
