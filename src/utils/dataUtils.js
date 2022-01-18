@@ -1072,6 +1072,30 @@ export default {
         return response;
     },
 
+    async searchResources(brokerUri, search) {
+        let searchResult = [];
+        let params = {
+            "recipient": brokerUri,
+            "limit": 100
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/search", params, search);
+        let lines = response.split('\n');
+        for (let line of lines) {
+            if (line.trim().length > 0) {
+                let lineSplit = line.split('\t');
+                if (lineSplit[2] == "<https://w3id.org/idsa/core/Resource>") {
+                    let resourceUrl = lineSplit[0].replace('<', '').replace('>', '');
+                    searchResult.push({
+                        title: lineSplit[1].replaceAll('"', '').replace("@en", ""),
+                        resourceId: resourceUrl.substring(resourceUrl.lastIndexOf('/'), resourceUrl.length),
+                        accessUrl: lineSplit[3].replace('<', '').replace('>', ''),
+                    });
+                }
+            }
+        }
+        return searchResult;
+    },
+
     async receiveCatalogs(recipientId) {
         let catalogs = [];
         let params = {

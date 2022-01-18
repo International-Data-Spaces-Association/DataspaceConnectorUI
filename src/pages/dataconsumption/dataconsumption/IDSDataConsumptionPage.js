@@ -12,8 +12,12 @@ export default {
     },
     data() {
         return {
+            active_tab: 0,
+            brokerUri: "",
+            search: "",
             recipientId: "",
             selectedCatalog: "",
+            searchResult: [],
             catalogs: [],
             resources: [],
             filteredResources: [],
@@ -27,7 +31,24 @@ export default {
             downloadLink: "",
             dialog: false,
             valid: false,
+            validSearch: false,
+            defaultRule: validationUtils.getRequiredRule(),
             providerUrlRule: validationUtils.getUrlRequiredRule(),
+            headersSearch: [{
+                text: 'Title / Description / Keywords',
+                value: 'title'
+            },
+            {
+                text: 'Connector',
+                value: 'accessUrl'
+            },
+            {
+                text: '',
+                value: 'actions',
+                sortable: false,
+                align: 'right'
+            }
+            ],
             headers: [{
                 text: 'Creation date',
                 value: 'creationDate',
@@ -99,6 +120,31 @@ export default {
             this.$data.requestContractResponse = {};
             this.$data.downloadLink = "";
         },
+        async searchResources() {
+            this.$root.$emit('showBusyIndicator', true);
+            this.clear();
+            try {
+                this.$data.searchResult = await dataUtils.searchResources(this.$data.brokerUri, this.$data.search);
+            } catch (error) {
+                errorUtils.showError(error, "Request Catalogs");
+            }
+
+            this.$root.$emit('showBusyIndicator', false);
+        },
+        async requestSearchResult(item) {
+            this.$root.$emit('showBusyIndicator', true);
+            this.$data.recipientId = item.accessUrl;
+            await this.receiveCatalogs();
+            let filterdResources = [];
+            for (let resource of this.$data.resources) {
+                if (resource.id == item.resourceId) {
+                    filterdResources.push(resource);
+                }
+            }
+            this.$data.resources = filterdResources;
+            this.$data.active_tab = 0;
+            this.$root.$emit('showBusyIndicator', false);
+        },
         async receiveCatalogs() {
             this.$root.$emit('showBusyIndicator', true);
             this.clear();
@@ -163,6 +209,7 @@ export default {
         },
 
         showRepresentations(item) {
+
             this.$data.resources.forEach(element => {
                 if (element.id == item.id) {
                     let idsResource = element.idsResource;
