@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [8.8.0] - XXXX-XX-XX
+
+### Added
+- Data Consumption: Search for resources in the broker
+
 ## [8.7.0] - 2021-12-17
 
 ### Added
