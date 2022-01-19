@@ -14,6 +14,7 @@ export default {
         return {
             active_tab: 0,
             brokerUri: "",
+            brokerUris: [],
             search: "",
             recipientId: "",
             selectedCatalog: "",
@@ -99,10 +100,25 @@ export default {
             sortDesc: true
         };
     },
-    //    mounted: function () {
-    //
-    //    },
+    mounted: function () {
+        this.getBrokers();
+    },
     methods: {
+        async getBrokers() {
+            this.$root.$emit('showBusyIndicator', true);
+            try {
+                let response = (await dataUtils.getBrokers())._embedded.brokers;
+                this.$data.brokerUris = [];
+                for (var broker of response) {
+                    this.$data.brokerUris.push(broker.location);
+                }
+            } catch (error) {
+                errorUtils.showError(error, "Get brokers");
+            }
+            this.$forceUpdate();
+            this.$root.$emit('showBusyIndicator', false);
+
+        },
         getConnectorSelfDescription() {
             // this.$root.$emit('showBusyIndicator', true);
             // TODO Get resources 

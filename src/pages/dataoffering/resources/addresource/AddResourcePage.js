@@ -162,7 +162,7 @@ export default {
                 if (this.$data.currentResource == null) {
                     await dataUtils.createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
                         policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, brokerList, genericEndpoint);
-                    this.$router.push('idresourcesoffering');
+                    this.$router.push('idsresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                     this.$root.$emit('blockNavigationMenu', false);
                 } else {
@@ -170,7 +170,7 @@ export default {
                         title, description, language, paymentMethod, keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue,
                         contractPeriodToValue, filetype, brokerList, brokerDeleteList, genericEndpoint, this.$data.currentResource.ruleId,
                         this.$data.currentResource.artifactId);
-                    this.$router.push('idresourcesoffering');
+                    this.$router.push('idsresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                     this.$root.$emit('blockNavigationMenu', false);
                 }

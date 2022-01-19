@@ -5,7 +5,7 @@
             The dashboard shows statistical data of the current connector.
         </v-card-text>
     </v-card-text>
-    <v-card-text v-if="currentRoute  == 'idresourcesoffering'">
+    <v-card-text v-if="currentRoute  == 'idsresourcesoffering'">
         <v-card-text>
             Overview of all currently offered IDS
             resources.
@@ -82,10 +82,24 @@
             General settings of the DataSpaceConnector.
         </v-card-text>
     </v-card-text>
+    <v-card-text v-if="currentRoute  == 'idsresourcesconsumption'">
+        <v-card-text>
+            Overview of all requested IDS resources.<br><br>
+            New IDS resources can be requested by clicking the "REQUEST RESOURCE"-button.
+        </v-card-text>
+    </v-card-text>
     <v-card-text v-if="currentRoute  == 'requestresourceconsumption'">
         <v-card-text>
-            Request an IDS resource from the given connector URL.<br>
-            When requesting a Dataspace Connector the "/api/ids/data" endpoint should be used.
+            There are two ways to request an IDS resource from another Connector:
+            <br>
+            <br>
+            <b>Connector: </b>Enter a connector URL directly (use "/api/ids/data" endpoint) and get a list of all
+            resources of this connector, which
+            can be requested.
+            <br>
+            <br>
+            <b>Broker: </b>Enter a broker URL and search term. The broker then returns a list of resources from various
+            connectors, which can be requested.
         </v-card-text>
     </v-card-text>
 </v-card>

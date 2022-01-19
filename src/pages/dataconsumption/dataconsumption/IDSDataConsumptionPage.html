@@ -113,8 +113,9 @@
                 <v-row no-gutters class="data-consumption-page-row">
                     <v-col cols="12" md="11" sm="12">
                         <v-form v-model="validSearch" ref="form">
-                            <v-text-field label="Broker URL" v-model="brokerUri" :rules="providerUrlRule">
-                            </v-text-field>
+                            <v-autocomplete label="Broker URL" v-model="brokerUri" :items="brokerUris"
+                                no-data-text="No saved brokers" :rules="providerUrlRule">
+                            </v-autocomplete>
                             <v-text-field label="Search" v-model="search" :rules="defaultRule">
                             </v-text-field>
                             <v-btn color="primary" @click.native="searchResources" :disabled="!validSearch">

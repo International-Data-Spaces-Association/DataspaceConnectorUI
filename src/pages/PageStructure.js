@@ -28,7 +28,7 @@ export default {
             icon: "mdi-application-export",
             component: null,
             subpages: [{
-                path: "idresourcesoffering",
+                path: "idsresourcesoffering",
                 name: "IDS Resources (Offering)",
                 component: IDSResourcesPage,
                 subpages: [{
@@ -73,7 +73,7 @@ export default {
             icon: "mdi-file-document-outline",
             component: null,
             subpages: [{
-                path: "idresourcesconsumption",
+                path: "idsresourcesconsumption",
                 name: "IDS Resources (Consumption)",
                 component: IDSResourcesPageConsumption,
                 subpages: [{
