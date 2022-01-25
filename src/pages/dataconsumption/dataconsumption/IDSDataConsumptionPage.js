@@ -2,13 +2,13 @@ import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 import validationUtils from "@/utils/validationUtils";
 import ResourceDetailsDialog from "@/pages/dataoffering/resources/resourcedetailsdialog/ResourceDetailsDialog.vue";
-import PolicyLine from "@/components/policy/PolicyLine.vue";
+import ArtifactDialog from "@/pages/dataconsumption/dataconsumption/artifactdialog/ArtifactDialog.vue";
 
 
 export default {
     components: {
         ResourceDetailsDialog,
-        PolicyLine
+        ArtifactDialog
     },
     data() {
         return {
@@ -30,7 +30,7 @@ export default {
             idsContractOffer: {},
             requestContractResponse: {},
             downloadLink: "",
-            dialog: false,
+            artifactDialog: false,
             valid: false,
             validSearch: false,
             defaultRule: validationUtils.getRequiredRule(),
@@ -73,7 +73,8 @@ export default {
                 text: '',
                 value: 'actions',
                 sortable: false,
-                align: 'right'
+                align: 'right',
+                width: 100
             }
             ],
             headersArtifacts: [{
@@ -225,7 +226,6 @@ export default {
         },
 
         showRepresentations(item) {
-
             this.$data.resources.forEach(element => {
                 if (element.id == item.id) {
                     let idsResource = element.idsResource;
@@ -264,6 +264,10 @@ export default {
 
         getArtifacts(representation) {
             this.$data.selectedArtifacts = representation["ids:instance"];
+        },
+
+        requestArtifact(item) {
+            this.$refs.artifactDialog.show(this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"], this.$data.selectedResource["ids:standardLicense"]["@id"], item, this.clickAcceptContract);
         },
 
         clickAcceptContract(artifact) {
