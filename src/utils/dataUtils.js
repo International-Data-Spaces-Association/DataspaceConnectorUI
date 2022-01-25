@@ -53,7 +53,7 @@ const IDS_PAYMENT_METHOD_TO_NAME = {
     "https://w3id.org/idsa/code/UNDEFINED": "undefined"
 };
 
-let languages = null;
+let enums = null;
 let connectorUrl = "https://localhost:8080"
 console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
 if (process.env.CONNECTOR_URL !== undefined) {
@@ -292,21 +292,23 @@ export default {
         return (await restUtils.callConnector("GET", "/api/agreements/" + agreementId + "/artifacts"))["_embedded"].artifacts;
     },
 
-    async getLanguages() {
-        if (languages == null) {
-            let languages = (await restUtils.callConnector("GET", "/api/configmanager/enum/Language"));
-            return languages;
-        } else {
-            return languages;
+    async getEnums() {
+        if (enums == null) {
+            enums = await restUtils.callConnector("GET", "/api/utils/enums");
         }
+        return enums;
+    },
+
+    async getLanguages() {
+        return (await this.getEnums())["LANGUAGE"];
     },
 
     async getPaymentMethods() {
-        return await restUtils.callConnector("GET", "/api/configmanager/enum/paymentmethod");
+        return (await this.getEnums())["PAYMENT_METHOD"];
     },
 
     async getSecurityProfiles() {
-        return await restUtils.callConnector("GET", "/api/configmanager/enum/securityprofile");
+        return (await this.getEnums())["SECURITY_PROFILE"];
     },
 
     async registerConnectorAtBroker(brokerUri) {
@@ -1002,14 +1004,11 @@ export default {
     },
 
     async getDeployMethods() {
-        let response = await restUtils.callConnector("GET", "/api/configmanager/enum/deployMethod");
-        return response;
-
+        return (await this.getEnums())["DEPLOY_METHOD"];
     },
 
     async getLogLevels() {
-        let response = await restUtils.callConnector("GET", "/api/configmanager/enum/logLevel");
-        return response;
+        return (await this.getEnums())["LOG_LEVEL"];
     },
 
     async getConnectorConfiguration() {
@@ -1068,8 +1067,7 @@ export default {
     },
 
     async getConnectorDeployModes() {
-        let response = await restUtils.callConnector("GET", "/api/configmanager/enum/connectorDeployMode");
-        return response;
+        return (await this.getEnums())["CONNECTOR_DEPLOY_MODE"];
     },
 
     async searchResources(brokerUri, search) {
