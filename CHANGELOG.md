@@ -2,12 +2,18 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
-## [8.8.0] - XXXX-XX-XX
+## [8.8.0] - 2022-01-27 (compatible with DSC 6.5.3)
 
 ### Added
 - Data Consumption: Search for resources in the broker
 
-## [8.7.0] - 2021-12-17
+### Fixes
+- Route: Set contract period start/end on route creation
+
+# Known Issues
+- Settings: When changing any settings, the keystore/truststore passwords are lost in the DSC. (Is fixed in DSC 7.0.0)
+
+## [8.7.0] - 2021-12-17 (compatible with DSC 6.5.3)
 
 ### Added
 - Filter offered resources by catalog
@@ -22,7 +28,7 @@ All notable changes to this project will be documented in this file.
 - Data Consumption: No validation on resource meta data dialog
 - Data Consumption: getIdOfAgreement() fixed
 
-## [8.6.0] - 2021-10-08
+## [8.6.0] - 2021-10-08 (compatible with DSC 6.5.2)
 
 ### Added
 - Install apps from App Store
