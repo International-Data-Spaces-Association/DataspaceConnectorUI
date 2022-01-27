@@ -907,11 +907,14 @@ export default {
         let standardlicense = resource.standardlicense;
         let publisher = resource.publisher;
         let policyDescriptions = resource.policyDescriptions;
+        let contractPeriodFromValue = resource.contractPeriodFromValue;
+        let contractPeriodToValue = resource.contractPeriodToValue;
         let filetype = resource.fileType;
         let brokerUris = resource.brokerUris;
 
         try {
-            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
+                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, genericEndpoint);
             await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, resourceResponse.endpointId, destinationNode.x, destinationNode.y, resourceResponse.artifactId);
             this.addRouteStartAndEnd(routeId, startId, resourceResponse.endpointId);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
@@ -1070,6 +1073,30 @@ export default {
     async getConnectorDeployModes() {
         let response = await restUtils.callConnector("GET", "/api/configmanager/enum/connectorDeployMode");
         return response;
+    },
+
+    async searchResources(brokerUri, search) {
+        let searchResult = [];
+        let params = {
+            "recipient": brokerUri,
+            "limit": 100
+        }
+        let response = await restUtils.callConnector("POST", "/api/ids/search", params, search);
+        let lines = response.split('\n');
+        for (let line of lines) {
+            if (line.trim().length > 0) {
+                let lineSplit = line.split('\t');
+                if (lineSplit[2] == "<https://w3id.org/idsa/core/Resource>") {
+                    let resourceUrl = lineSplit[0].replace('<', '').replace('>', '');
+                    searchResult.push({
+                        title: lineSplit[1].replaceAll('"', '').replace("@en", ""),
+                        resourceId: resourceUrl.substring(resourceUrl.lastIndexOf('/'), resourceUrl.length),
+                        accessUrl: lineSplit[3].replace('<', '').replace('>', ''),
+                    });
+                }
+            }
+        }
+        return searchResult;
     },
 
     async receiveCatalogs(recipientId) {

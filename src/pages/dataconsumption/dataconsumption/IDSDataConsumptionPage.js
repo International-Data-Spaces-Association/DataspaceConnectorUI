@@ -2,18 +2,23 @@ import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 import validationUtils from "@/utils/validationUtils";
 import ResourceDetailsDialog from "@/pages/dataoffering/resources/resourcedetailsdialog/ResourceDetailsDialog.vue";
-import PolicyLine from "@/components/policy/PolicyLine.vue";
+import ArtifactDialog from "@/pages/dataconsumption/dataconsumption/artifactdialog/ArtifactDialog.vue";
 
 
 export default {
     components: {
         ResourceDetailsDialog,
-        PolicyLine
+        ArtifactDialog
     },
     data() {
         return {
+            active_tab: 0,
+            brokerUri: "",
+            brokerUris: [],
+            search: "",
             recipientId: "",
             selectedCatalog: "",
+            searchResult: [],
             catalogs: [],
             resources: [],
             filteredResources: [],
@@ -25,9 +30,26 @@ export default {
             idsContractOffer: {},
             requestContractResponse: {},
             downloadLink: "",
-            dialog: false,
+            artifactDialog: false,
             valid: false,
+            validSearch: false,
+            defaultRule: validationUtils.getRequiredRule(),
             providerUrlRule: validationUtils.getUrlRequiredRule(),
+            headersSearch: [{
+                text: 'Title / Description / Keywords',
+                value: 'title'
+            },
+            {
+                text: 'Connector',
+                value: 'accessUrl'
+            },
+            {
+                text: '',
+                value: 'actions',
+                sortable: false,
+                align: 'right'
+            }
+            ],
             headers: [{
                 text: 'Creation date',
                 value: 'creationDate',
@@ -51,7 +73,8 @@ export default {
                 text: '',
                 value: 'actions',
                 sortable: false,
-                align: 'right'
+                align: 'right',
+                width: 100
             }
             ],
             headersArtifacts: [{
@@ -78,10 +101,25 @@ export default {
             sortDesc: true
         };
     },
-    //    mounted: function () {
-    //
-    //    },
+    mounted: function () {
+        this.getBrokers();
+    },
     methods: {
+        async getBrokers() {
+            this.$root.$emit('showBusyIndicator', true);
+            try {
+                let response = (await dataUtils.getBrokers())._embedded.brokers;
+                this.$data.brokerUris = [];
+                for (var broker of response) {
+                    this.$data.brokerUris.push(broker.location);
+                }
+            } catch (error) {
+                errorUtils.showError(error, "Get brokers");
+            }
+            this.$forceUpdate();
+            this.$root.$emit('showBusyIndicator', false);
+
+        },
         getConnectorSelfDescription() {
             // this.$root.$emit('showBusyIndicator', true);
             // TODO Get resources 
@@ -98,6 +136,31 @@ export default {
             this.$data.idsContractOffer = {};
             this.$data.requestContractResponse = {};
             this.$data.downloadLink = "";
+        },
+        async searchResources() {
+            this.$root.$emit('showBusyIndicator', true);
+            this.clear();
+            try {
+                this.$data.searchResult = await dataUtils.searchResources(this.$data.brokerUri, this.$data.search);
+            } catch (error) {
+                errorUtils.showError(error, "Request Catalogs");
+            }
+
+            this.$root.$emit('showBusyIndicator', false);
+        },
+        async requestSearchResult(item) {
+            this.$root.$emit('showBusyIndicator', true);
+            this.$data.recipientId = item.accessUrl;
+            await this.receiveCatalogs();
+            let filterdResources = [];
+            for (let resource of this.$data.resources) {
+                if (resource.id == item.resourceId) {
+                    filterdResources.push(resource);
+                }
+            }
+            this.$data.resources = filterdResources;
+            this.$data.active_tab = 0;
+            this.$root.$emit('showBusyIndicator', false);
         },
         async receiveCatalogs() {
             this.$root.$emit('showBusyIndicator', true);
@@ -201,6 +264,10 @@ export default {
 
         getArtifacts(representation) {
             this.$data.selectedArtifacts = representation["ids:instance"];
+        },
+
+        requestArtifact(item) {
+            this.$refs.artifactDialog.show(this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"], this.$data.selectedResource["ids:standardLicense"]["@id"], item, this.clickAcceptContract);
         },
 
         clickAcceptContract(artifact) {
