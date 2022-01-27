@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 - Route: Set contract period start/end on route creation
 
 # Known Issues
-- Settings: When changing any settings, the keystore/truststore passwords are lost in the DSC. (Is fixed in DSC 7.0.0)
+- [Issue 851](https://github.com/International-Data-Spaces-Association/DataspaceConnector/issues/851): When changing any settings, the keystore/truststore passwords are lost in the DSC. (Is fixed in DSC 7.0.0)
 
 ## [8.7.0] - 2021-12-17 (compatible with DSC 6.5.3)
 
