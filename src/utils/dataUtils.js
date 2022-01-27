@@ -907,11 +907,14 @@ export default {
         let standardlicense = resource.standardlicense;
         let publisher = resource.publisher;
         let policyDescriptions = resource.policyDescriptions;
+        let contractPeriodFromValue = resource.contractPeriodFromValue;
+        let contractPeriodToValue = resource.contractPeriodToValue;
         let filetype = resource.fileType;
         let brokerUris = resource.brokerUris;
 
         try {
-            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
+                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, genericEndpoint);
             await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, resourceResponse.endpointId, destinationNode.x, destinationNode.y, resourceResponse.artifactId);
             this.addRouteStartAndEnd(routeId, startId, resourceResponse.endpointId);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
