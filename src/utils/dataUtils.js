@@ -430,7 +430,7 @@ export default {
                 "title": title
             });
         } catch (error) {
-            errorUtils.showError(error, "Create broker");
+            errorUtils.showError(error, "Create app store");
         }
     },
 
