@@ -532,19 +532,36 @@ export default {
         await restUtils.callConnector("PUT", "/api/endpoints/" + genericEndpointId + "/datasource/" + dataSourceId);
     },
 
-    async updateGenericEndpoint(id, dataSourceId, url, username, password, sourceType) {
+    async updateGenericEndpoint(id, dataSourceId, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName) {
         await restUtils.callConnector("PUT", "/api/endpoints/" + id, null, {
             "location": url,
             "type": "GENERIC"
         });
 
-        await restUtils.callConnector("PUT", "/api/datasources/" + dataSourceId, null, {
-            "authentication": {
-                "key": username,
-                "value": password
-            },
-            "type": sourceType
-        });
+        let bodyData = null;
+        if (username != null) {
+            bodyData = {
+                "basicAuth": {
+                    "key": username,
+                    "value": password
+                },
+                "type": sourceType,
+                "url": url
+            };
+        } else {
+            bodyData = {
+                "apiKey": {
+                    "key": authHeaderName,
+                    "value": authHeaderValue
+                },
+                "type": sourceType,
+                "url": url
+            };
+        }
+        if (sourceType == "DATABASE") {
+            bodyData.driverClassName = driverClassName;
+        }
+        await restUtils.callConnector("PUT", "/api/datasources/" + dataSourceId, null, bodyData);
     },
 
     async deleteGenericEndpoint(id, dataSourceId) {

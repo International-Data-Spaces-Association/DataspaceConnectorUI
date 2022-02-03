@@ -23,7 +23,8 @@ export default {
             urlRule: validationUtils.getUrlRequiredRule()
         };
     },
-    mounted: function () { },
+    mounted: function () {
+    },
     // watch: {
     //     dialog() {
     //         console.log("SHOW: ", this.$data.dialog);
@@ -45,23 +46,25 @@ export default {
             this.$data.password = "";
             this.$data.authHeaderName = "";
             this.$data.authHeaderValue = "";
-            this.$refs.form.resetValidation();
+            this.$nextTick(() => {
+                this.$refs.form.resetValidation();
+            });
         },
         cancelBackendConnection() {
             this.$data.dialog = false;
         },
         async saveBackendConnection() {
+            this.$root.$emit('showBusyIndicator', true);
+            this.$data.dialog = false;
+            if (this.$data.active_tab == 0) {
+                this.$data.authHeaderName = null;
+                this.$data.authHeaderValue = null;
+            } else {
+                this.$data.username = null;
+                this.$data.password = null;
+            }
             if (this.$data.currentEndpoint == null) {
-                this.$root.$emit('showBusyIndicator', true);
-                this.$data.dialog = false;
                 try {
-                    if (this.$data.active_tab == 0) {
-                        this.$data.authHeaderName = null;
-                        this.$data.authHeaderValue = null;
-                    } else {
-                        this.$data.username = null;
-                        this.$data.password = null;
-                    }
                     await dataUtils.createGenericEndpoint(this.$data.url, this.$data.username, this.$data.password, this.$data.authHeaderName,
                         this.$data.authHeaderValue, this.$data.sourceType.toUpperCase(), this.$data.driverClassName);
                 } catch (error) {
@@ -70,11 +73,10 @@ export default {
                 }
                 this.$emit('backendConnectionSaved');
             } else {
-                this.$root.$emit('showBusyIndicator', true);
-                this.$data.dialog = false;
                 try {
                     await dataUtils.updateGenericEndpoint(this.currentEndpoint.id, this.currentEndpoint.dataSourceId, this.$data.url,
-                        this.$data.username, this.$data.password, this.$data.sourceType);
+                        this.$data.username, this.$data.password, this.$data.authHeaderName,
+                        this.$data.authHeaderValue, this.$data.sourceType.toUpperCase(), this.$data.driverClassName);
                 } catch (error) {
                     console.log("Error on saveBackendConnection(): ", error);
                     this.$root.$emit('error', "Update backend connection failed.");
@@ -88,6 +90,7 @@ export default {
             this.$data.url = endpoint.accessUrl;
             let dataSource = await dataUtils.getDataSource(endpoint.dataSourceId);
             this.$data.sourceType = dataSource.type;
+            this.$data.driverClassName = "";
             this.$data.username = endpoint.username;
             this.$data.password = endpoint.password;
             this.$data.authHeaderName = "";

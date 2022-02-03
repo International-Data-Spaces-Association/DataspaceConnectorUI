@@ -20,7 +20,7 @@
                 </v-text-field>
                 <v-tabs class="pagestab" v-model="active_tab" ref="pagestab">
                     <v-tab>Basic</v-tab>
-                    <v-tab>API-Key</v-tab>
+                    <v-tab v-if="sourceType === 'REST'">API-Key</v-tab>
                     <v-tab-item :eager="true">
                         <v-text-field label="Username" v-model="username"> </v-text-field>
                         <v-text-field label="Password" v-model="password" :type="showPassword ? 'text' : 'password'"
