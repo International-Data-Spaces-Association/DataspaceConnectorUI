@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [8.8.1] - 2022-02-03 (compatible with DSC 6.5.3)
+
+### Fixes
+- Get connector URL from UI backend (env variables not working in frontend code)
+
+# Known Issues
+- [Issue 851](https://github.com/International-Data-Spaces-Association/DataspaceConnector/issues/851): When changing any settings, the keystore/truststore passwords are lost in the DSC. (Is fixed in DSC 7.0.0)
+
 ## [8.8.0] - 2022-01-27 (compatible with DSC 6.5.3)
 
 ### Added
