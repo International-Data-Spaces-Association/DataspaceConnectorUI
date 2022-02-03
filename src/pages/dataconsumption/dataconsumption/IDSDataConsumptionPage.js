@@ -225,8 +225,8 @@ export default {
             }
         },
 
-        showRepresentations(item) {
-            this.$data.resources.forEach(element => {
+        async showRepresentations(item) {
+            for (let element of this.$data.resources) {
                 if (element.id == item.id) {
                     let idsResource = element.idsResource;
                     this.$data.selectedRepresentations = [];
@@ -240,12 +240,10 @@ export default {
                     }
                     this.$data.selectedResource = idsResource;
                     for (let ruleJson of this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"]) {
-                        let ruleDescription = ruleJson["ids:description"][0]["@value"];
-                        let ruleName = dataUtils.convertDescriptionToPolicyName(ruleDescription);
-                        ruleJson.type = dataUtils.convertPolicyNameToType(ruleName);
+                        ruleJson.type = (await dataUtils.getPolicyNameByPattern(ruleJson)).value;
                     }
                 }
-            });
+            }
             this.$data.selectedRepresentation = {};
             this.$data.selectedArtifacts = [];
             this.$data.selectedIdsArtifact = {};
