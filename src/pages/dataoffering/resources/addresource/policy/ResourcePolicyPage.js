@@ -52,6 +52,7 @@ export default {
                             "ruleJson": resource.ruleJsons[i],
                             "policyName": resource.policyNames[i]
                         };
+
                         this.$data.policyLines.push(policyLine);
                     }
                 } else if (resource.policyDescriptions !== undefined) {

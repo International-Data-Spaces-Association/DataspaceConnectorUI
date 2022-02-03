@@ -30,16 +30,14 @@ export default {
             allValid: false,
             readonly: false,
             newBackendConnection: false,
+            fileData: null,
             filetype: "",
             hideBackendConnections: false
         };
     },
     watch: {
         valid: function () {
-            this.$data.allValid = this.$data.valid && (this.fromRoutePage == 'true' || this.$data.selected.length > 0);
-        },
-        selected: function () {
-            this.$data.allValid = this.$data.valid && (this.fromRoutePage == 'true' || this.$data.selected.length > 0);
+            this.$data.allValid = this.$data.valid;
         }
     },
     mounted: function () {
@@ -96,6 +94,14 @@ export default {
                 } catch (error) {
                     errorUtils.showError(error, "Get resource route");
                 }
+            }
+        },
+        fileChange(file) {
+            let reader = new FileReader();
+            reader.readAsBinaryString(file);
+            reader.onload = () => {
+                let data = reader.result;
+                this.$data.fileData = data;
             }
         }
     }

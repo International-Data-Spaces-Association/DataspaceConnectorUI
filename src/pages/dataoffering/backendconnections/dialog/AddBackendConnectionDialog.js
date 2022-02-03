@@ -12,11 +12,14 @@ export default {
             url: null,
             sourceType: "Database",
             sourceTypes: ["Database", "REST"],
+            driverClassName: null,
             username: null,
             password: null,
-            apiKey: null,
+            authHeaderName: null,
+            authHeaderValue: null,
             showPassword: false,
             valid: false,
+            requiredRule: validationUtils.getRequiredRule(),
             urlRule: validationUtils.getUrlRequiredRule()
         };
     },
@@ -37,9 +40,12 @@ export default {
             this.$data.currentEndpoint = null;
             this.$data.url = "";
             this.$data.sourceType = this.$data.sourceTypes[0];
+            this.$data.driverClassName = "";
             this.$data.username = "";
             this.$data.password = "";
-            this.$data.apiKey = "";
+            this.$data.authHeaderName = "";
+            this.$data.authHeaderValue = "";
+            this.$refs.form.resetValidation();
         },
         cancelBackendConnection() {
             this.$data.dialog = false;
@@ -50,12 +56,14 @@ export default {
                 this.$data.dialog = false;
                 try {
                     if (this.$data.active_tab == 0) {
-                        this.$data.apiKey = null;
+                        this.$data.authHeaderName = null;
+                        this.$data.authHeaderValue = null;
                     } else {
                         this.$data.username = null;
                         this.$data.password = null;
                     }
-                    await dataUtils.createGenericEndpoint(this.$data.url, this.$data.username, this.$data.password, this.$data.apiKey, this.$data.sourceType);
+                    await dataUtils.createGenericEndpoint(this.$data.url, this.$data.username, this.$data.password, this.$data.authHeaderName,
+                        this.$data.authHeaderValue, this.$data.sourceType.toUpperCase(), this.$data.driverClassName);
                 } catch (error) {
                     console.log("Error on saveBackendConnection(): ", error);
                     this.$root.$emit('error', "Create backend connection failed.");
@@ -78,10 +86,12 @@ export default {
             this.$data.title = "Edit Backend Connection"
             this.$data.currentEndpoint = endpoint;
             this.$data.url = endpoint.accessUrl;
-            this.$data.sourceType = (await dataUtils.getDataSource(endpoint.dataSourceId)).type;
+            let dataSource = await dataUtils.getDataSource(endpoint.dataSourceId);
+            this.$data.sourceType = dataSource.type;
             this.$data.username = endpoint.username;
             this.$data.password = endpoint.password;
-            this.$data.apiKey = endpoint.apiKey;
+            this.$data.authHeaderName = "";
+            this.$data.authHeaderValue = "";
             this.$data.dialog = true;
         }
     }
