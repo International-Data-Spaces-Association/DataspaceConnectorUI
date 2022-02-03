@@ -54,11 +54,6 @@ const IDS_PAYMENT_METHOD_TO_NAME = {
 };
 
 let languages = null;
-let connectorUrl = "https://localhost:8080"
-console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
-if (process.env.CONNECTOR_URL !== undefined) {
-    connectorUrl = process.env.CONNECTOR_URL;
-}
 
 export default {
     POLICY_PROVIDE_ACCESS,
@@ -633,7 +628,7 @@ export default {
     },
 
     async getConnectorAddress() {
-        return connectorUrl;
+        return await restUtils.callConnector("GET", "/connector/address");
     },
 
     async createConnectorEndpoint(artifactId) {
