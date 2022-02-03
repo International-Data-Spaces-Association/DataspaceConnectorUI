@@ -2,7 +2,9 @@
   <v-row no-gutters>
     <v-col cols="12" md="11">
       <v-form v-model="valid" ref="form">
-        <v-file-input label="File input" show-size @change="fileChange" :rules="defaultRule" v-if="!readonly">
+        <v-file-input label="File input" show-size @change="fileChange" :rules="defaultRule"
+          v-if="!readonly && !editMode"> </v-file-input>
+        <v-file-input label="File input" show-size @change="fileChange" v-if="editMode">
         </v-file-input>
         <v-text-field label="File type" v-model="filetype" :rules="defaultRule" :readonly="readonly"> </v-text-field>
       </v-form>

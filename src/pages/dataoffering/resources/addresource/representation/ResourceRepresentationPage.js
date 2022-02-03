@@ -4,7 +4,6 @@ import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 import validationUtils from "../../../../../utils/validationUtils";
-import clientDataModel from "../../../../../datamodel/clientDataModel";
 
 export default {
     components: {
@@ -32,7 +31,8 @@ export default {
             newBackendConnection: false,
             fileData: null,
             filetype: "",
-            hideBackendConnections: false
+            hideBackendConnections: false,
+            editMode: false
         };
     },
     watch: {
@@ -42,6 +42,7 @@ export default {
     },
     mounted: function () {
         this.getGenericEndpoints();
+        this.$data.editMode = false;
     },
     methods: {
         gotVisible() {
@@ -73,6 +74,8 @@ export default {
         },
         async loadResource(resource, hideBackendConnections) {
             this.$data.hideBackendConnections = hideBackendConnections;
+            this.$data.fileData = null;
+            this.$data.editMode = true;
             if (resource.fileType === undefined) {
                 this.$refs.form.reset();
             } else {
@@ -82,19 +85,6 @@ export default {
             }
 
             this.$data.selected = [];
-            if (!hideBackendConnections && resource.artifactId !== undefined && resource.artifactId != "") {
-                try {
-                    let route = await dataUtils.getRouteWithEnd(resource.artifactId);
-                    if (route != null) {
-                        let ge = route.start;
-                        let dataSource = ge.dataSource;
-                        this.$data.selected.push(clientDataModel.createGenericEndpoint(ge.id, ge.location, dataSource.type,
-                            dataSource.id, dataSource.authentication.username, dataSource.authentication.password, ge.type));
-                    }
-                } catch (error) {
-                    errorUtils.showError(error, "Get resource route");
-                }
-            }
         },
         fileChange(file) {
             let reader = new FileReader();

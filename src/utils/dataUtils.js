@@ -771,9 +771,6 @@ export default {
         let representationId = this.getIdOfConnectorResponse(response);
 
         response = await restUtils.callConnector("POST", "/api/artifacts", null, {
-            // "accessUrl": genericEndpoint.accessUrl,
-            // "username": genericEndpoint.username,
-            // "password": genericEndpoint.password
             "value": fileData
         });
         let artifactId = this.getIdOfConnectorResponse(response);
@@ -790,7 +787,7 @@ export default {
 
     async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
         keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
-        filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
+        filetype, brokerUris, brokerDeleteUris, fileData, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
                 "title": title,
@@ -846,23 +843,10 @@ export default {
                 "mediaType": filetype,
             });
 
-            await restUtils.callConnector("PUT", "/api/artifacts/" + artifactId, null, {
-                "accessUrl": genericEndpoint.accessUrl,
-                "username": genericEndpoint.username,
-                "password": genericEndpoint.password
-            });
-
-            let route = await this.getRouteWithEnd(artifactId);
-            if (route != null) {
-                let routeId = this.getIdOfConnectorResponse(route);
-                await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.id + "\"");
-            } else {
-                response = await this.createConnectorEndpoint(artifactId);
-                let endpointId = this.getIdOfConnectorResponse(response);
-                let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
-                let routeId = this.getIdOfConnectorResponse(response);
-                response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, endpointId, 220, 150, artifactId);
-                this.addRouteStartAndEnd(routeId, genericEndpoint.id, endpointId);
+            if (fileData != null) {
+                await restUtils.callConnector("PUT", "/api/artifacts/" + artifactId, null, {
+                    "value": fileData
+                });
             }
 
             await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
