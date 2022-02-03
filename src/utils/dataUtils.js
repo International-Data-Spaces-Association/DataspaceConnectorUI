@@ -54,11 +54,6 @@ const IDS_PAYMENT_METHOD_TO_NAME = {
 };
 
 let enums = null;
-let connectorUrl = "https://localhost:8080"
-console.log("CONNECTOR_URL", process.env.CONNECTOR_URL);
-if (process.env.CONNECTOR_URL !== undefined) {
-    connectorUrl = process.env.CONNECTOR_URL;
-}
 
 export default {
     POLICY_PROVIDE_ACCESS,
@@ -433,7 +428,7 @@ export default {
                 "title": title
             });
         } catch (error) {
-            errorUtils.showError(error, "Create broker");
+            errorUtils.showError(error, "Create app store");
         }
     },
 
@@ -645,7 +640,7 @@ export default {
     },
 
     async getConnectorAddress() {
-        return connectorUrl;
+        return await restUtils.callConnector("GET", "/connector/address");
     },
 
     async createConnectorEndpoint(artifactId) {
@@ -893,11 +888,14 @@ export default {
         let standardlicense = resource.standardlicense;
         let publisher = resource.publisher;
         let policyDescriptions = resource.policyDescriptions;
+        let contractPeriodFromValue = resource.contractPeriodFromValue;
+        let contractPeriodToValue = resource.contractPeriodToValue;
         let filetype = resource.fileType;
         let brokerUris = resource.brokerUris;
 
         try {
-            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, filetype, genericEndpoint);
+            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
+                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, genericEndpoint);
             await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, resourceResponse.endpointId, destinationNode.x, destinationNode.y, resourceResponse.artifactId);
             this.addRouteStartAndEnd(routeId, startId, resourceResponse.endpointId);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);

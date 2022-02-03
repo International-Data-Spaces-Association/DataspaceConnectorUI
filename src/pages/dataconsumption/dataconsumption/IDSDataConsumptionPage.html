@@ -21,12 +21,23 @@
                                     :sort-by.sync="sortBy" :sort-desc.sync="sortDesc"
                                     no-data-text="No resources available">
                                     <template @click="selectElement(item)" v-slot:item.actions="{ item }">
-                                        <v-icon class="mr-2" @click="showRepresentations(item)">
-                                            mdi-file-find
-                                        </v-icon>
-                                        <v-icon class="mr-2" @click="showItem(item)">
-                                            mdi-eye
-                                        </v-icon>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-icon class="mr-2" @click="showRepresentations(item)" v-bind="attrs"
+                                                    v-on="on">
+                                                    mdi-file-find
+                                                </v-icon>
+                                            </template>
+                                            <span>Show representations</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-icon class="mr-2" @click="showItem(item)" v-bind="attrs" v-on="on">
+                                                    mdi-eye
+                                                </v-icon>
+                                            </template>
+                                            <span>Show meta data</span>
+                                        </v-tooltip>
                                     </template>
                                 </v-data-table>
                             </div>
@@ -49,50 +60,15 @@
                     </div> -->
                             <v-data-table :headers="headersArtifacts" :items="selectedArtifacts" :items-per-page="5">
                                 <template v-slot:item.actions="{ item }">
-                                    <!-- <v-icon class="mr-2" @click="showContract(item)">
-                                    mdi-lock-open
-                                </v-icon> -->
-                                    <template>
-                                        <div class="text-center">
-                                            <v-dialog v-model="dialog" width="615">
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-icon class="mr-2" v-bind="attrs" v-on="on">
-                                                        mdi-lock-open
-                                                    </v-icon>
-                                                </template>
-
-                                                <v-card>
-                                                    <v-card-title class="text-h5 grey lighten-2">
-                                                        Contract information
-                                                    </v-card-title>
-
-                                                    <v-card-text>
-                                                        <h4 class="data-consumption-page-dialog-title">Rules:</h4>
-                                                        <policy-line
-                                                            v-for='rule in selectedResource["ids:contractOffer"][0]["ids:permission"]'
-                                                            :ruleJson="rule" :policyName="rule.type" :readonly=true>
-                                                        </policy-line>
-                                                        <h4 class="data-consumption-page-dialog-title">License:</h4>
-                                                        {{ selectedResource["ids:standardLicense"]["@id"] }}
-                                                    </v-card-text>
-
-                                                    <v-divider></v-divider>
-
-                                                    <v-card-actions>
-                                                        <v-spacer></v-spacer>
-                                                        <v-btn color="green" text
-                                                            @click="dialog = false; clickAcceptContract(item)">
-                                                            <p id="btn-accept">accept</p>
-                                                        </v-btn>
-
-                                                        <v-btn color="red" text @click="dialog = false">
-                                                            <p id="btn-decline">decline</p>
-                                                        </v-btn>
-                                                    </v-card-actions>
-                                                </v-card>
-                                            </v-dialog>
-                                        </div>
-                                    </template>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-icon class="mr-2" @click="requestArtifact(item)" v-bind="attrs"
+                                                v-on="on">
+                                                mdi-lock-open
+                                            </v-icon>
+                                        </template>
+                                        <span>Request artifact</span>
+                                    </v-tooltip>
                                 </template>
                             </v-data-table>
                         </div>
@@ -107,6 +83,7 @@
             </div>
             <div class="data-consumption-page-bottom"></div>
             <resource-details-dialog ref="resourceDetailsDialog"></resource-details-dialog>
+            <artifact-dialog ref="artifactDialog"></artifact-dialog>
         </v-tab-item>
         <v-tab-item :eager="true">
             <div>

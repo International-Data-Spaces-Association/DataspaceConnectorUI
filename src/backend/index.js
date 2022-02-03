@@ -161,17 +161,21 @@ app.post('/', (req, res) => {
             }
         });
     } else if (req.body.type == "GET") {
-        get(connectorUrl + call).then(response => {
-            res.send(response.data);
-        }).catch(error => {
-            if (error.response === undefined) {
-                console.log("Error on GET " + req.body.url, error);
-                res.send(stringifySafe(error));
-            } else {
-                console.log("Error on GET " + req.body.url, stringifySafe(error.response));
-                res.send(stringifySafe(error.response));
-            }
-        });
+        if (call == "/connector/address") {
+            res.send(connectorUrl);
+        } else {
+            get(connectorUrl + call).then(response => {
+                res.send(response.data);
+            }).catch(error => {
+                if (error.response === undefined) {
+                    console.log("Error on GET " + req.body.url, error);
+                    res.send(stringifySafe(error));
+                } else {
+                    console.log("Error on GET " + req.body.url, stringifySafe(error.response));
+                    res.send(stringifySafe(error.response));
+                }
+            });
+        }
     } else if (req.body.type == "DELETE") {
         del(connectorUrl + call, req.body.body).then(response => {
             res.send(response.data);
