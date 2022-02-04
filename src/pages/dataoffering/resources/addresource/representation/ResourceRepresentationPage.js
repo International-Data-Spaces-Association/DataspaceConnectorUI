@@ -75,7 +75,9 @@ export default {
         async loadResource(resource, hideBackendConnections) {
             this.$data.hideBackendConnections = hideBackendConnections;
             this.$data.fileData = null;
-            this.$data.editMode = true;
+            if (!this.readonly) {
+                this.$data.editMode = true;
+            }
             if (resource.fileType === undefined) {
                 this.$refs.form.reset();
             } else {

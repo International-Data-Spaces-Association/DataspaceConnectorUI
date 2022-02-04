@@ -223,8 +223,8 @@ export default {
             let contractId = this.getIdOfConnectorResponse(contract);
             let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
             for (let rule of rules) {
-                let name = await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value);
-                policyNames.push(name.value);
+                let name = await this.getPolicyNameByPattern(rule.value);
+                policyNames.push(name);
                 ruleIds.push(this.getIdOfConnectorResponse(rule));
                 ruleJsons.push(JSON.parse(rule.value));
             }
@@ -249,19 +249,11 @@ export default {
     async getRequestedResource(resourceId) {
         let resource = await restUtils.callConnector("GET", "/api/requests/" + resourceId);
         let policyNames = [];
+        let contractPeriodFromValue = undefined;
+        let contractPeriodToValue = undefined;
         let ruleIds = [];
         let ruleJsons = [];
-        let contracts = (await restUtils.callConnector("GET", "/api/requests/" + resourceId + "/contracts"))["_embedded"].contracts;
-        if (contracts.length > 0) {
-            let contract = contracts[0];
-            let contractId = this.getIdOfConnectorResponse(contract);
-            let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
-            for (let rule of rules) {
-                policyNames.push(await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
-                ruleIds.push(this.getIdOfConnectorResponse(rule));
-                ruleJsons.push(JSON.parse(rule.value));
-            }
-        }
+
         let representations = (await restUtils.callConnector("GET", "/api/requests/" + resourceId + "/representations"))["_embedded"].representations;
         let representation = undefined;
         let artifactId = undefined;
@@ -273,11 +265,12 @@ export default {
                 artifactId = this.getIdOfConnectorResponse(artifacts[0]);
             }
         }
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId);
+
+        return clientDataModel.convertIdsResource(resource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
     },
 
     async getPolicyNameByPattern(pattern) {
-        return await restUtils.callConnector("POST", "/api/examples/validation", null, pattern);
+        return (await restUtils.callConnector("POST", "/api/examples/validation", null, pattern)).value;
     },
 
     async getArtifactAgreements(artifactId) {
@@ -1044,11 +1037,11 @@ export default {
             "maintainer": maintainer,
             "logLevel": loglevel,
             "deployMode": deployMode,
-            "truststoreSettings": {
+            "truststore": {
                 "location": trustStoreUrl
             },
-            "proxySettings": proxySettings,
-            "keystoreSettings": {
+            "proxy": proxySettings,
+            "keystore": {
                 "location": keyStoreUrl
             }
         };

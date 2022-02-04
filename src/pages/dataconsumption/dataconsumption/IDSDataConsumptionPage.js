@@ -240,7 +240,12 @@ export default {
                     }
                     this.$data.selectedResource = idsResource;
                     for (let ruleJson of this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"]) {
-                        ruleJson.type = (await dataUtils.getPolicyNameByPattern(ruleJson)).value;
+                        ruleJson["@context"] = {
+                            "xsd": "http://www.w3.org/2001/XMLSchema#",
+                            "ids": "https://w3id.org/idsa/core/",
+                            "idsc": "https://w3id.org/idsa/code/"
+                        };
+                        ruleJson.type = await dataUtils.getPolicyNameByPattern(JSON.stringify(ruleJson));
                     }
                 }
             }
