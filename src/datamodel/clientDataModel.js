@@ -282,7 +282,7 @@ export default {
         let id = dataUtils.getIdOfConnectorResponse(genericEndpoint);
         let accessUrl = undefined;
         accessUrl = genericEndpoint.location;
-        let dataSourceId = dataUtils.getIdOfLink(genericEndpoint, "dataSource");
+        let dataSourceId = dataUtils.getIdOfLink(genericEndpoint, "datasource");
         let username = undefined;
         let password = undefined;
         let apiKey = undefined;

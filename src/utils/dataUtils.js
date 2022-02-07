@@ -53,7 +53,7 @@ const IDS_PAYMENT_METHOD_TO_NAME = {
     "https://w3id.org/idsa/code/UNDEFINED": "undefined"
 };
 
-let languages = null;
+let enums = null;
 
 export default {
     POLICY_PROVIDE_ACCESS,
@@ -223,7 +223,8 @@ export default {
             let contractId = this.getIdOfConnectorResponse(contract);
             let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
             for (let rule of rules) {
-                policyNames.push(await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
+                let name = await this.getPolicyNameByPattern(rule.value);
+                policyNames.push(name);
                 ruleIds.push(this.getIdOfConnectorResponse(rule));
                 ruleJsons.push(JSON.parse(rule.value));
             }
@@ -248,19 +249,11 @@ export default {
     async getRequestedResource(resourceId) {
         let resource = await restUtils.callConnector("GET", "/api/requests/" + resourceId);
         let policyNames = [];
+        let contractPeriodFromValue = undefined;
+        let contractPeriodToValue = undefined;
         let ruleIds = [];
         let ruleJsons = [];
-        let contracts = (await restUtils.callConnector("GET", "/api/requests/" + resourceId + "/contracts"))["_embedded"].contracts;
-        if (contracts.length > 0) {
-            let contract = contracts[0];
-            let contractId = this.getIdOfConnectorResponse(contract);
-            let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
-            for (let rule of rules) {
-                policyNames.push(await restUtils.callConnector("POST", "/api/examples/validation", null, rule.value));
-                ruleIds.push(this.getIdOfConnectorResponse(rule));
-                ruleJsons.push(JSON.parse(rule.value));
-            }
-        }
+
         let representations = (await restUtils.callConnector("GET", "/api/requests/" + resourceId + "/representations"))["_embedded"].representations;
         let representation = undefined;
         let artifactId = undefined;
@@ -272,11 +265,12 @@ export default {
                 artifactId = this.getIdOfConnectorResponse(artifacts[0]);
             }
         }
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, ruleIds, ruleJsons, artifactId);
+
+        return clientDataModel.convertIdsResource(resource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
     },
 
     async getPolicyNameByPattern(pattern) {
-        return await restUtils.callConnector("POST", "/api/examples/validation", null, pattern);
+        return (await restUtils.callConnector("POST", "/api/examples/validation", null, pattern)).value;
     },
 
     async getArtifactAgreements(artifactId) {
@@ -287,21 +281,23 @@ export default {
         return (await restUtils.callConnector("GET", "/api/agreements/" + agreementId + "/artifacts"))["_embedded"].artifacts;
     },
 
-    async getLanguages() {
-        if (languages == null) {
-            let languages = (await restUtils.callConnector("GET", "/api/configmanager/enum/Language"));
-            return languages;
-        } else {
-            return languages;
+    async getEnums() {
+        if (enums == null) {
+            enums = await restUtils.callConnector("GET", "/api/utils/enums");
         }
+        return enums;
+    },
+
+    async getLanguages() {
+        return (await this.getEnums())["LANGUAGE"];
     },
 
     async getPaymentMethods() {
-        return await restUtils.callConnector("GET", "/api/configmanager/enum/paymentmethod");
+        return (await this.getEnums())["PAYMENT_METHOD"];
     },
 
     async getSecurityProfiles() {
-        return await restUtils.callConnector("GET", "/api/configmanager/enum/securityprofile");
+        return (await this.getEnums())["SECURITY_PROFILE"];
     },
 
     async registerConnectorAtBroker(brokerUri) {
@@ -492,47 +488,73 @@ export default {
         return genericEndpoints;
     },
 
-    async createGenericEndpoint(url, username, password, apiKey, sourceType) {
+    async createGenericEndpoint(url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName) {
         let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
             "location": url,
             "type": "GENERIC"
         });
         let genericEndpointId = this.getIdOfConnectorResponse(response);
 
-        let authentication = null;
+        let bodyData = null;
         if (username != null) {
-            authentication = {
-                "key": username,
-                "value": password
+            bodyData = {
+                "basicAuth": {
+                    "key": username,
+                    "value": password
+                },
+                "type": sourceType,
+                "url": url
             };
         } else {
-            authentication = {
-                "value": apiKey
+            bodyData = {
+                "apiKey": {
+                    "key": authHeaderName,
+                    "value": authHeaderValue
+                },
+                "type": sourceType,
+                "url": url
             };
         }
-        response = await restUtils.callConnector("POST", "/api/datasources", null, {
-            "authentication": authentication,
-            "type": sourceType
-        });
+        if (sourceType == "DATABASE") {
+            bodyData.driverClassName = driverClassName;
+        }
+        response = await restUtils.callConnector("POST", "/api/datasources", null, bodyData);
         let dataSourceId = this.getIdOfConnectorResponse(response);
 
         // dataSourceId is needed with double quotes at start and end for this API call
         await restUtils.callConnector("PUT", "/api/endpoints/" + genericEndpointId + "/datasource/" + dataSourceId);
     },
 
-    async updateGenericEndpoint(id, dataSourceId, url, username, password, sourceType) {
+    async updateGenericEndpoint(id, dataSourceId, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName) {
         await restUtils.callConnector("PUT", "/api/endpoints/" + id, null, {
             "location": url,
             "type": "GENERIC"
         });
 
-        await restUtils.callConnector("PUT", "/api/datasources/" + dataSourceId, null, {
-            "authentication": {
-                "key": username,
-                "value": password
-            },
-            "type": sourceType
-        });
+        let bodyData = null;
+        if (username != null) {
+            bodyData = {
+                "basicAuth": {
+                    "key": username,
+                    "value": password
+                },
+                "type": sourceType,
+                "url": url
+            };
+        } else {
+            bodyData = {
+                "apiKey": {
+                    "key": authHeaderName,
+                    "value": authHeaderValue
+                },
+                "type": sourceType,
+                "url": url
+            };
+        }
+        if (sourceType == "DATABASE") {
+            bodyData.driverClassName = driverClassName;
+        }
+        await restUtils.callConnector("PUT", "/api/datasources/" + dataSourceId, null, bodyData);
     },
 
     async deleteGenericEndpoint(id, dataSourceId) {
@@ -702,26 +724,19 @@ export default {
         }
     },
 
-    async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
-        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, genericEndpoint) {
+    async createResourceAndUpdateAtBroker(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
+        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, fileData) {
         try {
             let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, genericEndpoint);
-            let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
-            let routeId = this.getIdOfConnectorResponse(response);
-            response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, resourceResponse.endpointId, 220, 150, resourceResponse.artifactId);
-
-            this.addRouteStartAndEnd(routeId, genericEndpoint.id, resourceResponse.endpointId);
-
+                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, fileData);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
-
         } catch (error) {
             errorUtils.showError(error, "Save resource");
         }
     },
 
     async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
-        contractPeriodFromValue, contractPeriodToValue, filetype) {
+        contractPeriodFromValue, contractPeriodToValue, filetype, fileData) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
             "title": title,
@@ -761,10 +776,7 @@ export default {
         let representationId = this.getIdOfConnectorResponse(response);
 
         response = await restUtils.callConnector("POST", "/api/artifacts", null, {
-            // "accessUrl": genericEndpoint.accessUrl,
-            // "username": genericEndpoint.username,
-            // "password": genericEndpoint.password
-            "value": ""
+            "value": fileData
         });
         let artifactId = this.getIdOfConnectorResponse(response);
 
@@ -772,18 +784,15 @@ export default {
 
         response = await restUtils.callConnector("POST", "/api/representations/" + representationId + "/artifacts", null, [artifactId]);
 
-        response = await this.createConnectorEndpoint(artifactId);
-        let endpointId = this.getIdOfConnectorResponse(response);
         return {
             "resourceId": resourceId,
-            "artifactId": artifactId,
-            "endpointId": endpointId
+            "artifactId": artifactId
         };
     },
 
     async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
         keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
-        filetype, brokerUris, brokerDeleteUris, genericEndpoint, ruleId, artifactId) {
+        filetype, brokerUris, brokerDeleteUris, fileData, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
                 "title": title,
@@ -839,23 +848,10 @@ export default {
                 "mediaType": filetype,
             });
 
-            await restUtils.callConnector("PUT", "/api/artifacts/" + artifactId, null, {
-                "accessUrl": genericEndpoint.accessUrl,
-                "username": genericEndpoint.username,
-                "password": genericEndpoint.password
-            });
-
-            let route = await this.getRouteWithEnd(artifactId);
-            if (route != null) {
-                let routeId = this.getIdOfConnectorResponse(route);
-                await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.id + "\"");
-            } else {
-                response = await this.createConnectorEndpoint(artifactId);
-                let endpointId = this.getIdOfConnectorResponse(response);
-                let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
-                let routeId = this.getIdOfConnectorResponse(response);
-                response = await this.createSubRoute(routeId, genericEndpoint.id, 20, 150, endpointId, 220, 150, artifactId);
-                this.addRouteStartAndEnd(routeId, genericEndpoint.id, endpointId);
+            if (fileData != null) {
+                await restUtils.callConnector("PUT", "/api/artifacts/" + artifactId, null, {
+                    "value": fileData
+                });
             }
 
             await this.updateResourceBrokerRegistration(brokerUris, brokerDeleteUris, resourceId);
@@ -1000,14 +996,11 @@ export default {
     },
 
     async getDeployMethods() {
-        let response = await restUtils.callConnector("GET", "/api/configmanager/enum/deployMethod");
-        return response;
-
+        return (await this.getEnums())["DEPLOY_METHOD"];
     },
 
     async getLogLevels() {
-        let response = await restUtils.callConnector("GET", "/api/configmanager/enum/logLevel");
-        return response;
+        return (await this.getEnums())["LOG_LEVEL"];
     },
 
     async getConnectorConfiguration() {
@@ -1044,11 +1037,11 @@ export default {
             "maintainer": maintainer,
             "logLevel": loglevel,
             "deployMode": deployMode,
-            "truststoreSettings": {
+            "truststore": {
                 "location": trustStoreUrl
             },
-            "proxySettings": proxySettings,
-            "keystoreSettings": {
+            "proxy": proxySettings,
+            "keystore": {
                 "location": keyStoreUrl
             }
         };
@@ -1066,8 +1059,7 @@ export default {
     },
 
     async getConnectorDeployModes() {
-        let response = await restUtils.callConnector("GET", "/api/configmanager/enum/connectorDeployMode");
-        return response;
+        return (await this.getEnums())["CONNECTOR_DEPLOY_MODE"];
     },
 
     async searchResources(brokerUri, search) {

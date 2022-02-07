@@ -52,6 +52,7 @@ export default {
                             "ruleJson": resource.ruleJsons[i],
                             "policyName": resource.policyNames[i]
                         };
+
                         this.$data.policyLines.push(policyLine);
                     }
                 } else if (resource.policyDescriptions !== undefined) {
@@ -72,6 +73,8 @@ export default {
             let agreements = await dataUtils.getArtifactAgreements(resource.artifactId);
             if (agreements.length > 0) {
                 let agreement = JSON.parse(agreements[0].value);
+                this.$data.contractPeriodFromValue = agreement["ids:contractStart"]["@value"].substring(0, 10);
+                this.$data.contractPeriodToValue = agreement["ids:contractEnd"]["@value"].substring(0, 10);
                 let i = 0;
                 for (let permission of agreement["ids:permission"]) {
                     permission["@context"] = {

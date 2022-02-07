@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [9.0.0] - 2022-02-07 (compatible with DSC 7.0.0)
+
+### Added
+- Data Offering: Add local file
+
+### Changes
+- Use new DSC v.7 API
+- Brokers / App Stores: On edit show URL as label (instead of textfield)
+
+### Fixes
+- Data Consumption: No validation on resource meta data dialog
+- Data Consumption: Show correct rules in contract dialog
+
 ## [8.8.1] - 2022-02-03 (compatible with DSC 6.5.3)
 
 ### Fixes

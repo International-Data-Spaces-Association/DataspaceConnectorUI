@@ -225,8 +225,8 @@ export default {
             }
         },
 
-        showRepresentations(item) {
-            this.$data.resources.forEach(element => {
+        async showRepresentations(item) {
+            for (let element of this.$data.resources) {
                 if (element.id == item.id) {
                     let idsResource = element.idsResource;
                     this.$data.selectedRepresentations = [];
@@ -240,12 +240,15 @@ export default {
                     }
                     this.$data.selectedResource = idsResource;
                     for (let ruleJson of this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"]) {
-                        let ruleDescription = ruleJson["ids:description"][0]["@value"];
-                        let ruleName = dataUtils.convertDescriptionToPolicyName(ruleDescription);
-                        ruleJson.type = dataUtils.convertPolicyNameToType(ruleName);
+                        ruleJson["@context"] = {
+                            "xsd": "http://www.w3.org/2001/XMLSchema#",
+                            "ids": "https://w3id.org/idsa/core/",
+                            "idsc": "https://w3id.org/idsa/code/"
+                        };
+                        ruleJson.type = await dataUtils.getPolicyNameByPattern(JSON.stringify(ruleJson));
                     }
                 }
-            });
+            }
             this.$data.selectedRepresentation = {};
             this.$data.selectedArtifacts = [];
             this.$data.selectedIdsArtifact = {};

@@ -15,9 +15,12 @@
             <v-form v-model="valid" ref="form">
                 <v-text-field ref="tfURL" label="URL" v-model="url" :rules="urlRule"> </v-text-field>
                 <v-select label="Source Type" v-model="sourceType" :items="sourceTypes"></v-select>
+                <v-text-field v-if="sourceType === 'Database'" label="Driver class name" v-model="driverClassName"
+                    :rules="requiredRule">
+                </v-text-field>
                 <v-tabs class="pagestab" v-model="active_tab" ref="pagestab">
                     <v-tab>Basic</v-tab>
-                    <v-tab>API-Key</v-tab>
+                    <v-tab v-if="sourceType === 'REST'">API-Key</v-tab>
                     <v-tab-item :eager="true">
                         <v-text-field label="Username" v-model="username"> </v-text-field>
                         <v-text-field label="Password" v-model="password" :type="showPassword ? 'text' : 'password'"
@@ -26,7 +29,8 @@
                         </v-text-field>
                     </v-tab-item>
                     <v-tab-item :eager="true">
-                        <v-text-field label="API-Key" v-model="apiKey"> </v-text-field>
+                        <v-text-field label="Header name" v-model="authHeaderName"> </v-text-field>
+                        <v-text-field label="Header value" v-model="authHeaderValue"> </v-text-field>
                     </v-tab-item>
                 </v-tabs>
 

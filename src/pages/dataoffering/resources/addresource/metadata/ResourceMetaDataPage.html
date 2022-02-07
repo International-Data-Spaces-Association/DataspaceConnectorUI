@@ -14,8 +14,8 @@
             <v-select label="Language" v-model="language" :items="languageItems" item-text="displayName"
                 item-value="originalName" readonly>
             </v-select>
-            <v-select label="Payment Modality" v-model="paymentMethod" :items="paymentMethods"
-                item-text="representation" item-value="displayName" readonly>
+            <v-select label="Payment Modality" v-model="paymentMethod" :items="paymentMethods" item-text="displayName"
+                item-value="jsonInput" readonly>
             </v-select>
             <v-btn color="primary" @click.native="nextPage" v-show="!onlyMetaData">
                 Next</v-btn>
@@ -34,8 +34,8 @@
             <v-select label="Language" v-model="language" :items="languageItems" item-text="displayName"
                 item-value="originalName" :rules="defaultRule" required>
             </v-select>
-            <v-select label="Payment Modality" v-model="paymentMethod" :items="paymentMethods"
-                item-text="representation" item-value="displayName" :rules="defaultRule" required>
+            <v-select label="Payment Modality" v-model="paymentMethod" :items="paymentMethods" item-text="displayName"
+                item-value="jsonInput" :rules="defaultRule" required>
             </v-select>
             <v-btn color="primary" @click.native="nextPage" :disabled="!valid" v-show="!onlyMetaData">
                 Next</v-btn>
