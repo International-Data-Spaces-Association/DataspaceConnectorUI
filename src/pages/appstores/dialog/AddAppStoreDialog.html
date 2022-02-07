@@ -13,7 +13,8 @@
 
             <v-card-text>
                 <v-text-field label="Title" v-model="appstoreTitle" :rules="defaultRule"> </v-text-field>
-                <v-text-field label="URL" v-model="url" :rules="urlRule" :readonly="urlReadOnly">
+                <p v-if="urlReadOnly">URL: {{url}}</p>
+                <v-text-field label="URL" v-model="url" :rules="urlRule" :readonly="urlReadOnly" v-if="!urlReadOnly">
                 </v-text-field>
             </v-card-text>
 
