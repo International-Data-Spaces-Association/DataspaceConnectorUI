@@ -6,7 +6,8 @@
 
         <v-card-text>
             <h4 class="data-consumption-page-dialog-title">Rules:</h4>
-            <policy-line v-for='rule in rules' :ruleJson="rule" :policyName="rule.type" :readonly=true>
+            <policy-line v-for='rule in rules' :key="rule['@id']" :ruleJson="rule" :policyName="rule.type"
+                :readonly=true>
             </policy-line>
             <h4 class="data-consumption-page-dialog-title">License:</h4>
             {{ license }}

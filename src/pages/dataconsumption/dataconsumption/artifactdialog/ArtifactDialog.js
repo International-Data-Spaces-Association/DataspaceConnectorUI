@@ -16,11 +16,11 @@ export default {
     mounted: function () { },
     methods: {
         show(rules, license, artifact, callback) {
-            this.$data.dialog = true;
             this.$data.rules = rules;
             this.$data.license = license;
             this.$data.artifact = artifact;
             this.$data.callback = callback;
+            this.$data.dialog = true;
         },
         clickAcceptContract() {
             this.$data.dialog = false;
