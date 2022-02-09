@@ -477,10 +477,20 @@ export default {
     async getGenericEndpoints() {
         let genericEndpoints = [];
         let idsEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.endpoints;
+        let dataSources = (await restUtils.callConnector("GET", "/api/datasources"))._embedded.datasources;
         if (idsEndpoints !== undefined) {
             for (let idsEndpoint of idsEndpoints) {
                 if (idsEndpoint.type == "GENERIC") {
-                    genericEndpoints.push(clientDataModel.convertIdsGenericEndpoint(idsEndpoint));
+                    let dataSource = null;
+                    let datasourceId = this.getIdOfLink(idsEndpoint, "datasource");
+                    for (let ds of dataSources) {
+                        if (ds.id == datasourceId) {
+                            dataSource = ds;
+                        }
+                    }
+                    let endpoint = clientDataModel.convertIdsGenericEndpoint(idsEndpoint, dataSource);
+                    endpoint.dataSource = dataSource;
+                    genericEndpoints.push(endpoint);
                 }
             }
         }
@@ -488,9 +498,13 @@ export default {
         return genericEndpoints;
     },
 
-    async createGenericEndpoint(url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName) {
+    async createGenericEndpoint(url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
+        let location = url;
+        if (sourceType == "DATABASE") {
+            location = camelSqlUri;
+        }
         let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
-            "location": url,
+            "location": location,
             "type": "GENERIC"
         });
         let genericEndpointId = this.getIdOfConnectorResponse(response);
@@ -502,8 +516,7 @@ export default {
                     "key": username,
                     "value": password
                 },
-                "type": sourceType,
-                "url": url
+                "type": sourceType
             };
         } else {
             bodyData = {
@@ -511,11 +524,11 @@ export default {
                     "key": authHeaderName,
                     "value": authHeaderValue
                 },
-                "type": sourceType,
-                "url": url
+                "type": sourceType
             };
         }
         if (sourceType == "DATABASE") {
+            bodyData.url = url;
             bodyData.driverClassName = driverClassName;
         }
         response = await restUtils.callConnector("POST", "/api/datasources", null, bodyData);
@@ -525,9 +538,13 @@ export default {
         await restUtils.callConnector("PUT", "/api/endpoints/" + genericEndpointId + "/datasource/" + dataSourceId);
     },
 
-    async updateGenericEndpoint(id, dataSourceId, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName) {
+    async updateGenericEndpoint(id, dataSourceId, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
+        let location = url;
+        if (sourceType == "DATABASE") {
+            location = camelSqlUri;
+        }
         await restUtils.callConnector("PUT", "/api/endpoints/" + id, null, {
-            "location": url,
+            "location": location,
             "type": "GENERIC"
         });
 
@@ -552,6 +569,7 @@ export default {
             };
         }
         if (sourceType == "DATABASE") {
+            bodyData.url = url;
             bodyData.driverClassName = driverClassName;
         }
         await restUtils.callConnector("PUT", "/api/datasources/" + dataSourceId, null, bodyData);
@@ -607,7 +625,17 @@ export default {
 
     async getGenericEndpoint(id) {
         let idsGenericEndpoint = await await restUtils.callConnector("GET", "/api/endpoints/" + id);
-        return clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint);
+        let dataSources = (await restUtils.callConnector("GET", "/api/datasources"))._embedded.datasources;
+        let dataSource = null;
+        let datasourceId = this.getIdOfLink(idsGenericEndpoint, "datasource");
+        for (let ds of dataSources) {
+            if (ds.id == datasourceId) {
+                dataSource = ds;
+            }
+        }
+        let endpoint = clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint, dataSource);
+        endpoint.dataSource = dataSource;
+        return endpoint;
     },
 
     getAppIdOfEndpointId() {

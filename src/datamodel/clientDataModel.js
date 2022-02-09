@@ -230,7 +230,7 @@ export default {
         return configuration;
     },
 
-    createGenericEndpoint(id, accessUrl, dataSourceId, username, password, apiKey, type) {
+    createGenericEndpoint(id, accessUrl, username, password, apiKey, type, driverClassName, camelSqlUri) {
         let genericEndpoint = {};
 
         if (id === undefined) {
@@ -243,12 +243,6 @@ export default {
             genericEndpoint.accessUrl = "";
         } else {
             genericEndpoint.accessUrl = accessUrl;
-        }
-
-        if (dataSourceId === undefined) {
-            genericEndpoint.dataSourceId = "";
-        } else {
-            genericEndpoint.dataSourceId = dataSourceId;
         }
 
         if (username === undefined) {
@@ -275,18 +269,38 @@ export default {
             genericEndpoint.type = type;
         }
 
+        if (driverClassName === undefined) {
+            genericEndpoint.driverClassName = "";
+        } else {
+            genericEndpoint.driverClassName = driverClassName;
+        }
+
+        if (camelSqlUri === undefined) {
+            genericEndpoint.camelSqlUri = "";
+        } else {
+            genericEndpoint.camelSqlUri = camelSqlUri;
+        }
+
         return genericEndpoint;
     },
 
-    convertIdsGenericEndpoint(genericEndpoint) {
+    convertIdsGenericEndpoint(genericEndpoint, dataSource) {
         let id = dataUtils.getIdOfConnectorResponse(genericEndpoint);
         let accessUrl = undefined;
-        accessUrl = genericEndpoint.location;
-        let dataSourceId = dataUtils.getIdOfLink(genericEndpoint, "datasource");
+        let driverClassName = undefined;
+        let camelSqlUri = undefined;
+        if (dataSource.type == "REST") {
+            accessUrl = genericEndpoint.location;
+        } else {
+            // TODO get from data source when API is changed.
+            accessUrl = "#TODO#";
+            driverClassName = "#TODO#";
+            camelSqlUri = genericEndpoint.location;
+        }
         let username = undefined;
         let password = undefined;
         let apiKey = undefined;
-        return this.createGenericEndpoint(id, accessUrl, dataSourceId, username, password, apiKey, genericEndpoint.type);
+        return this.createGenericEndpoint(id, accessUrl, username, password, apiKey, genericEndpoint.type, driverClassName, camelSqlUri);
     },
 
     createApp(id, title, description, type) {
