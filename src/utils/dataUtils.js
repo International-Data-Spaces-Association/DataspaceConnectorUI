@@ -489,6 +489,7 @@ export default {
                         }
                     }
                     let endpoint = clientDataModel.convertIdsGenericEndpoint(idsEndpoint, dataSource);
+                    endpoint.selfLink = idsEndpoint._links.self.href;
                     endpoint.dataSource = dataSource;
                     genericEndpoints.push(endpoint);
                 }
@@ -752,11 +753,18 @@ export default {
         }
     },
 
-    async createResourceAndUpdateAtBroker(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
-        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, fileData) {
+    async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
+        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, fileData, genericEndpoint) {
         try {
+            let routeSelfLink = null;
+            if (genericEndpoint != null) {
+                let response = await this.createNewRoute(this.getCurrentDate() + " - " + title);
+                let routeId = this.getIdOfConnectorResponse(response);
+                routeSelfLink = response._links.self.href;
+                await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.selfLink + "\"");
+            }
             let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, fileData);
+                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, fileData, routeSelfLink);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
         } catch (error) {
             errorUtils.showError(error, "Save resource");
@@ -764,7 +772,7 @@ export default {
     },
 
     async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
-        contractPeriodFromValue, contractPeriodToValue, filetype, fileData) {
+        contractPeriodFromValue, contractPeriodToValue, filetype, fileData, routeSelfLink) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
             "title": title,
@@ -803,9 +811,15 @@ export default {
         });
         let representationId = this.getIdOfConnectorResponse(response);
 
-        response = await restUtils.callConnector("POST", "/api/artifacts", null, {
-            "value": fileData
-        });
+        if (fileData != null) {
+            response = await restUtils.callConnector("POST", "/api/artifacts", null, {
+                "value": fileData
+            });
+        } else if (routeSelfLink != null) {
+            response = await restUtils.callConnector("POST", "/api/artifacts", null, {
+                "accessUrl": routeSelfLink
+            });
+        }
         let artifactId = this.getIdOfConnectorResponse(response);
 
         response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/representations", null, [representationId]);

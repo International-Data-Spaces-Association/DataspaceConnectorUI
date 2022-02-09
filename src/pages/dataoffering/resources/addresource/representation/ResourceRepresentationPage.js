@@ -23,21 +23,26 @@ export default {
             sourceType: "",
             sourceTypeItems: [],
             selected: [],
-            valid: false,
+            validLocal: false,
+            validRemote: false,
             defaultRule: validationUtils.getRequiredRule(),
             numberRule: validationUtils.getNumberRequiredRule(),
-            allValid: false,
+            allValidRemote: false,
             readonly: false,
             newBackendConnection: false,
             fileData: null,
             filetype: "",
             hideBackendConnections: false,
-            editMode: false
+            editMode: false,
+            active_tab: 0
         };
     },
     watch: {
-        valid: function () {
-            this.$data.allValid = this.$data.valid;
+        validRemote: function () {
+            this.$data.allValidRemote = this.$data.validRemote && (this.fromRoutePage == 'true' || this.$data.selected.length > 0);
+        },
+        selected: function () {
+            this.$data.allValidRemote = this.$data.validRemote && (this.fromRoutePage == 'true' || this.$data.selected.length > 0);
         }
     },
     mounted: function () {
@@ -95,6 +100,9 @@ export default {
                 let data = reader.result;
                 this.$data.fileData = data;
             }
+        },
+        isLocal() {
+            return this.$data.active_tab == 0;
         }
     }
 };

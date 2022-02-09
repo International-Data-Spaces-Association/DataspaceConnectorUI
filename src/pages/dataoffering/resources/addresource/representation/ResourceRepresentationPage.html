@@ -1,17 +1,60 @@
 <div>
   <v-row no-gutters>
     <v-col cols="12" md="11">
-      <v-form v-model="valid" ref="form">
-        <v-file-input label="File input" show-size @change="fileChange" :rules="defaultRule"
-          v-if="!readonly && !editMode"> </v-file-input>
-        <v-file-input label="File input" show-size @change="fileChange" v-if="editMode">
-        </v-file-input>
-        <v-text-field label="File type" v-model="filetype" :rules="defaultRule" :readonly="readonly"> </v-text-field>
-      </v-form>
-
+      <v-tabs class="pagestab" v-model="active_tab" ref="pagestab">
+        <v-tab>Local data</v-tab>
+        <v-tab>Remote data</v-tab>
+        <v-tab-item :eager="true">
+          <v-form v-model="validLocal" ref="form">
+            <v-file-input label="File input" show-size @change="fileChange" :rules="defaultRule"
+              v-if="!readonly && !editMode"> </v-file-input>
+            <v-file-input label="File input" show-size @change="fileChange" v-if="editMode">
+            </v-file-input>
+            <v-text-field label="File type" v-model="filetype" :rules="defaultRule" :readonly="readonly">
+            </v-text-field>
+          </v-form>
+          <v-btn color="primary" @click.native="previousPage" class="prev-page-button">Back</v-btn>
+          <v-btn color="primary" @click.native="nextPage" class="prev-page-button" :disabled="!readonly && !validLocal">
+            Next</v-btn>
+        </v-tab-item>
+        <v-tab-item :eager="true">
+          <div v-if="fromRoutePage === undefined && !hideBackendConnections"
+            style="height: min-content; border-style: dashed; margin-top: 20px; padding: 10px; color: #239b7e; margin-bottom: 30px;">
+            <v-row v-if="fromRoutePage === undefined && !readonly" no-gutters>
+              <v-col cols="12" md="6" sm="12">
+                <add-backend-connection-dialog ref="addBackendConnectionDialog"
+                  @backendConnectionSaved="backendConnectionSaved">
+                </add-backend-connection-dialog>
+                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details>
+                </v-text-field>
+              </v-col>
+            </v-row>
+            <v-row v-if="fromRoutePage === undefined && !readonly" no-gutters>
+              <v-col cols="12" md="11" sm="12">
+                <v-data-table v-model="selected" :headers="headers" :items="backendConnections" :items-per-page="5"
+                  :search="search" show-select :single-select=true item-key="id"
+                  no-data-text="No backend connections available">
+                </v-data-table>
+              </v-col>
+            </v-row>
+            <v-row v-if="fromRoutePage === undefined && readonly" no-gutters>
+              <v-col cols="12" md="11" sm="12">
+                <v-data-table :headers="headers" :items="selected" :items-per-page="5" :search="search"
+                  :single-select=true item-key="id" no-data-text="No backend connections set">
+                </v-data-table>
+              </v-col>
+            </v-row>
+          </div>
+          <v-form v-model="validRemote" ref="formRemote">
+            <v-text-field label="File type" v-model="filetype" :rules="defaultRule" :readonly="readonly">
+            </v-text-field>
+          </v-form>
+          <v-btn color="primary" @click.native="previousPage" class="prev-page-button">Back</v-btn>
+          <v-btn color="primary" @click.native="nextPage" class="prev-page-button"
+            :disabled="!readonly && !allValidRemote">
+            Next</v-btn>
+        </v-tab-item>
+      </v-tabs>
     </v-col>
   </v-row>
-  <v-btn color="primary" @click.native="previousPage" class="prev-page-button">Back</v-btn>
-  <v-btn color="primary" @click.native="nextPage" class="prev-page-button" :disabled="!readonly && !allValid">Next
-  </v-btn>
 </div>

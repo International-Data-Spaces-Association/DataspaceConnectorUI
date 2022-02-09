@@ -141,7 +141,15 @@ export default {
             let policyDescriptions = this.$refs.policyPage.getDescriptions();
             let contractPeriodFromValue = this.$refs.policyPage.getContractPeriodFromValue();
             let contractPeriodToValue = this.$refs.policyPage.getContractPeriodToValue();
-            let fileData = this.$refs.representationPage.fileData;
+            let fileData = null;
+            let genericEndpoint = null;
+            if (this.$refs.representationPage.isLocal()) {
+                fileData = this.$refs.representationPage.fileData;
+            } else {
+                if (this.$refs.representationPage.selected.length > 0) {
+                    genericEndpoint = this.$refs.representationPage.selected[0];
+                }
+            }
             let filetype = this.$refs.representationPage.filetype;
             let brokerList = this.$refs.brokersPage.getSelectedBrokerList()
             let brokerDeleteList = this.$refs.brokersPage.getBrokerDeleteList();
@@ -156,8 +164,8 @@ export default {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$root.$emit('blockNavigationMenu', true);
                 if (this.$data.currentResource == null) {
-                    await dataUtils.createResourceAndUpdateAtBroker(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                        policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, brokerList, fileData);
+                    await dataUtils.createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
+                        policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, brokerList, fileData, genericEndpoint);
                     this.$router.push('idsresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                     this.$root.$emit('blockNavigationMenu', false);
