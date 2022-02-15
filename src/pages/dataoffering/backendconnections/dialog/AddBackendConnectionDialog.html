@@ -21,7 +21,7 @@
                 </v-text-field>
                 <v-text-field v-if="sourceType==='Database'" label="Camel SQL component URI (query)"
                     v-model="camelSqlUri"></v-text-field>
-                <v-tabs class="pagestab" v-model="active_tab" ref="pagestab">
+                <v-tabs class="pagestab" v-model="active_tab" ref="pagestab" hide-slider>
                     <v-tab>Basic</v-tab>
                     <v-tab v-if="sourceType === 'REST'">API-Key</v-tab>
                     <v-tab-item :eager="true">
