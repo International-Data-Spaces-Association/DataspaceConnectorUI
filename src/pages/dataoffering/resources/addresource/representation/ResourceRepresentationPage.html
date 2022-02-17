@@ -10,6 +10,16 @@
               v-if="!readonly && !editMode"> </v-file-input>
             <v-file-input label="File input" show-size @change="fileChange" v-if="editMode">
             </v-file-input>
+            <v-row v-if="readonly && file != null" no-gutters class="read-only-local-file">
+              <v-col cols="12" md="6" sm="12">
+                File: {{ file.name }}
+                <v-btn icon :href="file.link">
+                  <v-icon color="primary">
+                    mdi-download
+                  </v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
             <v-text-field label="File type" v-model="filetype" :rules="defaultRule" :readonly="readonly">
             </v-text-field>
           </v-form>

@@ -1,3 +1,7 @@
 .add-resource-page .resourcetypestab .v-slide-group {
     display: none;
 }
+
+.read-only-local-file {
+    margin-top: 10px;
+}

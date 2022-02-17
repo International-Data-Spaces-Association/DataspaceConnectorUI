@@ -4,6 +4,7 @@ import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 import validationUtils from "../../../../../utils/validationUtils";
+import clientDataModel from "../../../../../datamodel/clientDataModel";
 
 export default {
     components: {
@@ -30,7 +31,7 @@ export default {
             allValidRemote: false,
             readonly: false,
             newBackendConnection: false,
-            fileData: null,
+            file: null,
             filetype: "",
             hideBackendConnections: false,
             editMode: false,
@@ -79,7 +80,7 @@ export default {
         },
         async loadResource(resource, hideBackendConnections) {
             this.$data.hideBackendConnections = hideBackendConnections;
-            this.$data.fileData = null;
+            this.$data.file = null;
             if (!this.readonly) {
                 this.$data.editMode = true;
             }
@@ -92,13 +93,40 @@ export default {
             }
 
             this.$data.selected = [];
+            if (!hideBackendConnections && resource.artifactId !== undefined && resource.artifactId != "") {
+                try {
+                    let route = await dataUtils.getRouteOfArtifact(resource.artifactId);
+                    if (route == null) {
+                        this.$data.active_tab = 0;
+                        let artifact = await dataUtils.getArtifact(resource.artifactId);
+                        this.$data.file = {
+                            name: artifact.title,
+                            link: artifact._links.data.href
+                        }
+                    } else {
+                        this.$data.active_tab = 1;
+                        let ge = route.start;
+                        let dataSource = ge.dataSource;
+                        this.$data.selected.push(clientDataModel.createGenericEndpoint(ge.id, ge.location, dataSource.type,
+                            dataSource.id, dataSource.authentication.username, dataSource.authentication.password, ge.type));
+                    }
+                } catch (error) {
+                    errorUtils.showError(error, "Get resource route");
+                }
+            }
         },
         fileChange(file) {
             let reader = new FileReader();
             reader.readAsBinaryString(file);
             reader.onload = () => {
                 let data = reader.result;
-                this.$data.fileData = data;
+                this.$data.file = {
+                    name: file.name,
+                    data: data
+                };
+            }
+            if (file.name.lastIndexOf(".") != -1) {
+                this.$data.filetype = file.name.substring(file.name.lastIndexOf(".") + 1, file.name.length);
             }
         },
         isLocal() {

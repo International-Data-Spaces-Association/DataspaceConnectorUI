@@ -273,6 +273,10 @@ export default {
         return (await restUtils.callConnector("POST", "/api/examples/validation", null, pattern)).value;
     },
 
+    async getArtifact(artifactId) {
+        return await restUtils.callConnector("GET", "/api/artifacts/" + artifactId);
+    },
+
     async getArtifactAgreements(artifactId) {
         return (await restUtils.callConnector("GET", "/api/artifacts/" + artifactId + "/agreements"))["_embedded"].agreements;
     },
@@ -754,7 +758,7 @@ export default {
     },
 
     async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
-        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, fileData, genericEndpoint) {
+        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, file, genericEndpoint) {
         try {
             let routeSelfLink = null;
             if (genericEndpoint != null) {
@@ -764,7 +768,7 @@ export default {
                 await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.selfLink + "\"");
             }
             let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, fileData, routeSelfLink);
+                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
         } catch (error) {
             errorUtils.showError(error, "Save resource");
@@ -772,7 +776,7 @@ export default {
     },
 
     async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
-        contractPeriodFromValue, contractPeriodToValue, filetype, fileData, routeSelfLink) {
+        contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
             "title": title,
@@ -811,9 +815,10 @@ export default {
         });
         let representationId = this.getIdOfConnectorResponse(response);
 
-        if (fileData != null) {
+        if (file != null) {
             response = await restUtils.callConnector("POST", "/api/artifacts", null, {
-                "value": fileData
+                "title": file.name,
+                "value": file.data
             });
         } else if (routeSelfLink != null) {
             response = await restUtils.callConnector("POST", "/api/artifacts", null, {
@@ -834,7 +839,7 @@ export default {
 
     async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
         keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
-        filetype, brokerUris, brokerDeleteUris, fileData, ruleId, artifactId) {
+        filetype, brokerUris, brokerDeleteUris, file, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
                 "title": title,
@@ -890,9 +895,10 @@ export default {
                 "mediaType": filetype,
             });
 
-            if (fileData != null) {
+            if (file != null) {
                 await restUtils.callConnector("PUT", "/api/artifacts/" + artifactId, null, {
-                    "value": fileData
+                    "title": file.name,
+                    "value": file.data
                 });
             }
 
@@ -978,18 +984,12 @@ export default {
         return resource;
     },
 
-    async getRouteWithEnd(artifactId) {
-        let routeWithEnd = null;
-        let response = await this.getRoutes();
-        for (let route of response) {
-            if (route.end !== undefined && route.end != null) {
-                if (route.end.location.includes(artifactId)) {
-                    routeWithEnd = route;
-                    break;
-                }
-            }
+    async getRouteOfArtifact(artifactId) {
+        let route = await restUtils.callConnector("GET", "/api/artifacts/" + artifactId + "/route");
+        if (typeof route == "string") {
+            route = null;
         }
-        return routeWithEnd;
+        return route;
     },
 
     async getRouteErrors() {
