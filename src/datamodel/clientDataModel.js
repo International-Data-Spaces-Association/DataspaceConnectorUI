@@ -292,9 +292,8 @@ export default {
         if (dataSource.type == "REST") {
             accessUrl = genericEndpoint.location;
         } else {
-            // TODO get from data source when API is changed.
-            accessUrl = "#TODO#";
-            driverClassName = "#TODO#";
+            accessUrl = dataSource.url;
+            driverClassName = dataSource.driverClassName;
             camelSqlUri = genericEndpoint.location;
         }
         let username = undefined;
