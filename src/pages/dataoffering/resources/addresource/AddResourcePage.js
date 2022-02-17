@@ -172,7 +172,7 @@ export default {
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId, catalogIds, deletedCatalogIds,
                         title, description, language, paymentMethod, keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue,
-                        contractPeriodToValue, filetype, brokerList, brokerDeleteList, file, this.$data.currentResource.ruleId,
+                        contractPeriodToValue, filetype, brokerList, brokerDeleteList, file, genericEndpoint, this.$data.currentResource.ruleId,
                         this.$data.currentResource.artifactId);
                     this.$router.push('idsresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);

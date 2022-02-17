@@ -839,7 +839,7 @@ export default {
 
     async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
         keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
-        filetype, brokerUris, brokerDeleteUris, file, ruleId, artifactId) {
+        filetype, brokerUris, brokerDeleteUris, file, genericEndpoint, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
                 "title": title,
@@ -895,7 +895,11 @@ export default {
                 "mediaType": filetype,
             });
 
-            if (file != null) {
+            if (genericEndpoint != null) {
+                let route = await this.getRouteOfArtifact(artifactId);
+                let routeId = this.getIdOfConnectorResponse(route);
+                await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.selfLink + "\"");
+            } else if (file != null) {
                 await restUtils.callConnector("PUT", "/api/artifacts/" + artifactId, null, {
                     "title": file.name,
                     "value": file.data

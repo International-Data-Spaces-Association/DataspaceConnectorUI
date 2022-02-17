@@ -2,18 +2,21 @@
   <v-row no-gutters>
     <v-col cols="12" md="11">
       <v-tabs class="pagestab" v-model="active_tab" ref="pagestab" hide-slider>
-        <v-tab>Local data</v-tab>
-        <v-tab>Remote data</v-tab>
+        <v-tab :disabled="readonly || editMode">Local data</v-tab>
+        <v-tab :disabled="readonly || editMode">Remote data</v-tab>
         <v-tab-item :eager="true">
           <v-form v-model="validLocal" ref="form">
             <v-file-input label="File input" show-size @change="fileChange" :rules="defaultRule"
-              v-if="!readonly && !editMode"> </v-file-input>
-            <v-file-input label="File input" show-size @change="fileChange" v-if="editMode">
-            </v-file-input>
-            <v-row v-if="readonly && file != null" no-gutters class="read-only-local-file">
+              v-if="!readonly && editMode && loadedFile == null"> </v-file-input>
+            <v-row v-if="(readonly || editMode) && loadedFile != null" no-gutters class="read-only-local-file">
               <v-col cols="12" md="6" sm="12">
-                File: {{ file.name }}
-                <v-btn icon :href="file.link">
+                File: {{ loadedFile.name }}
+                <v-btn icon @click="editFile" v-if="editMode">
+                  <v-icon color="primary">
+                    mdi-pencil
+                  </v-icon>
+                </v-btn>
+                <v-btn icon :href="loadedFile.link">
                   <v-icon color="primary">
                     mdi-download
                   </v-icon>

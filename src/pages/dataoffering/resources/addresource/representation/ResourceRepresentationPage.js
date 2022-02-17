@@ -32,6 +32,7 @@ export default {
             readonly: false,
             newBackendConnection: false,
             file: null,
+            loadedFile: null,
             filetype: "",
             hideBackendConnections: false,
             editMode: false,
@@ -80,7 +81,7 @@ export default {
         },
         async loadResource(resource, hideBackendConnections) {
             this.$data.hideBackendConnections = hideBackendConnections;
-            this.$data.file = null;
+            this.$data.loadedFile = null;
             if (!this.readonly) {
                 this.$data.editMode = true;
             }
@@ -99,7 +100,7 @@ export default {
                     if (route == null) {
                         this.$data.active_tab = 0;
                         let artifact = await dataUtils.getArtifact(resource.artifactId);
-                        this.$data.file = {
+                        this.$data.loadedFile = {
                             name: artifact.title,
                             link: artifact._links.data.href
                         }
@@ -114,6 +115,9 @@ export default {
                     errorUtils.showError(error, "Get resource route");
                 }
             }
+        },
+        editFile() {
+            this.$data.loadedFile = null;
         },
         fileChange(file) {
             let reader = new FileReader();
