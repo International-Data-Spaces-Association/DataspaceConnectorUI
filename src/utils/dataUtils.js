@@ -481,7 +481,7 @@ export default {
     async getGenericEndpoints() {
         let genericEndpoints = [];
         let idsEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.endpoints;
-        let dataSources = (await restUtils.callConnector("GET", "/api/datasources"))._embedded.databaseDataSourceViewList;
+        let dataSources = (await restUtils.callConnector("GET", "/api/datasources"))._embedded.datasources;
         if (idsEndpoints !== undefined) {
             for (let idsEndpoint of idsEndpoints) {
                 if (idsEndpoint.type == "GENERIC") {
@@ -630,7 +630,7 @@ export default {
 
     async getGenericEndpoint(id) {
         let idsGenericEndpoint = await await restUtils.callConnector("GET", "/api/endpoints/" + id);
-        let dataSources = (await restUtils.callConnector("GET", "/api/datasources"))._embedded.databaseDataSourceViewList;
+        let dataSources = (await restUtils.callConnector("GET", "/api/datasources"))._embedded.datasources;
         let dataSource = null;
         let datasourceId = this.getIdOfLink(idsGenericEndpoint, "datasource");
         for (let ds of dataSources) {
