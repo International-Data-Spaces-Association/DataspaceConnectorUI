@@ -92,7 +92,14 @@ export default {
             this.$data.title = "Edit Backend Connection"
             this.$data.currentEndpoint = endpoint;
             this.$data.url = endpoint.accessUrl;
-            let dataSource = await dataUtils.getDataSource(endpoint.dataSource.id);
+            let dataSource;
+            if (endpoint.dataSource.id === undefined) {
+                dataSource = {
+                    "type": "Other"
+                }
+            } else {
+                dataSource = await dataUtils.getDataSource(endpoint.dataSource.id);
+            }
             this.$data.sourceType = dataSource.type;
             if (dataSource.type.toUpperCase() == "DATABASE") {
                 this.$data.driverClassName = endpoint.driverClassName;

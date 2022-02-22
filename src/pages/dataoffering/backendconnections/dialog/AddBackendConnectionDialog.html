@@ -17,7 +17,10 @@
                 <p v-if="editMode" class="abc-dialog-sourcetype-label">Source Type: {{ sourceType }}</p>
                 <p v-if="sourceType === 'Other'" class="abc-dialog-note">Note: Per default, only the HTTP and SQL
                     Camel component are present in the Dataspace Connector. In order to use any other Camel component,
-                    e.g. File, the dependency for that component has to be added to the pom.xml first!</p>
+                    e.g. File, the dependency for that component has to be added to the pom.xml first! <a
+                        href="https://international-data-spaces-association.github.io/DataspaceConnector/CommunicationGuide/v6/Camel"
+                        target="_blank">(See
+                        documentation)</a></p>
                 <v-text-field v-if="sourceType !== 'Other'" ref="tfURL" label="URL" v-model="url" :rules="urlRule">
                 </v-text-field>
                 <v-text-field v-if="sourceType === 'Other'" ref="tfURL" label="URL" v-model="url" :rules="requiredRule">

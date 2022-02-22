@@ -289,7 +289,7 @@ export default {
         let accessUrl = undefined;
         let driverClassName = undefined;
         let camelSqlUri = undefined;
-        if (dataSource.type == "REST") {
+        if (dataSource.type == "REST" || dataSource.type == "Other") {
             accessUrl = genericEndpoint.location;
         } else {
             accessUrl = dataSource.url;

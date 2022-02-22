@@ -486,10 +486,17 @@ export default {
             for (let idsEndpoint of idsEndpoints) {
                 if (idsEndpoint.type == "GENERIC") {
                     let dataSource = null;
-                    let datasourceId = this.getIdOfLink(idsEndpoint, "datasource");
-                    for (let ds of dataSources) {
-                        if (ds.id == datasourceId) {
-                            dataSource = ds;
+                    if (idsEndpoint._links["datasource"] === undefined) {
+                        dataSource = {
+                            "type": "Other"
+                        }
+                    } else {
+                        let datasourceId = this.getIdOfLink(idsEndpoint, "datasource");
+                        for (let ds of dataSources) {
+                            if (ds.id == datasourceId) {
+                                dataSource = ds;
+                                break;
+                            }
                         }
                     }
                     let endpoint = clientDataModel.convertIdsGenericEndpoint(idsEndpoint, dataSource);
@@ -536,11 +543,14 @@ export default {
             bodyData.url = url;
             bodyData.driverClassName = driverClassName;
         }
-        response = await restUtils.callConnector("POST", "/api/datasources", null, bodyData);
-        let dataSourceId = this.getIdOfConnectorResponse(response);
 
-        // dataSourceId is needed with double quotes at start and end for this API call
-        await restUtils.callConnector("PUT", "/api/endpoints/" + genericEndpointId + "/datasource/" + dataSourceId);
+        if (sourceType != "OTHER") {
+            response = await restUtils.callConnector("POST", "/api/datasources", null, bodyData);
+            let dataSourceId = this.getIdOfConnectorResponse(response);
+
+            // dataSourceId is needed with double quotes at start and end for this API call
+            await restUtils.callConnector("PUT", "/api/endpoints/" + genericEndpointId + "/datasource/" + dataSourceId);
+        }
     },
 
     async updateGenericEndpoint(id, dataSourceId, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
@@ -553,31 +563,33 @@ export default {
             "type": "GENERIC"
         });
 
-        let bodyData = null;
-        if (username != null) {
-            bodyData = {
-                "basicAuth": {
-                    "key": username,
-                    "value": password
-                },
-                "type": sourceType,
-                "url": url
-            };
-        } else {
-            bodyData = {
-                "apiKey": {
-                    "key": authHeaderName,
-                    "value": authHeaderValue
-                },
-                "type": sourceType,
-                "url": url
-            };
+        if (sourceType != "OTHER") {
+            let bodyData = null;
+            if (username != null) {
+                bodyData = {
+                    "basicAuth": {
+                        "key": username,
+                        "value": password
+                    },
+                    "type": sourceType,
+                    "url": url
+                };
+            } else {
+                bodyData = {
+                    "apiKey": {
+                        "key": authHeaderName,
+                        "value": authHeaderValue
+                    },
+                    "type": sourceType,
+                    "url": url
+                };
+            }
+            if (sourceType == "DATABASE") {
+                bodyData.url = url;
+                bodyData.driverClassName = driverClassName;
+            }
+            await restUtils.callConnector("PUT", "/api/datasources/" + dataSourceId, null, bodyData);
         }
-        if (sourceType == "DATABASE") {
-            bodyData.url = url;
-            bodyData.driverClassName = driverClassName;
-        }
-        await restUtils.callConnector("PUT", "/api/datasources/" + dataSourceId, null, bodyData);
     },
 
     async deleteGenericEndpoint(id, dataSourceId) {
