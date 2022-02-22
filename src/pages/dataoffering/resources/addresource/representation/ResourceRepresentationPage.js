@@ -131,6 +131,8 @@ export default {
             }
             if (file.name.lastIndexOf(".") != -1) {
                 this.$data.filetype = file.name.substring(file.name.lastIndexOf(".") + 1, file.name.length);
+            } else {
+                this.$data.filetype = "";
             }
         },
         isLocal() {

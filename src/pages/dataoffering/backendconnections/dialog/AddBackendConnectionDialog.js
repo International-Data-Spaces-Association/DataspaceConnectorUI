@@ -11,7 +11,7 @@ export default {
             title: "",
             url: null,
             sourceType: "Database",
-            sourceTypes: ["Database", "REST"],
+            sourceTypes: ["Database", "REST", "Other"],
             driverClassName: null,
             camelSqlUri: null,
             username: null,

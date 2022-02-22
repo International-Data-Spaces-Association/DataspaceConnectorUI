@@ -7,7 +7,7 @@
         <v-tab-item :eager="true">
           <v-form v-model="validLocal" ref="form">
             <v-file-input label="File input" show-size @change="fileChange" :rules="defaultRule"
-              v-if="!readonly && editMode && loadedFile == null"> </v-file-input>
+              v-if="!readonly && loadedFile == null"> </v-file-input>
             <v-row v-if="(readonly || editMode) && loadedFile != null" no-gutters class="read-only-local-file">
               <v-col cols="12" md="6" sm="12">
                 File: {{ loadedFile.name }}

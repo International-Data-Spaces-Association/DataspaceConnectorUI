@@ -15,13 +15,20 @@
             <v-form v-model="valid" ref="form">
                 <v-select label="Source Type" v-model="sourceType" :items="sourceTypes" v-if="!editMode"></v-select>
                 <p v-if="editMode" class="abc-dialog-sourcetype-label">Source Type: {{ sourceType }}</p>
-                <v-text-field ref="tfURL" label="URL" v-model="url" :rules="urlRule"> </v-text-field>
+                <p v-if="sourceType === 'Other'" class="abc-dialog-note">Note: Per default, only the HTTP and SQL
+                    Camel component are present in the Dataspace Connector. In order to use any other Camel component,
+                    e.g. File, the dependency for that component has to be added to the pom.xml first!</p>
+                <v-text-field v-if="sourceType !== 'Other'" ref="tfURL" label="URL" v-model="url" :rules="urlRule">
+                </v-text-field>
+                <v-text-field v-if="sourceType === 'Other'" ref="tfURL" label="URL" v-model="url" :rules="requiredRule">
+                </v-text-field>
                 <v-text-field v-if="sourceType === 'Database'" label="Driver class name" v-model="driverClassName"
                     :rules="requiredRule">
                 </v-text-field>
                 <v-text-field v-if="sourceType==='Database'" label="Camel SQL component URI (query)"
                     v-model="camelSqlUri"></v-text-field>
-                <v-tabs class="pagestab" v-model="active_tab" ref="pagestab" hide-slider>
+                <v-tabs class="pagestab" v-model="active_tab" ref="pagestab" hide-slider
+                    v-if="sourceType === 'Database' || sourceType === 'REST'">
                     <v-tab>Basic</v-tab>
                     <v-tab v-if="sourceType === 'REST'">API-Key</v-tab>
                     <v-tab-item :eager="true">
