@@ -128,7 +128,7 @@ app.post('/', (req, res) => {
     let call = req.body.url;
     let i = 0;
     for (let key in req.body.params) {
-        if (i == 0) {
+        if (i === 0) {
             call += "?" + key + "=" + escape(req.body.params[key]);
         } else {
             call += "&" + key + "=" + escape(req.body.params[key]);
