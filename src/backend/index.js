@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import axios from "axios";
 import https from "https";
-import fs from "fs";
 import bodyParser from "body-parser";
 import path from "path";
 
