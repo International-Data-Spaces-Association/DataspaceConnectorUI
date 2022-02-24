@@ -26,6 +26,7 @@ export default {
             selected: [],
             validLocal: false,
             validRemote: false,
+            validRoute: false,
             defaultRule: validationUtils.getRequiredRule(),
             numberRule: validationUtils.getNumberRequiredRule(),
             allValidRemote: false,

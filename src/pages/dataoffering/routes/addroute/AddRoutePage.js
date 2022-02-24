@@ -26,7 +26,9 @@ export default {
             description: "",
             saveMessage: "",
             isNewRoute: false,
-            routeValid: true
+            routeValid: true,
+            numOfBackendNodes: 0,
+            numOfIdsEndpointNodes: 0
         };
     },
     mounted: function () {
@@ -60,31 +62,41 @@ export default {
                 this.$data.currentRoute = route;
                 this.$data.description = route.description;
                 let routeSteps = await dataUtils.getRouteSteps(id);
-                for (let subRoute of routeSteps) {
-                    let subRouteId = dataUtils.getIdOfConnectorResponse(subRoute);
-                    let start = subRoute.start;
-                    let end = subRoute.end;
-                    let output = undefined;
-                    let outputs = await dataUtils.getRouteOutput(subRouteId);
-                    if (outputs.length > 0) {
-                        output = outputs[0];
+                let artifact = await dataUtils.getArtifactOfRoute(id);
+                if (routeSteps.length == 0) {
+                    await this.addNode(route.start, undefined, 20, 150);
+                    await this.addNode(undefined, artifact, 220, 150);
+                    let startNodeId = dataUtils.getNodeIdByObjectId(route.start.id, this.$refs.chart.internalNodes);
+                    let endNodeId = dataUtils.getNodeIdByObjectId(artifact.id, this.$refs.chart.internalNodes);
+                    let isLeftToRight = true;
+                    this.loadConnection(startNodeId, route.start.id, endNodeId, artifact.id, isLeftToRight);
+                } else {
+                    for (let subRoute of routeSteps) {
+                        let subRouteId = dataUtils.getIdOfConnectorResponse(subRoute);
+                        let start = subRoute.start;
+                        let end = subRoute.end;
+                        let output = undefined;
+                        let outputs = await dataUtils.getRouteOutput(subRouteId);
+                        if (outputs.length > 0) {
+                            output = outputs[0];
+                        }
+                        await this.addNode(start, output, parseInt(subRoute.additional.startCoordinateX),
+                            parseInt(subRoute.additional.startCoordinateY));
+                        await this.addNode(end, output, parseInt(subRoute.additional.endCoordinateX),
+                            parseInt(subRoute.additional.endCoordinateY));
+                        let startNodeObjectId = start.id;
+                        if (start.type == "APP") {
+                            // startNodeObjectId = dataUtils.getAppIdOfEndpointId(start.id);
+                        }
+                        let endNodeObjectId = end.id;
+                        if (end.type == "APP") {
+                            // endNodeObjectId = dataUtils.getAppIdOfEndpointId(end.id);
+                        }
+                        let startNodeId = dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
+                        let endNodeId = dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
+                        let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
+                        this.loadConnection(startNodeId, start.id, endNodeId, end.id, isLeftToRight);
                     }
-                    await this.addNode(start, output, parseInt(subRoute.additional.startCoordinateX),
-                        parseInt(subRoute.additional.startCoordinateY));
-                    await this.addNode(end, output, parseInt(subRoute.additional.endCoordinateX),
-                        parseInt(subRoute.additional.endCoordinateY));
-                    let startNodeObjectId = start.id;
-                    if (start.type == "APP") {
-                        // startNodeObjectId = dataUtils.getAppIdOfEndpointId(start.id);
-                    }
-                    let endNodeObjectId = end.id;
-                    if (end.type == "APP") {
-                        // endNodeObjectId = dataUtils.getAppIdOfEndpointId(end.id);
-                    }
-                    let startNodeId = dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
-                    let endNodeId = dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
-                    let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
-                    this.loadConnection(startNodeId, start.id, endNodeId, end.id, isLeftToRight);
                 }
             } catch (error) {
                 errorUtils.showError(error, "Get route");
@@ -94,7 +106,13 @@ export default {
 
         },
         async addNode(endpoint, output, x, y) {
-            if (endpoint.type == "GENERIC") {
+            if (endpoint === undefined) {
+                if (output !== undefined) {
+                    let artifactId = dataUtils.getIdOfConnectorResponse(output);
+                    let idsResource = await dataUtils.getResourceOfArtifact(artifactId);
+                    await this.addIdsEndpoint(output.id, x, y, dataUtils.getIdOfConnectorResponse(idsResource));
+                }
+            } else if (endpoint.type == "GENERIC") {
                 if (!this.nodeExists(endpoint.id)) {
                     await this.addBackend(endpoint.id, x, y);
                 }
@@ -103,12 +121,6 @@ export default {
                 // if (!this.nodeExists(appId)) {
                 //     await this.addApp(appId, x, y);
                 // }
-            } else if (endpoint.type == "CONNECTOR") {
-                if (!this.nodeExists(endpoint.id) && output !== undefined) {
-                    let artifactId = dataUtils.getIdOfConnectorResponse(output);
-                    let idsResource = await dataUtils.getResourceOfArtifact(artifactId);
-                    await this.addIdsEndpoint(endpoint.id, x, y, dataUtils.getIdOfConnectorResponse(idsResource));
-                }
             }
         },
         loadConnection(startNodeId, startEndpointId, endNodeId, endEndpointId, isLeftToRight) {
@@ -275,6 +287,7 @@ export default {
             this.addConnection(connection);
         },
         async handleChartSave(nodes, connections) {
+            let hasError = false;
             var connectionsCopy = [];
             for (var connection of connections) {
                 connectionsCopy.push(connection);
@@ -282,43 +295,64 @@ export default {
             try {
                 let response = await dataUtils.createNewRoute(this.$data.description);
                 let routeId = dataUtils.getIdOfConnectorResponse(response);
-                await this.saveRouteSteps(routeId, connections, nodes);
-            } catch (error) {
-                errorUtils.showError(error, "Save route");
-            }
-        },
-        async saveRouteSteps(routeId, connections, nodes) {
-            let error = false;
-            let genericEndpoint = null;
-            for (var connection of connections) {
-                var sourceNode = dataUtils.getNode(connection.source.id, nodes);
-                var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
+                let routeSelfLink = response._links.self.href;
 
+                var sourceNode = dataUtils.getNode(connections[0].source.id, nodes);
                 if (sourceNode.type == "backendnode") {
-                    genericEndpoint = sourceNode.genericEndpoint;
+                    let genericEndpoint = sourceNode.genericEndpoint;
+                    dataUtils.addRouteStart(routeId, genericEndpoint.selfLink);
+                }
+                var destinationNode = dataUtils.getNode(connections[connections.length - 1].destination.id, nodes);
+                if (sourceNode.type == "backendnode") {
+                    let genericEndpoint = sourceNode.genericEndpoint;
+                    dataUtils.addRouteStart(routeId, genericEndpoint.selfLink);
                 }
                 if (destinationNode.type == "idsendpointnode") {
-                    let err = await dataUtils.createResourceIdsEndpointAndAddSubRoute(sourceNode, destinationNode, genericEndpoint, routeId, connection.sourceEndpointId);
-                    if (err) {
-                        error = true;
-                        break;
-                    }
-                } else {
-                    let err = await dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x,
-                        sourceNode.y, connection.destinationEndpointId, destinationNode.x, destinationNode.y, null);
-                    if (err) {
-                        error = true;
-                        break;
-                    }
+                    await dataUtils.createResourceAndArtifact(destinationNode, routeSelfLink);
                 }
+                // await this.saveRouteSteps(routeId, connections, nodes);
+            } catch (error) {
+                errorUtils.showError(error, "Save route");
+                hasError = true;
             }
-
-            if (!error) {
+            if (!hasError) {
                 this.$data.receivedResults = [];
                 this.$data.saveMessage = "Successfully saved."
             }
             this.$root.$emit('showBusyIndicator', false);
         },
+        // async saveRouteSteps(routeId, connections, nodes) {
+        //     let error = false;
+        //     let genericEndpoint = null;
+        //     for (var connection of connections) {
+        //         var sourceNode = dataUtils.getNode(connection.source.id, nodes);
+        //         var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
+
+        //         if (sourceNode.type == "backendnode") {
+        //             genericEndpoint = sourceNode.genericEndpoint;
+        //         }
+        //         if (destinationNode.type == "idsendpointnode") {
+        //             let err = await dataUtils.createResourceIdsEndpointAndAddSubRoute(sourceNode, destinationNode, genericEndpoint, routeId, connection.sourceEndpointId);
+        //             if (err) {
+        //                 error = true;
+        //                 break;
+        //             }
+        //         } else {
+        //             let err = await dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x,
+        //                 sourceNode.y, connection.destinationEndpointId, destinationNode.x, destinationNode.y, null);
+        //             if (err) {
+        //                 error = true;
+        //                 break;
+        //             }
+        //         }
+        //     }
+
+        //     if (!error) {
+        //         this.$data.receivedResults = [];
+        //         this.$data.saveMessage = "Successfully saved."
+        //     }
+        //     this.$root.$emit('showBusyIndicator', false);
+        // },
         connectionRemoved() {
             this.validateRoute();
         },
@@ -343,6 +377,15 @@ export default {
                     this.$data.saveMessage = "Backend should not be a destination node.";
                     this.$data.routeValid = false;
                     break;
+                }
+            }
+            this.$data.numOfBackendNodes = 0;
+            this.$data.numOfIdsEndpointNodes = 0;
+            for (let node of this.$refs.chart.internalNodes) {
+                if (node.type == "backendnode") {
+                    this.$data.numOfBackendNodes++;
+                } else if (node.type == "idsendpointnode") {
+                    this.$data.numOfIdsEndpointNodes++;
                 }
             }
         },

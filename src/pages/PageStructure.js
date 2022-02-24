@@ -1,6 +1,8 @@
 import DashboardPage from "@/pages/dashboard/DashboardPage.vue";
 import IDSResourcesPage from "@/pages/dataoffering/resources/IDSResourcesPage.vue";
 import AddResourcePage from "@/pages/dataoffering/resources/addresource/AddResourcePage.vue";
+import RoutesPage from "@/pages/dataoffering/routes/RoutesPage.vue";
+import AddRoutePage from "@/pages/dataoffering/routes/addroute/AddRoutePage.vue";
 import IDSDataConsumptionPage from "@/pages/dataconsumption/dataconsumption/IDSDataConsumptionPage.vue";
 import IDSResourcesPageConsumption from "@/pages/dataconsumption/resources/IDSResourcesPageConsumption.vue";
 import BrokersPage from "@/pages/brokers/BrokersPage.vue";
@@ -45,6 +47,21 @@ export default {
                 name: "Backend Connections (Offering)",
                 component: BackendConnectionsPage
             }, {
+                path: "routesoffering",
+                name: "Routes (Offering)",
+                component: RoutesPage,
+                subpages: [{
+                    path: "addroute",
+                    name: "Add Route",
+                    component: AddRoutePage,
+                    subpages: []
+                }, {
+                    path: "showroute",
+                    name: "Show Route",
+                    component: AddRoutePage,
+                    subpages: []
+                }]
+            }, {
                 path: "catalogsoffering",
                 name: "Catalogs (Offering)",
                 component: ResourceCatalogsPage,
@@ -68,6 +85,10 @@ export default {
             }, {
                 path: "backendconnectionsconsumption",
                 name: "Backend Connections (Consumation)",
+                component: null
+            }, {
+                path: "routesconsumption",
+                name: "Routes (Consumation)",
                 component: null
             }]
         }, {

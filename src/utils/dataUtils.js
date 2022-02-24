@@ -273,6 +273,10 @@ export default {
         return (await restUtils.callConnector("POST", "/api/examples/validation", null, pattern)).value;
     },
 
+    async getArtifactOfRoute(routeId) {
+        return (await restUtils.callConnector("GET", "/api/routes/" + routeId + "/output"));
+    },
+
     async getArtifact(artifactId) {
         return await restUtils.callConnector("GET", "/api/artifacts/" + artifactId);
     },
@@ -652,6 +656,7 @@ export default {
         }
         let endpoint = clientDataModel.convertIdsGenericEndpoint(idsGenericEndpoint, dataSource);
         endpoint.dataSource = dataSource;
+        endpoint.selfLink = idsGenericEndpoint._links.self.href;
         return endpoint;
     },
 
@@ -950,8 +955,7 @@ export default {
         }
     },
 
-    async createResourceIdsEndpointAndAddSubRoute(sourceNode, destinationNode, genericEndpoint, routeId, startId) {
-        let hasError = false;
+    async createResourceAndArtifact(destinationNode, routeSelfLink) {
         let resource = destinationNode.resource;
         let catalogIds = resource.catalogIds;
         let title = resource.title;
@@ -967,18 +971,10 @@ export default {
         let filetype = resource.fileType;
         let brokerUris = resource.brokerUris;
 
-        try {
-            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, genericEndpoint);
-            await this.createSubRoute(routeId, startId, sourceNode.x, sourceNode.y, resourceResponse.endpointId, destinationNode.x, destinationNode.y, resourceResponse.artifactId);
-            this.addRouteStartAndEnd(routeId, startId, resourceResponse.endpointId);
-            await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
-        } catch (error) {
-            errorUtils.showError(error, "Save Route");
-            hasError = true;
-        }
+        let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
+            policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, null, routeSelfLink);
 
-        return hasError;
+        await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
     },
 
     async updateResourceAtBrokers(brokerUris, resourceId) {
@@ -1009,11 +1005,18 @@ export default {
     },
 
     async getRouteErrors() {
-        return await restUtils.callConnector("GET", "/api/configmanager/route/error");
+        let response = await restUtils.callConnector("GET", "/api/camel/routes/error");
+        // response is not a valid JSON "{[]}", so remove brackets and parse.
+        response = response.replaceAll("{", "").replaceAll("}", "");
+        return JSON.parse(response);
     },
 
     async getRoutes() {
         return (await restUtils.callConnector("GET", "/api/routes"))._embedded.routes;
+    },
+
+    async addRouteStart(routeId, startSelfLink) {
+        await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + startSelfLink + "\"");
     },
 
     async addRouteStartAndEnd(routeId, startId, endId) {
