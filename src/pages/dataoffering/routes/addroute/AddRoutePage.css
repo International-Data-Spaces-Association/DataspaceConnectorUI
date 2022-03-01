@@ -19,7 +19,7 @@
 }
 
 .idsendpointnode {
-    rx: 0px;
+    rx: 30px;
     fill: var(--v-accent-base);
 }
 

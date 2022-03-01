@@ -178,7 +178,7 @@ export default {
         },
         newIdsEndpointNodeSaved(node) {
             let x = this.getXForNewNode();
-            let y = 150;
+            let y = 210;
             node.x = x;
             node.y = y;
             this.$refs.chart.add(node);
@@ -261,9 +261,8 @@ export default {
                 id: +new Date(),
                 x: x,
                 y: y,
-                name: 'IDS Endpoint',
+                name: 'Artifact',
                 type: 'idsendpointnode',
-                text: "IDS Endpoint",
                 objectId: id,
                 resource: resource
             });
@@ -391,44 +390,57 @@ export default {
         },
         render: function (g, node, isSelected) {
             node.width = node.width || 120;
-            node.height = node.height || 180;
+            if (node.type == "idsendpointnode") {
+                node.height = node.height || 60;
+            } else {
+                node.height = node.height || 180;
+            }
             let borderColor = isSelected ? "#666666" : "#bbbbbb";
-            let resourceNode = g.append("rect").attr("class", "resourcenode");
-            resourceNode
-                .style("width", "100px");
-            resourceNode.style("height", "50px");
-            resourceNode
-                .attr("x", node.x + 10)
-                .attr("y", node.y);
-            resourceNode.attr("stroke", borderColor);
+            if (node.type != "idsendpointnode") {
+                let resourceNode = g.append("rect").attr("class", "resourcenode");
+                resourceNode
+                    .style("width", "100px");
+                resourceNode.style("height", "50px");
+                resourceNode
+                    .attr("x", node.x + 10)
+                    .attr("y", node.y);
+                resourceNode.attr("stroke", borderColor);
 
-            g.append("text")
-                .attr("x", node.x + node.width / 2)
-                .attr("y", node.y + 30)
-                .attr("text-anchor", "middle")
-                .attr("class", "unselectable")
-                .text(() => "Resource");
+                g.append("text")
+                    .attr("x", node.x + node.width / 2)
+                    .attr("y", node.y + 30)
+                    .attr("text-anchor", "middle")
+                    .attr("class", "unselectable")
+                    .text(() => "Resource");
 
-            g.append("line").attr("class", "resourceline").attr("x1", node.x + 60)
-                .attr("y1", node.y + 60)
-                .attr("x2", node.x + 60)
-                .attr("y2", node.y + 50);
-
+                g.append("line").attr("class", "resourceline").attr("x1", node.x + 60)
+                    .attr("y1", node.y + 60)
+                    .attr("x2", node.x + 60)
+                    .attr("y2", node.y + 50);
+            }
             let nodeRect = g.append("rect").classed(node.type, true);
             nodeRect
                 .style("width", "120px");
-            nodeRect.style("height", "120px");
+            let textYOffset = 80;
+            let nodeOffset = 60;
+            if (node.type == "idsendpointnode") {
+                nodeRect.style("height", "60px");
+                textYOffset = 35;
+                nodeOffset = 0;
+            } else {
+                nodeRect.style("height", "120px");
+            }
             nodeRect.attr("stroke", borderColor);
             nodeRect
                 .attr("x", node.x)
-                .attr("y", node.y + 60);
+                .attr("y", node.y + nodeOffset);
             if (isSelected) {
                 nodeRect.classed("selectedNode", true);
             }
 
             g.append("text")
                 .attr("x", node.x + node.width / 2)
-                .attr("y", node.y + 80)
+                .attr("y", node.y + textYOffset)
                 .attr("text-anchor", "middle")
                 .attr("class", "unselectable")
                 .classed(node.type + "-text", true)
@@ -444,28 +456,15 @@ export default {
                     }
                 });
 
-            // < defs >
-            //     <
-            //     !--define lines
-            // for text lies on-- >
-            // <
-            // path id = "path1"
-            // d = "M10,30 H100 M10,60 H100 M10,90 H100 M10,120 H100" > < /path> <
-            //     /defs>  <
-            //     text transform = "translate(80,255)"
-            // fill = "red"
-            // font - size = "20" >
-            //     <
-            //     textPath xlink: href = "#path1" > This is a long long long text...... < /textPath> <
-            //     /text>
-
-            g.append("defs").append("path").attr("id", "path1").attr("d", "M10,20 H100 M10,40 H100 M10,60 H100 M10,80 H100");
-            g.append("text")
-                .attr("style", "font-size: 11px")
-                .attr("transform", "translate(" + (node.x) + ", " + (node.y + 100) + ")")
-                .attr("class", "unselectable")
-                .classed(node.type + "-text", true)
-                .append("textPath").attr("xlink:href", "#path1").text(node.text);
+            if (node.type != "idsendpointnode") {
+                g.append("defs").append("path").attr("id", "path1").attr("d", "M10,20 H100 M10,40 H100 M10,60 H100 M10,80 H100");
+                g.append("text")
+                    .attr("style", "font-size: 11px")
+                    .attr("transform", "translate(" + (node.x) + ", " + (node.y + 100) + ")")
+                    .attr("class", "unselectable")
+                    .classed(node.type + "-text", true)
+                    .append("textPath").attr("xlink:href", "#path1").text(node.text);
+            }
 
         }
     }

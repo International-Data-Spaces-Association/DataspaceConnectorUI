@@ -31,12 +31,15 @@ export default {
             this.$data.node = node;
             let resource;
             if (node == null) {
-                this.$data.title = "Add IDS Endpoint";
+                this.$data.title = "Add Artifact";
                 resource = clientDataModel.createResource("", -1);
             } else {
-                this.$data.title = "Edit IDS Endpoint";
+                this.$data.title = "Edit Artifact";
                 resource = node.resource;
             }
+
+            resource.contractPeriodFromValue = resource.contractPeriodFromValue.substring(0, 10);
+            resource.contractPeriodToValue = resource.contractPeriodToValue.substring(0, 10);
 
             this.$refs.addResourcePage.set(resource, false);
             this.$data.dialog = true;
@@ -50,9 +53,8 @@ export default {
                     id: +new Date(),
                     x: 0,
                     y: 0,
-                    name: 'IDS Endpoint',
+                    name: 'Artifact',
                     type: 'idsendpointnode',
-                    text: "IDS Endpoint",
                     objectId: null,
                 };
 
