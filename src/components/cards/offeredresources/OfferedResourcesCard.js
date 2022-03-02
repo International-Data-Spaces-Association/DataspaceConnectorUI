@@ -30,10 +30,10 @@ export default {
                 } else {
                     this.$data.offeredResourcesAvailable = true;
                     this.$data.totalNumber = response.totalNumber;
-                    if (response.totalNumber > 1) {
-                        this.$data.totalNumberType = "resources"
-                    } else {
+                    if (response.totalNumber === 1) {
                         this.$data.totalNumberType = "resource"
+                    } else {
+                        this.$data.totalNumberType = "resources"
                     }
                     this.$data.totalSize = this.getTotalSize(response.totalSize);
                     this.$data.totalSizeType = this.getTotalSizeType(response.totalSize);
