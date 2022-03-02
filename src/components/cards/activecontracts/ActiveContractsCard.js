@@ -1,9 +1,11 @@
 import DashboardCard from "@/components/cards/dashboardcard/DashboardCard.vue";
 import dataUtils from "@/utils/dataUtils";
+import {VBtn} from "vuetify/lib";
 
 export default {
     components: {
-        DashboardCard
+        DashboardCard,
+        VBtn
     },
     data() {
         return {

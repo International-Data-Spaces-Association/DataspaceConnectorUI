@@ -1,8 +1,19 @@
-<v-card class="dashboardcard">
-    <div class="header">
-        <slot name="header"></slot>
-    </div>
-    <v-card-text class="cardtext">
-        <slot name="content"></slot>
+<v-card>
+    <v-list-item two-line>
+        <v-list-item-content>
+            <v-list-item-title class="text-h5 black--text text-center">
+                <slot name="header"></slot>
+            </v-list-item-title>
+        </v-list-item-content>
+    </v-list-item>
+    <v-card-text>
+        <v-row>
+            <v-col cols="12">
+                <slot name="content"></slot>
+            </v-col>
+        </v-row>
     </v-card-text>
+    <v-card-actions v-if="$slots.button" class="justify-center">
+        <slot name="button"></slot>
+    </v-card-actions>
 </v-card>
