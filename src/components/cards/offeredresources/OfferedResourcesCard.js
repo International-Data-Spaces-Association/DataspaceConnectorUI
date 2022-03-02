@@ -2,7 +2,6 @@ import DashboardCard from "@/components/cards/dashboardcard/DashboardCard.vue";
 import dataUtils from "../../../utils/dataUtils";
 import errorUtils from "../../../utils/errorUtils";
 
-
 export default {
     components: {
         DashboardCard
