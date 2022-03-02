@@ -6,7 +6,7 @@ import fs from "fs";
 import bodyParser from "body-parser";
 import path from "path";
 
-const vuePath = path.resolve() + '/../../dist';
+const vuePath = path.join(path.resolve(),'..', '..', 'dist');
 const DEBUG = false;
 const app = express();
 const port = 8083;
@@ -121,7 +121,7 @@ function serializer(replacer, cycleReplacer) {
 }
 
 app.get('/', function (req, res) {
-    res.sendFile(vuePath + "index.html");
+    res.sendFile(path.join(vuePath, "index.html"));
 });
 
 app.post('/', (req, res) => {
