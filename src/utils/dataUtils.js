@@ -1292,7 +1292,29 @@ export default {
             publisher, fileType, "", contractPeriodFromValue, contractPeriodToValue, null);
         clientResource.idsResource = resource;
         resources.push(clientResource);
-    }
+    },
+
+    async getNumberOfActiveIncomingAgreements(){
+        return (await restUtils.callConnector("GET", "/api/agreements"))["_embedded"]
+            .agreements
+            .filter((element) => element.confirmed === true && element.remoteId === "genesis")
+            .length;
+    },
+    async getNumberOfActiveOutgoingAgreements() {
+        return (await restUtils.callConnector("GET", "/api/agreements"))["_embedded"]
+            .agreements
+            .filter((element) => element.confirmed === true && element.remoteId !== "genesis")
+            .length;
+    },
+    async getNumberOfDataSources(){
+        return (await this.getGenericEndpoints()).length;
+    },
+    async getNumberOfContracts() {
+        return (await restUtils.callConnector("GET", "/api/contracts"))["_embedded"]
+            .contracts
+            // .filter((element) => element.confirmed === true && element.remoteId !== "genesis")
+            .length;
+    },
 }
 
 
