@@ -33,7 +33,10 @@ if (process.env.CONNECTOR_USER !== undefined) {
 if (process.env.CONNECTOR_PASSWORD !== undefined) {
     auth.password = process.env.CONNECTOR_PASSWORD;
 }
-
+// initialize health before basicAuth to allow access without authentication
+app.use('/health', function (req, res) {
+    res.end('OK')
+});
 app.use(express.static(vuePath));
 
 
