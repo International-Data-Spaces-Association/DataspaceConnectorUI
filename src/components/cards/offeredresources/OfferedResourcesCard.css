@@ -1,6 +1,5 @@
 .offeredresourcescard {
-    width: 400px;
-    height: 300px;
+    width: 100%;
 }
 
 .offeredresourcescard .statsdiv {
@@ -16,10 +15,6 @@
     font-size: 20px;
 }
 
-.offeredresourcescard .row {
-    margin-bottom: 40px;
-}
-
 .offeredresourcescard .number {
     font-size: 60px;
     font-weight: bold;
@@ -31,8 +26,4 @@
     font-size: 24px;
     left: 5px;
     position: relative;
-}
-
-.hideOfferedResourceData {
-    visibility: hidden;
 }
