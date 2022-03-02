@@ -126,7 +126,7 @@ export default {
     },
     getDisplayName(name) {
         var displayName = name;
-        if (displayName.indexOf('(') != -1) {
+        if (displayName.indexOf('(') !== -1) {
             displayName = displayName.substring(0, displayName.indexOf('('));
         }
         return displayName;
