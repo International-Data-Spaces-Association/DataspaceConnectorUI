@@ -30,12 +30,12 @@ export default {
             this.$data.connection = connection;
             this.$data.sourceNode = dataUtils.getNode(connection.source.id, nodes);
             this.$data.destinationNode = dataUtils.getNode(connection.destination.id, nodes);
-            let sourceEndpoints = await dataUtils.getEndpointList(this.$data.sourceNode);
+            let sourceEndpoints = await dataUtils.getEndpointList(this.$data.sourceNode, "OUTPUT_ENDPOINT");
             this.$data.outputs = [];
             for (let endpoint of sourceEndpoints) {
                 this.$data.outputs.push(this.getItem(endpoint));
             }
-            let destEndpoints = await dataUtils.getEndpointList(this.$data.destinationNode);
+            let destEndpoints = await dataUtils.getEndpointList(this.$data.destinationNode, "INPUT_ENDPOINT");
             this.$data.inputs = [];
             for (let endpoint of destEndpoints) {
                 this.$data.inputs.push(this.getItem(endpoint));
@@ -87,7 +87,7 @@ export default {
             } else if (endpoint.type == "APP") {
                 item = {
                     id: endpoint.id,
-                    text: endpoint.title
+                    text: endpoint.location
                 };
             }
             return item;

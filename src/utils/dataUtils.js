@@ -411,7 +411,29 @@ export default {
     },
 
     async getApps() {
-        return (await restUtils.callConnector("GET", "/api/apps"))._embedded.apps;
+        let apps = (await restUtils.callConnector("GET", "/api/apps"))._embedded.apps;
+        for (let app of apps) {
+            app.id = this.getIdOfConnectorResponse(app);
+        }
+        return apps;
+    },
+
+    async getApp(id) {
+        let app = await restUtils.callConnector("GET", "/api/apps/" + id);
+        app.id = this.getIdOfConnectorResponse(app);
+        return app;
+    },
+
+    async getAppEndpoints(id, endpointType) {
+        let response = [];
+        let endpoints = (await restUtils.callConnector("GET", "/api/apps/" + id + "/endpoints"))._embedded.endpoints;
+        for (let endpoint of endpoints) {
+            if (endpoint.endpointType == endpointType) {
+                endpoint.id = this.getIdOfConnectorResponse(endpoint);
+                response.push(endpoint);
+            }
+        }
+        return response;
     },
 
     async getAppStore(id) {
@@ -632,14 +654,13 @@ export default {
         await restUtils.callConnector("DELETE", "/api/routes/" + id);
     },
 
-    async getEndpointList(node) {
+    async getEndpointList(node, endpointType) {
         let endpointList = [];
         if (node.type == "backendnode") {
             let endpoint = await this.getGenericEndpoint(node.objectId);
             endpointList.push(endpoint);
         } else if (node.type == "appnode") {
-            let endpoint = await this.getApp(node.objectId);
-            endpointList.push(endpoint);
+            endpointList = await this.getAppEndpoints(node.objectId, endpointType);
         }
         return endpointList;
     },
