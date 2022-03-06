@@ -6,3 +6,7 @@
 .abc-dialog-note {
     color: var(--v-accent-base);
 }
+
+.text-color{
+color: var(--v-primary-base);
+}

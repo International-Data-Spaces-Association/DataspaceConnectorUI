@@ -10,9 +10,12 @@
         <v-card-title class="headline grey lighten-2">
             {{title}}
         </v-card-title>
-
         <v-card-text>
             <v-form v-model="valid" ref="form">
+                <v-text-field label="Title" v-model="name">
+                </v-text-field>
+                <v-text-field label="Description" v-model="desc">
+                </v-text-field>
                 <v-select label="Source Type" v-model="sourceType" :items="sourceTypes" v-if="!editMode"></v-select>
                 <p v-if="editMode" class="abc-dialog-sourcetype-label">Source Type: {{ sourceType }}</p>
                 <p v-if="sourceType === 'Other'" class="abc-dialog-note">Note: Per default, only the HTTP and SQL
@@ -30,23 +33,26 @@
                 </v-text-field>
                 <v-text-field v-if="sourceType==='Database'" label="Camel SQL component URI (query)"
                     v-model="camelSqlUri"></v-text-field>
+                <div class="text-h6 text-color" v-if="sourceType === 'Database' || sourceType === 'REST'">Authentication</div>
                 <v-tabs class="pagestab" v-model="active_tab" ref="pagestab" hide-slider
                     v-if="sourceType === 'Database' || sourceType === 'REST'">
+                    <v-tab>None</v-tab>
                     <v-tab>Basic</v-tab>
                     <v-tab v-if="sourceType === 'REST'">API-Key</v-tab>
                     <v-tab-item :eager="true">
-                        <v-text-field label="Username" v-model="username"> </v-text-field>
-                        <v-text-field label="Password" v-model="password" :type="showPassword ? 'text' : 'password'"
-                            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                            @click:append="showPassword = !showPassword">
-                        </v-text-field>
                     </v-tab-item>
                     <v-tab-item :eager="true">
+                        <v-text-field label="Username" v-model="username"> </v-text-field>
+                        <v-text-field label="Password" v-model="password" :type="showPassword ? 'text' : 'password'"
+                                      :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                                      @click:append="showPassword = !showPassword">
+                        </v-text-field>
+                    </v-tab-item>
+                    <v-tab-item :eager="true" v-if="sourceType === 'REST'">
                         <v-text-field label="Header name" v-model="authHeaderName"> </v-text-field>
                         <v-text-field label="Header value" v-model="authHeaderValue"> </v-text-field>
                     </v-tab-item>
                 </v-tabs>
-
             </v-form>
         </v-card-text>
 
