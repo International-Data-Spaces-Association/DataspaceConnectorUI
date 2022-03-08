@@ -15,7 +15,7 @@
                         </v-select>
                         <div v-if="outputs.length == 0 && sourceNode != null && sourceNode.type == 'idsendpointnode'"
                             class="noselectdiv">
-                            {{ sourceNode.text }}</div>
+                            {{ sourceNode.name }}</div>
                     </v-col>
                     <v-col cols="12" md="2" class="inoutarrowcol">
                         <div class="inoutarrow">➞</div>
@@ -28,7 +28,7 @@
                         </v-select>
                         <div v-if="inputs.length == 0 && destinationNode != null && destinationNode.type == 'idsendpointnode'"
                             class="noselectdiv">
-                            {{ destinationNode.text }}</div>
+                            {{ destinationNode.name }}</div>
                     </v-col>
                 </v-row>
             </v-form>
