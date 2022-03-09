@@ -99,6 +99,15 @@ function stringifySafe(obj, replacer, spaces, cycleReplacer) {
     return JSON.stringify(obj, serializer(replacer, cycleReplacer), spaces)
 }
 
+function filterError(origError) {
+    if (origError.response !== undefined) {
+        // remove config & request data, because it contains sensitive data. 
+        origError.response.config = null;
+        origError.response.request = null;
+    }
+    return origError;
+}
+
 function serializer(replacer, cycleReplacer) {
     var stack = [], keys = []
 
@@ -138,7 +147,8 @@ app.post('/', (req, res) => {
     if (req.body.type == "POST") {
         post(connectorUrl + call, req.body.body).then(response => {
             res.send(response.data);
-        }).catch(error => {
+        }).catch(origError => {
+            let error = filterError(origError);
             if (error.response === undefined) {
                 console.log("Error on POST " + req.body.url, error);
                 res.send(stringifySafe(error));
@@ -151,7 +161,8 @@ app.post('/', (req, res) => {
     } else if (req.body.type == "PUT") {
         put(connectorUrl + call, req.body.body).then(response => {
             res.send(response.data);
-        }).catch(error => {
+        }).catch(origError => {
+            let error = filterError(origError);
             if (error.response === undefined) {
                 console.log("Error on PUT " + req.body.url, error);
                 res.send(stringifySafe(error));
@@ -166,7 +177,8 @@ app.post('/', (req, res) => {
         } else {
             get(connectorUrl + call).then(response => {
                 res.send(response.data);
-            }).catch(error => {
+            }).catch(origError => {
+                let error = filterError(origError);
                 if (error.response === undefined) {
                     console.log("Error on GET " + req.body.url, error);
                     res.send(stringifySafe(error));
@@ -179,7 +191,8 @@ app.post('/', (req, res) => {
     } else if (req.body.type == "DELETE") {
         del(connectorUrl + call, req.body.body).then(response => {
             res.send(response.data);
-        }).catch(error => {
+        }).catch(origError => {
+            let error = filterError(origError);
             if (error.response === undefined) {
                 console.log("Error on DELETE " + req.body.url, error);
                 res.send(stringifySafe(error));
