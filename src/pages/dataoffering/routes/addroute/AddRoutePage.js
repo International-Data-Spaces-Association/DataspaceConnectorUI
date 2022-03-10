@@ -28,14 +28,21 @@ export default {
             isNewRoute: false,
             routeValid: true,
             numOfBackendNodes: 0,
-            numOfIdsEndpointNodes: 0
+            numOfIdsEndpointNodes: 0,
+            isOffering: true
         };
+    },
+    watch: {
+        $route() {
+            this.init();
+        }
     },
     mounted: function () {
         this.init();
     },
     methods: {
         async init() {
+            this.$data.isOffering = this.$route.path.includes("offering");
             let response = [];
             try {
                 response = await dataUtils.getGenericEndpoints();
@@ -137,12 +144,12 @@ export default {
                     id: startNodeId,
                     position: isLeftToRight ? "right" : "left",
                 },
-                sourceEndpointId: startEndpointId,
+                sourceEndpointSelfLink: startEndpointId,
                 destination: {
                     id: endNodeId,
                     position: isLeftToRight ? "left" : "right",
                 },
-                destinationEndpointId: endEndpointId,
+                destinationEndpointSelfLink: endEndpointId,
                 id: connectorId,
                 type: "pass",
                 name: "Pass",
@@ -161,7 +168,9 @@ export default {
         },
         handleEditNode(node) {
             if (node.type == "idsendpointnode") {
-                this.$refs.editIDSEndpointDialog.show(node);
+                if (this.$data.isOffering) {
+                    this.$refs.editIDSEndpointDialog.show(node);
+                }
             } else {
                 this.$refs.editNodeDialog.title = "Edit " + node.name;
                 this.$refs.editNodeDialog.dialog = true;
@@ -249,7 +258,20 @@ export default {
             this.validateRoute();
         },
         showAddIdsEndpointDialog() {
-            this.$refs.editIDSEndpointDialog.show(null);
+            if (this.$data.isOffering) {
+                this.$refs.editIDSEndpointDialog.show(null);
+            } else {
+                // For Data Consumption only add an empty artifact node (no data needed).
+                let node = {
+                    id: +new Date(),
+                    x: 0,
+                    y: 0,
+                    name: 'Artifact',
+                    type: 'idsendpointnode',
+                    objectId: null,
+                };
+                this.newIdsEndpointNodeSaved(node);
+            }
         },
         async addIdsEndpoint(id, x, y, resourceId) {
             if (x === undefined) {
@@ -301,20 +323,18 @@ export default {
                 let routeId = dataUtils.getIdOfConnectorResponse(response);
                 let routeSelfLink = response._links.self.href;
 
-                var sourceNode = dataUtils.getNode(connections[0].source.id, nodes);
-                if (sourceNode.type == "backendnode") {
-                    let genericEndpoint = sourceNode.genericEndpoint;
-                    dataUtils.addRouteStart(routeId, genericEndpoint.selfLink);
+                if (this.$data.isOffering) {
+                    var sourceNode = dataUtils.getNode(connections[0].source.id, nodes);
+                    if (sourceNode.type == "backendnode") {
+                        let genericEndpoint = sourceNode.genericEndpoint;
+                        dataUtils.addRouteStart(routeId, genericEndpoint.selfLink);
+                    }
+                    var destinationNode = dataUtils.getNode(connections[connections.length - 1].destination.id, nodes);
+                    if (destinationNode.type == "idsendpointnode") {
+                        await dataUtils.createResourceAndArtifact(destinationNode, routeSelfLink);
+                    }
                 }
-                var destinationNode = dataUtils.getNode(connections[connections.length - 1].destination.id, nodes);
-                if (sourceNode.type == "backendnode") {
-                    let genericEndpoint = sourceNode.genericEndpoint;
-                    dataUtils.addRouteStart(routeId, genericEndpoint.selfLink);
-                }
-                if (destinationNode.type == "idsendpointnode") {
-                    await dataUtils.createResourceAndArtifact(destinationNode, routeSelfLink);
-                }
-                // await this.saveRouteSteps(routeId, connections, nodes);
+                await this.saveRouteSteps(routeId, connections, nodes);
             } catch (error) {
                 errorUtils.showError(error, "Save route");
                 hasError = true;
@@ -325,38 +345,28 @@ export default {
             }
             this.$root.$emit('showBusyIndicator', false);
         },
-        // async saveRouteSteps(routeId, connections, nodes) {
-        //     let error = false;
-        //     let genericEndpoint = null;
-        //     for (var connection of connections) {
-        //         var sourceNode = dataUtils.getNode(connection.source.id, nodes);
-        //         var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
+        async saveRouteSteps(routeId, connections, nodes) {
+            let error = false;
+            // let genericEndpoint = null;
+            for (var connection of connections) {
+                var sourceNode = dataUtils.getNode(connection.source.id, nodes);
+                var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
+                if (connection.sourceEndpointSelfLink != null) {
+                    let err = await dataUtils.createSubRoute(routeId, connection.sourceEndpointSelfLink, sourceNode.x,
+                        sourceNode.y, connection.destinationEndpointSelfLink, destinationNode.x, destinationNode.y);
+                    if (err) {
+                        error = true;
+                        break;
+                    }
+                }
+            }
 
-        //         if (sourceNode.type == "backendnode") {
-        //             genericEndpoint = sourceNode.genericEndpoint;
-        //         }
-        //         if (destinationNode.type == "idsendpointnode") {
-        //             let err = await dataUtils.createResourceIdsEndpointAndAddSubRoute(sourceNode, destinationNode, genericEndpoint, routeId, connection.sourceEndpointId);
-        //             if (err) {
-        //                 error = true;
-        //                 break;
-        //             }
-        //         } else {
-        //             let err = await dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x,
-        //                 sourceNode.y, connection.destinationEndpointId, destinationNode.x, destinationNode.y, null);
-        //             if (err) {
-        //                 error = true;
-        //                 break;
-        //             }
-        //         }
-        //     }
-
-        //     if (!error) {
-        //         this.$data.receivedResults = [];
-        //         this.$data.saveMessage = "Successfully saved."
-        //     }
-        //     this.$root.$emit('showBusyIndicator', false);
-        // },
+            if (!error) {
+                this.$data.receivedResults = [];
+                this.$data.saveMessage = "Successfully saved."
+            }
+            this.$root.$emit('showBusyIndicator', false);
+        },
         connectionRemoved() {
             this.validateRoute();
         },
@@ -373,14 +383,26 @@ export default {
             for (let connection of this.$refs.chart.internalConnections) {
                 var sourceNode = dataUtils.getNode(connection.source.id, this.$refs.chart.internalNodes);
                 var destinationNode = dataUtils.getNode(connection.destination.id, this.$refs.chart.internalNodes);
-                if (sourceNode.type == "idsendpointnode") {
-                    this.$data.saveMessage = "IDS Endpoint should not be a source node.";
-                    this.$data.routeValid = false;
-                    break;
-                } else if (destinationNode.type == "backendnode") {
-                    this.$data.saveMessage = "Backend should not be a destination node.";
-                    this.$data.routeValid = false;
-                    break;
+                if (this.$data.isOffering) {
+                    if (sourceNode.type == "idsendpointnode") {
+                        this.$data.saveMessage = "Artifact should not be a source node.";
+                        this.$data.routeValid = false;
+                        break;
+                    } else if (destinationNode.type == "backendnode") {
+                        this.$data.saveMessage = "Backend should not be a destination node.";
+                        this.$data.routeValid = false;
+                        break;
+                    }
+                } else {
+                    if (sourceNode.type == "backendnode") {
+                        this.$data.saveMessage = "Backend should not be a source node.";
+                        this.$data.routeValid = false;
+                        break;
+                    } else if (destinationNode.type == "idsendpointnode") {
+                        this.$data.saveMessage = "Artifact should not be a destination node.";
+                        this.$data.routeValid = false;
+                        break;
+                    }
                 }
             }
             this.$data.numOfBackendNodes = 0;

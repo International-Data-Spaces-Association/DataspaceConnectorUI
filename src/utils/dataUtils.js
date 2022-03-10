@@ -430,6 +430,7 @@ export default {
         for (let endpoint of endpoints) {
             if (endpoint.endpointType == endpointType) {
                 endpoint.id = this.getIdOfConnectorResponse(endpoint);
+                endpoint.selfLink = endpoint._links.self.href;
                 response.push(endpoint);
             }
         }
@@ -1053,11 +1054,10 @@ export default {
         });
     },
 
-    async createSubRoute(routeId, startId, startCoordinateX, startCoordinateY, endId, endCoordinateX, endCoordinateY, artifactId) {
+    async createSubRoute(routeId, startSelfLink, startCoordinateX, startCoordinateY, endSelfLink, endCoordinateX, endCoordinateY) {
         let hasError = false;
         try {
             let response = await restUtils.callConnector("POST", "/api/routes", null, {
-                "routeType": "Subroute",
                 "deploy": "None",
                 "startCoordinateX": startCoordinateX,
                 "startCoordinateY": startCoordinateY,
@@ -1065,11 +1065,10 @@ export default {
                 "endCoordinateY": endCoordinateY
             });
             let subRouteId = this.getIdOfConnectorResponse(response);
-            await restUtils.callConnector("POST", "/api/routes/" + routeId + "/steps", null, [subRouteId]);
-            await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/start", null, "\"" + startId + "\"");
-            await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/end", null, "\"" + endId + "\"");
-            await restUtils.callConnector("POST", "/api/routes/" + subRouteId + "/outputs", null, [artifactId]);
-
+            let subRouteSelfLink = response._links.self.href;
+            await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/start", null, "\"" + startSelfLink + "\"");
+            await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/end", null, "\"" + endSelfLink + "\"");
+            await restUtils.callConnector("POST", "/api/routes/" + routeId + "/steps", null, [subRouteSelfLink]);
         } catch (error) {
             errorUtils.showError(error, "Save Route");
             hasError = true;
