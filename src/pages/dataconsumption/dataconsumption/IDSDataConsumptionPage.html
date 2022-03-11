@@ -6,7 +6,7 @@
             <div>
                 <v-row no-gutters class="data-consumption-page-row">
                     <v-col cols="12" md="11" sm="12">
-                        <v-form v-model="valid" ref="form">
+                        <v-form v-model="valid" ref="form" @submit="receiveCatalogs">
                             <v-text-field label="Provider Connector URL" v-model="recipientId" :rules="providerUrlRule">
                             </v-text-field>
                             <v-btn id="btn-show-catalogs" color="primary" @click.native="receiveCatalogs"
