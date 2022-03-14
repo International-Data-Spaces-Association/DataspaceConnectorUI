@@ -11,9 +11,9 @@
                 </resource-meta-data-page>
             </v-tab-item>
             <v-tab-item :eager="true">
-                <resource-policy-page ref="policyPage" @previousPage="previousPage" @nextPage="nextPage"
+                <add-policy-dialog ref="policyPage" @previousPage="previousPage" @nextPage="nextPage"
                     :readonly="readonly">
-                </resource-policy-page>
+                </add-policy-dialog>
             </v-tab-item>
             <v-tab-item :eager="true">
                 <resource-representation-page ref="representationPage" :fromRoutePage="fromRoutePage"

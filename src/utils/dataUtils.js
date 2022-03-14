@@ -511,7 +511,7 @@ export default {
         let dataSources = (await restUtils.callConnector("GET", "/api/datasources"))._embedded.datasources;
         if (idsEndpoints !== undefined) {
             for (let idsEndpoint of idsEndpoints) {
-                if (idsEndpoint.type == "GENERIC") {
+                if (idsEndpoint.type === "GENERIC") {
                     let dataSource = null;
                     if (idsEndpoint._links["datasource"] === undefined) {
                         dataSource = {
@@ -520,7 +520,7 @@ export default {
                     } else {
                         let datasourceId = this.getIdOfLink(idsEndpoint, "datasource");
                         for (let ds of dataSources) {
-                            if (ds.id == datasourceId) {
+                            if (ds.id === datasourceId) {
                                 dataSource = ds;
                                 break;
                             }
@@ -544,7 +544,9 @@ export default {
         }
         let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
             "location": location,
-            "type": "GENERIC"
+            "type": "GENERIC",
+            "title": title,
+            "description": desc
         });
         let genericEndpointId = this.getIdOfConnectorResponse(response);
 
@@ -566,12 +568,12 @@ export default {
                 "type": sourceType
             };
         }
-        if (sourceType == "DATABASE") {
+        if (sourceType === "DATABASE") {
             bodyData.url = url;
             bodyData.driverClassName = driverClassName;
         }
 
-        if (sourceType != "OTHER") {
+        if (sourceType !== "OTHER") {
             response = await restUtils.callConnector("POST", "/api/datasources", null, bodyData);
             let dataSourceId = this.getIdOfConnectorResponse(response);
 
@@ -580,9 +582,9 @@ export default {
         }
     },
 
-    async updateGenericEndpoint(id, dataSourceId, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
+    async updateGenericEndpoint(title, desc, id, dataSourceId, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
         let location = url;
-        if (sourceType == "DATABASE") {
+        if (sourceType === "OTHER") {
             location = camelSqlUri;
         }
         await restUtils.callConnector("PUT", "/api/endpoints/" + id, null, {
@@ -1309,9 +1311,36 @@ export default {
     async getNumberOfDataSources(){
         return (await this.getGenericEndpoints()).length;
     },
+    async createContract(name, desc, contractPeriodFromValue, contractPeriodToValue){
+        let bodyData = {
+            "title": name,
+            "description": desc,
+            "start": contractPeriodFromValue,
+            "end": contractPeriodToValue
+        }
+        return (await restUtils.callConnector("POST", "/api/contracts", null, bodyData)).value;
+    },
+    async getAllContracts() {
+        let allContracts = [];
+        let response = (await restUtils.callConnector("GET", "/api/contracts"))._embedded.contracts;
+        if (response !== undefined) {
+            for(let policy of response){
+                let creationDate = policy.creationDate.substring(0, 19).replace("T", " ");
+                let start = policy.start.substring(0, 19).replace("T", " ");
+                let end = policy.end.substring(0, 19).replace("T", " ");
+                allContracts.push({
+                    title: policy.title,
+                    dateCreated: creationDate,
+                    validFrom: start,
+                    validTill: end
+                });
+            }
+        }
+        console.log(allContracts);
+        return allContracts;
+    },
     async getNumberOfContracts() {
-        return (await restUtils.callConnector("GET", "/api/contracts"))["_embedded"]
-            .contracts
+        return (await this.getAllContracts())
             // .filter((element) => element.confirmed === true && element.remoteId !== "genesis")
             .length;
     },

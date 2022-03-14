@@ -5,6 +5,7 @@ import ResourceRepresentationPage from "./representation/ResourceRepresentationP
 import ResourceBrokersPage from "./brokers/ResourceBrokersPage.vue";
 import ResourceCatalogsPage from "./catalog/ResourceCatalogsPage.vue";
 import errorUtils from "../../../../utils/errorUtils";
+import AddPolicyDialog from "@/pages/dataoffering/resources/addresource/policy/policyDialog/AddPolicyDialog.vue";
 
 export default {
     components: {
@@ -12,7 +13,8 @@ export default {
         ResourcePolicyPage,
         ResourceRepresentationPage,
         ResourceCatalogsPage,
-        ResourceBrokersPage
+        ResourceBrokersPage,
+        AddPolicyDialog
     },
     props: ['fromRoutePage'],
     data() {
@@ -50,19 +52,19 @@ export default {
             this.tabChanged();
         },
         tabChanged() {
-            if (this.$data.active_tab == 1) {
+            if (this.$data.active_tab === 1) {
                 if (this.$refs.policyPage !== undefined) {
                     this.$refs.policyPage.gotVisible();
                 }
-            } else if (this.$data.active_tab == 2) {
+            } else if (this.$data.active_tab === 2) {
                 if (this.$refs.representationPage !== undefined) {
                     this.$refs.representationPage.gotVisible();
                 }
-            } else if (this.$data.active_tab == 3) {
+            } else if (this.$data.active_tab === 3) {
                 if (this.$refs.catalogsPage !== undefined) {
                     this.$refs.catalogsPage.gotVisible();
                 }
-            } else if (this.$data.active_tab == 4) {
+            } else if (this.$data.active_tab === 4) {
                 if (this.$refs.brokersPage !== undefined) {
                     this.$refs.brokersPage.gotVisible();
                 }
