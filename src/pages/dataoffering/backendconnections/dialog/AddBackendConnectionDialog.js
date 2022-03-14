@@ -42,7 +42,7 @@ export default {
     methods: {
         addButtonClicked() {
             this.$data.editMode = false;
-            this.$data.title = "Add Backend Connection";
+            this.$data.title = "Add Data Source";
             this.$data.currentEndpoint = null;
             this.$data.name="";
             this.$data.desc="";
