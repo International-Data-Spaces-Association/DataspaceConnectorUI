@@ -430,6 +430,7 @@ export default {
         for (let endpoint of endpoints) {
             if (endpoint.endpointType == endpointType) {
                 endpoint.id = this.getIdOfConnectorResponse(endpoint);
+                endpoint.selfLink = endpoint._links.self.href;
                 response.push(endpoint);
             }
         }
@@ -654,13 +655,14 @@ export default {
         await restUtils.callConnector("DELETE", "/api/routes/" + id);
     },
 
-    async getEndpointList(node, endpointType) {
+    async getEndpointList(node) {
         let endpointList = [];
         if (node.type == "backendnode") {
             let endpoint = await this.getGenericEndpoint(node.objectId);
             endpointList.push(endpoint);
         } else if (node.type == "appnode") {
-            endpointList = await this.getAppEndpoints(node.objectId, endpointType);
+            let endpoint = await this.getApp(node.objectId);
+            endpointList.push(endpoint);
         }
         return endpointList;
     },

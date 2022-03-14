@@ -39,13 +39,29 @@ export default {
             errorSortBy: 'timestamp',
             sortDesc: true,
             routes: [],
-            routeErrors: []
+            routeErrors: [],
+            isOffering: true,
+            addRouteButtonTo: ""
         };
     },
+    watch: {
+        $route() {
+            this.init();
+        }
+    },
     mounted: function () {
-        this.getRoutes();
+        this.init();
     },
     methods: {
+        async init() {
+            this.$data.isOffering = this.$route.path.includes("offering");
+            if (this.$data.isOffering) {
+                this.$data.addRouteButtonTo = "/addrouteoffering";
+            } else {
+                this.$data.addRouteButtonTo = "/addrouteconsumption";
+            }
+            this.getRoutes();
+        },
         async getRoutes() {
             this.$root.$emit('showBusyIndicator', true);
             await this.getRouteErrors();
@@ -53,7 +69,15 @@ export default {
                 let response = await dataUtils.getRoutes();
                 this.$data.routes = [];
                 for (let route of response) {
-                    if (route.additional.routeType == "Route") {
+                    let showInList = false;
+                    if (route.deploy == "Camel") {
+                        if (this.$data.isOffering && route.start !== undefined && route.start != null) {
+                            showInList = true;
+                        } else if (!this.$data.isOffering && (route.start === undefined || route.start == null)) {
+                            showInList = true;
+                        }
+                    }
+                    if (showInList) {
                         this.$data.routes.push({
                             id: dataUtils.getIdOfConnectorResponse(route),
                             description: route.description

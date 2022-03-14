@@ -51,8 +51,8 @@ export default {
                 name: "Routes (Offering)",
                 component: RoutesPage,
                 subpages: [{
-                    path: "addroute",
-                    name: "Add Route",
+                    path: "addrouteoffering",
+                    name: "Add Route (Offering)",
                     component: AddRoutePage,
                     subpages: []
                 }, {
@@ -84,12 +84,23 @@ export default {
                 }]
             }, {
                 path: "backendconnectionsconsumption",
-                name: "Backend Connections (Consumation)",
+                name: "Backend Connections (Consumption)",
                 component: null
             }, {
                 path: "routesconsumption",
-                name: "Routes (Consumation)",
-                component: null
+                name: "Routes (Consumption)",
+                component: RoutesPage,
+                subpages: [{
+                    path: "addrouteconsumption",
+                    name: "Add Route (Consumption)",
+                    component: AddRoutePage,
+                    subpages: []
+                }, {
+                    path: "showroute",
+                    name: "Show Route",
+                    component: AddRoutePage,
+                    subpages: []
+                }]
             }]
         }, {
             path: "brokers",
