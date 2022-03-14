@@ -537,7 +537,7 @@ export default {
         return genericEndpoints;
     },
 
-    async createGenericEndpoint(url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
+    async createGenericEndpoint(title, desc, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
         let location = url;
         if (sourceType == "DATABASE") {
             location = camelSqlUri;
