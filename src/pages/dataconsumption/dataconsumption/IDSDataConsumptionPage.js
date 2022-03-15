@@ -30,6 +30,7 @@ export default {
             idsContractOffer: {},
             requestContractResponse: {},
             downloadLink: "",
+            agreementArtifact: null,
             artifactDialog: false,
             valid: false,
             validSearch: false,
@@ -98,13 +99,19 @@ export default {
             }
             ],
             sortBy: 'creationDate',
-            sortDesc: true
+            sortDesc: true,
+            routes: [],
+            selectedRoutes: []
         };
     },
     mounted: function () {
-        this.getBrokers();
+        this.init();
     },
     methods: {
+        async init() {
+            await this.getBrokers();
+            await this.getRoutes();
+        },
         async getBrokers() {
             this.$root.$emit('showBusyIndicator', true);
             try {
@@ -117,6 +124,31 @@ export default {
                 errorUtils.showError(error, "Get brokers");
             }
             this.$forceUpdate();
+            this.$root.$emit('showBusyIndicator', false);
+
+        },
+        async getRoutes() {
+            this.$root.$emit('showBusyIndicator', true);
+            try {
+                let response = await dataUtils.getRoutes();
+                this.$data.routes = [];
+                for (let route of response) {
+                    let showInList = false;
+                    if (route.deploy == "Camel") {
+                        if (route.start === undefined || route.start == null) {
+                            showInList = true;
+                        }
+                    }
+                    if (showInList) {
+                        this.$data.routes.push({
+                            selfLink: route._links.self.href,
+                            description: route.description
+                        });
+                    }
+                }
+            } catch (error) {
+                errorUtils.showError(error, "Get routes");
+            }
             this.$root.$emit('showBusyIndicator', false);
 
         },
@@ -136,6 +168,7 @@ export default {
             this.$data.idsContractOffer = {};
             this.$data.requestContractResponse = {};
             this.$data.downloadLink = "";
+            this.$data.agreementArtifact = null;
         },
         async searchResources() {
             this.$root.$emit('showBusyIndicator', true);
@@ -184,6 +217,7 @@ export default {
             this.$data.idsContractOffer = {};
             this.$data.requestContractResponse = {};
             this.$data.downloadLink = "";
+            this.$data.agreementArtifact = null;
             this.$root.$emit('showBusyIndicator', false);
         },
 
@@ -210,7 +244,8 @@ export default {
                 this.$data.requestContractResponse = await dataUtils.receiveContract(this.$data.recipientId,
                     this.$data.selectedResource["@id"], this.$data.selectedResource["ids:contractOffer"], this.$data.selectedIdsArtifact, download);
                 let agreementId = await dataUtils.getIdOfAgreement(this.$data.requestContractResponse._links.artifacts.href);
-                this.$data.downloadLink = (await dataUtils.getAgreementArtifacts(agreementId))[0]._links.data.href;
+                this.$data.agreementArtifact = (await dataUtils.getAgreementArtifacts(agreementId))[0];
+                this.$data.downloadLink = this.$data.agreementArtifact._links.data.href;
                 this.$vuetify.goTo(".data-consumption-page-bottom");
             } catch (error) {
                 errorUtils.showError(error, "Request Contract");
@@ -255,6 +290,7 @@ export default {
             this.$data.idsContractOffer = {};
             this.$data.requestContractResponse = {};
             this.$data.downloadLink = "";
+            this.$data.agreementArtifact = null;
             this.$vuetify.goTo(".data-consumption-page-bottom");
         },
 
@@ -277,7 +313,12 @@ export default {
             this.$data.selectedIdsArtifact = artifact;
             this.requestContract();
             this.subscribeToResource();
+        },
+        async dispatchViaRoutes() {
+            this.$root.$emit('showBusyIndicator', true);
+            let artifactId = dataUtils.getIdOfConnectorResponse(this.$data.agreementArtifact);
+            await dataUtils.dispatchViaRoutes(artifactId, this.$data.selectedRoutes);
+            this.$root.$emit('showBusyIndicator', false);
         }
-
     }
 };

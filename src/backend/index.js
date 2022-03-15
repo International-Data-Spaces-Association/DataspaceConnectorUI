@@ -91,8 +91,19 @@ function del(url, data) {
     });
 }
 
-function escape(text) {
-    return encodeURIComponent(text);
+function escape(text, key) {
+    let escapedText = "";
+    if (Array.isArray(text)) {
+        for (let i = 0; i < text.length; i++) {
+            if (i > 0) {
+                escapedText += "&" + key + "=";
+            }
+            escapedText += encodeURIComponent(text[i]);
+        }
+    } else {
+        escapedText = encodeURIComponent(text);
+    }
+    return escapedText;
 }
 
 function stringifySafe(obj, replacer, spaces, cycleReplacer) {
@@ -138,9 +149,9 @@ app.post('/', (req, res) => {
     let i = 0;
     for (let key in req.body.params) {
         if (i === 0) {
-            call += "?" + key + "=" + escape(req.body.params[key]);
+            call += "?" + key + "=" + escape(req.body.params[key], key);
         } else {
-            call += "&" + key + "=" + escape(req.body.params[key]);
+            call += "&" + key + "=" + escape(req.body.params[key], key);
         }
         i++;
     }
