@@ -39,7 +39,11 @@ export default {
     },
     methods: {
         addButtonClicked() {
-            //empty fields here
+            this.$data.name = "";
+            this.$data.desc = "";
+            this.$data.currentPolicy = null;
+            this.$data.contractPeriodFromValue = null;
+            this.$data.contractPeriodToValue = null;
         },
         cancelPolicy() {
             this.$data.dialog = false;
@@ -141,16 +145,30 @@ export default {
             if(this.$data.currentPolicy === null) {
                 try {
                     await dataUtils.createContract(this.$data.name, this.$data.desc, this.getContractPeriodFromValue(),
-                        this.getContractPeriodToValue());
+                        this.getContractPeriodToValue(), this.getDescriptions()).value;
                 } catch (error){
                     console.log("Error on savePolicyTemplate(): ", error);
                     this.$root.$emit('error', "Create policy template failed.");
                 }
                 this.$emit('policyTemplateSaved');
+            } else {
+                try {
+                    await dataUtils.updateContract(this.$data.currentPolicy.id, this.$data.name, this.$data.desc,
+                        this.getContractPeriodFromValue(), this.getContractPeriodToValue(), this.getDescriptions());
+                } catch (error) {
+                    console.log("Error on updatePolicyTemplate(): ", error);
+                    this.$root.$emit('error', "Update policy template failed.");
+                }
+                this.$emit('policyTemplateSaved');
             }
         },
         async edit(policy) {
-            console.log(policy);
+            this.$data.currentPolicy = policy;
+            this.$data.name = policy.title;
+            this.$data.desc = policy.description;
+            this.$data.contractPeriodFromValue = new Date(policy.contractStart).toISOString().substring(0,10);
+            this.$data.contractPeriodToValue = new Date(policy.contractEnd).toISOString().substring(0,10);
+            this.$data.dialog = true;
         },
         validationChanged() {
             for (let policyLine of this.$data.policyLines) {

@@ -353,7 +353,7 @@ export default {
 
     toRegisterStatusClass(brokerStatus) {
         let statusClass = "notRegisteredAtBroker";
-        if (brokerStatus == "Registered") {
+        if (brokerStatus === "Registered") {
             statusClass = "registeredAtBroker";
         }
         return statusClass;
@@ -539,7 +539,7 @@ export default {
 
     async createGenericEndpoint(title, desc, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
         let location = url;
-        if (sourceType == "DATABASE") {
+        if (sourceType === "DATABASE") {
             location = camelSqlUri;
         }
         let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
@@ -732,6 +732,10 @@ export default {
         return this.getIdOfLink(response, "self");
     },
 
+    getIdOfPolicy(policyLink) {
+        return policyLink.substring(policyLink.lastIndexOf("/")+1, policyLink.length);
+    },
+
     getIdOfLink(response, linkName) {
         let url = response._links[linkName].href;
         return url.substring(url.lastIndexOf("/") + 1, url.length);
@@ -830,15 +834,8 @@ export default {
             "end": contractPeriodToValue
         });
         let contractId = this.getIdOfConnectorResponse(response);
+        response = this.createRules(policyDescriptions, contractId);
 
-        for (let policyDescription of policyDescriptions) {
-            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
-            response = await restUtils.callConnector("POST", "/api/rules", null, {
-                "value": JSON.stringify(ruleJson)
-            });
-            let ruleId = this.getIdOfConnectorResponse(response);
-            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
-        }
         response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]);
 
         response = await restUtils.callConnector("POST", "/api/representations", null, {
@@ -1311,14 +1308,27 @@ export default {
     async getNumberOfDataSources(){
         return (await this.getGenericEndpoints()).length;
     },
-    async createContract(name, desc, contractPeriodFromValue, contractPeriodToValue){
+    async createContract(name, desc, contractPeriodFromValue, contractPeriodToValue, policyDescriptions){
         let bodyData = {
             "title": name,
             "description": desc,
             "start": contractPeriodFromValue,
-            "end": contractPeriodToValue
+            "end": contractPeriodToValue,
         }
-        return (await restUtils.callConnector("POST", "/api/contracts", null, bodyData)).value;
+        let createdContract = await restUtils.callConnector("POST", "/api/contracts", null, bodyData);
+        let contractId = this.getIdOfConnectorResponse(createdContract);
+        let response = this.createRules(policyDescriptions, contractId);
+        return response.value;
+    },
+    async createRules(policyDescriptions, contractId) {
+        for (let policyDescription of policyDescriptions) {
+            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+            let response = await restUtils.callConnector("POST", "/api/rules", null, {
+                "value": JSON.stringify(ruleJson)
+            });
+            let ruleId = this.getIdOfConnectorResponse(response);
+            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
+        }
     },
     async getAllContracts() {
         let allContracts = [];
@@ -1329,15 +1339,28 @@ export default {
                 let start = policy.start.substring(0, 19).replace("T", " ");
                 let end = policy.end.substring(0, 19).replace("T", " ");
                 allContracts.push({
+                    id: this.getIdOfPolicy(policy._links.self.href),
                     title: policy.title,
+                    description: policy.description,
                     dateCreated: creationDate,
-                    validFrom: start,
-                    validTill: end
+                    contractStart: start,
+                    contractEnd: end
                 });
             }
         }
-        console.log(allContracts);
         return allContracts;
+    },
+    async updateContract(id, name, desc, contractPeriodFromValue, contractPeriodToValue) {
+        let bodyData = {
+            "title": name,
+            "description": desc,
+            "start": contractPeriodFromValue,
+            "end": contractPeriodToValue
+        }
+        return (await restUtils.callConnector("PUT", "/api/contracts/"+id, null, bodyData)).value;
+    },
+    async deleteContract(id) {
+        await restUtils.callConnector("DELETE", "/api/contracts/" + id);
     },
     async getNumberOfContracts() {
         return (await this.getAllContracts())

@@ -1,4 +1,5 @@
 import AddPolicyDialog from "@/pages/dataoffering/resources/addresource/policy/policyDialog/AddPolicyDialog.vue";
+import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 import { VDataTable, VIcon } from "vuetify/lib";
@@ -6,6 +7,7 @@ import { VDataTable, VIcon } from "vuetify/lib";
 export default {
     components: {
         AddPolicyDialog,
+        ConfirmationDialog,
         VDataTable,
         VIcon
     },
@@ -25,11 +27,11 @@ export default {
                 },
                 {
                     text: 'Contract start date',
-                    value: 'validFrom'
+                    value: 'contractStart'
                 },
                 {
                     text: 'Contract end date',
-                    value: 'validTill'
+                    value: 'contractEnd'
                 },
                 {
                     text: '',
@@ -67,6 +69,22 @@ export default {
             };
             this.$refs.confirmationDialog.callback = this.deleteCallback;
             this.$refs.confirmationDialog.dialog = true;
+        },
+        deleteCallback(choice, callbackData) {
+            if (choice === "yes") {
+                this.$root.$emit('showBusyIndicator', true);
+                this.deletePolicy(callbackData.item.id);
+            }
+        },
+        async deletePolicy(id) {
+            try {
+                await dataUtils.deleteContract(id);
+            }
+            catch (error) {
+                console.log("Error on deletePolicy(): ", error);
+                this.$root.$emit('error', "Delete policy template failed.");
+            }
+            this.getAllContracts();
         },
         editPolicyTemplate(item) {
             this.$refs.addPolicyDialog.edit(item);
