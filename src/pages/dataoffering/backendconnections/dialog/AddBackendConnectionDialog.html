@@ -24,7 +24,9 @@
                         href="https://international-data-spaces-association.github.io/DataspaceConnector/CommunicationGuide/v6/Camel"
                         target="_blank">(See
                         documentation)</a></p>
-                <v-text-field v-if="sourceType !== 'Other'" ref="tfURL" label="URL" v-model="url" :rules="urlRule.concat(requiredRule)">
+                <v-text-field v-if="sourceType === 'REST'" ref="tfURL" label="URL" v-model="url" :rules="urlRule.concat(requiredRule)">
+                </v-text-field>
+                <v-text-field v-if="sourceType === 'Database'" ref="tfURL" label="URL" v-model="url" :rules="requiredRule">
                 </v-text-field>
                 <v-text-field v-if="sourceType === 'Database'" label="Driver class name" v-model="driverClassName"
                     :rules="requiredRule">
