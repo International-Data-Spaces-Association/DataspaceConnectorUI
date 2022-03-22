@@ -608,8 +608,8 @@ export default {
             } else {
                 bodyData = {
                     "apiKey": {
-                        "key": authHeaderName,
-                        "value": authHeaderValue
+                        "key": authHeaderName == undefined ? "" : authHeaderName,
+                        "value": authHeaderValue == undefined ? "" : authHeaderValue
                     },
                     "type": sourceType,
                     "url": url
