@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [X.X.X]
 
 ### Added
+- Added a dashboard card showing the configured default endpoint
 
 ### Changes
 
