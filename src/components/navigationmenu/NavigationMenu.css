@@ -43,7 +43,7 @@
 }
 
 .navigation-menu .v-icon {
-  color: white !important;
+  color: var(--v-lighttext-base) !important;
   font-size: 40px;
 }
 
