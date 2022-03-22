@@ -539,14 +539,16 @@ export default {
 
     async createGenericEndpoint(title, desc, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
         let location = url;
-        if (sourceType === "DATABASE") {
+        if (sourceType === "OTHER") {
             location = camelSqlUri;
         }
         let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
             "location": location,
             "type": "GENERIC",
-            "title": title,
-            "description": desc
+            "additional": {
+                "title": title,
+                "description": desc
+            }
         });
         let genericEndpointId = this.getIdOfConnectorResponse(response);
 
