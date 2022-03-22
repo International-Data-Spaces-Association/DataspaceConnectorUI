@@ -86,7 +86,7 @@ export default {
                 this.$emit('backendConnectionSaved');
             } else {
                 try {
-                    await dataUtils.updateGenericEndpoint(this.currentEndpoint.id, this.currentEndpoint.dataSource.id, this.$data.name, this.$data.desc, this.$data.url,
+                    await dataUtils.updateGenericEndpoint(this.$data.name, this.$data.desc, this.currentEndpoint.id, this.currentEndpoint.dataSource.id, this.$data.url,
                         this.$data.username, this.$data.password, this.$data.authHeaderName,
                         this.$data.authHeaderValue, this.$data.sourceType.toUpperCase(), this.$data.driverClassName, this.$data.camelSqlUri);
                 } catch (error) {
@@ -100,8 +100,8 @@ export default {
             this.$data.editMode = true;
             this.$data.title = "Edit Backend Connection";
             this.$data.currentEndpoint = endpoint;
-            this.$data.name = endpoint.name;
-            this.$data.desc = endpoint.desc;
+            this.$data.name = endpoint.title;
+            this.$data.desc = endpoint.description;
             this.$data.url = endpoint.accessUrl;
             let dataSource;
             if (endpoint.dataSource.id === undefined) {

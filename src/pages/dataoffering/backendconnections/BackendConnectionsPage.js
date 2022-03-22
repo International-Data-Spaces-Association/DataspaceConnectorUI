@@ -13,6 +13,9 @@ export default {
         return {
             search: '',
             headers: [{
+                text: 'Name',
+                value: 'title'
+            },{
                 text: 'URL',
                 value: 'accessUrl'
             },

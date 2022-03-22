@@ -545,10 +545,8 @@ export default {
         let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
             "location": location,
             "type": "GENERIC",
-            "additional": {
-                "title": title,
-                "description": desc
-            }
+            "title": title,
+            "description": desc
         });
         let genericEndpointId = this.getIdOfConnectorResponse(response);
 
@@ -591,7 +589,9 @@ export default {
         }
         await restUtils.callConnector("PUT", "/api/endpoints/" + id, null, {
             "location": location,
-            "type": "GENERIC"
+            "type": "GENERIC",
+            "title": title,
+            "description": desc
         });
 
         if (sourceType != "OTHER") {

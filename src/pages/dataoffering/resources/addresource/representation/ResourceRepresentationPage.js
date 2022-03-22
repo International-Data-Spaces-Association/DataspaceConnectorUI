@@ -110,7 +110,7 @@ export default {
                         let ge = route.start;
                         let dataSource = ge.dataSource;
                         this.$data.selected.push(clientDataModel.createGenericEndpoint(ge.id, ge.location, dataSource.type,
-                            dataSource.id, dataSource.authentication.username, dataSource.authentication.password, ge.type));
+                            dataSource.id, dataSource.authentication.username, dataSource.authentication.password, ge.type, ge.title, ge.description));
                     }
                 } catch (error) {
                     errorUtils.showError(error, "Get resource route");

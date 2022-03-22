@@ -230,7 +230,7 @@ export default {
         return configuration;
     },
 
-    createGenericEndpoint(id, accessUrl, username, password, apiKey, type, driverClassName, camelSqlUri) {
+    createGenericEndpoint(id, accessUrl, username, password, apiKey, type, driverClassName, camelSqlUri, title, description) {
         let genericEndpoint = {};
 
         if (id === undefined) {
@@ -281,6 +281,18 @@ export default {
             genericEndpoint.camelSqlUri = camelSqlUri;
         }
 
+        if (title === undefined) {
+            genericEndpoint.title = "";
+        } else {
+            genericEndpoint.title = title;
+        }
+
+        if (description === undefined) {
+            genericEndpoint.description = "";
+        } else {
+            genericEndpoint.description = description;
+        }
+
         return genericEndpoint;
     },
 
@@ -299,7 +311,9 @@ export default {
         let username = undefined;
         let password = undefined;
         let apiKey = undefined;
-        return this.createGenericEndpoint(id, accessUrl, username, password, apiKey, genericEndpoint.type, driverClassName, camelSqlUri);
+        let title = genericEndpoint.title;
+        let description = genericEndpoint.description;
+        return this.createGenericEndpoint(id, accessUrl, username, password, apiKey, genericEndpoint.type, driverClassName, camelSqlUri, title, description);
     },
 
     createApp(id, title, description, type) {
