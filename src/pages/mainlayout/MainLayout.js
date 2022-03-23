@@ -2,13 +2,14 @@ import NavigationMenu from "@/components/navigationmenu/NavigationMenu.vue";
 import InfoBox from "@/components/infobox/InfoBox.vue";
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
-
+import { VSwitch } from "vuetify/lib/components";
 // import BrokersPage from "@/pages/brokers/BrokersPage.vue";
 
 export default {
     components: {
         NavigationMenu,
-        InfoBox
+        InfoBox,
+        VSwitch
     },
     data: () => ({
         drawer: null,
@@ -17,7 +18,8 @@ export default {
         blockNavigationMenu: false,
         uiTitle: "IDS Configuration Manager",
         errorSnackbar: false,
-        errorText: ""
+        errorText: "",
+        isExpert: false,
     }),
     watch: {
         $route() {

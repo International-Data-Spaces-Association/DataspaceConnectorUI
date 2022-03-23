@@ -3,6 +3,18 @@
         <navigation-menu />
         <v-overlay :value="blockNavigationMenu">
         </v-overlay>
+        <template v-slot:append>
+            <div class="pa-8 text-center">
+                    <v-switch
+                            ref="switch"
+                            inset
+                            v-model="isExpert"
+                            label="Expert"
+                            color="white"
+                            hide-details
+                    ></v-switch>
+            </div>
+        </template>
     </v-navigation-drawer>
 
     <v-app-bar app height="80">
