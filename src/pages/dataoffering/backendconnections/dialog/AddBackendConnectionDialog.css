@@ -8,9 +8,5 @@
 }
 
 .text-color{
-color: var(--v-primary-base);
-}
-
-.v-select__selection--comma {
-    color: #000000de !important;
+    color: var(--v-primary-base);
 }
