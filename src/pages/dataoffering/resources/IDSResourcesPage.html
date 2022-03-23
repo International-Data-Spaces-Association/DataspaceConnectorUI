@@ -1,16 +1,24 @@
 <div class="content">
   <div>
-    <v-btn elevation="1" color="primary" class="buttontext--text addresourcebutton" to="/addresource">Add Resource
-    </v-btn>
-    <v-row no-gutters>
-      <v-col cols="12" md="4" sm="12">
-        <v-select label="Filter by catalog" v-model="catalogId" :items="catalogs" item-text="title" item-value="id"
-          @change="catalogChanged">
-        </v-select>
-      </v-col>
-    </v-row>
-    <v-row no-gutters>
-      <v-col cols="12" md="4" sm="12">
+      <div class="text-h5 header-text ">
+         Data Offerings
+      </div>
+      <div class="text-subtitle-1 font-weight-regular">
+          Overview of all currently offered IDS resources.
+      </div>
+      <v-row>
+          <v-col md="2" sm="12" class="pb-0">
+              <v-btn elevation="1" color="primary" class="buttontext--text addresourcebutton" to="/addresource">Add Offering
+              </v-btn>
+          </v-col>
+      </v-row>
+    <v-row>
+        <v-col class="pb-0" cols="12" md="3" sm="6">
+            <v-select label="Filter by catalog" v-model="catalogId" :items="catalogs" item-text="title" item-value="id"
+                      @change="catalogChanged">
+            </v-select>
+        </v-col>
+      <v-col class="pb-0"  cols="12" md="3" sm="12">
         <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
       </v-col>
     </v-row>
