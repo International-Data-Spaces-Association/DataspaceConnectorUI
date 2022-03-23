@@ -29,16 +29,6 @@ export default {
     },
     mounted: function () {
     },
-    // watch: {
-    //     dialog() {
-    //         console.log("SHOW: ", this.$data.dialog);
-    //         if (this.$data.dialog) {
-    //             setTimeout(() => {
-    //                 this.$refs.tfURL.$el.focus();
-    //             })
-    //         }
-    //     }
-    // },
     methods: {
         addButtonClicked() {
             this.$data.editMode = false;

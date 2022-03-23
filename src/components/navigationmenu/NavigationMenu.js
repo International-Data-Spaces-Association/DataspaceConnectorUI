@@ -9,12 +9,6 @@ export default {
       activeRoute: null,
     }
   },
-  beforeUpdated: function(){
-    console.log("before updated");
-  },
-  updated: function(){
-    console.log("updated");
-  },
   mounted: function () {
     this.$data.activeRoute = this.$route;
   },
@@ -33,7 +27,6 @@ export default {
     getItems() {
       var items = [];
       for (let page of PageStructure.getPageStructure()) {
-        console.log(this.advancedView);
         if (page.showInMenu === undefined || page.showInMenu === true) {
           let subitems = undefined;
           if (page.subpages !== undefined && page.subpages.length > 0) {
