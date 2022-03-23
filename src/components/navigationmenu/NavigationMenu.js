@@ -1,13 +1,19 @@
 import PageStructure from "@/pages/PageStructure";
 
 export default {
-  props: [],
+  props: ['advancedView'],
   name: "navigation-menu",
   data() {
     return {
       items: this.getItems(),
-      activeRoute: null
+      activeRoute: null,
     }
+  },
+  beforeUpdated: function(){
+    console.log("before updated");
+  },
+  updated: function(){
+    console.log("updated");
   },
   mounted: function () {
     this.$data.activeRoute = this.$route;
@@ -18,9 +24,16 @@ export default {
     },
   },
   methods: {
+    filterItemsForDisplay(items) {
+      return items.filter(item => item.showInAdvancedViewOnly === false || (item.showInAdvancedViewOnly === true && this.advancedView));
+    },
+    isItemForDisplay(item) {
+      return item.showInAdvancedViewOnly === false || (item.showInAdvancedViewOnly === true && this.advancedView);
+    },
     getItems() {
       var items = [];
       for (let page of PageStructure.getPageStructure()) {
+        console.log(this.advancedView);
         if (page.showInMenu === undefined || page.showInMenu === true) {
           let subitems = undefined;
           if (page.subpages !== undefined && page.subpages.length > 0) {
@@ -30,7 +43,8 @@ export default {
                 subitems.push({
                   icon: subpage.icon,
                   title: PageStructure.getDisplayName(subpage.name),
-                  to: subpage.path
+                  to: subpage.path,
+                  showInAdvancedViewOnly: subpage.showInAdvancedViewOnly !== undefined && subpage.showInAdvancedViewOnly
                 });
               }
             }
@@ -43,6 +57,7 @@ export default {
             icon: page.icon,
             title: page.name,
             to: page.path,
+            showInAdvancedViewOnly: page.showInAdvancedViewOnly !== undefined && page.showInAdvancedViewOnly,
             subitems: subitems
           });
         }

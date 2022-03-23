@@ -19,7 +19,7 @@ export default {
         uiTitle: "IDS Configuration Manager",
         errorSnackbar: false,
         errorText: "",
-        isExpert: false,
+        advancedView: false,
     }),
     watch: {
         $route() {
@@ -31,7 +31,7 @@ export default {
     },
     mounted: function () {
         errorUtils.setVueRoot(this.$root);
-        if (process.env.VUE_APP_UI_TITLE !== undefined && process.env.VUE_APP_UI_TITLE != "#UI_TITLE#") {
+        if (process.env.VUE_APP_UI_TITLE !== undefined && process.env.VUE_APP_UI_TITLE !== "#UI_TITLE#") {
             this.$data.uiTitle = process.env.VUE_APP_UI_TITLE;
         }
         this.setTitleFromConnector();

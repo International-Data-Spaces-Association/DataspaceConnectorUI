@@ -1,6 +1,8 @@
 import DashboardPage from "@/pages/dashboard/DashboardPage.vue";
 import IDSResourcesPage from "@/pages/dataoffering/resources/IDSResourcesPage.vue";
 import AddResourcePage from "@/pages/dataoffering/resources/addresource/AddResourcePage.vue";
+import RoutesPage from "@/pages/dataoffering/routes/RoutesPage.vue";
+import AddRoutePage from "@/pages/dataoffering/routes/addroute/AddRoutePage.vue";
 import IDSDataConsumptionPage from "@/pages/dataconsumption/dataconsumption/IDSDataConsumptionPage.vue";
 import IDSResourcesPageConsumption from "@/pages/dataconsumption/resources/IDSResourcesPageConsumption.vue";
 import SettingsPage from "@/pages/settings/SettingsPage.vue";
@@ -10,6 +12,7 @@ import BrokersPage from "@/pages/brokers/BrokersPage.vue";
 import AppsPage from "@/pages/apps/AppsPage.vue";
 import AppStoresPage from "@/pages/appstores/AppStoresPage.vue";
 import InstallAppsPage from "@/pages/appstores/installapps/InstallAppsPage.vue";
+import ResourceCatalogsPage from "@/pages/dataoffering/resources/addresource/catalog/ResourceCatalogsPage.vue";
 
 export default {
     getPageStructure() {
@@ -44,6 +47,28 @@ export default {
                 path: "policytemplates",
                 name: "Policy Templates",
                 component: ResourcePolicyPage,
+                subpages: [],
+            }, {
+                path: "routesoffering",
+                name: "Routes (Offering)",
+                component: RoutesPage,
+                showInAdvancedViewOnly: true,
+                subpages: [{
+                    path: "addrouteoffering",
+                    name: "Add Route (Offering)",
+                    component: AddRoutePage,
+                    subpages: []
+                }, {
+                    path: "showroute",
+                    name: "Show Route",
+                    component: AddRoutePage,
+                    subpages: []
+                }]
+            }, {
+                path: "catalogsoffering",
+                name: "Catalogs (Offering)",
+                component: ResourceCatalogsPage,
+                showInAdvancedViewOnly: true,
                 subpages: []
             }]
         }, {
@@ -61,9 +86,24 @@ export default {
                     component: IDSDataConsumptionPage,
                     subpages: []
                 }]
+            }, {
+                path: "routesconsumption",
+                name: "Routes (Consumption)",
+                component: RoutesPage,
+                showInAdvancedViewOnly: true,
+                subpages: [{
+                    path: "addrouteconsumption",
+                    name: "Add Route (Consumption)",
+                    component: AddRoutePage,
+                    subpages: []
+                }, {
+                    path: "showroute",
+                    name: "Show Route",
+                    component: AddRoutePage,
+                    subpages: []
+                }]
             }]
         }, {
-
                 path: null,
                 name: "IDS Ecosystem",
                 icon: "mdi-briefcase-variant-outline",
@@ -75,21 +115,7 @@ export default {
                         icon: "mdi-apps",
                         component: AppsPage,
                         subpages: []
-                    }, {
-                        path: "appstores",
-                        name: "App Stores",
-                        icon: "mdi-storefront-outline",
-                        component: AppStoresPage,
-                        subpages: [{
-                            path: "installapps",
-                            name: "Install apps",
-                            component: InstallAppsPage,
-                            subpages: [],
-                            showInMenu: false
-                        }
-                        ]
                     },
-
                 ]
             },
             {
@@ -97,6 +123,7 @@ export default {
             name: "Settings",
             icon: "mdi-cog-outline",
             component: null,
+            showInAdvancedViewOnly: true,
             subpages: [
                 {
                     path: "general",
@@ -117,7 +144,22 @@ export default {
                     icon: "mdi-briefcase-variant-outline",
                     component: BrokersPage,
                     subpages: []
-                },]
+                },
+                {
+                    path: "appstores",
+                    name: "App Stores",
+                    icon: "mdi-storefront-outline",
+                    component: AppStoresPage,
+                    subpages: [{
+                        path: "installapps",
+                        name: "Install apps",
+                        component: InstallAppsPage,
+                        subpages: [],
+                        showInMenu: false
+                    }
+                    ]
+                }
+            ]
         }
         ];
     },

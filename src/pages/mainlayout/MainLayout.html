@@ -1,16 +1,16 @@
 <v-app id="inspire">
     <v-navigation-drawer overlay-color="white" v-model="drawer" width="324" app>
-        <navigation-menu />
+        <navigation-menu :advancedView="advancedView"/>
         <v-overlay :value="blockNavigationMenu">
         </v-overlay>
         <template v-slot:append>
-            <div class="pa-8 text-center">
+            <div class="pa-8 text-center text--white">
                     <v-switch
                             ref="switch"
                             inset
-                            v-model="isExpert"
-                            label="Expert"
-                            color="white"
+                            v-model="advancedView"
+                            label="Advanced View"
+                            color="accent"
                             hide-details
                     ></v-switch>
             </div>
@@ -20,7 +20,11 @@
     <v-app-bar app height="80">
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-        <v-toolbar-title class="main-title">{{uiTitle}}</v-toolbar-title>
+        <v-toolbar-title class="main-title text--black">
+            {{uiTitle}}
+            <div class="text-caption">A Connector to show ease of use of data sovereignty
+            </div>
+        </v-toolbar-title>
     </v-app-bar>
 
     <v-main>
@@ -31,12 +35,9 @@
                 </template>
             </v-breadcrumbs>
         </div>
-        <v-row no-gutters>
-            <v-col cols="12" md="9">
+        <v-row>
+            <v-col cols="12" md="12">
                 <router-view class="main-content"></router-view>
-            </v-col>
-            <v-col cols="12" md="2">
-                <info-box></info-box>
             </v-col>
         </v-row>
         <v-overlay :value="showBusyIndicator">
