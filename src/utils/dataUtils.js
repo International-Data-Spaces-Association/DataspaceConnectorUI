@@ -211,6 +211,7 @@ export default {
     async getResource(resourceId) {
         let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
         let policyNames = [];
+        let contractName = undefined;
         let contractPeriodFromValue = undefined;
         let contractPeriodToValue = undefined;
         let ruleIds = [];
@@ -218,6 +219,7 @@ export default {
         let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contracts;
         if (contracts.length > 0) {
             let contract = contracts[0];
+            contractName = contract.title;
             contractPeriodFromValue = contract.start;
             contractPeriodToValue = contract.end;
             let contractId = this.getIdOfConnectorResponse(contract);
@@ -243,7 +245,7 @@ export default {
         let brokers = await this.getBrokersOfResource(resourceId);
         let brokerUris = brokers.map(x => x.location);
         let catalogs = await this.getCatalogsOfResource(resourceId);
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, brokerUris, catalogs);
+        return clientDataModel.convertIdsResource(resource, representation, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, brokerUris, catalogs);
     },
 
     async getRequestedResource(resourceId) {
@@ -796,7 +798,7 @@ export default {
     },
 
     async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
-        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, file, genericEndpoint) {
+        templateTitle, contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, file, genericEndpoint) {
         try {
             let routeSelfLink = null;
             if (genericEndpoint != null) {
@@ -806,14 +808,14 @@ export default {
                 await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.selfLink + "\"");
             }
             let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink);
+                templateTitle, policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
         } catch (error) {
             errorUtils.showError(error, "Save resource");
         }
     },
 
-    async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
+    async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, templateTitle,
         contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
@@ -830,8 +832,8 @@ export default {
         for (let catalogId of catalogIds) {
             await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
         }
-
         response = await restUtils.callConnector("POST", "/api/contracts", null, {
+            "title": templateTitle,
             "start": contractPeriodFromValue,
             "end": contractPeriodToValue
         });
@@ -869,7 +871,7 @@ export default {
     },
 
     async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
-        keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
+        keywords, standardlicense, publisher, samples, templateTitle, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
         filetype, brokerUris, brokerDeleteUris, file, genericEndpoint, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
@@ -915,11 +917,11 @@ export default {
                 let ruleId = this.getIdOfConnectorResponse(response);
                 response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
                 response = await restUtils.callConnector("PUT", "/api/contracts/" + contractId, null, {
+                    "title": templateTitle,
                     "start": contractPeriodFromValue,
                     "end": contractPeriodToValue
                 });
             }
-            //
 
             await restUtils.callConnector("PUT", "/api/representations/" + representationId, null, {
                 "language": language,
@@ -1340,26 +1342,52 @@ export default {
                 let creationDate = policy.creationDate.substring(0, 19).replace("T", " ");
                 let start = policy.start.substring(0, 19).replace("T", " ");
                 let end = policy.end.substring(0, 19).replace("T", " ");
+                let rules = (await restUtils.callConnector("GET", "/api/contracts/" + this.getIdOfConnectorResponse(policy) + "/rules"))["_embedded"].rules;
                 allContracts.push({
-                    id: this.getIdOfPolicy(policy._links.self.href),
+                    id: this.getIdOfConnectorResponse(policy),
                     title: policy.title,
                     description: policy.description,
                     dateCreated: creationDate,
                     contractStart: start,
-                    contractEnd: end
+                    contractEnd: end,
+                    rules: rules
                 });
             }
         }
         return allContracts;
     },
-    async updateContract(id, name, desc, contractPeriodFromValue, contractPeriodToValue) {
+    async getRules(rules) {
+        let policyNames = [];
+        let ruleJsons = [];
+        let ruleIds = [];
+        let contractRules = {};
+        for (let rule of rules) {
+            let policyName = await this.getPolicyNameByPattern(rule.value);
+            policyNames.push(policyName);
+            ruleIds.push(this.getIdOfConnectorResponse(rule));
+            ruleJsons.push(JSON.parse(rule.value));
+            contractRules = {
+                policyNames: policyNames,
+                ruleIds: ruleIds,
+                ruleJsons: ruleJsons
+            }
+        }
+        return contractRules;
+    },
+    async updateContract(contractId, name, desc, contractPeriodFromValue, contractPeriodToValue, policyDescriptions) {
         let bodyData = {
             "title": name,
             "description": desc,
             "start": contractPeriodFromValue,
             "end": contractPeriodToValue
         }
-        return (await restUtils.callConnector("PUT", "/api/contracts/"+id, null, bodyData)).value;
+        let response = await restUtils.callConnector("PUT", "/api/contracts/" + contractId, null, bodyData).value;
+        let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
+            for (let rule of rules) {
+                await restUtils.callConnector("DELETE", "/api/rules/" + this.getIdOfConnectorResponse(rule));
+        }
+            response = await this.createRules(policyDescriptions, contractId);
+        return response;
     },
     async deleteContract(id) {
         await restUtils.callConnector("DELETE", "/api/contracts/" + id);

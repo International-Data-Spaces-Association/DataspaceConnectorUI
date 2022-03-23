@@ -2,7 +2,7 @@ import dataUtils from "@/utils/dataUtils";
 
 export default {
     createResource(url, id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
-        publisher, fileType, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, representationId, brokerUris, samples, catalogs) {
+        publisher, fileType, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, representationId, brokerUris, samples, catalogs) {
         let resource = {};
         if (url === undefined) {
             resource.url = "";
@@ -68,6 +68,11 @@ export default {
             resource.policyNames = [];
         } else {
             resource.policyNames = policyNames;
+        }
+        if (contractName === undefined) {
+            resource.contractName = "";
+        } else {
+            resource.contractName = contractName;
         }
         if (contractPeriodFromValue === undefined) {
             resource.contractPeriodFromValue = "";
@@ -350,7 +355,7 @@ export default {
         return this.createApp(id, idsApp.title, idsApp.description, "APP");
     },
 
-    convertIdsResource(idsResource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, brokerUris, catalogs) {
+    convertIdsResource(idsResource, representation, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, brokerUris, catalogs) {
         let title = idsResource.title;
         if (title.includes("\"@en")) {
             title = idsResource.title.substring(1, idsResource.title.lastIndexOf("\""));
@@ -368,7 +373,7 @@ export default {
 
         return this.createResource(idsResource._links.self.href, dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.paymentModality, idsResource.keywords,
-            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, representationId, brokerUris,
+            idsResource.version, idsResource.license, idsResource.publisher, fileType, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, representationId, brokerUris,
             idsResource.samples, catalogs);
     },
 

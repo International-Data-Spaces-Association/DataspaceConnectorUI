@@ -27,7 +27,7 @@ export default {
     watch: {
         policyDisplayName: function () {
             for (let name of dataUtils.getPolicyNames()) {
-                if (name == this.$data.policyDisplayName) {
+                if (name === this.$data.policyDisplayName) {
                     this.$refs[name].visibleclass = "";
                     // this.$refs[name].readonly = this.$data.readonly;
                 } else {
@@ -48,7 +48,7 @@ export default {
     },
     methods: {
         setPolicy() {
-            if ((this.policyName === undefined || this.policyName == "") && this.policyDescription === undefined) {
+            if ((this.policyName === undefined || this.policyName === "") && this.policyDescription === undefined) {
                 this.$refs[dataUtils.getPolicyNames()[0]].setPolicy(this.ruleJson);
             } else {
                 if (this.ruleJson === undefined) {

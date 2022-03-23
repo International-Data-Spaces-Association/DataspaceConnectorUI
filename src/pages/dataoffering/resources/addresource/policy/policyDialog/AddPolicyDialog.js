@@ -13,6 +13,7 @@ export default {
             dialog: false,
             title: "Add Policy Template",
             policyLines: [],
+            rules: [],
             policyType: null,
             readonly: false,
             valid: true,
@@ -163,11 +164,24 @@ export default {
             }
         },
         async edit(policy) {
+            this.$data.policyLines = [];
             this.$data.currentPolicy = policy;
             this.$data.name = policy.title;
             this.$data.desc = policy.description;
             this.$data.contractPeriodFromValue = new Date(policy.contractStart).toISOString().substring(0,10);
             this.$data.contractPeriodToValue = new Date(policy.contractEnd).toISOString().substring(0,10);
+            let contractRules = await dataUtils.getRules(policy.rules);
+            if(contractRules.policyNames !== undefined) {
+                for (let i = 0; i < contractRules.policyNames.length; i++) {
+                    let policyLine = {
+                        "name": Date.now() + i,
+                        "policyName": contractRules.policyNames[i],
+                        "ruleId": contractRules.ruleIds[i],
+                        "ruleJson": contractRules.ruleJsons[i]
+                    };
+                    this.$data.policyLines.push(policyLine);
+                }
+            }
             this.$data.dialog = true;
         },
         validationChanged() {
