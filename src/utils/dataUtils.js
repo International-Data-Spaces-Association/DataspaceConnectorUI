@@ -1300,7 +1300,10 @@ export default {
     async getNumberOfActiveIncomingAgreements(){
         return (await restUtils.callConnector("GET", "/api/agreements"))["_embedded"]
             .agreements
-            .filter((element) => element.confirmed === true && element.remoteId === "genesis")
+            .filter((element) => element.confirmed === true
+                && moment(JSON.parse(element["value"])["ids:contractEnd"]["@value"]).diff(moment()) > 0
+                && moment(JSON.parse(element["value"])["ids:contractStart"]["@value"]).diff(moment()) < 0
+                && element.remoteId === "genesis")
             .length;
     },
     async getNumberOfActiveOutgoingAgreements() {
