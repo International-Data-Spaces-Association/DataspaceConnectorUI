@@ -13,7 +13,7 @@ export default {
         return {
             search: '',
             headers: [{
-                text: 'Name',
+                text: 'Title',
                 value: 'title'
             },{
                 text: 'URL',
