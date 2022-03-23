@@ -108,6 +108,7 @@ export default {
                 name: "IDS Ecosystem",
                 icon: "mdi-briefcase-variant-outline",
                 component: null,
+                showInAdvancedViewOnly: true,
                 subpages: [
                    {
                         path: "apps",
