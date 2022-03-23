@@ -108,13 +108,20 @@ export default {
                 name: "IDS Ecosystem",
                 icon: "mdi-briefcase-variant-outline",
                 component: null,
-                showInAdvancedViewOnly: true,
                 subpages: [
                    {
                         path: "apps",
                         name: "Apps",
                         icon: "mdi-apps",
                         component: AppsPage,
+                        subpages: [],
+                        showInAdvancedViewOnly: true,
+                    },
+                    {
+                        path: "brokers",
+                        name: "Brokers",
+                        icon: "mdi-briefcase-variant-outline",
+                        component: BrokersPage,
                         subpages: []
                     },
                 ]
@@ -138,13 +145,6 @@ export default {
                     path: "backendconnectionsconsumption",
                     name: "Data Sinks",
                     component: null
-                },
-                {
-                    path: "brokers",
-                    name: "Brokers",
-                    icon: "mdi-briefcase-variant-outline",
-                    component: BrokersPage,
-                    subpages: []
                 },
                 {
                     path: "appstores",
