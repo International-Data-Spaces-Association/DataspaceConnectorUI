@@ -83,7 +83,7 @@ export default {
         async applyTemplateDetails() {
             this.$data.policyLines = [];
             for ( let templateName of this.$data.allContracts) {
-                if(templateName.id === this.$data.policyTemplateName) {
+                if(templateName.title === this.$data.policyTemplateName) {
                     this.$data.contractPeriodFromValue = new Date(templateName.contractStart).toISOString().substring(0,10);
                     this.$data.contractPeriodToValue = new Date(templateName.contractEnd).toISOString().substring(0,10);
                     let contractRules = await dataUtils.getRules(templateName.rules);
