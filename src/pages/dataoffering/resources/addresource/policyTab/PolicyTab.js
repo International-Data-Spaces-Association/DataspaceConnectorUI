@@ -69,7 +69,10 @@ export default {
             try {
                 this.$data.allContracts = await dataUtils.getAllContracts();
                 for ( let templateName of this.$data.allContracts) {
-                    this.$data.policyTemplateTitles.push(templateName.title)
+                    this.$data.policyTemplateTitles.push({
+                        templateId: templateName.id,
+                        templateName: templateName.title
+                    })
                 }
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
