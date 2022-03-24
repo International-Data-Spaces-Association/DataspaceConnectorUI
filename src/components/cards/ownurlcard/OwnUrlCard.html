@@ -10,7 +10,7 @@
     <template v-slot:button>
         <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-                  <v-btn class="no-uppercase btn-color" @click="copyCode" @mouseout="reset" style="color:black; cursor: pointer;" v-bind="attrs"
+                  <v-btn class="no-uppercase" color="primary" @click="copyCode" @mouseout="reset" v-bind="attrs"
                         v-on="on" depressed>Copy URL</v-btn>
             </template>
             <span>{{copyText}}</span>

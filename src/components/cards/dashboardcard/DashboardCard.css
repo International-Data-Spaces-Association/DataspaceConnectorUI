@@ -12,11 +12,6 @@
     text-transform: unset !important;
 }
 
-.btn-color{
-    background-color: var(--v-primary6-base) !important;
-    border-color: var(--v-primary6-base) !important;
-}
-
 .kpi_number {
     font-size: 60px;
     line-height: 60px;
