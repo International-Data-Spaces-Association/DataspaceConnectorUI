@@ -647,10 +647,6 @@ export default {
         return (await restUtils.callConnector("GET", "/api/routes/" + id + "/steps"))._embedded.routes;
     },
 
-    async getRouteOutput(id) {
-        return (await restUtils.callConnector("GET", "/api/routes/" + id + "/outputs"))._embedded.artifacts;
-    },
-
     async deleteRoute(id) {
         await restUtils.callConnector("DELETE", "/api/routes/" + id);
     },
@@ -1019,7 +1015,7 @@ export default {
     async getRouteErrors() {
         let response = await restUtils.callConnector("GET", "/api/camel/routes/error");
         // response is not a valid JSON "{[]}", so remove brackets and parse.
-        response = response.replaceAll("{", "").replaceAll("}", "");
+        response = response.substring(1, response.length - 1);
         return JSON.parse(response);
     },
 
@@ -1056,8 +1052,12 @@ export default {
             });
             let subRouteId = this.getIdOfConnectorResponse(response);
             let subRouteSelfLink = response._links.self.href;
-            await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/start", null, "\"" + startSelfLink + "\"");
-            await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/end", null, "\"" + endSelfLink + "\"");
+            if (startSelfLink !== undefined && startSelfLink != null) {
+                await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/start", null, "\"" + startSelfLink + "\"");
+            }
+            if (endSelfLink !== undefined && endSelfLink != null) {
+                await restUtils.callConnector("PUT", "/api/routes/" + subRouteId + "/endpoint/end", null, "\"" + endSelfLink + "\"");
+            }
             await restUtils.callConnector("POST", "/api/routes/" + routeId + "/steps", null, [subRouteSelfLink]);
         } catch (error) {
             errorUtils.showError(error, "Save Route");

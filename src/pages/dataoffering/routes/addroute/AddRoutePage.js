@@ -78,23 +78,21 @@ export default {
                 let artifact = await dataUtils.getArtifactOfRoute(id);
                 if (routeSteps.length == 0) {
                     await this.addNode(route.start, undefined, 20, 150);
-                    await this.addNode(undefined, artifact, 220, 150);
+                    await this.addNode(undefined, artifact, 220, 210);
                     let startNodeId = dataUtils.getNodeIdByObjectId(route.start.id, this.$refs.chart.internalNodes);
                     let endNodeId = dataUtils.getNodeIdByObjectId(artifact.id, this.$refs.chart.internalNodes);
                     let isLeftToRight = true;
                     this.loadConnection(startNodeId, route.start.id, endNodeId, artifact.id, isLeftToRight);
                 } else {
                     for (let subRoute of routeSteps) {
-                        let subRouteId = dataUtils.getIdOfConnectorResponse(subRoute);
                         let start = subRoute.start;
                         let end = subRoute.end;
                         let output = undefined;
-                        let outputs = await dataUtils.getRouteOutput(subRouteId);
-                        if (outputs.length > 0) {
-                            output = outputs[0];
-                        }
                         await this.addNode(start, output, parseInt(subRoute.additional.startCoordinateX),
                             parseInt(subRoute.additional.startCoordinateY));
+                        if (end == null) {
+                            output = artifact;
+                        }
                         await this.addNode(end, output, parseInt(subRoute.additional.endCoordinateX),
                             parseInt(subRoute.additional.endCoordinateY));
                         let startNodeObjectId = start.id;
@@ -119,7 +117,7 @@ export default {
 
         },
         async addNode(endpoint, output, x, y) {
-            if (endpoint === undefined) {
+            if (endpoint === undefined || endpoint == null) {
                 if (output !== undefined) {
                     let artifactId = dataUtils.getIdOfConnectorResponse(output);
                     let idsResource = await dataUtils.getResourceOfArtifact(artifactId);
@@ -328,13 +326,17 @@ export default {
                     if (sourceNode.type == "backendnode") {
                         let genericEndpoint = sourceNode.genericEndpoint;
                         dataUtils.addRouteStart(routeId, genericEndpoint.selfLink);
+                    } else if (sourceNode.type == "appnode") {
+                        dataUtils.addRouteStart(routeId, connections[0].sourceEndpointSelfLink);
                     }
                     var destinationNode = dataUtils.getNode(connections[connections.length - 1].destination.id, nodes);
                     if (destinationNode.type == "idsendpointnode") {
                         await dataUtils.createResourceAndArtifact(destinationNode, routeSelfLink);
                     }
                 }
-                await this.saveRouteSteps(routeId, connections, nodes);
+                if (connections.length > 1) {
+                    await this.saveRouteSteps(routeId, connections, nodes);
+                }
             } catch (error) {
                 errorUtils.showError(error, "Save route");
                 hasError = true;
