@@ -316,8 +316,8 @@ export default {
         let username = undefined;
         let password = undefined;
         let apiKey = undefined;
-        let title = genericEndpoint.title;
-        let description = genericEndpoint.description;
+        let title = genericEndpoint.additional !== undefined ? genericEndpoint.additional.title : undefined;
+        let description = genericEndpoint.additional !== undefined ? genericEndpoint.additional.description : undefined;
         return this.createGenericEndpoint(id, accessUrl, username, password, apiKey, genericEndpoint.type, driverClassName, camelSqlUri, title, description);
     },
 
