@@ -78,6 +78,14 @@
                                 {{ downloadLink }}
                             </v-btn>
                         </div>
+                        <div v-if="requestContractResponse['confirmed'] == true">
+                            <h3 class="data-consumption-page-title">Dispatch via routes:</h3>
+                            <v-select label="Routes" v-model="selectedRoutes" :items="routes" item-text="description"
+                                item-value="selfLink" multiple chips></v-select>
+                            <v-btn color="secondary" @click.native="dispatchViaRoutes">
+                                Dispatch
+                            </v-btn>
+                        </div>
                     </v-col>
                 </v-row>
             </div>

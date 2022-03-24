@@ -726,16 +726,6 @@ export default {
         return await restUtils.callConnector("GET", "/connector/address");
     },
 
-    async createConnectorEndpoint(artifactId) {
-        let connectorAddress = (await this.getConnectorAddress());
-        let accessUrl = connectorAddress + "/api/artifacts/" + artifactId + "/data";
-
-        return await restUtils.callConnector("POST", "/api/endpoints", null, {
-            "location": accessUrl,
-            "type": "CONNECTOR"
-        });
-    },
-
     getIdOfConnectorResponse(response) {
         return this.getIdOfLink(response, "self");
     },
@@ -1261,6 +1251,13 @@ export default {
 
         let response = await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
         return response;
+    },
+
+    async dispatchViaRoutes(artifactId, routes) {
+        let params = {
+            "routeIds": routes
+        };
+        await restUtils.callConnector("GET", "/api/artifacts/" + artifactId + "/data/", params);
     },
 
     convertToClientResource(resource, resources) {
