@@ -1,5 +1,5 @@
 .v-navigation-drawer {
-  background-color: var(--v-primary-base) !important;
+  background-color: var(--v-navigationBackground-base) !important;
 }
 
 .navigation-menu {
