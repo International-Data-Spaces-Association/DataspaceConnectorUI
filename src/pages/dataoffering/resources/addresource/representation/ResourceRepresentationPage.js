@@ -4,7 +4,6 @@ import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 import validationUtils from "../../../../../utils/validationUtils";
-import clientDataModel from "../../../../../datamodel/clientDataModel";
 
 export default {
     components: {
@@ -108,9 +107,13 @@ export default {
                     } else {
                         this.$data.active_tab = 1;
                         let ge = route.start;
-                        let dataSource = ge.dataSource;
-                        this.$data.selected.push(clientDataModel.createGenericEndpoint(ge.id, ge.location, dataSource.type,
-                            dataSource.id, dataSource.authentication.username, dataSource.authentication.password, ge.type, ge.title, ge.description));
+                        for (let backendConnection of this.$data.backendConnections) {
+                            if (backendConnection.id == ge.id) {
+                                this.$data.selected.push(backendConnection);
+                                break;
+                            }
+                        }
+
                     }
                 } catch (error) {
                     errorUtils.showError(error, "Get resource route");

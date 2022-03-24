@@ -653,10 +653,6 @@ export default {
         return (await restUtils.callConnector("GET", "/api/routes/" + id + "/steps"))._embedded.routes;
     },
 
-    async getRouteOutput(id) {
-        return (await restUtils.callConnector("GET", "/api/routes/" + id + "/outputs"))._embedded.artifacts;
-    },
-
     async deleteRoute(id) {
         await restUtils.callConnector("DELETE", "/api/routes/" + id);
     },
@@ -1023,7 +1019,7 @@ export default {
     async getRouteErrors() {
         let response = await restUtils.callConnector("GET", "/api/camel/routes/error");
         // response is not a valid JSON "{[]}", so remove brackets and parse.
-        response = response.replaceAll("{", "").replaceAll("}", "");
+        response = response.substring(1, response.length - 1);
         return JSON.parse(response);
     },
 

@@ -142,6 +142,15 @@ function serializer(replacer, cycleReplacer) {
     }
 }
 
+app.get('/testdata', function (req, res) {
+    res.send("TEST DATA FROM BACKEND");
+});
+
+app.post('/testdata', function (req, res) {
+    console.log(">>> TEST DATA RECEIVED: ", req.body);
+    res.send("OK");
+});
+
 app.get('/', function (req, res) {
     res.sendFile(path.join(vuePath, "index.html"));
 });

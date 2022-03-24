@@ -43,7 +43,7 @@ export default {
 
             if (connection.sourceEndpointSelfLink === undefined) {
                 if (sourceEndpoints.length == 1) {
-                    this.$data.outputSelfLink = this.getItem(sourceEndpoints[0]).id;
+                    this.$data.outputSelfLink = this.getItem(sourceEndpoints[0]).selfLink;
                     autoSetOutput = true;
                 } else {
                     this.$data.outputSelfLink = null;
@@ -53,7 +53,7 @@ export default {
             }
             if (connection.destinationEndpointSelfLink === undefined) {
                 if (destEndpoints.length == 1) {
-                    this.$data.inputSelfLink = this.getItem(destEndpoints[0]).id;
+                    this.$data.inputSelfLink = this.getItem(destEndpoints[0]).selfLink;
                     autoSetInput = true;
                 } else {
                     this.$data.inputSelfLink = null;

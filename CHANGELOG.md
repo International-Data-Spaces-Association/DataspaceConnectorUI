@@ -27,15 +27,26 @@ This release requires the most recent DSC version 7.0.4, which introduces `addit
 
 ### Fixed
 - Screen refreshing when pressing enter in URL field at Data Consumption view
+- Raised comparison of variable from value to type level
+- Validation for database URLs does not require http prefix
 
 ### Removed
 - Unused imports
 
-### Changes
+
+## [9.1.0] - 2022-03-25 (compatible with DSC 7.0.0)
+
+### Added
+- Data Offering: Add local data resources
+- Backend Connections: Source type "Other"
+- Added route creator (Data Offering & Consumption) with apps
+- Data Consumption: Dispatch data via routes
 
 ### Fixes
 - Raised comparison of variable from value to type level
-- Validation for database URLs does not require http prefix
+- Removed sensitive data in HTTP response
+
+
 
 ## [9.0.0] - 2022-02-07 (compatible with DSC 7.0.0)
 

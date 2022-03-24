@@ -59,7 +59,7 @@ export default {
                     component: AddRoutePage,
                     subpages: []
                 }, {
-                    path: "showroute",
+                    path: "showrouteoffering",
                     name: "Show Route",
                     component: AddRoutePage,
                     subpages: []
@@ -97,7 +97,7 @@ export default {
                     component: AddRoutePage,
                     subpages: []
                 }, {
-                    path: "showroute",
+                    path: "showrouteconsumption",
                     name: "Show Route",
                     component: AddRoutePage,
                     subpages: []

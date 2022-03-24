@@ -123,7 +123,11 @@ export default {
             }
         },
         editItem(item) {
-            this.$router.push('showroute?routeId=' + item.id);
+            if (this.$data.isOffering) {
+                this.$router.push('showrouteoffering?routeId=' + item.id);
+            } else {
+                this.$router.push('showrouteconsumption?routeId=' + item.id);
+            }
         }
     }
 };
