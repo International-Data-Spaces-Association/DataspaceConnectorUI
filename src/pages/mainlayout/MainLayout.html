@@ -4,13 +4,14 @@
         <v-overlay :value="blockNavigationMenu">
         </v-overlay>
         <template v-slot:append>
-            <div class="pa-8 text-center text--white">
+            <div class="advancedView pa-3 text-center text--white">
                     <v-switch
                             ref="switch"
                             inset
                             v-model="advancedView"
                             label="Advanced View"
-                            color="accent"
+                            color="--v-lighttext-base"
+                            class="pa-0 ma-0"
                             hide-details
                     ></v-switch>
             </div>
