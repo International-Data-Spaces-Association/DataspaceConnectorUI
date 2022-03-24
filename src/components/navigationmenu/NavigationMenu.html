@@ -1,7 +1,7 @@
 <!--  -->
 <v-list class="navigation-menu">
   <div class="navigation-menu-header">
-    <img src="@/assets/images/fraunhofer_logo_schwarz.png" class="fraunhofer-logo"></img>
+    <img src="@/assets/images/fraunhofer_logo_schwarz.png" class="custom-logo"></img>
   </div>
   <template v-for="item in items">
     <v-list-item v-if="!item.subitems && isItemForDisplay(item)" v-bind:class="{activeitem: isActive(item)}" :key="item.title" :to="item.to">
