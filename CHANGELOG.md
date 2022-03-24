@@ -2,15 +2,40 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
-## [X.X.X]
+## [Unreleased]
+This release requires the most recent DSC version 7.0.4, which introduces `addition` field in EndpointView
 
 ### Added
-- Added a dashboard card showing the configured default endpoint
+- Dashboard card showing the configured default endpoint
+- Dashboard card showing number of data sources
+- Dashboard card showing number of policy templates
+- Dashboard card showing number of data offerings
+- Dashboard card showing number of active contracts
+- Customizable background color of navigation via variable `navigationBackground`
+- Health check in backend for kubernetes probes
+- Title and description for data sources
+- Templating for policies (Contract + Rules as templates)
+- Advanced mode toggle (bottom of navigation bar) hiding in default's disabled mode several navigation bar elements
+
+### Changed
+- Raised comparison of variable from value to type level
+- Navigation elements structure
+- Adjusted shown fields in Add and Adjust popup for Backend Connections
+- Colors of dropdown elements
+- Sticky logo on small screens showing scroll bar in navigation
+- Moved CSS styles from App.vue into separate default.css
+
+### Fixed
+- Screen refreshing when pressing enter in URL field at Data Consumption view
+
+### Removed
+- Unused imports
 
 ### Changes
 
 ### Fixes
 - Raised comparison of variable from value to type level
+- Validation for database URLs does not require http prefix
 
 ## [9.0.0] - 2022-02-07 (compatible with DSC 7.0.0)
 
