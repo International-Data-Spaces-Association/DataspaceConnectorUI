@@ -12,12 +12,6 @@
     color: var(--v-text1-base);
 }
 
-.v-toolbar__content .v-icon {
-    color: var(--v-text1-base) !important;
-}
-.v-navigation-drawer label.theme--light.v-label{
-    color:var(--v-lighttext-base);
-}
 .advancedView{
-background-color: var(--v-text4-base);
+    background-color: var(--v-text4-base);
 }
