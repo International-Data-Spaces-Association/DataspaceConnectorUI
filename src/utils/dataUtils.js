@@ -361,6 +361,41 @@ export default {
         return statusClass;
     },
 
+    async startApp(appId) {
+        try {
+            let params = {
+                "type": "START"
+            };
+            await restUtils.callConnector("PUT", "/api/apps/" + appId + "/actions", params);
+        } catch (error) {
+            errorUtils.showError(error, "Start app");
+        }
+    },
+
+    async stopApp(appId) {
+        try {
+            let params = {
+                "type": "STOP"
+            };
+            await restUtils.callConnector("PUT", "/api/apps/" + appId + "/actions", params);
+        } catch (error) {
+            errorUtils.showError(error, "Stop app");
+        }
+    },
+
+    async isAppRunning(appId) {
+        let appStatus = null;
+        try {
+            let params = {
+                "type": "DESCRIBE"
+            };
+            appStatus = JSON.parse((await restUtils.callConnector("PUT", "/api/apps/" + appId + "/actions", params)).value).State.Running;
+        } catch (error) {
+            appStatus = false;
+        }
+        return appStatus;
+    },
+
     async deleteApp(appId) {
         await restUtils.callConnector("DELETE", "/api/apps/" + appId);
     },
@@ -430,7 +465,7 @@ export default {
         let response = [];
         let endpoints = (await restUtils.callConnector("GET", "/api/apps/" + id + "/endpoints"))._embedded.endpoints;
         for (let endpoint of endpoints) {
-            if (endpoint.endpointType == endpointType) {
+            if (endpointType === undefined || endpoint.endpointType == endpointType) {
                 endpoint.id = this.getIdOfConnectorResponse(endpoint);
                 endpoint.selfLink = endpoint._links.self.href;
                 response.push(endpoint);
@@ -670,7 +705,7 @@ export default {
     },
 
     async getGenericEndpoint(id) {
-        let idsGenericEndpoint = await await restUtils.callConnector("GET", "/api/endpoints/" + id);
+        let idsGenericEndpoint = await restUtils.callConnector("GET", "/api/endpoints/" + id);
         let dataSources = (await restUtils.callConnector("GET", "/api/datasources"))._embedded.datasources;
         let dataSource = null;
         let datasourceId = this.getIdOfLink(idsGenericEndpoint, "datasource");
@@ -685,16 +720,19 @@ export default {
         return endpoint;
     },
 
-    getAppIdOfEndpointId() {
+    async getAppIdOfEndpointId(endpointId) {
         let result = null;
-        // for (let app of apps) {
-        //     for (let appEndpoint of app.appEndpointList[1]) {
-        //         if (endpointId == appEndpoint[1].endpoint["@id"]) {
-        //             result = app.id;
-        //             break;
-        //         }
-        //     }
-        // }
+        let apps = await this.getApps();
+        for (let app of apps) {
+            let appEndpoints = await this.getAppEndpoints(app.id);
+
+            for (let appEndpoint of appEndpoints) {
+                if (endpointId == appEndpoint.id) {
+                    result = app.id;
+                    break;
+                }
+            }
+        }
         return result;
     },
 
@@ -709,12 +747,25 @@ export default {
         return node;
     },
 
-    getNodeIdByObjectId(endpointId, nodes) {
+    async getSelfLinkOfEndpoint(endpointId) {
+        let endpoint = await restUtils.callConnector("GET", "/api/endpoints/" + endpointId);
+        return endpoint._links.self.href;
+    },
+
+    async getNodeIdByObjectId(endpointId, nodes) {
         let nodeId = null;
         for (let n of nodes) {
-            if (n.objectId == endpointId) {
-                nodeId = n.id;
-                break;
+            if (n.type == "appnode") {
+                let appId = await this.getAppIdOfEndpointId(endpointId);
+                if (n.objectId == appId) {
+                    nodeId = n.id;
+                    break;
+                }
+            } else {
+                if (n.objectId == endpointId) {
+                    nodeId = n.id;
+                    break;
+                }
             }
         }
         return nodeId;

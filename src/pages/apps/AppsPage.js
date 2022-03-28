@@ -12,8 +12,8 @@ export default {
         return {
             search: '',
             headers: [{
-                text: 'ID',
-                value: 'id'
+                text: 'Title',
+                value: 'title'
             },
             {
                 text: 'Keywords',
@@ -34,6 +34,8 @@ export default {
                 width: 170
             }
             ],
+            sortBy: 'title',
+            sortDesc: false,
             apps: [],
             appToAppStoreMap: [],
             selected: []
@@ -62,6 +64,7 @@ export default {
                 this.$data.apps = [];
                 for (var app of response) {
                     let appID = dataUtils.getIdOfConnectorResponse(app);
+                    let isAppRunning = await dataUtils.isAppRunning(appID);
                     let appStore;
                     if (this.$data.appToAppStoreMap[appID] === undefined) {
                         appStore = "";
@@ -71,9 +74,11 @@ export default {
                     this.$data.apps.push({
                         app: app,
                         id: appID,
+                        title: app.title,
                         keywords: app.keywords.join(", "),
                         publisher: app.publisher,
-                        appStore: appStore
+                        appStore: appStore,
+                        isAppRunning: isAppRunning
                     });
                 }
             } catch (error) {
@@ -81,6 +86,18 @@ export default {
             }
             this.$forceUpdate();
             this.$root.$emit('showBusyIndicator', false);
+        },
+        async startApp(item) {
+            this.$root.$emit('showBusyIndicator', true);
+            await dataUtils.startApp(item.id);
+            this.$root.$emit('showBusyIndicator', false);
+            this.getApps();
+        },
+        async stopApp(item) {
+            this.$root.$emit('showBusyIndicator', true);
+            await dataUtils.stopApp(item.id);
+            this.$root.$emit('showBusyIndicator', false);
+            this.getApps();
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete App";
