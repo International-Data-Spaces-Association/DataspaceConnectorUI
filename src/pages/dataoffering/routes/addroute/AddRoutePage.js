@@ -79,10 +79,11 @@ export default {
                 if (routeSteps.length == 0) {
                     await this.addNode(route.start, undefined, 20, 150);
                     await this.addNode(undefined, artifact, 220, 210);
-                    let startNodeId = dataUtils.getNodeIdByObjectId(route.start.id, this.$refs.chart.internalNodes);
-                    let endNodeId = dataUtils.getNodeIdByObjectId(artifact.id, this.$refs.chart.internalNodes);
+                    let startNodeId = await dataUtils.getNodeIdByObjectId(route.start.id, this.$refs.chart.internalNodes);
+                    let endNodeId = await dataUtils.getNodeIdByObjectId(artifact.id, this.$refs.chart.internalNodes);
                     let isLeftToRight = true;
-                    this.loadConnection(startNodeId, route.start.id, endNodeId, artifact.id, isLeftToRight);
+                    let startEndpointSelfLink = await dataUtils.getSelfLinkOfEndpoint(route.start.id);
+                    this.loadConnection(startNodeId, startEndpointSelfLink, endNodeId, null, isLeftToRight);
                 } else {
                     for (let subRoute of routeSteps) {
                         let start = subRoute.start;
@@ -103,8 +104,8 @@ export default {
                         if (end.type == "APP") {
                             // endNodeObjectId = dataUtils.getAppIdOfEndpointId(end.id);
                         }
-                        let startNodeId = dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
-                        let endNodeId = dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
+                        let startNodeId = await dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
+                        let endNodeId = await dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
                         let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
                         this.loadConnection(startNodeId, start.id, endNodeId, end.id, isLeftToRight);
                     }
@@ -127,14 +128,14 @@ export default {
                 if (!this.nodeExists(endpoint.id)) {
                     await this.addBackend(endpoint.id, x, y);
                 }
-            } else if (endpoint.type == "APP") {
-                // let appId = dataUtils.getAppIdOfEndpointId(endpoint.id);
-                // if (!this.nodeExists(appId)) {
-                //     await this.addApp(appId, x, y);
-                // }
+            } else if (endpoint.type == null || endpoint.type == "APP") { // endpoint.type == null is a workaround, because AppEndpoints currently have type:null in DSC
+                let appId = await dataUtils.getAppIdOfEndpointId(endpoint.id);
+                if (!this.nodeExists(appId)) {
+                    await this.addApp(appId, x, y);
+                }
             }
         },
-        loadConnection(startNodeId, startEndpointId, endNodeId, endEndpointId, isLeftToRight) {
+        loadConnection(startNodeId, startEndpointSelfLink, endNodeId, endEndpointSelfLink, isLeftToRight) {
             // TODO Load connector position from backend (currently not saved).
             let connectorId = +new Date();
             let connection = {
@@ -142,12 +143,12 @@ export default {
                     id: startNodeId,
                     position: isLeftToRight ? "right" : "left",
                 },
-                sourceEndpointSelfLink: startEndpointId,
+                sourceEndpointSelfLink: startEndpointSelfLink,
                 destination: {
                     id: endNodeId,
                     position: isLeftToRight ? "left" : "right",
                 },
-                destinationEndpointSelfLink: endEndpointId,
+                destinationEndpointSelfLink: endEndpointSelfLink,
                 id: connectorId,
                 type: "pass",
                 name: "Pass",
@@ -170,8 +171,8 @@ export default {
                     this.$refs.editIDSEndpointDialog.show(node);
                 }
             } else {
-                this.$refs.editNodeDialog.title = "Edit " + node.name;
-                this.$refs.editNodeDialog.dialog = true;
+                // this.$refs.editNodeDialog.title = "Edit " + node.name;
+                // this.$refs.editNodeDialog.dialog = true;
             }
         },
         addConnection(connection) {

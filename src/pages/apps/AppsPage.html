@@ -8,31 +8,33 @@
     <v-row no-gutters>
         <v-col cols="12" md="11" sm="12">
             <v-data-table v-model="selected" :headers="headers" :items="apps" :items-per-page="5" :search="search"
-                item-key="id" no-data-text="No apps available">
+                item-key="id" no-data-text="No apps available" :sort-by.sync="sortBy" :sort-desc.sync="sortDesc">
                 <template v-slot:item.actions="{ item }">
-                    <!-- <v-tooltip bottom>
+                    <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-icon class="mr-2" @click="startApp(item)" v-bind="attrs" v-on="on">
+                            <v-icon class="mr-2" @click="startApp(item)" v-bind="attrs" v-on="on"
+                                :disabled="item.isAppRunning">
                                 mdi-play
                             </v-icon>
                         </template>
-                        <span>Install apps</span>
+                        <span>Start app</span>
                     </v-tooltip>
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-icon class="mr-2" @click="stopApp(item)" v-bind="attrs" v-on="on">
+                            <v-icon class="mr-2" @click="stopApp(item)" v-bind="attrs" v-on="on"
+                                :disabled="!item.isAppRunning">
                                 mdi-stop
                             </v-icon>
                         </template>
-                        <span>Edit app store</span>
-                    </v-tooltip> -->
+                        <span>Stop app</span>
+                    </v-tooltip>
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
                             <v-icon @click="deleteItem(item)" v-bind="attrs" v-on="on">
                                 mdi-delete
                             </v-icon>
                         </template>
-                        <span>Delete app store</span>
+                        <span>Delete app</span>
                     </v-tooltip>
                 </template>
             </v-data-table>
