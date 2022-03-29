@@ -2,18 +2,8 @@ import PolicyLine from "@/components/policy/PolicyLine.vue";
 import { VBtn, VContainer } from "vuetify/lib/components";
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
-import {VCard} from "vuetify/lib/components";
-import {VCardTitle} from "vuetify/lib/components";
-import {VList} from "vuetify/lib/components";
-import {VListItem} from "vuetify/lib/components";
-import {VListItemContent} from "vuetify/lib/components";
-import {VListItemSubtitle} from "vuetify/lib/components";
-import {VForm} from "vuetify/lib/components";
-import {VCardText} from "vuetify/lib/components";
-import {VDatePicker} from "vuetify/lib/components";
-import {VMenu} from "vuetify/lib/components";
-import {VTextField} from "vuetify/lib/components";
-import {VCheckbox} from "vuetify/lib/components";
+import {VCard, VCheckbox, VCardTitle, VList, VListItem, VListItemContent, VListItemSubtitle,
+    VForm, VCardText, VDatePicker, VMenu, VTextField } from "vuetify/lib/components";
 import validationUtils from "@/utils/validationUtils";
 
 export default {
