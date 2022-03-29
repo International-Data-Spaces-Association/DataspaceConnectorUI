@@ -574,8 +574,8 @@ export default {
         return genericEndpoints;
     },
 
-    async createGenericEndpoint(title, desc, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
-        let location = url;
+    async createGenericEndpoint(title, desc, sqlQuery, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
+        let location = sqlQuery;
         if (sourceType === "OTHER") {
             location = camelSqlUri;
         }
@@ -606,7 +606,7 @@ export default {
             };
         }
         if (sourceType === "DATABASE") {
-            bodyData.url = url;
+            bodyData.url = sqlQuery;
             bodyData.driverClassName = driverClassName;
         }
 
@@ -1033,9 +1033,9 @@ export default {
         let contractPeriodToValue = resource.contractPeriodToValue;
         let filetype = resource.fileType;
         let brokerUris = resource.brokerUris;
-
+        let contractName = resource.contractName;
         let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-            policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, null, routeSelfLink);
+            contractName, policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, null, routeSelfLink);
 
         await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
     },
@@ -1338,8 +1338,9 @@ export default {
             contractPeriodFromValue = resource["ids:contractOffer"][0]["ids:contractStart"]["@value"];
             contractPeriodToValue = resource["ids:contractOffer"][0]["ids:contractEnd"]["@value"];
         }
+        let contractName = resource.contractName;
         let clientResource = clientDataModel.createResource(resource["@id"], id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
-            publisher, fileType, "", contractPeriodFromValue, contractPeriodToValue, null);
+            publisher, fileType, contractName, "", contractPeriodFromValue, contractPeriodToValue, null);
         clientResource.idsResource = resource;
         resources.push(clientResource);
     },

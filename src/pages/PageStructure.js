@@ -127,7 +127,7 @@ export default {
                 ]
             },
             {
-            path: "settings",
+            path: null,
             name: "Settings",
             icon: "mdi-cog-outline",
             component: null,

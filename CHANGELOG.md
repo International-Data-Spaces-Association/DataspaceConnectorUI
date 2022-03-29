@@ -46,8 +46,6 @@ This release requires the most recent DSC version 7.0.4, which introduces `addit
 - Raised comparison of variable from value to type level
 - Removed sensitive data in HTTP response
 
-
-
 ## [9.0.0] - 2022-02-07 (compatible with DSC 7.0.0)
 
 ### Added

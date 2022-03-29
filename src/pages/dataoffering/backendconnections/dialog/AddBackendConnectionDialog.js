@@ -11,11 +11,11 @@ export default {
             title: "",
             name:"",
             desc:"",
-            url: null,
+            sqlQuery: null,
             sourceType: "Database",
             sourceTypes: ["Database", "REST", "Other"],
             driverClassName: null,
-            camelSqlUri: null,
+            camelUri: null,
             username: null,
             password: null,
             authHeaderName: null,
@@ -36,7 +36,7 @@ export default {
             this.$data.currentEndpoint = null;
             this.$data.name="";
             this.$data.desc="";
-            this.$data.url = "";
+            this.$data.sqlQuery = "";
             this.$data.sourceType = this.$data.sourceTypes[0];
             this.$data.driverClassName = "";
             this.$data.username = "";
@@ -67,8 +67,8 @@ export default {
             }
             if (this.$data.currentEndpoint == null) {
                 try {
-                    await dataUtils.createGenericEndpoint(this.$data.name, this.$data.desc, this.$data.url, this.$data.username, this.$data.password, this.$data.authHeaderName,
-                        this.$data.authHeaderValue, this.$data.sourceType.toUpperCase(), this.$data.driverClassName, this.$data.camelSqlUri);
+                    await dataUtils.createGenericEndpoint(this.$data.name, this.$data.desc, this.$data.sqlQuery, this.$data.username, this.$data.password, this.$data.authHeaderName,
+                        this.$data.authHeaderValue, this.$data.sourceType.toUpperCase(), this.$data.driverClassName, this.$data.camelUri);
                 } catch (error) {
                     console.log("Error on saveBackendConnection(): ", error);
                     this.$root.$emit('error', "Create backend connection failed.");
@@ -76,9 +76,9 @@ export default {
                 this.$emit('backendConnectionSaved');
             } else {
                 try {
-                    await dataUtils.updateGenericEndpoint(this.$data.name, this.$data.desc, this.currentEndpoint.id, this.currentEndpoint.dataSource.id, this.$data.url,
+                    await dataUtils.updateGenericEndpoint(this.$data.name, this.$data.desc, this.currentEndpoint.id, this.currentEndpoint.dataSource.id, this.$data.sqlQuery,
                         this.$data.username, this.$data.password, this.$data.authHeaderName,
-                        this.$data.authHeaderValue, this.$data.sourceType.toUpperCase(), this.$data.driverClassName, this.$data.camelSqlUri);
+                        this.$data.authHeaderValue, this.$data.sourceType.toUpperCase(), this.$data.driverClassName, this.$data.camelUri);
                 } catch (error) {
                     console.log("Error on saveBackendConnection(): ", error);
                     this.$root.$emit('error', "Update backend connection failed.");
@@ -92,7 +92,7 @@ export default {
             this.$data.currentEndpoint = endpoint;
             this.$data.name = endpoint.title;
             this.$data.desc = endpoint.description;
-            this.$data.url = endpoint.accessUrl;
+            this.$data.sqlQuery = endpoint.accessUrl;
             let dataSource;
             if (endpoint.dataSource.id === undefined) {
                 dataSource = {
@@ -104,10 +104,10 @@ export default {
             this.$data.sourceType = dataSource.type;
             if (dataSource.type.toUpperCase() === "DATABASE") {
                 this.$data.driverClassName = endpoint.driverClassName;
-                this.$data.camelSqlUri = endpoint.camelSqlUri;
+                this.$data.camelUri = endpoint.camelSqlUri;
             } else {
                 this.$data.driverClassName = "";
-                this.$data.camelSqlUri = "";
+                this.$data.camelUri = "";
             }
             this.$data.username = endpoint.username;
             this.$data.password = endpoint.password;
