@@ -26,13 +26,13 @@
                         documentation)</a></p>
                 <v-text-field v-if="sourceType === 'REST'" ref="tfURL" label="URL" v-model="url" :rules="urlRule.concat(requiredRule)">
                 </v-text-field>
-                <v-text-field v-if="sourceType === 'Database'" ref="tfURL" label="SQL Query" v-model="sqlQuery" :rules="requiredRule">
+                <v-text-field v-if="sourceType === 'Database'" ref="tfURL" label="URL" v-model="url" :rules="requiredRule">
                 </v-text-field>
                 <v-text-field v-if="sourceType === 'Database'" label="Driver class name" v-model="driverClassName"
                     :rules="requiredRule">
                 </v-text-field>
-                <v-text-field v-if="sourceType === 'Other'" label="Camel component URI (query)"
-                    v-model="camelUri"></v-text-field>
+                <v-text-field v-if="sourceType === 'Other'" label="Camel SQL component URI (query)"
+                    v-model="camelSqlUri"></v-text-field>
                 <div class="text-h6 text-color" v-if="sourceType === 'Database' || sourceType === 'REST'">Authentication</div>
                 <v-tabs class="pagestab" v-model="active_tab" ref="pagestab" hide-slider
                     v-if="sourceType === 'Database' || sourceType === 'REST'">
