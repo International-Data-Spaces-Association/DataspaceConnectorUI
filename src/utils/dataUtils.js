@@ -268,7 +268,7 @@ export default {
             }
         }
 
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
+        return clientDataModel.convertIdsResource(resource, representation, "", policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
     },
 
     async getPolicyNameByPattern(pattern) {
@@ -855,7 +855,7 @@ export default {
                 await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.selfLink + "\"");
             }
             let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                templateTitle, policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink);
+                policyDescriptions, templateTitle, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
         } catch (error) {
             errorUtils.showError(error, "Save resource");
@@ -1035,7 +1035,7 @@ export default {
         let brokerUris = resource.brokerUris;
         let contractName = resource.contractName;
         let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-            contractName, policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, null, routeSelfLink);
+            policyDescriptions, contractName, contractPeriodFromValue, contractPeriodToValue, filetype, null, routeSelfLink);
 
         await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
     },
