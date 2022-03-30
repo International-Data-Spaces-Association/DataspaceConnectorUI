@@ -64,7 +64,9 @@ export default {
         async installApp(item) {
             this.$root.$emit('showBusyIndicator', true);
             try {
-                await dataUtils.installApp(this.$data.appStore.location, item.app["@id"]);
+                let app = await dataUtils.installApp(this.$data.appStore.location, item.app["@id"]);
+                let appId = dataUtils.getIdOfConnectorResponse(app);
+                await dataUtils.startApp(appId);
             } catch (error) {
                 errorUtils.showError(error, "Install app");
             }

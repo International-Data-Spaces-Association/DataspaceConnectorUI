@@ -97,17 +97,21 @@ export default {
                         await this.addNode(end, output, parseInt(subRoute.additional.endCoordinateX),
                             parseInt(subRoute.additional.endCoordinateY));
                         let startNodeObjectId = start.id;
-                        if (start.type == "APP") {
-                            // startNodeObjectId = dataUtils.getAppIdOfEndpointId(start.id);
+                        let startEndpointSelfLink = await dataUtils.getSelfLinkOfEndpoint(start.id);
+
+                        if (end == null) {
+                            let startNodeId = await dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
+                            let endNodeId = await dataUtils.getNodeIdByObjectId(artifact.id, this.$refs.chart.internalNodes);
+                            let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
+                            this.loadConnection(startNodeId, startEndpointSelfLink, endNodeId, null, isLeftToRight);
+                        } else {
+                            let endNodeObjectId = end.id;
+                            let endEndpointSelfLink = await dataUtils.getSelfLinkOfEndpoint(end.id);
+                            let startNodeId = await dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
+                            let endNodeId = await dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
+                            let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
+                            this.loadConnection(startNodeId, startEndpointSelfLink, endNodeId, endEndpointSelfLink, isLeftToRight);
                         }
-                        let endNodeObjectId = end.id;
-                        if (end.type == "APP") {
-                            // endNodeObjectId = dataUtils.getAppIdOfEndpointId(end.id);
-                        }
-                        let startNodeId = await dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
-                        let endNodeId = await dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
-                        let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
-                        this.loadConnection(startNodeId, start.id, endNodeId, end.id, isLeftToRight);
                     }
                 }
             } catch (error) {

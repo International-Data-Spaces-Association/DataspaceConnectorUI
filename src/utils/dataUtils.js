@@ -410,7 +410,7 @@ export default {
             "recipient": appStoreUrl,
             "appId": appUrl
         }
-        await restUtils.callConnector("POST", "/api/ids/app", params);
+        return await restUtils.callConnector("POST", "/api/ids/app", params);
     },
 
     async getAppsOfAppStore(appStoreUrl) {
