@@ -844,8 +844,8 @@ export default {
         }
     },
 
-    async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
-        templateTitle, contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, file, genericEndpoint) {
+    async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, templateTitle, policyDescriptions,
+        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, file, genericEndpoint) {
         try {
             let routeSelfLink = null;
             if (genericEndpoint != null) {
