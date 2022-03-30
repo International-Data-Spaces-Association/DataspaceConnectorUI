@@ -1085,6 +1085,10 @@ export default {
         await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + startSelfLink + "\"");
     },
 
+    async addRouteEnd(routeId, endSelfLink) {
+        await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/end", null, "\"" + endSelfLink + "\"");
+    },
+
     async addRouteStartAndEnd(routeId, startId, endId) {
         await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + startId + "\"");
         await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/end", null, "\"" + endId + "\"");
