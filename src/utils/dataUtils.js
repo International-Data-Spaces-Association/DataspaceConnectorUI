@@ -395,6 +395,13 @@ export default {
     },
 
     async deleteApp(appId) {
+        if (await this.isAppRunning(appId)) {
+            await this.stopApp(appId);
+        }
+        let params = {
+            "type": "DELETE"
+        };
+        await restUtils.callConnector("PUT", "/api/apps/" + appId + "/actions", params);
         await restUtils.callConnector("DELETE", "/api/apps/" + appId);
     },
 
