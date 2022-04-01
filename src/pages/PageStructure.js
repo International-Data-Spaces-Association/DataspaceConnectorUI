@@ -43,10 +43,6 @@ export default {
                     subpages: []
                 }]
             }, {
-                path: "backendconnectionsoffering",
-                name: "Backend Connections (Offering)",
-                component: BackendConnectionsPage
-            }, {
                 path: "routesoffering",
                 name: "Routes (Offering)",
                 component: RoutesPage,
@@ -83,10 +79,6 @@ export default {
                     subpages: []
                 }]
             }, {
-                path: "backendconnectionsconsumption",
-                name: "Backend Connections (Consumption)",
-                component: null
-            }, {
                 path: "routesconsumption",
                 name: "Routes (Consumption)",
                 component: RoutesPage,
@@ -102,6 +94,11 @@ export default {
                     subpages: []
                 }]
             }]
+        }, {
+            path: "backendconnections",
+            name: "Backend Connections",
+            icon: "mdi-database",
+            component: BackendConnectionsPage
         }, {
             path: "brokers",
             name: "Brokers",

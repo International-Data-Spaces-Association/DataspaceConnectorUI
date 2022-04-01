@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file.
 - Data Consumption: Dispatch data via routes
 - Start/Stop apps
 
+### Changes
+- Moved "Backend Connections" to the top menu level
+
 ### Fixes
 - Raised comparison of variable from value to type level
 - Removed sensitive data in HTTP response

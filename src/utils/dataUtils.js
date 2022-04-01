@@ -691,8 +691,10 @@ export default {
 
     async deleteRoute(id) {
         let artifact = await restUtils.callConnector("GET", "/api/routes/" + id + "/output");
-        let artifactId = this.getIdOfConnectorResponse(artifact);
-        await restUtils.callConnector("DELETE", "/api/artifacts/" + artifactId);
+        if (typeof artifact == 'object') {
+            let artifactId = this.getIdOfConnectorResponse(artifact);
+            await restUtils.callConnector("DELETE", "/api/artifacts/" + artifactId);
+        }
         await restUtils.callConnector("DELETE", "/api/routes/" + id);
     },
 
