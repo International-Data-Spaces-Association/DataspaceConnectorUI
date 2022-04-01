@@ -39,13 +39,29 @@ export default {
             errorSortBy: 'timestamp',
             sortDesc: true,
             routes: [],
-            routeErrors: []
+            routeErrors: [],
+            isOffering: true,
+            addRouteButtonTo: ""
         };
     },
+    watch: {
+        $route() {
+            this.init();
+        }
+    },
     mounted: function () {
-        this.getRoutes();
+        this.init();
     },
     methods: {
+        async init() {
+            this.$data.isOffering = this.$route.path.includes("offering");
+            if (this.$data.isOffering) {
+                this.$data.addRouteButtonTo = "/addrouteoffering";
+            } else {
+                this.$data.addRouteButtonTo = "/addrouteconsumption";
+            }
+            this.getRoutes();
+        },
         async getRoutes() {
             this.$root.$emit('showBusyIndicator', true);
             await this.getRouteErrors();
@@ -53,7 +69,15 @@ export default {
                 let response = await dataUtils.getRoutes();
                 this.$data.routes = [];
                 for (let route of response) {
-                    if (route.additional.routeType == "Route") {
+                    let showInList = false;
+                    if (route.deploy == "Camel") {
+                        if (this.$data.isOffering && route.start !== undefined && route.start != null) {
+                            showInList = true;
+                        } else if (!this.$data.isOffering && (route.start === undefined || route.start == null)) {
+                            showInList = true;
+                        }
+                    }
+                    if (showInList) {
                         this.$data.routes.push({
                             id: dataUtils.getIdOfConnectorResponse(route),
                             description: route.description
@@ -80,7 +104,7 @@ export default {
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Route";
-            this.$refs.confirmationDialog.text = "Are you sure you want to delete the route '" + item.description + "'?";
+            this.$refs.confirmationDialog.text = "Are you sure you want to delete the route '" + item.description + "'? (The linked artifact will also be deleted)";
             this.$refs.confirmationDialog.callbackData = {
                 item: item
             };
@@ -99,7 +123,11 @@ export default {
             }
         },
         editItem(item) {
-            this.$router.push('showroute?routeId=' + item.id);
+            if (this.$data.isOffering) {
+                this.$router.push('showrouteoffering?routeId=' + item.id);
+            } else {
+                this.$router.push('showrouteconsumption?routeId=' + item.id);
+            }
         }
     }
 };

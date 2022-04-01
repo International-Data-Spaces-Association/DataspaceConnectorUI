@@ -10,12 +10,12 @@
                     <v-col cols="12" md="5" class="selectcol">
                         <v-select
                             v-if="sourceNode == null || sourceNode.type != 'idsendpointnode' || outputs.length > 0"
-                            label="Output" v-model="outputId" :items="outputs" item-text="text" item-value="id"
-                            :rules="defaultRule">
+                            label="Output" v-model="outputSelfLink" :items="outputs" item-text="text"
+                            item-value="selfLink" :rules="defaultRule">
                         </v-select>
                         <div v-if="outputs.length == 0 && sourceNode != null && sourceNode.type == 'idsendpointnode'"
                             class="noselectdiv">
-                            {{ sourceNode.text }}</div>
+                            {{ sourceNode.name }}</div>
                     </v-col>
                     <v-col cols="12" md="2" class="inoutarrowcol">
                         <div class="inoutarrow">➞</div>
@@ -23,12 +23,12 @@
                     <v-col cols="12" md="5" class="selectcol">
                         <v-select
                             v-if="destinationNode == null || destinationNode.type != 'idsendpointnode' || inputs.length > 0"
-                            label="Input" v-model="inputId" :items="inputs" item-text="text" item-value="id"
+                            label="Input" v-model="inputSelfLink" :items="inputs" item-text="text" item-value="selfLink"
                             :rules="defaultRule">
                         </v-select>
                         <div v-if="inputs.length == 0 && destinationNode != null && destinationNode.type == 'idsendpointnode'"
                             class="noselectdiv">
-                            {{ destinationNode.text }}</div>
+                            {{ destinationNode.name }}</div>
                     </v-col>
                 </v-row>
             </v-form>

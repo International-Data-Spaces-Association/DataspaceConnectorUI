@@ -26,14 +26,23 @@ export default {
             description: "",
             saveMessage: "",
             isNewRoute: false,
-            routeValid: true
+            routeValid: true,
+            numOfBackendNodes: 0,
+            numOfIdsEndpointNodes: 0,
+            isOffering: true
         };
+    },
+    watch: {
+        $route() {
+            this.init();
+        }
     },
     mounted: function () {
         this.init();
     },
     methods: {
         async init() {
+            this.$data.isOffering = this.$route.path.includes("offering");
             let response = [];
             try {
                 response = await dataUtils.getGenericEndpoints();
@@ -41,6 +50,12 @@ export default {
                 errorUtils.showError(error, "Get backend connections");
             }
             this.$data.backendConnections = response;
+            try {
+                response = await dataUtils.getApps();
+            } catch (error) {
+                errorUtils.showError(error, "Get apps");
+            }
+            this.$data.apps = response;
             this.$data.saveMessage = "";
             this.validateRoute();
             if (this.$route.query.routeId === undefined) {
@@ -60,31 +75,112 @@ export default {
                 this.$data.currentRoute = route;
                 this.$data.description = route.description;
                 let routeSteps = await dataUtils.getRouteSteps(id);
-                for (let subRoute of routeSteps) {
-                    let subRouteId = dataUtils.getIdOfConnectorResponse(subRoute);
-                    let start = subRoute.start;
-                    let end = subRoute.end;
-                    let output = undefined;
-                    let outputs = await dataUtils.getRouteOutput(subRouteId);
-                    if (outputs.length > 0) {
-                        output = outputs[0];
+                let artifact;
+                if (this.$data.isOffering) {
+                    artifact = await dataUtils.getArtifactOfRoute(id);
+                } else {
+                    artifact = undefined;
+                }
+
+                if (routeSteps.length == 0) {
+                    if (this.$data.isOffering) {
+                        await this.addNode(route.start, undefined, 20, 150);
+                        await this.addNode(undefined, artifact, 220, 210);
+                        let startNodeId = await dataUtils.getNodeIdByObjectId(route.start.id, this.$refs.chart.internalNodes);
+                        let endNodeId = await dataUtils.getNodeIdByObjectId(artifact.id, this.$refs.chart.internalNodes);
+                        let isLeftToRight = true;
+                        let startEndpointSelfLink = await dataUtils.getSelfLinkOfEndpoint(route.start.id);
+                        this.loadConnection(startNodeId, startEndpointSelfLink, endNodeId, null, isLeftToRight);
+                    } else {
+                        // For Data Consumption only add an empty artifact node (no data needed).
+                        let node = {
+                            id: +new Date(),
+                            x: 220,
+                            y: 210,
+                            name: 'Artifact',
+                            type: 'idsendpointnode',
+                            objectId: null,
+                        };
+                        this.$refs.chart.add(node);
+                        let startNodeId = node.id;
+                        await this.addNode(route.end, artifact, 20, 150);
+                        let endNodeId = await dataUtils.getNodeIdByObjectId(route.end.id, this.$refs.chart.internalNodes);
+                        let isLeftToRight = false;
+                        let endEndpointSelfLink = await dataUtils.getSelfLinkOfEndpoint(route.end.id);
+                        this.loadConnection(startNodeId, null, endNodeId, endEndpointSelfLink, isLeftToRight);
                     }
-                    await this.addNode(start, output, parseInt(subRoute.additional.startCoordinateX),
-                        parseInt(subRoute.additional.startCoordinateY));
-                    await this.addNode(end, output, parseInt(subRoute.additional.endCoordinateX),
-                        parseInt(subRoute.additional.endCoordinateY));
-                    let startNodeObjectId = start.id;
-                    if (start.type == "APP") {
-                        // startNodeObjectId = dataUtils.getAppIdOfEndpointId(start.id);
+                } else {
+                    for (let subRoute of routeSteps) {
+                        if (this.$data.isOffering) {
+                            let start = subRoute.start;
+                            let end = subRoute.end;
+                            let output = undefined;
+                            await this.addNode(start, output, parseInt(subRoute.additional.startCoordinateX),
+                                parseInt(subRoute.additional.startCoordinateY));
+                            if (end == null) {
+                                output = artifact;
+                            }
+                            await this.addNode(end, output, parseInt(subRoute.additional.endCoordinateX),
+                                parseInt(subRoute.additional.endCoordinateY));
+                            let startNodeObjectId = start.id;
+                            let startEndpointSelfLink = await dataUtils.getSelfLinkOfEndpoint(start.id);
+
+                            if (end == null) {
+                                let startNodeId = await dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
+                                let endNodeId = await dataUtils.getNodeIdByObjectId(artifact.id, this.$refs.chart.internalNodes);
+                                let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
+                                this.loadConnection(startNodeId, startEndpointSelfLink, endNodeId, null, isLeftToRight);
+                            } else {
+                                let endNodeObjectId = end.id;
+                                let endEndpointSelfLink = await dataUtils.getSelfLinkOfEndpoint(end.id);
+                                let startNodeId = await dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
+                                let endNodeId = await dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
+                                let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
+                                this.loadConnection(startNodeId, startEndpointSelfLink, endNodeId, endEndpointSelfLink, isLeftToRight);
+                            }
+                        } else {
+                            let start = subRoute.start;
+                            let end = subRoute.end;
+                            let output = undefined;
+                            let startNodeId = null;
+                            let startEndpointSelfLink = null;
+                            if (start == null) {
+                                // For Data Consumption only add an empty artifact node (no data needed).
+                                let node = {
+                                    id: +new Date(),
+                                    x: parseInt(subRoute.additional.startCoordinateX),
+                                    y: parseInt(subRoute.additional.startCoordinateY),
+                                    name: 'Artifact',
+                                    type: 'idsendpointnode',
+                                    objectId: null,
+                                };
+                                this.$refs.chart.add(node);
+                                startNodeId = node.id;
+                            } else {
+                                await this.addNode(start, output, parseInt(subRoute.additional.startCoordinateX),
+                                    parseInt(subRoute.additional.startCoordinateY));
+                                let startNodeObjectId = start.id;
+                                startEndpointSelfLink = await dataUtils.getSelfLinkOfEndpoint(start.id);
+                                startNodeId = await dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
+                            }
+
+                            await this.addNode(end, output, parseInt(subRoute.additional.endCoordinateX),
+                                parseInt(subRoute.additional.endCoordinateY));
+
+
+                            if (end == null) {
+                                let endNodeId = await dataUtils.getNodeIdByObjectId(artifact.id, this.$refs.chart.internalNodes);
+                                let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
+                                this.loadConnection(startNodeId, startEndpointSelfLink, endNodeId, null, isLeftToRight);
+                            } else {
+                                let endNodeObjectId = end.id;
+                                let endEndpointSelfLink = await dataUtils.getSelfLinkOfEndpoint(end.id);
+                                let endNodeId = await dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
+                                let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
+                                this.loadConnection(startNodeId, startEndpointSelfLink, endNodeId, endEndpointSelfLink, isLeftToRight);
+                            }
+                        }
                     }
-                    let endNodeObjectId = end.id;
-                    if (end.type == "APP") {
-                        // endNodeObjectId = dataUtils.getAppIdOfEndpointId(end.id);
-                    }
-                    let startNodeId = dataUtils.getNodeIdByObjectId(startNodeObjectId, this.$refs.chart.internalNodes);
-                    let endNodeId = dataUtils.getNodeIdByObjectId(endNodeObjectId, this.$refs.chart.internalNodes);
-                    let isLeftToRight = parseInt(subRoute.additional.startCoordinateX) < parseInt(subRoute.additional.endCoordinateX);
-                    this.loadConnection(startNodeId, start.id, endNodeId, end.id, isLeftToRight);
                 }
             } catch (error) {
                 errorUtils.showError(error, "Get route");
@@ -94,24 +190,24 @@ export default {
 
         },
         async addNode(endpoint, output, x, y) {
-            if (endpoint.type == "GENERIC") {
+            if (endpoint === undefined || endpoint == null) {
+                if (output !== undefined) {
+                    let artifactId = dataUtils.getIdOfConnectorResponse(output);
+                    let idsResource = await dataUtils.getResourceOfArtifact(artifactId);
+                    await this.addIdsEndpoint(output.id, x, y, dataUtils.getIdOfConnectorResponse(idsResource));
+                }
+            } else if (endpoint.type == "GENERIC") {
                 if (!this.nodeExists(endpoint.id)) {
                     await this.addBackend(endpoint.id, x, y);
                 }
-            } else if (endpoint.type == "APP") {
-                // let appId = dataUtils.getAppIdOfEndpointId(endpoint.id);
-                // if (!this.nodeExists(appId)) {
-                //     await this.addApp(appId, x, y);
-                // }
-            } else if (endpoint.type == "CONNECTOR") {
-                if (!this.nodeExists(endpoint.id) && output !== undefined) {
-                    let artifactId = dataUtils.getIdOfConnectorResponse(output);
-                    let idsResource = await dataUtils.getResourceOfArtifact(artifactId);
-                    await this.addIdsEndpoint(endpoint.id, x, y, dataUtils.getIdOfConnectorResponse(idsResource));
+            } else if (endpoint.type == null || endpoint.type == "APP") { // endpoint.type == null is a workaround, because AppEndpoints currently have type:null in DSC
+                let appId = await dataUtils.getAppIdOfEndpointId(endpoint.id);
+                if (!this.nodeExists(appId)) {
+                    await this.addApp(appId, x, y);
                 }
             }
         },
-        loadConnection(startNodeId, startEndpointId, endNodeId, endEndpointId, isLeftToRight) {
+        loadConnection(startNodeId, startEndpointSelfLink, endNodeId, endEndpointSelfLink, isLeftToRight) {
             // TODO Load connector position from backend (currently not saved).
             let connectorId = +new Date();
             let connection = {
@@ -119,12 +215,12 @@ export default {
                     id: startNodeId,
                     position: isLeftToRight ? "right" : "left",
                 },
-                sourceEndpointId: startEndpointId,
+                sourceEndpointSelfLink: startEndpointSelfLink,
                 destination: {
                     id: endNodeId,
                     position: isLeftToRight ? "left" : "right",
                 },
-                destinationEndpointId: endEndpointId,
+                destinationEndpointSelfLink: endEndpointSelfLink,
                 id: connectorId,
                 type: "pass",
                 name: "Pass",
@@ -143,10 +239,12 @@ export default {
         },
         handleEditNode(node) {
             if (node.type == "idsendpointnode") {
-                this.$refs.editIDSEndpointDialog.show(node);
+                if (this.$data.isOffering) {
+                    this.$refs.editIDSEndpointDialog.show(node);
+                }
             } else {
-                this.$refs.editNodeDialog.title = "Edit " + node.name;
-                this.$refs.editNodeDialog.dialog = true;
+                // this.$refs.editNodeDialog.title = "Edit " + node.name;
+                // this.$refs.editNodeDialog.dialog = true;
             }
         },
         addConnection(connection) {
@@ -166,7 +264,7 @@ export default {
         },
         newIdsEndpointNodeSaved(node) {
             let x = this.getXForNewNode();
-            let y = 150;
+            let y = 210;
             node.x = x;
             node.y = y;
             this.$refs.chart.add(node);
@@ -212,27 +310,39 @@ export default {
             return x;
         },
         async addApp(id, x, y) {
-            console.log(">>> addApp: ", id, x, y);
-            // if (x === undefined) {
-            //     x = this.getXForNewNode();
-            // }
-            // if (y === undefined) {
-            //     y = 150;
-            // }
-            // var app = await dataUtils.getApp(id);
-            // this.$refs.chart.add({
-            //     id: +new Date(),
-            //     x: x,
-            //     y: y,
-            //     name: 'App',
-            //     type: 'appnode',
-            //     text: app.title,
-            //     objectId: id,
-            // });
-            // this.validateRoute();
+            if (x === undefined) {
+                x = this.getXForNewNode();
+            }
+            if (y === undefined) {
+                y = 150;
+            }
+            var app = await dataUtils.getApp(id);
+            this.$refs.chart.add({
+                id: +new Date(),
+                x: x,
+                y: y,
+                name: 'App',
+                type: 'appnode',
+                text: app.title,
+                objectId: id,
+            });
+            this.validateRoute();
         },
         showAddIdsEndpointDialog() {
-            this.$refs.editIDSEndpointDialog.show(null);
+            if (this.$data.isOffering) {
+                this.$refs.editIDSEndpointDialog.show(null);
+            } else {
+                // For Data Consumption only add an empty artifact node (no data needed).
+                let node = {
+                    id: +new Date(),
+                    x: 0,
+                    y: 0,
+                    name: 'Artifact',
+                    type: 'idsendpointnode',
+                    objectId: null,
+                };
+                this.newIdsEndpointNodeSaved(node);
+            }
         },
         async addIdsEndpoint(id, x, y, resourceId) {
             if (x === undefined) {
@@ -249,9 +359,8 @@ export default {
                 id: +new Date(),
                 x: x,
                 y: y,
-                name: 'IDS Endpoint',
+                name: 'Artifact',
                 type: 'idsendpointnode',
-                text: "IDS Endpoint",
                 objectId: id,
                 resource: resource
             });
@@ -275,37 +384,63 @@ export default {
             this.addConnection(connection);
         },
         async handleChartSave(nodes, connections) {
-            var connectionsCopy = [];
-            for (var connection of connections) {
+            let hasError = false;
+            let connectionsCopy = [];
+            for (let connection of connections) {
                 connectionsCopy.push(connection);
             }
             try {
                 let response = await dataUtils.createNewRoute(this.$data.description);
                 let routeId = dataUtils.getIdOfConnectorResponse(response);
-                await this.saveRouteSteps(routeId, connections, nodes);
+                let routeSelfLink = response._links.self.href;
+
+                if (this.$data.isOffering) {
+                    let sourceNode = dataUtils.getNode(connections[0].source.id, nodes);
+                    if (sourceNode.type == "backendnode") {
+                        let genericEndpoint = sourceNode.genericEndpoint;
+                        dataUtils.addRouteStart(routeId, genericEndpoint.selfLink);
+                    } else if (sourceNode.type == "appnode") {
+                        dataUtils.addRouteStart(routeId, connections[0].sourceEndpointSelfLink);
+                    }
+                    let destinationNode = dataUtils.getNode(connections[connections.length - 1].destination.id, nodes);
+                    if (destinationNode.type == "idsendpointnode") {
+                        await dataUtils.createResourceAndArtifact(destinationNode, routeSelfLink);
+                    }
+                }
+                if (connections.length > 1) {
+                    await this.saveRouteSteps(routeId, connections, nodes);
+                }
+                if (!this.$data.isOffering) {
+                    dataUtils.addRouteEnd(routeId, connections[0].destinationEndpointSelfLink);
+                }
             } catch (error) {
                 errorUtils.showError(error, "Save route");
+                hasError = true;
             }
+            if (!hasError) {
+                this.$data.receivedResults = [];
+                this.$data.saveMessage = "Successfully saved."
+            }
+            this.$root.$emit('showBusyIndicator', false);
         },
         async saveRouteSteps(routeId, connections, nodes) {
             let error = false;
-            let genericEndpoint = null;
+            // let genericEndpoint = null;
             for (var connection of connections) {
                 var sourceNode = dataUtils.getNode(connection.source.id, nodes);
                 var destinationNode = dataUtils.getNode(connection.destination.id, nodes);
-
-                if (sourceNode.type == "backendnode") {
-                    genericEndpoint = sourceNode.genericEndpoint;
-                }
-                if (destinationNode.type == "idsendpointnode") {
-                    let err = await dataUtils.createResourceIdsEndpointAndAddSubRoute(sourceNode, destinationNode, genericEndpoint, routeId, connection.sourceEndpointId);
-                    if (err) {
-                        error = true;
-                        break;
+                if (this.$data.isOffering) {
+                    if (connection.sourceEndpointSelfLink != null) {
+                        let err = await dataUtils.createSubRoute(routeId, connection.sourceEndpointSelfLink, sourceNode.x,
+                            sourceNode.y, connection.destinationEndpointSelfLink, destinationNode.x, destinationNode.y);
+                        if (err) {
+                            error = true;
+                            break;
+                        }
                     }
                 } else {
-                    let err = await dataUtils.createSubRoute(routeId, connection.sourceEndpointId, sourceNode.x,
-                        sourceNode.y, connection.destinationEndpointId, destinationNode.x, destinationNode.y, null);
+                    let err = await dataUtils.createSubRoute(routeId, connection.sourceEndpointSelfLink, sourceNode.x,
+                        sourceNode.y, connection.destinationEndpointSelfLink, destinationNode.x, destinationNode.y);
                     if (err) {
                         error = true;
                         break;
@@ -335,57 +470,91 @@ export default {
             for (let connection of this.$refs.chart.internalConnections) {
                 var sourceNode = dataUtils.getNode(connection.source.id, this.$refs.chart.internalNodes);
                 var destinationNode = dataUtils.getNode(connection.destination.id, this.$refs.chart.internalNodes);
-                if (sourceNode.type == "idsendpointnode") {
-                    this.$data.saveMessage = "IDS Endpoint should not be a source node.";
-                    this.$data.routeValid = false;
-                    break;
-                } else if (destinationNode.type == "backendnode") {
-                    this.$data.saveMessage = "Backend should not be a destination node.";
-                    this.$data.routeValid = false;
-                    break;
+                if (this.$data.isOffering) {
+                    if (sourceNode.type == "idsendpointnode") {
+                        this.$data.saveMessage = "Artifact should not be a source node.";
+                        this.$data.routeValid = false;
+                        break;
+                    } else if (destinationNode.type == "backendnode") {
+                        this.$data.saveMessage = "Backend should not be a destination node.";
+                        this.$data.routeValid = false;
+                        break;
+                    }
+                } else {
+                    if (sourceNode.type == "backendnode") {
+                        this.$data.saveMessage = "Backend should not be a source node.";
+                        this.$data.routeValid = false;
+                        break;
+                    } else if (destinationNode.type == "idsendpointnode") {
+                        this.$data.saveMessage = "Artifact should not be a destination node.";
+                        this.$data.routeValid = false;
+                        break;
+                    }
+                }
+            }
+            this.$data.numOfBackendNodes = 0;
+            this.$data.numOfIdsEndpointNodes = 0;
+            for (let node of this.$refs.chart.internalNodes) {
+                if (node.type == "backendnode") {
+                    this.$data.numOfBackendNodes++;
+                } else if (node.type == "idsendpointnode") {
+                    this.$data.numOfIdsEndpointNodes++;
                 }
             }
         },
         render: function (g, node, isSelected) {
             node.width = node.width || 120;
-            node.height = node.height || 180;
+            if (node.type == "idsendpointnode") {
+                node.height = node.height || 60;
+            } else {
+                node.height = node.height || 180;
+            }
             let borderColor = isSelected ? "#666666" : "#bbbbbb";
-            let resourceNode = g.append("rect").attr("class", "resourcenode");
-            resourceNode
-                .style("width", "100px");
-            resourceNode.style("height", "50px");
-            resourceNode
-                .attr("x", node.x + 10)
-                .attr("y", node.y);
-            resourceNode.attr("stroke", borderColor);
+            if (node.type != "idsendpointnode") {
+                let resourceNode = g.append("rect").attr("class", "resourcenode");
+                resourceNode
+                    .style("width", "100px");
+                resourceNode.style("height", "50px");
+                resourceNode
+                    .attr("x", node.x + 10)
+                    .attr("y", node.y);
+                resourceNode.attr("stroke", borderColor);
 
-            g.append("text")
-                .attr("x", node.x + node.width / 2)
-                .attr("y", node.y + 30)
-                .attr("text-anchor", "middle")
-                .attr("class", "unselectable")
-                .text(() => "Resource");
+                g.append("text")
+                    .attr("x", node.x + node.width / 2)
+                    .attr("y", node.y + 30)
+                    .attr("text-anchor", "middle")
+                    .attr("class", "unselectable")
+                    .text(() => "Resource");
 
-            g.append("line").attr("class", "resourceline").attr("x1", node.x + 60)
-                .attr("y1", node.y + 60)
-                .attr("x2", node.x + 60)
-                .attr("y2", node.y + 50);
-
+                g.append("line").attr("class", "resourceline").attr("x1", node.x + 60)
+                    .attr("y1", node.y + 60)
+                    .attr("x2", node.x + 60)
+                    .attr("y2", node.y + 50);
+            }
             let nodeRect = g.append("rect").classed(node.type, true);
             nodeRect
                 .style("width", "120px");
-            nodeRect.style("height", "120px");
+            let textYOffset = 80;
+            let nodeOffset = 60;
+            if (node.type == "idsendpointnode") {
+                nodeRect.style("height", "60px");
+                textYOffset = 35;
+                nodeOffset = 0;
+            } else {
+                nodeRect.style("height", "120px");
+            }
             nodeRect.attr("stroke", borderColor);
             nodeRect
                 .attr("x", node.x)
-                .attr("y", node.y + 60);
+                .attr("y", node.y + nodeOffset);
             if (isSelected) {
                 nodeRect.classed("selectedNode", true);
             }
 
             g.append("text")
                 .attr("x", node.x + node.width / 2)
-                .attr("y", node.y + 80)
+                .attr("y", node.y + textYOffset)
                 .attr("text-anchor", "middle")
                 .attr("class", "unselectable")
                 .classed(node.type + "-text", true)
@@ -401,28 +570,15 @@ export default {
                     }
                 });
 
-            // < defs >
-            //     <
-            //     !--define lines
-            // for text lies on-- >
-            // <
-            // path id = "path1"
-            // d = "M10,30 H100 M10,60 H100 M10,90 H100 M10,120 H100" > < /path> <
-            //     /defs>  <
-            //     text transform = "translate(80,255)"
-            // fill = "red"
-            // font - size = "20" >
-            //     <
-            //     textPath xlink: href = "#path1" > This is a long long long text...... < /textPath> <
-            //     /text>
-
-            g.append("defs").append("path").attr("id", "path1").attr("d", "M10,20 H100 M10,40 H100 M10,60 H100 M10,80 H100");
-            g.append("text")
-                .attr("style", "font-size: 11px")
-                .attr("transform", "translate(" + (node.x) + ", " + (node.y + 100) + ")")
-                .attr("class", "unselectable")
-                .classed(node.type + "-text", true)
-                .append("textPath").attr("xlink:href", "#path1").text(node.text);
+            if (node.type != "idsendpointnode") {
+                g.append("defs").append("path").attr("id", "path1").attr("d", "M10,20 H100 M10,40 H100 M10,60 H100 M10,80 H100");
+                g.append("text")
+                    .attr("style", "font-size: 11px")
+                    .attr("transform", "translate(" + (node.x) + ", " + (node.y + 100) + ")")
+                    .attr("class", "unselectable")
+                    .classed(node.type + "-text", true)
+                    .append("textPath").attr("xlink:href", "#path1").text(node.text);
+            }
 
         }
     }

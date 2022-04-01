@@ -141,7 +141,15 @@ export default {
             let policyDescriptions = this.$refs.policyPage.getDescriptions();
             let contractPeriodFromValue = this.$refs.policyPage.getContractPeriodFromValue();
             let contractPeriodToValue = this.$refs.policyPage.getContractPeriodToValue();
-            let fileData = this.$refs.representationPage.fileData;
+            let file = null;
+            let genericEndpoint = null;
+            if (this.$refs.representationPage.isLocal()) {
+                file = this.$refs.representationPage.file;
+            } else {
+                if (this.$refs.representationPage.selected.length > 0) {
+                    genericEndpoint = this.$refs.representationPage.selected[0];
+                }
+            }
             let filetype = this.$refs.representationPage.filetype;
             let brokerList = this.$refs.brokersPage.getSelectedBrokerList()
             let brokerDeleteList = this.$refs.brokersPage.getBrokerDeleteList();
@@ -156,15 +164,15 @@ export default {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$root.$emit('blockNavigationMenu', true);
                 if (this.$data.currentResource == null) {
-                    await dataUtils.createResourceAndUpdateAtBroker(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                        policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, brokerList, fileData);
+                    await dataUtils.createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
+                        policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, brokerList, file, genericEndpoint);
                     this.$router.push('idsresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                     this.$root.$emit('blockNavigationMenu', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId, catalogIds, deletedCatalogIds,
                         title, description, language, paymentMethod, keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue,
-                        contractPeriodToValue, filetype, brokerList, brokerDeleteList, fileData, this.$data.currentResource.ruleId,
+                        contractPeriodToValue, filetype, brokerList, brokerDeleteList, file, genericEndpoint, this.$data.currentResource.ruleId,
                         this.$data.currentResource.artifactId);
                     this.$router.push('idsresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);

@@ -6,16 +6,15 @@
     </v-row>
     <v-row no-gutters v-if="isNewRoute">
         <v-col cols="12" md="12">
-            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
-                @click="showAddBackendDialog">Add
+            <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="showAddBackendDialog"
+                :disabled="numOfBackendNodes > 0">Add
                 Backend
             </v-btn>
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton" @click="showAddAppDialog">Add
                 App
             </v-btn>
             <v-btn elevation="1" color="primary" class="buttontext--text routespagebutton"
-                @click="showAddIdsEndpointDialog">Add
-                IDS Endpoint
+                @click="showAddIdsEndpointDialog" :disabled="numOfIdsEndpointNodes > 0">Add Artifact
             </v-btn>
         </v-col>
     </v-row>

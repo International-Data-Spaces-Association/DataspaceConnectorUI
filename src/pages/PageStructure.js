@@ -1,6 +1,8 @@
 import DashboardPage from "@/pages/dashboard/DashboardPage.vue";
 import IDSResourcesPage from "@/pages/dataoffering/resources/IDSResourcesPage.vue";
 import AddResourcePage from "@/pages/dataoffering/resources/addresource/AddResourcePage.vue";
+import RoutesPage from "@/pages/dataoffering/routes/RoutesPage.vue";
+import AddRoutePage from "@/pages/dataoffering/routes/addroute/AddRoutePage.vue";
 import IDSDataConsumptionPage from "@/pages/dataconsumption/dataconsumption/IDSDataConsumptionPage.vue";
 import IDSResourcesPageConsumption from "@/pages/dataconsumption/resources/IDSResourcesPageConsumption.vue";
 import BrokersPage from "@/pages/brokers/BrokersPage.vue";
@@ -41,9 +43,20 @@ export default {
                     subpages: []
                 }]
             }, {
-                path: "backendconnectionsoffering",
-                name: "Backend Connections (Offering)",
-                component: BackendConnectionsPage
+                path: "routesoffering",
+                name: "Routes (Offering)",
+                component: RoutesPage,
+                subpages: [{
+                    path: "addrouteoffering",
+                    name: "Add Route (Offering)",
+                    component: AddRoutePage,
+                    subpages: []
+                }, {
+                    path: "showrouteoffering",
+                    name: "Show Route (Offering)",
+                    component: AddRoutePage,
+                    subpages: []
+                }]
             }, {
                 path: "catalogsoffering",
                 name: "Catalogs (Offering)",
@@ -66,10 +79,26 @@ export default {
                     subpages: []
                 }]
             }, {
-                path: "backendconnectionsconsumption",
-                name: "Backend Connections (Consumation)",
-                component: null
+                path: "routesconsumption",
+                name: "Routes (Consumption)",
+                component: RoutesPage,
+                subpages: [{
+                    path: "addrouteconsumption",
+                    name: "Add Route (Consumption)",
+                    component: AddRoutePage,
+                    subpages: []
+                }, {
+                    path: "showrouteconsumption",
+                    name: "Show Route (Consumption)",
+                    component: AddRoutePage,
+                    subpages: []
+                }]
             }]
+        }, {
+            path: "backendconnections",
+            name: "Backend Connections",
+            icon: "mdi-database",
+            component: BackendConnectionsPage
         }, {
             path: "brokers",
             name: "Brokers",

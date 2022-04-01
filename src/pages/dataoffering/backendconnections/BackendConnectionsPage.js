@@ -17,6 +17,10 @@ export default {
                 value: 'accessUrl'
             },
             {
+                text: 'Type',
+                value: 'dataSource.type'
+            },
+            {
                 text: '',
                 value: 'actions',
                 sortable: false,
@@ -55,7 +59,7 @@ export default {
         deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                this.deleteBackendConnection(callbackData.item.id, callbackData.item.dataSourceId);
+                this.deleteBackendConnection(callbackData.item.id, callbackData.item.dataSource.id);
             }
         },
         async deleteBackendConnection(id, dataSourceId) {

@@ -11,9 +11,9 @@ export default {
             title: "",
             connection: null,
             isNewConnection: true,
-            outputId: null,
+            outputSelfLink: null,
             outputs: [],
-            inputId: null,
+            inputSelfLink: null,
             inputs: [],
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
@@ -30,36 +30,36 @@ export default {
             this.$data.connection = connection;
             this.$data.sourceNode = dataUtils.getNode(connection.source.id, nodes);
             this.$data.destinationNode = dataUtils.getNode(connection.destination.id, nodes);
-            let sourceEndpoints = await dataUtils.getEndpointList(this.$data.sourceNode);
+            let sourceEndpoints = await dataUtils.getEndpointList(this.$data.sourceNode, "OUTPUT_ENDPOINT");
             this.$data.outputs = [];
             for (let endpoint of sourceEndpoints) {
                 this.$data.outputs.push(this.getItem(endpoint));
             }
-            let destEndpoints = await dataUtils.getEndpointList(this.$data.destinationNode);
+            let destEndpoints = await dataUtils.getEndpointList(this.$data.destinationNode, "INPUT_ENDPOINT");
             this.$data.inputs = [];
             for (let endpoint of destEndpoints) {
                 this.$data.inputs.push(this.getItem(endpoint));
             }
 
-            if (connection.sourceEndpointId === undefined) {
+            if (connection.sourceEndpointSelfLink === undefined) {
                 if (sourceEndpoints.length == 1) {
-                    this.$data.outputId = this.getItem(sourceEndpoints[0]).id;
+                    this.$data.outputSelfLink = this.getItem(sourceEndpoints[0]).selfLink;
                     autoSetOutput = true;
                 } else {
-                    this.$data.outputId = null;
+                    this.$data.outputSelfLink = null;
                 }
             } else {
-                this.$data.outputId = connection.sourceEndpointId;
+                this.$data.outputSelfLink = connection.sourceEndpointSelfLink;
             }
-            if (connection.destinationEndpointId === undefined) {
+            if (connection.destinationEndpointSelfLink === undefined) {
                 if (destEndpoints.length == 1) {
-                    this.$data.inputId = this.getItem(destEndpoints[0]).id;
+                    this.$data.inputSelfLink = this.getItem(destEndpoints[0]).selfLink;
                     autoSetInput = true;
                 } else {
-                    this.$data.inputId = null;
+                    this.$data.inputSelfLink = null;
                 }
             } else {
-                this.$data.inputId = connection.destinationEndpointId;
+                this.$data.inputSelfLink = connection.destinationEndpointSelfLink;
             }
             this.dialog = true;
             this.$refs.form.resetValidation();
@@ -69,8 +69,8 @@ export default {
             }
         },
         save() {
-            this.$data.connection.sourceEndpointId = this.$data.outputId;
-            this.$data.connection.destinationEndpointId = this.$data.inputId;
+            this.$data.connection.sourceEndpointSelfLink = this.$data.outputSelfLink;
+            this.$data.connection.destinationEndpointSelfLink = this.$data.inputSelfLink;
 
             if (this.$data.isNewConnection) {
                 this.$emit('newConnectionSaved', this.$data.connection);
@@ -82,12 +82,14 @@ export default {
             if (endpoint.type == "GENERIC") {
                 item = {
                     id: endpoint.id,
+                    selfLink: endpoint.selfLink,
                     text: endpoint.accessUrl
                 };
             } else if (endpoint.type == "APP") {
                 item = {
                     id: endpoint.id,
-                    text: endpoint.title
+                    selfLink: endpoint.selfLink,
+                    text: endpoint.location
                 };
             }
             return item;

@@ -2,6 +2,23 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [9.1.0] - 2022-04-01 (compatible with DSC 7.0.0)
+
+### Added
+- Data Offering: Add local data resources
+- Backend Connections: Source type "Other"
+- Added route creator (Data Offering & Consumption) with apps
+- Data Consumption: Dispatch data via routes
+- Start/Stop apps
+
+### Changes
+- Moved "Backend Connections" to the top menu level
+
+### Fixes
+- Raised comparison of variable from value to type level
+- Removed sensitive data in HTTP response
+- Also delete docker container of app on delete
+
 ## [9.0.0] - 2022-02-07 (compatible with DSC 7.0.0)
 
 ### Added

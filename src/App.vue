@@ -22,6 +22,10 @@ export default {
   src: local("icons"), url(./assets/fonts/icons.ttf) format("truetype");
 }
 
+.v-tab--active {
+  border-bottom: 2px solid var(--v-primary-base) !important;
+}
+
 .icon-dashboard:before {
   content: "\e900";
 }
