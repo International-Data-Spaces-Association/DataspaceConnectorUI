@@ -411,11 +411,7 @@ export default {
                     await this.saveRouteSteps(routeId, connections, nodes);
                 }
                 if (!this.$data.isOffering) {
-                    let destinationNode = dataUtils.getNode(connections[connections.length - 1].destination.id, nodes);
-                    if (destinationNode.type == "backendnode") {
-                        let genericEndpoint = destinationNode.genericEndpoint;
-                        dataUtils.addRouteEnd(routeId, genericEndpoint.selfLink);
-                    }
+                    dataUtils.addRouteEnd(routeId, connections[0].destinationEndpointSelfLink);
                 }
             } catch (error) {
                 errorUtils.showError(error, "Save route");
