@@ -1448,6 +1448,11 @@ export default {
             // .filter((element) => element.confirmed === true && element.remoteId !== "genesis")
             .length;
     },
+    async getNumberOfPolicyTemplates() {
+        return (await this.getAllContracts())
+            .filter(str => str.title !== "" && str.title.length >= 0 )
+            .length;
+    },
 }
 
 

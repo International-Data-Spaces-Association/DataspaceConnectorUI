@@ -17,7 +17,7 @@ export default {
     },
     methods: {
         async getData() {
-            this.$data.totalNumber = await dataUtils.getNumberOfContracts();
+            this.$data.totalNumber = await dataUtils.getNumberOfPolicyTemplates();
         },
     }
 };
