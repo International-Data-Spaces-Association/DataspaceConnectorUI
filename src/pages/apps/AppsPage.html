@@ -30,7 +30,7 @@
                     </v-tooltip>
                     <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-icon @click="deleteItem(item)" v-bind="attrs" v-on="on">
+                            <v-icon @click="deleteItem(item)" v-bind="attrs" v-on="on" :disabled="item.isAppRunning">
                                 mdi-delete
                             </v-icon>
                         </template>

@@ -102,4 +102,16 @@
             connectors, which can be requested.
         </v-card-text>
     </v-card-text>
+    <v-card-text v-if="currentRoute  == 'apps'">
+        <v-card-text>
+            Overview of all currently installed apps.
+            <br>
+            <br>
+            Here, the associated Docker containers of the apps can be started or stopped.
+            <br>
+            <br>
+            Apps (and their containers) can also be deleted.<br>
+            Running apps cannot be deleted and must be stopped first.
+        </v-card-text>
+    </v-card-text>
 </v-card>

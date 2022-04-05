@@ -78,6 +78,9 @@ export default {
                 let artifact;
                 if (this.$data.isOffering) {
                     artifact = await dataUtils.getArtifactOfRoute(id);
+                    if (typeof artifact !== "object") {
+                        artifact = undefined;
+                    }
                 } else {
                     artifact = undefined;
                 }
@@ -468,8 +471,8 @@ export default {
                 this.$data.routeValid = false;
             }
             for (let connection of this.$refs.chart.internalConnections) {
-                var sourceNode = dataUtils.getNode(connection.source.id, this.$refs.chart.internalNodes);
-                var destinationNode = dataUtils.getNode(connection.destination.id, this.$refs.chart.internalNodes);
+                let sourceNode = dataUtils.getNode(connection.source.id, this.$refs.chart.internalNodes);
+                let destinationNode = dataUtils.getNode(connection.destination.id, this.$refs.chart.internalNodes);
                 if (this.$data.isOffering) {
                     if (sourceNode.type == "idsendpointnode") {
                         this.$data.saveMessage = "Artifact should not be a source node.";
@@ -492,6 +495,15 @@ export default {
                     }
                 }
             }
+
+            if (this.$refs.chart.internalConnections.length > 0) {
+                let destinationNode = dataUtils.getNode(this.$refs.chart.internalConnections[this.$refs.chart.internalConnections.length - 1].destination.id, this.$refs.chart.internalNodes);
+                if (destinationNode.type != "idsendpointnode") {
+                    this.$data.saveMessage = "Route should end with an Artifact.";
+                    this.$data.routeValid = false;
+                }
+            }
+
             this.$data.numOfBackendNodes = 0;
             this.$data.numOfIdsEndpointNodes = 0;
             for (let node of this.$refs.chart.internalNodes) {

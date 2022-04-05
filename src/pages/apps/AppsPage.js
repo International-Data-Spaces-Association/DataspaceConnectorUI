@@ -95,13 +95,35 @@ export default {
         },
         async stopApp(item) {
             this.$root.$emit('showBusyIndicator', true);
-            await dataUtils.stopApp(item.id);
+            let inUse = await dataUtils.stopApp(item.id);
             this.$root.$emit('showBusyIndicator', false);
-            this.getApps();
+            if (inUse) {
+                this.$refs.confirmationDialog.title = "Stop App";
+                this.$refs.confirmationDialog.text = "App is used in route(s). Associated routes need to be deleted.";
+                this.$refs.confirmationDialog.text2 = "Delete all associated routes and stop app?";
+                this.$refs.confirmationDialog.callbackData = {
+                    item: item
+                };
+                this.$refs.confirmationDialog.callback = this.stopCallback;
+                this.$refs.confirmationDialog.dialog = true;
+            } else {
+                this.getApps();
+            }
+
+        },
+        async stopCallback(choice, callbackData) {
+            if (choice == "yes") {
+                this.$root.$emit('showBusyIndicator', true);
+                await dataUtils.deleteAllRoutesOfApp(callbackData.item.id);
+                await dataUtils.stopApp(callbackData.item.id);
+                this.$root.$emit('showBusyIndicator', false);
+                this.getApps();
+            }
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete App";
             this.$refs.confirmationDialog.text = "Are you sure you want to delete the App?";
+            this.$refs.confirmationDialog.text2 = "Routes using this app will no longer work.";
             this.$refs.confirmationDialog.callbackData = {
                 item: item
             };

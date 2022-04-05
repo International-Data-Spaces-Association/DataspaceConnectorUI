@@ -359,6 +359,44 @@ export default {
         return statusClass;
     },
 
+    async deleteAllRoutesOfApp(appId) {
+        let appEndpoints = await this.getAppEndpoints(appId);
+        let appEndpointIds = [];
+        for (let appEndpoint of appEndpoints) {
+            appEndpointIds.push(this.getIdOfConnectorResponse(appEndpoint));
+        }
+        let routes = await this.getRoutes();
+        for (let route of routes) {
+            let routeId = this.getIdOfConnectorResponse(route);
+            if (this.routeContainsEndpoint(route, appEndpointIds)) {
+                this.deleteRoute(routeId);
+            } else {
+                let subRoutes = await this.getRouteSteps(routeId);
+                for (let subRoute of subRoutes) {
+                    if (this.routeContainsEndpoint(subRoute, appEndpointIds)) {
+                        this.deleteRoute(routeId);
+                        break;
+                    }
+                }
+            }
+        }
+    },
+
+    routeContainsEndpoint(route, endpointsIds) {
+        let contains = false;
+        for (let endpointId of endpointsIds) {
+            if (route.start !== undefined && route.start != null && route.start.id == endpointId) {
+                contains = true;
+                break;
+            }
+            if (route.end !== undefined && route.end != null && route.end.id == endpointId) {
+                contains = true;
+                break;
+            }
+        }
+        return contains;
+    },
+
     async startApp(appId) {
         try {
             let params = {
@@ -371,14 +409,20 @@ export default {
     },
 
     async stopApp(appId) {
+        let inUse = false;
         try {
             let params = {
                 "type": "STOP"
             };
             await restUtils.callConnector("PUT", "/api/apps/" + appId + "/actions", params);
         } catch (error) {
-            errorUtils.showError(error, "Stop app");
+            if (error.details !== undefined && error.details.data !== undefined && error.details.data.message == "Selected App is in use by Camel.") {
+                inUse = true;
+            } else {
+                errorUtils.showError(error, "Stop app");
+            }
         }
+        return inUse;
     },
 
     async isAppRunning(appId) {
