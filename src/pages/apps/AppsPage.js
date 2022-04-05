@@ -123,17 +123,18 @@ export default {
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete App";
             this.$refs.confirmationDialog.text = "Are you sure you want to delete the App?";
-            this.$refs.confirmationDialog.text2 = "Routes using this app will no longer work.";
+            this.$refs.confirmationDialog.text2 = "Associated routes will be deleted.";
             this.$refs.confirmationDialog.callbackData = {
                 item: item
             };
             this.$refs.confirmationDialog.callback = this.deleteCallback;
             this.$refs.confirmationDialog.dialog = true;
         },
-        deleteCallback(choice, callbackData) {
+        async deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                this.deleteApp(callbackData.item.id);
+                await dataUtils.deleteAllRoutesOfApp(callbackData.item.id);
+                await this.deleteApp(callbackData.item.id);
             }
         },
         async deleteApp(appId) {
