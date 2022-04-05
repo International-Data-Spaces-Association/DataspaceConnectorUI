@@ -20,9 +20,9 @@
                                 <v-data-table :headers="headers" :items="resources" :items-per-page="5"
                                     :sort-by.sync="sortBy" :sort-desc.sync="sortDesc"
                                     no-data-text="No resources available">
-                                    <template @click="selectElement(item)" v-slot:item.actions="{ item }">
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on, attrs }">
+                                    <template v-slot:item.actions="{ item }">
+                                        <v-tooltip bottom @click="selectElement(item)" >
+                                            <template v-slot:activator="{ on, attrs }" v-if="momentDiff(item.contractPeriodToValue,'YYYY-MM-DD') >= 0 && momentDiff(item.contractPeriodFromValue,'YYYY-MM-DD') <= 0" >
                                                 <v-icon class="mr-2" @click="showRepresentations(item)" v-bind="attrs"
                                                     v-on="on">
                                                     mdi-file-find

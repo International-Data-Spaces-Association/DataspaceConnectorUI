@@ -3,7 +3,7 @@ import errorUtils from "@/utils/errorUtils";
 import validationUtils from "@/utils/validationUtils";
 import ResourceDetailsDialog from "@/pages/dataoffering/resources/resourcedetailsdialog/ResourceDetailsDialog.vue";
 import ArtifactDialog from "@/pages/dataconsumption/dataconsumption/artifactdialog/ArtifactDialog.vue";
-
+import moment from 'moment'
 
 export default {
     components: {
@@ -69,6 +69,12 @@ export default {
             }, {
                 text: 'License',
                 value: 'standardlicense'
+            }, {
+                text: 'Offered from',
+                value: 'contractPeriodFromValue'
+            }, {
+                text: 'Offered until',
+                value: 'contractPeriodToValue'
             },
             {
                 text: '',
@@ -108,6 +114,9 @@ export default {
         this.init();
     },
     methods: {
+        momentDiff: function (date,format) {
+            return moment(date,format).diff(moment());
+        },
         async init() {
             await this.getBrokers();
             await this.getRoutes();
