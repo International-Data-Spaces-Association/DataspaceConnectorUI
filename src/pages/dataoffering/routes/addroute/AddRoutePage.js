@@ -52,6 +52,7 @@ export default {
             this.$data.backendConnections = response;
             try {
                 response = await dataUtils.getApps();
+                response = await this.getOnlyRunningApps(response);
             } catch (error) {
                 errorUtils.showError(error, "Get apps");
             }
@@ -65,6 +66,16 @@ export default {
             } else {
                 this.loadRoute(this.$route.query.routeId);
             }
+        },
+        async getOnlyRunningApps(apps) {
+            let runningApps = [];
+            for (let app of apps) {
+                let appID = dataUtils.getIdOfConnectorResponse(app);
+                if (await dataUtils.isAppRunning(appID)) {
+                    runningApps.push(app);
+                }
+            }
+            return runningApps;
         },
         async loadRoute(id) {
             this.$root.$emit('showBusyIndicator', true);
@@ -277,7 +288,7 @@ export default {
             this.$refs.addBackendDialog.show(this.$data.backendConnections, "Backend Connection", "URL", "accessUrl");
         },
         showAddAppDialog() {
-            this.$refs.addAppDialog.show(this.$data.apps, "App", "App title", "title");
+            this.$refs.addAppDialog.show(this.$data.apps, "Running App", "App title", "title");
         },
         async addBackend(id, x, y) {
             if (x === undefined) {
