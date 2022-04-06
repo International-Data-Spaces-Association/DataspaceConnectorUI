@@ -1407,6 +1407,10 @@ export default {
         }
         return allContracts;
     },
+    async getAllPolicyTemplates() {
+        return (await this.getAllContracts())
+            .filter(str => str.title !== "" && str.title.length >= 0 );
+    },
     async getRules(rules) {
         let policyNames = [];
         let ruleJsons = [];
@@ -1452,7 +1456,7 @@ export default {
         return (await this.getAllContracts())
             .filter(str => str.title !== "" && str.title.length >= 0 )
             .length;
-    },
+    }
 }
 
 

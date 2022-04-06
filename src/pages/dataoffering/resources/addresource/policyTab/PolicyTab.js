@@ -57,7 +57,7 @@ export default {
     methods: {
         async getAllContracts() {
             try {
-                this.$data.allContracts = await dataUtils.getAllContracts();
+                this.$data.allContracts = await dataUtils.getAllPolicyTemplates();
                 for ( let templateName of this.$data.allContracts) {
                     this.$data.policyTemplateTitles.push({
                         templateId: templateName.id,

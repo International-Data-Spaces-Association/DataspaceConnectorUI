@@ -51,8 +51,7 @@ export default {
     methods: {
         async getAllContracts() {
             try {
-                this.$data.allContracts = await dataUtils.getAllContracts();
-                this.$data.allContracts = this.$data.allContracts.filter(str => str.title !== "" && str.title.length >= 0 );
+                this.$data.allContracts = await dataUtils.getAllPolicyTemplates();
                 this.$forceUpdate();
                 this.$root.$emit('showBusyIndicator', false);
             } catch (error) {
