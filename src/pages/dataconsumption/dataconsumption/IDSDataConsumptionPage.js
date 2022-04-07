@@ -309,10 +309,12 @@ export default {
             this.$refs.artifactDialog.show(this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"], this.$data.selectedResource["ids:standardLicense"]["@id"], item, this.clickAcceptContract);
         },
 
-        clickAcceptContract(artifact) {
+        clickAcceptContract(artifact, subscribe) {
             this.$data.selectedIdsArtifact = artifact;
             this.requestContract();
-            this.subscribeToResource();
+            if (subscribe) {
+                this.subscribeToResource();
+            }
         },
         async dispatchViaRoutes() {
             this.$root.$emit('showBusyIndicator', true);

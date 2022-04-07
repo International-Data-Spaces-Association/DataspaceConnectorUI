@@ -1,0 +1,20 @@
+<div>
+  <v-row no-gutters>
+    <v-col cols="12" md="6" sm="6">
+      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+    </v-col>
+  </v-row>
+  <v-row no-gutters>
+    <v-col cols="12" md="11" sm="12">
+      <v-data-table v-model="selected" :headers="headers" :items="subscriptions" :items-per-page="5" :search="search"
+        item-key="url" no-data-text="No subscriptions available">
+        <template v-slot:item.actions="{ item }">
+          <v-icon @click="deleteItem(item)">
+            mdi-delete
+          </v-icon>
+        </template>
+      </v-data-table>
+    </v-col>
+  </v-row>
+  <confirmation-dialog ref="confirmationDialog"></confirmation-dialog>
+</div>

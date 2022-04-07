@@ -183,7 +183,9 @@ export default {
         let response = (await restUtils.callConnector("GET", "/api/requests"))["_embedded"].resources;
         let resources = [];
         for (let idsResource of response) {
-            resources.push(clientDataModel.convertIdsResource(idsResource));
+            let resource = clientDataModel.convertIdsResource(idsResource);
+            resource.remoteId = idsResource.remoteId.substring(idsResource.remoteId.lastIndexOf("/") + 1, idsResource.remoteId.length);
+            resources.push(resource);
         }
         return resources;
     },
@@ -591,6 +593,18 @@ export default {
         return await restUtils.callConnector("GET", "/api/datasources/" + id);
     },
 
+    async getSubscriptions() {
+        let subscriptions = (await restUtils.callConnector("GET", "/api/subscriptions"))._embedded.subscriptions;
+        for (let subscription of subscriptions) {
+            subscription.creationDate = subscription.creationDate.substring(0, 19).replace("T", " ");
+        }
+        return subscriptions;
+    },
+
+    async deleteSubscription(id) {
+        await restUtils.callConnector("DELETE", "/api/subscriptions/" + id);
+    },
+
     async getGenericEndpoints() {
         let genericEndpoints = [];
         let idsEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.endpoints;
@@ -723,6 +737,10 @@ export default {
         await restUtils.callConnector("DELETE", "/api/offers/" + resource.id);
         await restUtils.callConnector("DELETE", "/api/representations/" + resource.representationId);
         await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
+    },
+
+    async deleteRequestedResource(id) {
+        await restUtils.callConnector("DELETE", "/api/requests/" + id);
     },
 
     async getRoute(id) {
@@ -1341,6 +1359,27 @@ export default {
     },
 
     async subscribeToResource(recipientId, resoureceId) {
+        let params = {
+            "recipient": recipientId,
+        }
+
+        let configuration = await this.getConnectorConfiguration();
+
+        let body = {
+            "title": "default",
+            "description": "Notify on update",
+            "target": resoureceId,
+            "location": configuration.endpoint,
+            "subscriber": configuration.id,
+            "pushData": true
+        }
+        body = JSON.stringify(body);
+
+        let response = await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
+        return response;
+    },
+
+    async subscribeToRequestedResource(recipientId, resoureceId) {
         let params = {
             "recipient": recipientId,
         }

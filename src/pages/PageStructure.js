@@ -10,7 +10,8 @@ import AppsPage from "@/pages/apps/AppsPage.vue";
 import AppStoresPage from "@/pages/appstores/AppStoresPage.vue";
 import InstallAppsPage from "@/pages/appstores/installapps/InstallAppsPage.vue";
 import SettingsPage from "@/pages/settings/SettingsPage.vue";
-import BackendConnectionsPage from "@/pages/dataoffering/backendconnections/BackendConnectionsPage.vue";
+import BackendConnectionsPage from "@/pages/backendconnections/BackendConnectionsPage.vue";
+import SubscriptionsPage from "@/pages/subscriptions/SubscriptionsPage.vue";
 import ResourceCatalogsPage from "@/pages/dataoffering/resources/addresource/catalog/ResourceCatalogsPage.vue";
 
 export default {
@@ -99,6 +100,11 @@ export default {
             name: "Backend Connections",
             icon: "mdi-database",
             component: BackendConnectionsPage
+        }, {
+            path: "subscriptions",
+            name: "Subscriptions",
+            icon: "mdi-rss",
+            component: SubscriptionsPage
         }, {
             path: "brokers",
             name: "Brokers",

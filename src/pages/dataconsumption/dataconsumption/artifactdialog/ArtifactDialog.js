@@ -10,7 +10,8 @@ export default {
             rules: [],
             license: "",
             artifact: null,
-            callback: null
+            callback: null,
+            subscribe: false
         };
     },
     mounted: function () { },
@@ -24,7 +25,7 @@ export default {
         },
         clickAcceptContract() {
             this.$data.dialog = false;
-            this.$data.callback(this.$data.artifact);
+            this.$data.callback(this.$data.artifact, this.$data.subscribe);
         }
     }
 };
