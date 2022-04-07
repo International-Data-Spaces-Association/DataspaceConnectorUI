@@ -508,10 +508,18 @@ export default {
             }
 
             if (this.$refs.chart.internalConnections.length > 0) {
-                let destinationNode = dataUtils.getNode(this.$refs.chart.internalConnections[this.$refs.chart.internalConnections.length - 1].destination.id, this.$refs.chart.internalNodes);
-                if (destinationNode.type != "idsendpointnode") {
-                    this.$data.saveMessage = "Route should end with an Artifact.";
-                    this.$data.routeValid = false;
+                if (this.$data.isOffering) {
+                    let destinationNode = dataUtils.getNode(this.$refs.chart.internalConnections[this.$refs.chart.internalConnections.length - 1].destination.id, this.$refs.chart.internalNodes);
+                    if (destinationNode.type != "idsendpointnode") {
+                        this.$data.saveMessage = "Route should end with an Artifact.";
+                        this.$data.routeValid = false;
+                    }
+                } else {
+                    let sourceNode = dataUtils.getNode(this.$refs.chart.internalConnections[0].source.id, this.$refs.chart.internalNodes);
+                    if (sourceNode.type != "idsendpointnode") {
+                        this.$data.saveMessage = "Route should start with an Artifact.";
+                        this.$data.routeValid = false;
+                    }
                 }
             }
 

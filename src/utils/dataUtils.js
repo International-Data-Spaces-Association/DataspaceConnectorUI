@@ -1358,7 +1358,7 @@ export default {
         return await restUtils.callConnector("POST", "/api/ids/contract", params, contractOffer[0]["ids:permission"]);
     },
 
-    async subscribeToResource(recipientId, resoureceId) {
+    async subscribeToResource(recipientId, resoureceId, subscriptionLocation) {
         let params = {
             "recipient": recipientId,
         }
@@ -1369,28 +1369,7 @@ export default {
             "title": "default",
             "description": "Notify on update",
             "target": resoureceId,
-            "location": configuration.endpoint,
-            "subscriber": configuration.id,
-            "pushData": true
-        }
-        body = JSON.stringify(body);
-
-        let response = await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
-        return response;
-    },
-
-    async subscribeToRequestedResource(recipientId, resoureceId) {
-        let params = {
-            "recipient": recipientId,
-        }
-
-        let configuration = await this.getConnectorConfiguration();
-
-        let body = {
-            "title": "default",
-            "description": "Notify on update",
-            "target": resoureceId,
-            "location": configuration.endpoint,
+            "location": subscriptionLocation,
             "subscriber": configuration.id,
             "pushData": true
         }
