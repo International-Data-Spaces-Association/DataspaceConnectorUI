@@ -2,8 +2,8 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
-## [Unreleased]
-This release requires the most recent DSC version 7.0.4, which introduces `addition` field in EndpointView
+## [10.0.0] - XXXX-XX-XX (compatible with DSC 7.1.0)
+ATTENTION: This release requires at least DSC version 7.1.0, which introduces `addition` field in EndpointView. See [Changelog DSC v7.1.0](https://github.com/International-Data-Spaces-Association/DataspaceConnector/releases/tag/v7.1.0,changelog)
 
 ### Added
 - Dashboard card showing the configured default endpoint
@@ -16,18 +16,21 @@ This release requires the most recent DSC version 7.0.4, which introduces `addit
 - Title and description for data sources
 - Templating for policies (Contract + Rules as templates)
 - Advanced mode toggle (bottom of navigation bar) hiding in default's disabled mode several navigation bar elements
+- Header shows connector description
+- Check if a contract's validity time range fits to the current date, otherwise do not show buttons to request artifact
 
 ### Changed
-- Raised comparison of variable from value to type level
+- Several labels to explain functionalities simpler
 - Navigation elements structure
 - Adjusted shown fields in Add and Adjust popup for Backend Connections
 - Colors of dropdown elements
 - Sticky logo on small screens showing scroll bar in navigation
 - Moved CSS styles from App.vue into separate default.css
+- Updated package.json version number
 
 ### Fixed
 - Screen refreshing when pressing enter in URL field at Data Consumption view
-- Raised comparison of variable from value to type level
+- Raised a broad range of comparisons of variables from value to type level
 - Validation for database URLs does not require http prefix
 
 ### Removed

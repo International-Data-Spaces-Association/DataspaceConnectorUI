@@ -75,6 +75,11 @@ Please read the [development guide](https://github.com/International-Data-Spaces
 
 Please read through our [contributing guidelines](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI/blob/develop/CONTRIBUTING.md).
 
-### Contact
-
+### Main Contact
 [Bastian Wetljen | Fraunhofer FKIE](mailto:bastian.weltjen@fkie.fraunhofer.de) 
+
+### Contributors
+* [Bastian Wetljen](https://github.com/BastianWel), [Fraunhofer FKIE](https://www.fkie.fraunhofer.de)
+* [Sebastian Opriel](https://github.com/SebastianOpriel), [sovity GmbH](http://sovity.de)
+* [Melissa Das](https://github.com/melissadas), [sovity GmbH](http://sovity.de)
+* [Philipp Reusch](https://github.com/pdrd), [sovity GmbH](http://sovity.de)
