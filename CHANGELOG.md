@@ -46,7 +46,7 @@ ATTENTION: This release requires at least DSC version 7.1.0, which introduces `a
 - Data Consumption: Table column "subscribed"
 
 ### Fixes
-- Route validation: Offering routes need to end with artifact
+- Route validation: Offering/Consumption routes need to end/start with artifact
 
 ## [9.1.0] - 2022-04-01 (compatible with DSC 7.0.0)
 
