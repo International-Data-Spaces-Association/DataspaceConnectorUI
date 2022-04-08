@@ -162,11 +162,9 @@ export default {
                         showInMenu: false
                     }]
                 }
-                    ]
-                }
-            ]
-        }
-        ];
+                ]
+            }
+        ]
     },
     getDisplayName(name) {
         var displayName = name;
