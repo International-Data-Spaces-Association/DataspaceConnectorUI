@@ -25,14 +25,20 @@ export default {
                 value: 'keywords'
             },
             {
+                text: 'Subscribed',
+                value: 'hasSubscription',
+                width: 100
+            },
+            {
                 text: '',
                 value: 'actions',
                 sortable: false,
                 align: 'right',
-                width: 150
+                width: 100
             }
             ],
             resources: [],
+            subscriptions: [],
             filteredResources: [],
             filterResourceType: null
         };
@@ -44,8 +50,21 @@ export default {
         async getResources() {
             this.$root.$emit('showBusyIndicator', true);
             try {
-                let response = await dataUtils.getRequestedResources();
-                this.$data.resources = response;
+                this.$data.subscriptions = await dataUtils.getSubscriptions();
+            } catch (error) {
+                errorUtils.showError(error, "Get subscriptions");
+            }
+            try {
+                this.$data.resources = await dataUtils.getRequestedResources();
+                for (let resource of this.$data.resources) {
+                    resource.hasSubscription = false;
+                    for (let subscription of this.$data.subscriptions) {
+                        if (subscription.target.includes(resource.remoteId)) {
+                            resource.hasSubscription = true;
+                            break;
+                        }
+                    }
+                }
             } catch (error) {
                 errorUtils.showError(error, "Get resources");
             }
@@ -67,6 +86,30 @@ export default {
         },
         showItem(item) {
             this.$refs.resourceDetailsDialog.showRequest(item.id);
-        }
+        },
+        deleteItem(item) {
+            this.$refs.confirmationDialog.title = "Delete Requested Resource";
+            this.$refs.confirmationDialog.text = "Are you sure you want to delete the requested resource '" + item.title + "'?";
+            this.$refs.confirmationDialog.callbackData = {
+                item: item
+            };
+            this.$refs.confirmationDialog.callback = this.deleteCallback;
+            this.$refs.confirmationDialog.dialog = true;
+        },
+        async deleteCallback(choice, callbackData) {
+            if (choice == "yes") {
+                let resourceId = callbackData.item.id;
+                this.$root.$emit('showBusyIndicator', true);
+
+                try {
+                    await dataUtils.deleteRequestedResource(resourceId);
+                } catch (error) {
+                    errorUtils.showError(error, "Delete requested resource");
+                }
+
+                this.getResources();
+                this.$root.$emit('showBusyIndicator', false);
+            }
+        },
     },
 };

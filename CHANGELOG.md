@@ -32,19 +32,35 @@ This release requires the most recent DSC version 7.0.4, which introduces `addit
 
 ### Removed
 - Unused imports
+- 
+## [9.2.0] - XXXX-XX-XX (compatible with DSC 7.0.0)
 
+### Added
+- Delete associated routes of apps on stop/delete
+- Subscriptions page
+- Data Consumption: Checkbox for subscription
+- Data Consumption: Delete requested resource
+- Data Consumption: Table column "subscribed"
 
-## [9.1.0] - 2022-03-25 (compatible with DSC 7.0.0)
+### Fixes
+- Route validation: Offering routes need to end with artifact
+
+## [9.1.0] - 2022-04-01 (compatible with DSC 7.0.0)
 
 ### Added
 - Data Offering: Add local data resources
 - Backend Connections: Source type "Other"
 - Added route creator (Data Offering & Consumption) with apps
 - Data Consumption: Dispatch data via routes
+- Start/Stop apps
+
+### Changes
+- Moved "Backend Connections" to the top menu level
 
 ### Fixes
 - Raised comparison of variable from value to type level
 - Removed sensitive data in HTTP response
+- Also delete docker container of app on delete
 
 ## [9.0.0] - 2022-02-07 (compatible with DSC 7.0.0)
 

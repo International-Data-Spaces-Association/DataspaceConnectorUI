@@ -104,7 +104,7 @@ export default {
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Route";
-            this.$refs.confirmationDialog.text = "Are you sure you want to delete the route '" + item.description + "'?";
+            this.$refs.confirmationDialog.text = "Are you sure you want to delete the route '" + item.description + "'? (The linked artifact will also be deleted)";
             this.$refs.confirmationDialog.callbackData = {
                 item: item
             };

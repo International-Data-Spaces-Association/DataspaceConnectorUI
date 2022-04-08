@@ -6,12 +6,13 @@ import AddRoutePage from "@/pages/dataoffering/routes/addroute/AddRoutePage.vue"
 import IDSDataConsumptionPage from "@/pages/dataconsumption/dataconsumption/IDSDataConsumptionPage.vue";
 import IDSResourcesPageConsumption from "@/pages/dataconsumption/resources/IDSResourcesPageConsumption.vue";
 import SettingsPage from "@/pages/settings/SettingsPage.vue";
-import BackendConnectionsPage from "@/pages/dataoffering/backendconnections/BackendConnectionsPage.vue";
 import ResourcePolicyPage from "@/pages/dataoffering/resources/addresource/policy/ResourcePolicyPage.vue";
 import BrokersPage from "@/pages/brokers/BrokersPage.vue";
 import AppsPage from "@/pages/apps/AppsPage.vue";
 import AppStoresPage from "@/pages/appstores/AppStoresPage.vue";
 import InstallAppsPage from "@/pages/appstores/installapps/InstallAppsPage.vue";
+import BackendConnectionsPage from "@/pages/backendconnections/BackendConnectionsPage.vue";
+import SubscriptionsPage from "@/pages/subscriptions/SubscriptionsPage.vue";
 import ResourceCatalogsPage from "@/pages/dataoffering/resources/addresource/catalog/ResourceCatalogsPage.vue";
 
 export default {
@@ -60,7 +61,7 @@ export default {
                     subpages: []
                 }, {
                     path: "showrouteoffering",
-                    name: "Show Route Offering",
+                    name: "Show Route (Offering)",
                     component: AddRoutePage,
                     subpages: []
                 }]
@@ -98,7 +99,7 @@ export default {
                     subpages: []
                 }, {
                     path: "showrouteconsumption",
-                    name: "Show Route Consumption",
+                    name: "Show Route (Consumption)",
                     component: AddRoutePage,
                     subpages: []
                 }]
@@ -134,19 +135,21 @@ export default {
             showInAdvancedViewOnly: true,
             subpages: [
                 {
-                    path: "general",
+                    path: "settings",
                     name: "General",
-                    component: SettingsPage
+                    component: SettingsPage,
+                    subpages: []
                 }, {
-                    path: "backendconnectionsoffering",
-                    name: "Data Sources",
+                    path: "backendconnections",
+                    name: "Backend Connections",
+                    icon: "mdi-database",
                     component: BackendConnectionsPage
                 }, {
-                    path: "backendconnectionsconsumption",
-                    name: "Data Sinks",
-                    component: null
-                },
-                {
+                    path: "subscriptions",
+                    name: "Subscriptions",
+                    icon: "mdi-rss",
+                    component: SubscriptionsPage
+                }, {
                     path: "appstores",
                     name: "App Stores",
                     icon: "mdi-storefront-outline",
@@ -157,7 +160,8 @@ export default {
                         component: InstallAppsPage,
                         subpages: [],
                         showInMenu: false
-                    }
+                    }]
+                }
                     ]
                 }
             ]
