@@ -1,0 +1,68 @@
+<v-dialog v-model="dialog" width="500">
+    <template v-slot:activator="{ on, attrs }">
+        <v-btn v-bind="attrs" v-on="on" elevation="1" color="primary"
+               class="buttontext--text addbackendconnectionbutton" @click="addButtonClicked">Add Policy Template
+        </v-btn>
+    </template>
+
+    <v-card>
+        <v-card-title class="headline grey lighten-2">
+            {{title}}
+        </v-card-title>
+        <v-card-text>
+            <v-form v-model="valid" ref="form">
+                <v-text-field label="Title" v-model="name" :rules="defaultRule">
+                </v-text-field>
+                <v-text-field label="Description" v-model="desc">
+                </v-text-field>
+                <div class="label-text">Add Policy Patterns</div>
+                <policy-line v-for="policyLine in policyLines" v-bind:key="policyLine.name" :name="policyLine.name"
+                             :ruleJson="policyLine.ruleJson" :policyName="policyLine.policyName"
+                             :policyDescription="policyLine.policyDescription" :ref="policyLine.name" :readonly="readonly"
+                             @removePolicy="removePolicy" @validationChanged="validationChanged">
+                </policy-line>
+                <v-btn color="primary" small class="policy-page-add-button" @click.native="addPolicy" v-show="!readonly">+
+                </v-btn>
+            </v-form>
+            <p class="label-text">Contract validity period</p>
+            <v-form v-model="contractPeriodValid">
+                <v-row no-gutters>
+                    <v-col cols="12" md="5">
+                        <v-menu v-model="contractPeriodFromMenu" :close-on-content-click="false" :nudge-right="40"
+                                transition="scale-transition" offset-y min-width="auto">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field v-model="contractPeriodFromValue" label="From" prepend-icon="mdi-calendar"
+                                              readonly :rules="defaultRule" v-bind="attrs" v-on="on">
+                                </v-text-field>
+                            </template>
+                            <v-date-picker v-model="contractPeriodFromValue" @input="contractPeriodFromMenu = false"
+                                           :readonly="readonly">
+                            </v-date-picker>
+                        </v-menu>
+                    </v-col>
+                    <v-col cols="12" md="5">
+                        <v-menu v-model="contractPeriodToMenu" :close-on-content-click="false" :nudge-right="40"
+                                transition="scale-transition" offset-y min-width="auto" :readonly="readonly">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-text-field v-model="contractPeriodToValue" label="To" prepend-icon="mdi-calendar" readonly
+                                              :rules="defaultRule" v-bind="attrs" v-on="on">
+                                </v-text-field>
+                            </template>
+                            <v-date-picker v-model="contractPeriodToValue" @input="contractPeriodToMenu = false"
+                                           :readonly="readonly">
+                            </v-date-picker>
+                        </v-menu>
+                    </v-col>
+                </v-row>
+            </v-form>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" @click="cancelPolicy" class="prev-page-button">Cancel</v-btn>
+            <v-btn color="primary" @click="savePolicyTemplate" :disabled="!valid">Save</v-btn>
+        </v-card-actions>
+    </v-card>
+</v-dialog>

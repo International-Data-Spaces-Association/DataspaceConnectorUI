@@ -52,6 +52,7 @@ export default {
             this.$data.backendConnections = response;
             try {
                 response = await dataUtils.getApps();
+                response = await this.getOnlyRunningApps(response);
             } catch (error) {
                 errorUtils.showError(error, "Get apps");
             }
@@ -66,6 +67,16 @@ export default {
                 this.loadRoute(this.$route.query.routeId);
             }
         },
+        async getOnlyRunningApps(apps) {
+            let runningApps = [];
+            for (let app of apps) {
+                let appID = dataUtils.getIdOfConnectorResponse(app);
+                if (await dataUtils.isAppRunning(appID)) {
+                    runningApps.push(app);
+                }
+            }
+            return runningApps;
+        },
         async loadRoute(id) {
             this.$root.$emit('showBusyIndicator', true);
             this.$refs.chart.clear();
@@ -78,6 +89,9 @@ export default {
                 let artifact;
                 if (this.$data.isOffering) {
                     artifact = await dataUtils.getArtifactOfRoute(id);
+                    if (typeof artifact !== "object") {
+                        artifact = undefined;
+                    }
                 } else {
                     artifact = undefined;
                 }
@@ -274,7 +288,7 @@ export default {
             this.$refs.addBackendDialog.show(this.$data.backendConnections, "Backend Connection", "URL", "accessUrl");
         },
         showAddAppDialog() {
-            this.$refs.addAppDialog.show(this.$data.apps, "App", "App title", "title");
+            this.$refs.addAppDialog.show(this.$data.apps, "Running App", "App title", "title");
         },
         async addBackend(id, x, y) {
             if (x === undefined) {
@@ -411,11 +425,7 @@ export default {
                     await this.saveRouteSteps(routeId, connections, nodes);
                 }
                 if (!this.$data.isOffering) {
-                    let destinationNode = dataUtils.getNode(connections[connections.length - 1].destination.id, nodes);
-                    if (destinationNode.type == "backendnode") {
-                        let genericEndpoint = destinationNode.genericEndpoint;
-                        dataUtils.addRouteEnd(routeId, genericEndpoint.selfLink);
-                    }
+                    dataUtils.addRouteEnd(routeId, connections[0].destinationEndpointSelfLink);
                 }
             } catch (error) {
                 errorUtils.showError(error, "Save route");
@@ -472,8 +482,8 @@ export default {
                 this.$data.routeValid = false;
             }
             for (let connection of this.$refs.chart.internalConnections) {
-                var sourceNode = dataUtils.getNode(connection.source.id, this.$refs.chart.internalNodes);
-                var destinationNode = dataUtils.getNode(connection.destination.id, this.$refs.chart.internalNodes);
+                let sourceNode = dataUtils.getNode(connection.source.id, this.$refs.chart.internalNodes);
+                let destinationNode = dataUtils.getNode(connection.destination.id, this.$refs.chart.internalNodes);
                 if (this.$data.isOffering) {
                     if (sourceNode.type == "idsendpointnode") {
                         this.$data.saveMessage = "Artifact should not be a source node.";
@@ -496,6 +506,23 @@ export default {
                     }
                 }
             }
+
+            if (this.$refs.chart.internalConnections.length > 0) {
+                if (this.$data.isOffering) {
+                    let destinationNode = dataUtils.getNode(this.$refs.chart.internalConnections[this.$refs.chart.internalConnections.length - 1].destination.id, this.$refs.chart.internalNodes);
+                    if (destinationNode.type != "idsendpointnode") {
+                        this.$data.saveMessage = "Route should end with an Artifact.";
+                        this.$data.routeValid = false;
+                    }
+                } else {
+                    let sourceNode = dataUtils.getNode(this.$refs.chart.internalConnections[0].source.id, this.$refs.chart.internalNodes);
+                    if (sourceNode.type != "idsendpointnode") {
+                        this.$data.saveMessage = "Route should start with an Artifact.";
+                        this.$data.routeValid = false;
+                    }
+                }
+            }
+
             this.$data.numOfBackendNodes = 0;
             this.$data.numOfIdsEndpointNodes = 0;
             for (let node of this.$refs.chart.internalNodes) {

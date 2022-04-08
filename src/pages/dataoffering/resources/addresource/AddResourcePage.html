@@ -1,6 +1,6 @@
 <div class="content add-resource-page">
     <div>
-        <v-tabs class="pagestab" v-model="active_tab" ref="pagestab" hide-slider>
+        <v-tabs class="pagestab" v-model="active_tab" ref="pagestab">
             <v-tab :disabled="!readonly">Meta data</v-tab>
             <v-tab :disabled="!readonly" v-show="!onlyMetaData">Policy</v-tab>
             <v-tab :disabled="!readonly" v-show="!onlyMetaData">Representation</v-tab>
@@ -11,9 +11,8 @@
                 </resource-meta-data-page>
             </v-tab-item>
             <v-tab-item :eager="true">
-                <resource-policy-page ref="policyPage" @previousPage="previousPage" @nextPage="nextPage"
-                    :readonly="readonly">
-                </resource-policy-page>
+                <policy-tab ref="policyTab" @previousPage="previousPage" @nextPage="nextPage" :readonly="readonly">
+                </policy-tab>
             </v-tab-item>
             <v-tab-item :eager="true">
                 <resource-representation-page ref="representationPage" :fromRoutePage="fromRoutePage"

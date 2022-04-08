@@ -1,63 +1,42 @@
-<div>
-    <v-row no-gutters>
-        <v-col cols="12" md="11">
-            <policy-line v-for="policyLine in policyLines" v-bind:key="policyLine.name" :name="policyLine.name"
-                :ruleJson="policyLine.ruleJson" :policyName="policyLine.policyName"
-                :policyDescription="policyLine.policyDescription" :ref="policyLine.name" :readonly="readonly"
-                @removePolicy="removePolicy" @validationChanged="validationChanged">
-            </policy-line>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="11">
-            <v-btn color="primary" small class="policy-page-add-button" @click.native="addPolicy" v-show="!readonly">+
-            </v-btn>
-        </v-col>
-    </v-row>
-    <v-row no-gutters>
-        <v-col cols="12" md="11">
-            <p class="contract-duration-title">Contract validity period</p>
-        </v-col>
-    </v-row>
-    <v-form v-model="contractPeriodValid">
+<div class="content">
+    <div>
+        <div class="text-h5 header-text ">
+            Policy Templates
+        </div>
+        <div class="text-subtitle-1 font-weight-regular">
+            Overview of the usage policies for information of how often or how long the resource data can be used.
+        </div>
+        <v-row class="no-gutters">
+            <add-policy-dialog ref="addPolicyDialog" @policyTemplateSaved="policyTemplateSaved">
+            </add-policy-dialog>
+        </v-row>
         <v-row no-gutters>
-            <v-col cols="12" md="5">
-                <v-menu v-model="contractPeriodFromMenu" :close-on-content-click="false" :nudge-right="40"
-                    transition="scale-transition" offset-y min-width="auto">
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-text-field v-model="contractPeriodFromValue" label="From" prepend-icon="mdi-calendar"
-                            readonly :rules="defaultRule" v-bind="attrs" v-on="on">
-                        </v-text-field>
-                    </template>
-                    <v-date-picker v-model="contractPeriodFromValue" @input="contractPeriodFromMenu = false"
-                        :readonly="readonly">
-                    </v-date-picker>
-                </v-menu>
+            <v-col cols="6" md="6" sm="6">
+<!--                <v-select label="Filter by policy" v-model="policyId" :items="catalogs" item-text="title" item-value="id"
+                          @change="policyChanged">
+                </v-select>-->
             </v-col>
-            <v-col cols="12" md="1">
-
-            </v-col>
-            <v-col cols="12" md="5">
-                <v-menu v-model="contractPeriodToMenu" :close-on-content-click="false" :nudge-right="40"
-                    transition="scale-transition" offset-y min-width="auto" :readonly="readonly">
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-text-field v-model="contractPeriodToValue" label="To" prepend-icon="mdi-calendar" readonly
-                            :rules="defaultRule" v-bind="attrs" v-on="on">
-                        </v-text-field>
-                    </template>
-                    <v-date-picker v-model="contractPeriodToValue" @input="contractPeriodToMenu = false"
-                        :readonly="readonly">
-                    </v-date-picker>
-                </v-menu>
+<!--            <v-col cols="12" md="6" sm="12">
+                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+            </v-col>-->
+        </v-row>
+        <v-row>
+            <v-col cols="12" md="12" sm="12">
+                <div v-if="allContracts.length > 0">
+                    <v-data-table v-model="selected" :headers="headers" :items="allContracts" :items-per-page="5"
+                                  :search="search" item-key="url">
+                        <template v-slot:item.actions="{ item }">
+                            <v-icon class="mr-2" @click="editPolicyTemplate(item)">
+                                mdi-pencil
+                            </v-icon>
+                            <v-icon @click="deletePolicyTemplate(item)">
+                                mdi-delete
+                            </v-icon>
+                        </template>
+                    </v-data-table>
+                </div>
             </v-col>
         </v-row>
-    </v-form>
-    </v-menu>
-
-    <v-row no-gutters>
-        <v-col cols="12" md="11">
-            <v-btn color="primary" @click.native="previousPage" class="prev-page-button">Back</v-btn>
-            <v-btn color="primary" @click.native="nextPage" :disabled="!valid">Next</v-btn>
-        </v-col>
-    </v-row>
+    </div>
+    <confirmation-dialog ref="confirmationDialog"></confirmation-dialog>
 </div>

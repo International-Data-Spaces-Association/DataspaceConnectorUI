@@ -1,4 +1,4 @@
-import AddBackendConnectionDialog from "@/pages/dataoffering/backendconnections/dialog/AddBackendConnectionDialog.vue";
+import AddBackendConnectionDialog from "@/pages/backendconnections/dialog/AddBackendConnectionDialog.vue";
 import ConfirmationDialog from "@/components/confirmationdialog/ConfirmationDialog.vue";
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
@@ -13,6 +13,9 @@ export default {
         return {
             search: '',
             headers: [{
+                text: 'Title',
+                value: 'title'
+            },{
                 text: 'URL',
                 value: 'accessUrl'
             },

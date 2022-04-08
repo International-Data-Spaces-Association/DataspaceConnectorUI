@@ -2,7 +2,7 @@ import dataUtils from "@/utils/dataUtils";
 
 export default {
     createResource(url, id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
-        publisher, fileType, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, representationId, brokerUris, samples, catalogs) {
+        publisher, fileType, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, representationId, brokerUris, samples, catalogs) {
         let resource = {};
         if (url === undefined) {
             resource.url = "";
@@ -68,6 +68,11 @@ export default {
             resource.policyNames = [];
         } else {
             resource.policyNames = policyNames;
+        }
+        if (contractName === undefined) {
+            resource.contractName = "";
+        } else {
+            resource.contractName = contractName;
         }
         if (contractPeriodFromValue === undefined) {
             resource.contractPeriodFromValue = "";
@@ -230,7 +235,7 @@ export default {
         return configuration;
     },
 
-    createGenericEndpoint(id, accessUrl, username, password, apiKey, type, driverClassName, camelSqlUri) {
+    createGenericEndpoint(id, accessUrl, username, password, apiKey, type, driverClassName, camelSqlUri, title, description) {
         let genericEndpoint = {};
 
         if (id === undefined) {
@@ -281,6 +286,18 @@ export default {
             genericEndpoint.camelSqlUri = camelSqlUri;
         }
 
+        if (title === undefined) {
+            genericEndpoint.title = "";
+        } else {
+            genericEndpoint.title = title;
+        }
+
+        if (description === undefined) {
+            genericEndpoint.description = "";
+        } else {
+            genericEndpoint.description = description;
+        }
+
         return genericEndpoint;
     },
 
@@ -299,7 +316,9 @@ export default {
         let username = undefined;
         let password = undefined;
         let apiKey = undefined;
-        return this.createGenericEndpoint(id, accessUrl, username, password, apiKey, genericEndpoint.type, driverClassName, camelSqlUri);
+        let title = genericEndpoint.additional !== undefined ? genericEndpoint.additional.title : undefined;
+        let description = genericEndpoint.additional !== undefined ? genericEndpoint.additional.description : undefined;
+        return this.createGenericEndpoint(id, accessUrl, username, password, apiKey, genericEndpoint.type, driverClassName, camelSqlUri, title, description);
     },
 
     createApp(id, title, description, type) {
@@ -336,7 +355,7 @@ export default {
         return this.createApp(id, idsApp.title, idsApp.description, "APP");
     },
 
-    convertIdsResource(idsResource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, brokerUris, catalogs) {
+    convertIdsResource(idsResource, representation, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, brokerUris, catalogs) {
         let title = idsResource.title;
         if (title.includes("\"@en")) {
             title = idsResource.title.substring(1, idsResource.title.lastIndexOf("\""));
@@ -354,7 +373,7 @@ export default {
 
         return this.createResource(idsResource._links.self.href, dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.paymentModality, idsResource.keywords,
-            idsResource.version, idsResource.license, idsResource.publisher, fileType, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, representationId, brokerUris,
+            idsResource.version, idsResource.license, idsResource.publisher, fileType, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, representationId, brokerUris,
             idsResource.samples, catalogs);
     },
 

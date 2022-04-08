@@ -1,10 +1,5 @@
 <v-card class="info-box">
     <v-card-title>{{title}}</v-card-title>
-    <v-card-text v-if="currentRoute  == 'dashboard'">
-        <v-card-text>
-            The dashboard shows statistical data of the current connector.
-        </v-card-text>
-    </v-card-text>
     <v-card-text v-if="currentRoute  == 'idsresourcesoffering'">
         <v-card-text>
             Overview of all currently offered IDS
@@ -63,11 +58,35 @@
             Overview of all currently defined routes of offered data.<br>
         </v-card-text>
     </v-card-text>
+    <v-card-text v-if="currentRoute  == 'routesconsumption'">
+        <v-card-text>
+            Overview of all currently defined routes of requested data.<br>
+        </v-card-text>
+    </v-card-text>
     <v-card-text v-if="currentRoute  == 'addrouteoffering'">
         <v-card-text>
-            Creation of a route. Nodes of the types "Backend", "App" and "IDS Endpoint" can be created and connected by
-            edges. For each edge, the inputs and outputs to be connected can be selected by double-clicking. The
-            resource data can be entered by double-clicking on the "IDS Endpoint" node.<br>
+            Creation of a route. Nodes of the types "Backend", "App" and "Artifact" can be created and connected by
+            edges.
+            <br>
+            <br>
+            For each edge, the inputs and outputs to be connected can be selected by double-clicking.
+            <br>
+            <br>
+            The resource data can be entered by double-clicking on the "Artifact" node.<br>
+        </v-card-text>
+    </v-card-text>
+    <v-card-text v-if="currentRoute  == 'addrouteconsumption'">
+        <v-card-text>
+            Creation of a route. Nodes of the types "Backend", "App" and "Artifact" can be created and connected by
+            edges.
+            <br>
+            <br>
+            For each edge, the inputs and outputs to be connected can be selected by double-clicking.
+            <br>
+            <br>
+            The "Artifact" node here is only a placeholder for the artifact of the requested resource.
+            <br><br>
+            This route must be linked to the requested artifact at the "Request Resource" page.
         </v-card-text>
     </v-card-text>
     <v-card-text v-if="currentRoute  == 'showroute'">
@@ -100,6 +119,18 @@
             <br>
             <b>Broker: </b>Enter a broker URL and search term. The broker then returns a list of resources from various
             connectors, which can be requested.
+        </v-card-text>
+    </v-card-text>
+    <v-card-text v-if="currentRoute  == 'apps'">
+        <v-card-text>
+            Overview of all currently installed apps.
+            <br>
+            <br>
+            Here, the associated Docker containers of the apps can be started or stopped.
+            <br>
+            <br>
+            Apps (and their containers) can also be deleted.<br>
+            Running apps cannot be deleted and must be stopped first.
         </v-card-text>
     </v-card-text>
 </v-card>

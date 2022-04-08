@@ -1,7 +1,7 @@
-<div class="policy-line-div">
+<div>
     <v-row no-gutters>
-        <v-col cols="12" md="10">
-            <v-select label="Policy Pattern" v-model="policyDisplayName"
+        <v-col cols="12" md="10" xs="10">
+            <v-select v-model="policyDisplayName"
                 :items="['Provide Access', 'Prohibit Access', 'N Times Usage', 'Duration Usage', 'Usage During Interval',
 'Usage Until Deletion', 'Usage Logging', 'Usage Notification', 'Connector Restricted Usage', 'Security Profile Restricted Usage']" :readonly="readonly">
             </v-select>
@@ -33,7 +33,7 @@
                 </security-profile-restricted-usage>
             </div>
         </v-col>
-        <v-col cols="12" md="2" class="policy-line-remove-col">
+        <v-col cols="12" md="2" xs="2" class="policy-line-remove-col pt-4">
             <v-btn fab outlined class="policy-line-remove-button" @click.native="removePolicy" v-show="!readonly">
                 <v-icon>mdi-close</v-icon>
             </v-btn>

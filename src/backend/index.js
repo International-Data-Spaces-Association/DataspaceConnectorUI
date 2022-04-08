@@ -2,11 +2,10 @@ import express from "express";
 import cors from "cors";
 import axios from "axios";
 import https from "https";
-import fs from "fs";
 import bodyParser from "body-parser";
 import path from "path";
 
-const vuePath = path.resolve() + '/../../dist';
+const vuePath = path.join(path.resolve(),'..', '..', 'dist');
 const DEBUG = false;
 const app = express();
 const port = 8083;
@@ -33,7 +32,10 @@ if (process.env.CONNECTOR_USER !== undefined) {
 if (process.env.CONNECTOR_PASSWORD !== undefined) {
     auth.password = process.env.CONNECTOR_PASSWORD;
 }
-
+// initialize health before basicAuth to allow access without authentication
+app.use('/health', function (req, res) {
+    res.end('OK')
+});
 app.use(express.static(vuePath));
 
 
@@ -150,7 +152,7 @@ app.post('/testdata', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    res.sendFile(vuePath + "index.html");
+    res.sendFile(path.join(vuePath, "index.html"));
 });
 
 app.post('/', (req, res) => {
@@ -225,5 +227,5 @@ app.post('/', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Backend listening at http://localhost:${port}`)
 });

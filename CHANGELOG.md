@@ -2,17 +2,68 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
-## [9.1.0] - 2022-03-25 (compatible with DSC 7.0.0)
+## [10.0.0] - XXXX-XX-XX (compatible with DSC 7.1.0)
+ATTENTION: This release requires at least DSC version 7.1.0, which introduces `addition` field in EndpointView. See [Changelog DSC v7.1.0](https://github.com/International-Data-Spaces-Association/DataspaceConnector/releases/tag/v7.1.0,changelog)
+
+### Added
+- Dashboard card showing the configured default endpoint
+- Dashboard card showing number of data sources
+- Dashboard card showing number of policy templates
+- Dashboard card showing number of data offerings
+- Dashboard card showing number of active contracts
+- Customizable background color of navigation via variable `navigationBackground`
+- Health check in backend for kubernetes probes
+- Title and description for data sources
+- Templating for policies (Contract + Rules as templates)
+- Advanced mode toggle (bottom of navigation bar) hiding in default's disabled mode several navigation bar elements
+- Header shows connector description
+- Check if a contract's validity time range fits to the current date, otherwise do not show buttons to request artifact
+
+### Changed
+- Several labels to explain functionalities simpler
+- Navigation elements structure
+- Adjusted shown fields in Add and Adjust popup for Backend Connections
+- Colors of dropdown elements
+- Sticky logo on small screens showing scroll bar in navigation
+- Moved CSS styles from App.vue into separate default.css
+- Updated package.json version number
+
+### Fixed
+- Screen refreshing when pressing enter in URL field at Data Consumption view
+- Raised a broad range of comparisons of variables from value to type level
+- Validation for database URLs does not require http prefix
+
+### Removed
+- Unused imports
+- 
+## [9.2.0] - XXXX-XX-XX (compatible with DSC 7.0.0)
+
+### Added
+- Delete associated routes of apps on stop/delete
+- Subscriptions page
+- Data Consumption: Checkbox for subscription
+- Data Consumption: Delete requested resource
+- Data Consumption: Table column "subscribed"
+
+### Fixes
+- Route validation: Offering routes need to end with artifact
+
+## [9.1.0] - 2022-04-01 (compatible with DSC 7.0.0)
 
 ### Added
 - Data Offering: Add local data resources
 - Backend Connections: Source type "Other"
 - Added route creator (Data Offering & Consumption) with apps
 - Data Consumption: Dispatch data via routes
+- Start/Stop apps
+
+### Changes
+- Moved "Backend Connections" to the top menu level
 
 ### Fixes
 - Raised comparison of variable from value to type level
 - Removed sensitive data in HTTP response
+- Also delete docker container of app on delete
 
 ## [9.0.0] - 2022-02-07 (compatible with DSC 7.0.0)
 

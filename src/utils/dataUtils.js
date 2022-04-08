@@ -183,7 +183,9 @@ export default {
         let response = (await restUtils.callConnector("GET", "/api/requests"))["_embedded"].resources;
         let resources = [];
         for (let idsResource of response) {
-            resources.push(clientDataModel.convertIdsResource(idsResource));
+            let resource = clientDataModel.convertIdsResource(idsResource);
+            resource.remoteId = idsResource.remoteId.substring(idsResource.remoteId.lastIndexOf("/") + 1, idsResource.remoteId.length);
+            resources.push(resource);
         }
         return resources;
     },
@@ -211,6 +213,7 @@ export default {
     async getResource(resourceId) {
         let resource = await restUtils.callConnector("GET", "/api/offers/" + resourceId);
         let policyNames = [];
+        let contractName = undefined;
         let contractPeriodFromValue = undefined;
         let contractPeriodToValue = undefined;
         let ruleIds = [];
@@ -218,6 +221,7 @@ export default {
         let contracts = (await restUtils.callConnector("GET", "/api/offers/" + resourceId + "/contracts"))["_embedded"].contracts;
         if (contracts.length > 0) {
             let contract = contracts[0];
+            contractName = contract.title;
             contractPeriodFromValue = contract.start;
             contractPeriodToValue = contract.end;
             let contractId = this.getIdOfConnectorResponse(contract);
@@ -243,7 +247,7 @@ export default {
         let brokers = await this.getBrokersOfResource(resourceId);
         let brokerUris = brokers.map(x => x.location);
         let catalogs = await this.getCatalogsOfResource(resourceId);
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, brokerUris, catalogs);
+        return clientDataModel.convertIdsResource(resource, representation, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, brokerUris, catalogs);
     },
 
     async getRequestedResource(resourceId) {
@@ -266,7 +270,7 @@ export default {
             }
         }
 
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
+        return clientDataModel.convertIdsResource(resource, representation, "", policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
     },
 
     async getPolicyNameByPattern(pattern) {
@@ -353,10 +357,48 @@ export default {
 
     toRegisterStatusClass(brokerStatus) {
         let statusClass = "notRegisteredAtBroker";
-        if (brokerStatus == "Registered") {
+        if (brokerStatus === "Registered") {
             statusClass = "registeredAtBroker";
         }
         return statusClass;
+    },
+
+    async deleteAllRoutesOfApp(appId) {
+        let appEndpoints = await this.getAppEndpoints(appId);
+        let appEndpointIds = [];
+        for (let appEndpoint of appEndpoints) {
+            appEndpointIds.push(this.getIdOfConnectorResponse(appEndpoint));
+        }
+        let routes = await this.getRoutes();
+        for (let route of routes) {
+            let routeId = this.getIdOfConnectorResponse(route);
+            if (this.routeContainsEndpoint(route, appEndpointIds)) {
+                this.deleteRoute(routeId);
+            } else {
+                let subRoutes = await this.getRouteSteps(routeId);
+                for (let subRoute of subRoutes) {
+                    if (this.routeContainsEndpoint(subRoute, appEndpointIds)) {
+                        this.deleteRoute(routeId);
+                        break;
+                    }
+                }
+            }
+        }
+    },
+
+    routeContainsEndpoint(route, endpointsIds) {
+        let contains = false;
+        for (let endpointId of endpointsIds) {
+            if (route.start !== undefined && route.start != null && route.start.id == endpointId) {
+                contains = true;
+                break;
+            }
+            if (route.end !== undefined && route.end != null && route.end.id == endpointId) {
+                contains = true;
+                break;
+            }
+        }
+        return contains;
     },
 
     async startApp(appId) {
@@ -371,14 +413,20 @@ export default {
     },
 
     async stopApp(appId) {
+        let inUse = false;
         try {
             let params = {
                 "type": "STOP"
             };
             await restUtils.callConnector("PUT", "/api/apps/" + appId + "/actions", params);
         } catch (error) {
-            errorUtils.showError(error, "Stop app");
+            if (error.details !== undefined && error.details.data !== undefined && error.details.data.message == "Selected App is in use by Camel.") {
+                inUse = true;
+            } else {
+                errorUtils.showError(error, "Stop app");
+            }
         }
+        return inUse;
     },
 
     async isAppRunning(appId) {
@@ -547,13 +595,25 @@ export default {
         return await restUtils.callConnector("GET", "/api/datasources/" + id);
     },
 
+    async getSubscriptions() {
+        let subscriptions = (await restUtils.callConnector("GET", "/api/subscriptions"))._embedded.subscriptions;
+        for (let subscription of subscriptions) {
+            subscription.creationDate = subscription.creationDate.substring(0, 19).replace("T", " ");
+        }
+        return subscriptions;
+    },
+
+    async deleteSubscription(id) {
+        await restUtils.callConnector("DELETE", "/api/subscriptions/" + id);
+    },
+
     async getGenericEndpoints() {
         let genericEndpoints = [];
         let idsEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.endpoints;
         let dataSources = (await restUtils.callConnector("GET", "/api/datasources"))._embedded.datasources;
         if (idsEndpoints !== undefined) {
             for (let idsEndpoint of idsEndpoints) {
-                if (idsEndpoint.type == "GENERIC") {
+                if (idsEndpoint.type === "GENERIC") {
                     let dataSource = null;
                     if (idsEndpoint._links["datasource"] === undefined) {
                         dataSource = {
@@ -562,7 +622,7 @@ export default {
                     } else {
                         let datasourceId = this.getIdOfLink(idsEndpoint, "datasource");
                         for (let ds of dataSources) {
-                            if (ds.id == datasourceId) {
+                            if (ds.id === datasourceId) {
                                 dataSource = ds;
                                 break;
                             }
@@ -579,14 +639,16 @@ export default {
         return genericEndpoints;
     },
 
-    async createGenericEndpoint(url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
+    async createGenericEndpoint(title, desc, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
         let location = url;
-        if (sourceType == "DATABASE") {
+        if (sourceType === "OTHER") {
             location = camelSqlUri;
         }
         let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
             "location": location,
-            "type": "GENERIC"
+            "type": "GENERIC",
+            "title": title,
+            "description": desc
         });
         let genericEndpointId = this.getIdOfConnectorResponse(response);
 
@@ -602,18 +664,18 @@ export default {
         } else {
             bodyData = {
                 "apiKey": {
-                    "key": authHeaderName,
-                    "value": authHeaderValue
+                    "key": authHeaderName == undefined ? "" : authHeaderName,
+                    "value": authHeaderValue == undefined ? "" : authHeaderValue
                 },
                 "type": sourceType
             };
         }
-        if (sourceType == "DATABASE") {
+        if (sourceType === "DATABASE") {
             bodyData.url = url;
             bodyData.driverClassName = driverClassName;
         }
 
-        if (sourceType != "OTHER") {
+        if (sourceType !== "OTHER") {
             response = await restUtils.callConnector("POST", "/api/datasources", null, bodyData);
             let dataSourceId = this.getIdOfConnectorResponse(response);
 
@@ -622,17 +684,19 @@ export default {
         }
     },
 
-    async updateGenericEndpoint(id, dataSourceId, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
+    async updateGenericEndpoint(title, desc, id, dataSourceId, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
         let location = url;
-        if (sourceType == "DATABASE") {
+        if (sourceType === "OTHER") {
             location = camelSqlUri;
         }
         await restUtils.callConnector("PUT", "/api/endpoints/" + id, null, {
             "location": location,
-            "type": "GENERIC"
+            "type": "GENERIC",
+            "title": title,
+            "description": desc
         });
 
-        if (sourceType != "OTHER") {
+        if (sourceType !== "OTHER") {
             let bodyData = null;
             if (username != null) {
                 bodyData = {
@@ -646,14 +710,14 @@ export default {
             } else {
                 bodyData = {
                     "apiKey": {
-                        "key": authHeaderName,
-                        "value": authHeaderValue
+                        "key": authHeaderName == undefined ? "" : authHeaderName,
+                        "value": authHeaderValue == undefined ? "" : authHeaderValue
                     },
                     "type": sourceType,
                     "url": url
                 };
             }
-            if (sourceType == "DATABASE") {
+            if (sourceType === "DATABASE") {
                 bodyData.url = url;
                 bodyData.driverClassName = driverClassName;
             }
@@ -681,6 +745,10 @@ export default {
         await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
     },
 
+    async deleteRequestedResource(id) {
+        await restUtils.callConnector("DELETE", "/api/requests/" + id);
+    },
+
     async getRoute(id) {
         return await restUtils.callConnector("GET", "/api/routes/" + id);
     },
@@ -690,16 +758,22 @@ export default {
     },
 
     async deleteRoute(id) {
+        let artifact = await restUtils.callConnector("GET", "/api/routes/" + id + "/output");
+        if (typeof artifact == 'object') {
+            let artifactId = this.getIdOfConnectorResponse(artifact);
+            await restUtils.callConnector("DELETE", "/api/artifacts/" + artifactId);
+        }
         await restUtils.callConnector("DELETE", "/api/routes/" + id);
     },
 
-    async getEndpointList(node, endpointType) {
+    async getEndpointList(node) {
         let endpointList = [];
         if (node.type == "backendnode") {
             let endpoint = await this.getGenericEndpoint(node.objectId);
             endpointList.push(endpoint);
         } else if (node.type == "appnode") {
-            endpointList = await this.getAppEndpoints(node.objectId, endpointType);
+            let endpoint = await this.getApp(node.objectId);
+            endpointList.push(endpoint);
         }
         return endpointList;
     },
@@ -783,6 +857,10 @@ export default {
         return this.getIdOfLink(response, "self");
     },
 
+    getIdOfPolicy(policyLink) {
+        return policyLink.substring(policyLink.lastIndexOf("/")+1, policyLink.length);
+    },
+
     getIdOfLink(response, linkName) {
         let url = response._links[linkName].href;
         return url.substring(url.lastIndexOf("/") + 1, url.length);
@@ -840,7 +918,7 @@ export default {
         }
     },
 
-    async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
+    async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, templateTitle, policyDescriptions,
         contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, file, genericEndpoint) {
         try {
             let routeSelfLink = null;
@@ -851,14 +929,14 @@ export default {
                 await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.selfLink + "\"");
             }
             let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink);
+                policyDescriptions, templateTitle, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
         } catch (error) {
             errorUtils.showError(error, "Save resource");
         }
     },
 
-    async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions,
+    async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, templateTitle,
         contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink) {
         // TODO Sovereign, EndpointDocumentation
         let response = (await restUtils.callConnector("POST", "/api/offers", null, {
@@ -875,21 +953,14 @@ export default {
         for (let catalogId of catalogIds) {
             await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
         }
-
         response = await restUtils.callConnector("POST", "/api/contracts", null, {
+            "title": templateTitle,
             "start": contractPeriodFromValue,
             "end": contractPeriodToValue
         });
         let contractId = this.getIdOfConnectorResponse(response);
+        response = this.createRules(policyDescriptions, contractId);
 
-        for (let policyDescription of policyDescriptions) {
-            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
-            response = await restUtils.callConnector("POST", "/api/rules", null, {
-                "value": JSON.stringify(ruleJson)
-            });
-            let ruleId = this.getIdOfConnectorResponse(response);
-            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
-        }
         response = await restUtils.callConnector("POST", "/api/offers/" + resourceId + "/contracts", null, [contractId]);
 
         response = await restUtils.callConnector("POST", "/api/representations", null, {
@@ -921,7 +992,7 @@ export default {
     },
 
     async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
-        keywords, standardlicense, publisher, samples, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
+        keywords, standardlicense, publisher, samples, templateTitle, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
         filetype, brokerUris, brokerDeleteUris, file, genericEndpoint, ruleId, artifactId) {
         try {
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
@@ -944,7 +1015,7 @@ export default {
                 await restUtils.callConnector("DELETE", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
             }
 
-            // Delete all rules and create new ones. Rules that have not been edited in the UI are also deleted and recreated. 
+            // Delete all rules and create new ones. Rules that have not been edited in the UI are also deleted and recreated.
             // Implementing the detection of a change to an existing rule would have been complicated (Pattern can change, only value can change, ...)
 
             let contractId = -1;
@@ -967,11 +1038,11 @@ export default {
                 let ruleId = this.getIdOfConnectorResponse(response);
                 response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
                 response = await restUtils.callConnector("PUT", "/api/contracts/" + contractId, null, {
+                    "title": templateTitle,
                     "start": contractPeriodFromValue,
                     "end": contractPeriodToValue
                 });
             }
-            //
 
             await restUtils.callConnector("PUT", "/api/representations/" + representationId, null, {
                 "language": language,
@@ -1036,9 +1107,9 @@ export default {
         let contractPeriodToValue = resource.contractPeriodToValue;
         let filetype = resource.fileType;
         let brokerUris = resource.brokerUris;
-
+        let contractName = resource.contractName;
         let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-            policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, null, routeSelfLink);
+            policyDescriptions, contractName, contractPeriodFromValue, contractPeriodToValue, filetype, null, routeSelfLink);
 
         await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
     },
@@ -1267,7 +1338,7 @@ export default {
             let response = await restUtils.callConnector("POST", "/api/ids/description", params);
             return response;
         },
-    
+
         async receiveIdsContractOffer(recipientId, artifactId) {
             let params = {
                 "recipient": recipientId,
@@ -1291,7 +1362,7 @@ export default {
         return await restUtils.callConnector("POST", "/api/ids/contract", params, contractOffer[0]["ids:permission"]);
     },
 
-    async subscribeToResource(recipientId, resoureceId) {
+    async subscribeToResource(recipientId, resoureceId, subscriptionLocation) {
         let params = {
             "recipient": recipientId,
         }
@@ -1302,7 +1373,7 @@ export default {
             "title": "default",
             "description": "Notify on update",
             "target": resoureceId,
-            "location": configuration.endpoint,
+            "location": subscriptionLocation,
             "subscriber": configuration.id,
             "pushData": true
         }
@@ -1347,10 +1418,124 @@ export default {
             contractPeriodFromValue = resource["ids:contractOffer"][0]["ids:contractStart"]["@value"];
             contractPeriodToValue = resource["ids:contractOffer"][0]["ids:contractEnd"]["@value"];
         }
+        let contractName = resource.contractName;
         let clientResource = clientDataModel.createResource(resource["@id"], id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
-            publisher, fileType, "", contractPeriodFromValue, contractPeriodToValue, null);
+            publisher, fileType, contractName, "", contractPeriodFromValue, contractPeriodToValue, null);
         clientResource.idsResource = resource;
         resources.push(clientResource);
+    },
+
+    async getNumberOfActiveIncomingAgreements(){
+        return (await restUtils.callConnector("GET", "/api/agreements"))["_embedded"]
+            .agreements
+            .filter((element) => element.confirmed === true
+                && moment(JSON.parse(element["value"])["ids:contractEnd"]["@value"]).diff(moment()) > 0
+                && moment(JSON.parse(element["value"])["ids:contractStart"]["@value"]).diff(moment()) < 0
+                && element.remoteId === "genesis")
+            .length;
+    },
+    async getNumberOfActiveOutgoingAgreements() {
+        return (await restUtils.callConnector("GET", "/api/agreements"))["_embedded"]
+            .agreements
+            .filter((element) => element.confirmed === true && element.remoteId !== "genesis")
+            .length;
+    },
+    async getNumberOfDataSources(){
+        return (await this.getGenericEndpoints()).length;
+    },
+    async createContract(name, desc, contractPeriodFromValue, contractPeriodToValue, policyDescriptions){
+        let bodyData = {
+            "title": name,
+            "description": desc,
+            "start": contractPeriodFromValue,
+            "end": contractPeriodToValue,
+        }
+        let createdContract = await restUtils.callConnector("POST", "/api/contracts", null, bodyData);
+        let contractId = this.getIdOfConnectorResponse(createdContract);
+        let response = this.createRules(policyDescriptions, contractId);
+        return response.value;
+    },
+    async createRules(policyDescriptions, contractId) {
+        for (let policyDescription of policyDescriptions) {
+            let ruleJson = await restUtils.callConnector("POST", "/api/examples/policy", null, policyDescription);
+            let response = await restUtils.callConnector("POST", "/api/rules", null, {
+                "value": JSON.stringify(ruleJson)
+            });
+            let ruleId = this.getIdOfConnectorResponse(response);
+            response = await restUtils.callConnector("POST", "/api/contracts/" + contractId + "/rules", null, [ruleId]);
+        }
+    },
+    async getAllContracts() {
+        let allContracts = [];
+        let response = (await restUtils.callConnector("GET", "/api/contracts"))._embedded.contracts;
+        if (response !== undefined) {
+            for(let policy of response){
+                let creationDate = policy.creationDate.substring(0, 19).replace("T", " ");
+                let start = policy.start.substring(0, 19).replace("T", " ");
+                let end = policy.end.substring(0, 19).replace("T", " ");
+                let rules = (await restUtils.callConnector("GET", "/api/contracts/" + this.getIdOfConnectorResponse(policy) + "/rules"))["_embedded"].rules;
+                allContracts.push({
+                    id: this.getIdOfConnectorResponse(policy),
+                    title: policy.title,
+                    description: policy.description,
+                    dateCreated: creationDate,
+                    contractStart: start,
+                    contractEnd: end,
+                    rules: rules
+                });
+            }
+        }
+        return allContracts;
+    },
+    async getAllPolicyTemplates() {
+        return (await this.getAllContracts())
+            .filter(str => str.title !== "" && str.title.length >= 0 );
+    },
+    async getRules(rules) {
+        let policyNames = [];
+        let ruleJsons = [];
+        let ruleIds = [];
+        let contractRules = {};
+        for (let rule of rules) {
+            let policyName = await this.getPolicyNameByPattern(rule.value);
+            policyNames.push(policyName);
+            ruleIds.push(this.getIdOfConnectorResponse(rule));
+            ruleJsons.push(JSON.parse(rule.value));
+            contractRules = {
+                policyNames: policyNames,
+                ruleIds: ruleIds,
+                ruleJsons: ruleJsons
+            }
+        }
+        return contractRules;
+    },
+    async updateContract(contractId, name, desc, contractPeriodFromValue, contractPeriodToValue, policyDescriptions) {
+        let bodyData = {
+            "title": name,
+            "description": desc,
+            "start": contractPeriodFromValue,
+            "end": contractPeriodToValue
+        }
+        let response = await restUtils.callConnector("PUT", "/api/contracts/" + contractId, null, bodyData).value;
+        let rules = (await restUtils.callConnector("GET", "/api/contracts/" + contractId + "/rules"))["_embedded"].rules;
+            for (let rule of rules) {
+                await restUtils.callConnector("DELETE", "/api/rules/" + this.getIdOfConnectorResponse(rule));
+        }
+            response = await this.createRules(policyDescriptions, contractId);
+        return response;
+    },
+    async deleteContract(id) {
+        await restUtils.callConnector("DELETE", "/api/contracts/" + id);
+    },
+    async getNumberOfContracts() {
+        return (await this.getAllContracts())
+            // .filter((element) => element.confirmed === true && element.remoteId !== "genesis")
+            .length;
+    },
+    async getNumberOfPolicyTemplates() {
+        return (await this.getAllContracts())
+            .filter(str => str.title !== "" && str.title.length >= 0 )
+            .length;
     }
 }
 

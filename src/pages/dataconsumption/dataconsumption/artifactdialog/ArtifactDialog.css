@@ -7,3 +7,7 @@
     color: red;
     align-self: center;
 }
+
+.artifact-dialog-location.v-input--is-disabled {
+    visibility: hidden;
+}

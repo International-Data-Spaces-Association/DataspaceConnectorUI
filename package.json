@@ -1,6 +1,6 @@
 {
   "name": "dataspaceconnector-ui",
-  "version": "9.0.0",
+  "version": "10.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --open --port 8082",
@@ -14,16 +14,16 @@
   },
   "dependencies": {
     "apexcharts": "^3.33.1",
-    "axios": "0.26.0",
+    "axios": "^0.26.0",
     "concurrently": "^5.3.0",
     "core-js": "^3.21.1",
-    "d3": "5.15.0",
+    "d3": "^5.15.0",
     "material-design-icons-iconfont": "^6.1.1",
-    "moment": "2.29.1",
+    "moment": "^2.29.1",
     "vue": "^2.6.14",
-    "vue-apexcharts": "1.6.0",
-    "vue-router": "3.1.6",
-    "vuetify": "2.3.12"
+    "vue-apexcharts": "^1.6.0",
+    "vue-router": "^3.1.6",
+    "vuetify": "^2.3.12"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "4.5.15",

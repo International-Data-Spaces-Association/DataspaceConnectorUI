@@ -6,3 +6,7 @@
 .resources-page-agreements-button {
     cursor: pointer;
 }
+
+.header-text{
+    color: var(--v-primary-base);
+}

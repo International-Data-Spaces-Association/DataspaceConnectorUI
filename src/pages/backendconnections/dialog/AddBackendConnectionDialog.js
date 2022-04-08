@@ -1,5 +1,5 @@
 import dataUtils from "@/utils/dataUtils";
-import validationUtils from "../../../../utils/validationUtils";
+import validationUtils from "@/utils/validationUtils";
 
 export default {
     components: {},
@@ -9,6 +9,8 @@ export default {
             active_tab: 0,
             currentEndpoint: null,
             title: "",
+            name:"",
+            desc:"",
             url: null,
             sourceType: "Database",
             sourceTypes: ["Database", "REST", "Other"],
@@ -22,26 +24,18 @@ export default {
             valid: false,
             requiredRule: validationUtils.getRequiredRule(),
             urlRule: validationUtils.getUrlRequiredRule(),
-            editMode: false
+            editMode: false,
         };
     },
     mounted: function () {
     },
-    // watch: {
-    //     dialog() {
-    //         console.log("SHOW: ", this.$data.dialog);
-    //         if (this.$data.dialog) {
-    //             setTimeout(() => {
-    //                 this.$refs.tfURL.$el.focus();
-    //             })
-    //         }
-    //     }
-    // },
     methods: {
         addButtonClicked() {
             this.$data.editMode = false;
-            this.$data.title = "Add Backend Connection";
+            this.$data.title = "Add Data Source";
             this.$data.currentEndpoint = null;
+            this.$data.name="";
+            this.$data.desc="";
             this.$data.url = "";
             this.$data.sourceType = this.$data.sourceTypes[0];
             this.$data.driverClassName = "";
@@ -59,7 +53,12 @@ export default {
         async saveBackendConnection() {
             this.$root.$emit('showBusyIndicator', true);
             this.$data.dialog = false;
-            if (this.$data.active_tab == 0) {
+            if(this.$data.active_tab === 0) {
+                this.$data.authHeaderName = null;
+                this.$data.authHeaderValue = null;
+                this.$data.username = null;
+                this.$data.password = null;
+            } else if (this.$data.active_tab === 1) {
                 this.$data.authHeaderName = null;
                 this.$data.authHeaderValue = null;
             } else {
@@ -68,7 +67,7 @@ export default {
             }
             if (this.$data.currentEndpoint == null) {
                 try {
-                    await dataUtils.createGenericEndpoint(this.$data.url, this.$data.username, this.$data.password, this.$data.authHeaderName,
+                    await dataUtils.createGenericEndpoint(this.$data.name, this.$data.desc, this.$data.url, this.$data.username, this.$data.password, this.$data.authHeaderName,
                         this.$data.authHeaderValue, this.$data.sourceType.toUpperCase(), this.$data.driverClassName, this.$data.camelSqlUri);
                 } catch (error) {
                     console.log("Error on saveBackendConnection(): ", error);
@@ -77,7 +76,7 @@ export default {
                 this.$emit('backendConnectionSaved');
             } else {
                 try {
-                    await dataUtils.updateGenericEndpoint(this.currentEndpoint.id, this.currentEndpoint.dataSource.id, this.$data.url,
+                    await dataUtils.updateGenericEndpoint(this.$data.name, this.$data.desc, this.currentEndpoint.id, this.currentEndpoint.dataSource.id, this.$data.url,
                         this.$data.username, this.$data.password, this.$data.authHeaderName,
                         this.$data.authHeaderValue, this.$data.sourceType.toUpperCase(), this.$data.driverClassName, this.$data.camelSqlUri);
                 } catch (error) {
@@ -89,8 +88,10 @@ export default {
         },
         async edit(endpoint) {
             this.$data.editMode = true;
-            this.$data.title = "Edit Backend Connection"
+            this.$data.title = "Edit Backend Connection";
             this.$data.currentEndpoint = endpoint;
+            this.$data.name = endpoint.title;
+            this.$data.desc = endpoint.description;
             this.$data.url = endpoint.accessUrl;
             let dataSource;
             if (endpoint.dataSource.id === undefined) {
@@ -101,7 +102,7 @@ export default {
                 dataSource = await dataUtils.getDataSource(endpoint.dataSource.id);
             }
             this.$data.sourceType = dataSource.type;
-            if (dataSource.type.toUpperCase() == "DATABASE") {
+            if (dataSource.type.toUpperCase() === "DATABASE") {
                 this.$data.driverClassName = endpoint.driverClassName;
                 this.$data.camelSqlUri = endpoint.camelSqlUri;
             } else {

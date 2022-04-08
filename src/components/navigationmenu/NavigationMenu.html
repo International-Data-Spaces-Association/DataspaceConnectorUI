@@ -1,10 +1,10 @@
 <!--  -->
 <v-list class="navigation-menu">
   <div class="navigation-menu-header">
-    <img src="@/assets/images/fraunhofer_logo_schwarz.png" class="fraunhofer-logo"></img>
+    <img src="@/assets/images/fraunhofer_logo_schwarz.png" class="custom-logo"></img>
   </div>
   <template v-for="item in items">
-    <v-list-item v-if="!item.subitems" v-bind:class="{activeitem: isActive(item)}" :key="item.title" :to="item.to">
+    <v-list-item v-if="!item.subitems && isItemForDisplay(item)" v-bind:class="{activeitem: isActive(item)}" :key="item.title" :to="item.to">
       <v-list-item-icon>
         <v-icon color="white" v-text="item.icon" class="navigation-menu-icon"></v-icon>
       </v-list-item-icon>
@@ -14,7 +14,7 @@
       </v-list-item-content>
     </v-list-item>
 
-    <v-list-group v-if="item.subitems" v-model="item.active" :key="item.title" no-action>
+    <v-list-group v-if="item.subitems && isItemForDisplay(item)" v-model="item.active" :key="item.title" no-action>
       <template v-slot:activator>
         <v-list-item-icon>
           <v-icon color="white" v-text="item.icon" class="navigation-menu-icon"></v-icon>
@@ -24,7 +24,7 @@
         </v-list-item-content>
       </template>
 
-      <v-list-item v-for="child in item.subitems" v-bind:class="{activeitem: isActive(child)}" :key="child.title"
+      <v-list-item v-for="child in filterItemsForDisplay(item.subitems)" v-bind:class="{activeitem: isActive(child)}" :key="child.title"
         :to="child.to">
         <v-list-item-content>
           <v-list-item-title v-text="child.title"></v-list-item-title>

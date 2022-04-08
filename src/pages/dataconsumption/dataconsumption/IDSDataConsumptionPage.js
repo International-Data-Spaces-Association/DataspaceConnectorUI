@@ -3,7 +3,7 @@ import errorUtils from "@/utils/errorUtils";
 import validationUtils from "@/utils/validationUtils";
 import ResourceDetailsDialog from "@/pages/dataoffering/resources/resourcedetailsdialog/ResourceDetailsDialog.vue";
 import ArtifactDialog from "@/pages/dataconsumption/dataconsumption/artifactdialog/ArtifactDialog.vue";
-
+import moment from 'moment'
 
 export default {
     components: {
@@ -69,6 +69,12 @@ export default {
             }, {
                 text: 'License',
                 value: 'standardlicense'
+            }, {
+                text: 'Offered from',
+                value: 'contractPeriodFromValue'
+            }, {
+                text: 'Offered until',
+                value: 'contractPeriodToValue'
             },
             {
                 text: '',
@@ -108,6 +114,9 @@ export default {
         this.init();
     },
     methods: {
+        momentDiff: function (date,format) {
+            return moment(date,format).diff(moment());
+        },
         async init() {
             await this.getBrokers();
             await this.getRoutes();
@@ -252,9 +261,9 @@ export default {
             }
         },
 
-        async subscribeToResource() {
+        async subscribeToResource(subscriptionLocation) {
             try {
-                this.$data.subscribeToResourceResponse = await dataUtils.subscribeToResource(this.$data.recipientId, this.$data.selectedResource["@id"]);
+                this.$data.subscribeToResourceResponse = await dataUtils.subscribeToResource(this.$data.recipientId, this.$data.selectedResource["@id"], subscriptionLocation);
             } catch (error) {
                 errorUtils.showError(error, "subscribe to Resource");
             }
@@ -305,14 +314,28 @@ export default {
             this.$data.selectedArtifacts = representation["ids:instance"];
         },
 
-        requestArtifact(item) {
-            this.$refs.artifactDialog.show(this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"], this.$data.selectedResource["ids:standardLicense"]["@id"], item, this.clickAcceptContract);
+        async requestArtifact(item) {
+            let configuration = await dataUtils.getConnectorConfiguration();
+            let subscriptionLocations = [];
+            subscriptionLocations.push({
+                display: configuration.endpoint,
+                value: configuration.endpoint
+            });
+            for (let route of this.$data.routes) {
+                subscriptionLocations.push({
+                    display: route.description,
+                    value: route.selfLink
+                });
+            }
+            this.$refs.artifactDialog.show(this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"], this.$data.selectedResource["ids:standardLicense"]["@id"], item, subscriptionLocations, this.clickAcceptContract);
         },
 
-        clickAcceptContract(artifact) {
+        clickAcceptContract(artifact, subscribe, subscriptionLocation) {
             this.$data.selectedIdsArtifact = artifact;
             this.requestContract();
-            this.subscribeToResource();
+            if (subscribe) {
+                this.subscribeToResource(subscriptionLocation);
+            }
         },
         async dispatchViaRoutes() {
             this.$root.$emit('showBusyIndicator', true);
