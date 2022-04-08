@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 - Data Consumption: Table column "subscribed"
 
 ### Fixes
-- Route validation: Offering routes need to end with artifact
+- Route validation: Offering/Consumption routes need to end/start with artifact
 
 ## [9.1.0] - 2022-04-01 (compatible with DSC 7.0.0)
 
