@@ -5,11 +5,12 @@ export default {
             dialog: false,
             title: "",
             text: "",
+            text2: null,
             callback: null,
             callbackData: null
         };
     },
-    mounted: function () {},
+    mounted: function () { },
     methods: {
         yesClicked() {
             this.dialog = false;

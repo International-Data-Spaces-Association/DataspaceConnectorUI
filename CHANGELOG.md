@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [9.2.0] - XXXX-XX-XX (compatible with DSC 7.0.0)
+
+### Added
+- Delete associated routes of apps on stop/delete
+- Subscriptions page
+- Data Consumption: Checkbox for subscription
+- Data Consumption: Delete requested resource
+- Data Consumption: Table column "subscribed"
+
+### Fixes
+- Route validation: Offering/Consumption routes need to end/start with artifact
+
 ## [9.1.0] - 2022-04-01 (compatible with DSC 7.0.0)
 
 ### Added

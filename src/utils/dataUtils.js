@@ -183,7 +183,9 @@ export default {
         let response = (await restUtils.callConnector("GET", "/api/requests"))["_embedded"].resources;
         let resources = [];
         for (let idsResource of response) {
-            resources.push(clientDataModel.convertIdsResource(idsResource));
+            let resource = clientDataModel.convertIdsResource(idsResource);
+            resource.remoteId = idsResource.remoteId.substring(idsResource.remoteId.lastIndexOf("/") + 1, idsResource.remoteId.length);
+            resources.push(resource);
         }
         return resources;
     },
@@ -359,6 +361,44 @@ export default {
         return statusClass;
     },
 
+    async deleteAllRoutesOfApp(appId) {
+        let appEndpoints = await this.getAppEndpoints(appId);
+        let appEndpointIds = [];
+        for (let appEndpoint of appEndpoints) {
+            appEndpointIds.push(this.getIdOfConnectorResponse(appEndpoint));
+        }
+        let routes = await this.getRoutes();
+        for (let route of routes) {
+            let routeId = this.getIdOfConnectorResponse(route);
+            if (this.routeContainsEndpoint(route, appEndpointIds)) {
+                this.deleteRoute(routeId);
+            } else {
+                let subRoutes = await this.getRouteSteps(routeId);
+                for (let subRoute of subRoutes) {
+                    if (this.routeContainsEndpoint(subRoute, appEndpointIds)) {
+                        this.deleteRoute(routeId);
+                        break;
+                    }
+                }
+            }
+        }
+    },
+
+    routeContainsEndpoint(route, endpointsIds) {
+        let contains = false;
+        for (let endpointId of endpointsIds) {
+            if (route.start !== undefined && route.start != null && route.start.id == endpointId) {
+                contains = true;
+                break;
+            }
+            if (route.end !== undefined && route.end != null && route.end.id == endpointId) {
+                contains = true;
+                break;
+            }
+        }
+        return contains;
+    },
+
     async startApp(appId) {
         try {
             let params = {
@@ -371,14 +411,20 @@ export default {
     },
 
     async stopApp(appId) {
+        let inUse = false;
         try {
             let params = {
                 "type": "STOP"
             };
             await restUtils.callConnector("PUT", "/api/apps/" + appId + "/actions", params);
         } catch (error) {
-            errorUtils.showError(error, "Stop app");
+            if (error.details !== undefined && error.details.data !== undefined && error.details.data.message == "Selected App is in use by Camel.") {
+                inUse = true;
+            } else {
+                errorUtils.showError(error, "Stop app");
+            }
         }
+        return inUse;
     },
 
     async isAppRunning(appId) {
@@ -547,6 +593,18 @@ export default {
         return await restUtils.callConnector("GET", "/api/datasources/" + id);
     },
 
+    async getSubscriptions() {
+        let subscriptions = (await restUtils.callConnector("GET", "/api/subscriptions"))._embedded.subscriptions;
+        for (let subscription of subscriptions) {
+            subscription.creationDate = subscription.creationDate.substring(0, 19).replace("T", " ");
+        }
+        return subscriptions;
+    },
+
+    async deleteSubscription(id) {
+        await restUtils.callConnector("DELETE", "/api/subscriptions/" + id);
+    },
+
     async getGenericEndpoints() {
         let genericEndpoints = [];
         let idsEndpoints = (await restUtils.callConnector("GET", "/api/endpoints"))._embedded.endpoints;
@@ -679,6 +737,10 @@ export default {
         await restUtils.callConnector("DELETE", "/api/offers/" + resource.id);
         await restUtils.callConnector("DELETE", "/api/representations/" + resource.representationId);
         await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
+    },
+
+    async deleteRequestedResource(id) {
+        await restUtils.callConnector("DELETE", "/api/requests/" + id);
     },
 
     async getRoute(id) {
@@ -1296,7 +1358,7 @@ export default {
         return await restUtils.callConnector("POST", "/api/ids/contract", params, contractOffer[0]["ids:permission"]);
     },
 
-    async subscribeToResource(recipientId, resoureceId) {
+    async subscribeToResource(recipientId, resoureceId, subscriptionLocation) {
         let params = {
             "recipient": recipientId,
         }
@@ -1307,7 +1369,7 @@ export default {
             "title": "default",
             "description": "Notify on update",
             "target": resoureceId,
-            "location": configuration.endpoint,
+            "location": subscriptionLocation,
             "subscriber": configuration.id,
             "pushData": true
         }
