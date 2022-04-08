@@ -17,6 +17,7 @@ export default {
         showBusyIndicator: false,
         blockNavigationMenu: false,
         uiTitle: "IDS Configuration Manager",
+        description: "A Connector to show ease of use of data sovereignty",
         errorSnackbar: false,
         errorText: "",
         advancedView: false,
@@ -52,6 +53,7 @@ export default {
             try {
                 let connectorData = (await dataUtils.getConnectorConfiguration());
                 this.$data.uiTitle = connectorData.title;
+                this.$data.description = connectorData.description;
             } catch (error) {
                 errorUtils.showError(error, "Get connector settings");
             }
