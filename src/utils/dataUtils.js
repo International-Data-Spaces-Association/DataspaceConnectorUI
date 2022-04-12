@@ -641,7 +641,7 @@ export default {
 
     async createGenericEndpoint(title, desc, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
         let location = url;
-        if (sourceType === "OTHER") {
+        if (sourceType === "OTHER" || sourceType === "DATABASE") {
             location = camelSqlUri;
         }
         let response = await restUtils.callConnector("POST", "/api/endpoints", null, {
@@ -686,7 +686,7 @@ export default {
 
     async updateGenericEndpoint(title, desc, id, dataSourceId, url, username, password, authHeaderName, authHeaderValue, sourceType, driverClassName, camelSqlUri) {
         let location = url;
-        if (sourceType === "OTHER") {
+        if (sourceType === "OTHER" || sourceType === "DATABASE") {
             location = camelSqlUri;
         }
         await restUtils.callConnector("PUT", "/api/endpoints/" + id, null, {

@@ -12,8 +12,8 @@ export default {
             name:"",
             desc:"",
             url: null,
-            sourceType: "Database",
-            sourceTypes: ["Database", "REST", "Other"],
+            sourceType: "REST",
+            sourceTypes: ["REST", "Database", "Other"],
             driverClassName: null,
             camelSqlUri: null,
             username: null,
@@ -53,15 +53,15 @@ export default {
         async saveBackendConnection() {
             this.$root.$emit('showBusyIndicator', true);
             this.$data.dialog = false;
-            if(this.$data.active_tab === 0) {
+            if (this.$data.active_tab === 0) { //Basic Auth
                 this.$data.authHeaderName = null;
                 this.$data.authHeaderValue = null;
+            } else if (this.$data.active_tab === 1) { //API Key
                 this.$data.username = null;
                 this.$data.password = null;
-            } else if (this.$data.active_tab === 1) {
+            } else if(this.$data.active_tab === 2) { //None
                 this.$data.authHeaderName = null;
                 this.$data.authHeaderValue = null;
-            } else {
                 this.$data.username = null;
                 this.$data.password = null;
             }
@@ -102,9 +102,14 @@ export default {
                 dataSource = await dataUtils.getDataSource(endpoint.dataSource.id);
             }
             this.$data.sourceType = dataSource.type;
+            console.log(dataSource.type.toUpperCase());
+            console.log(endpoint);
             if (dataSource.type.toUpperCase() === "DATABASE") {
                 this.$data.driverClassName = endpoint.driverClassName;
                 this.$data.camelSqlUri = endpoint.camelSqlUri;
+            } else if (dataSource.type.toUpperCase() === "OTHER") {
+                this.$data.driverClassName = "";
+                this.$data.camelSqlUri = endpoint.accessUrl;
             } else {
                 this.$data.driverClassName = "";
                 this.$data.camelSqlUri = "";
