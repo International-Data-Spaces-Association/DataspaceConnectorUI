@@ -3,7 +3,6 @@ version: '3.5'
 services:
     dataspaceconnector-ui:
         image: dataspaceconnector-ui
-        network_mode: host
         environment:
             - CONNECTOR_URL=https://localhost:8080
             - UI_TITLE=Dataspace Connector UI
