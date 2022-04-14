@@ -5,6 +5,7 @@ services:
         image: dataspaceconnector-ui
         environment:
             - CONNECTOR_URL=https://localhost:8080
-            - UI_TITLE=Dataspace Connector UI
+            - CONNECTOR_USER=admin
+            - CONNECTOR_PASSWORD=password
         ports:
             - "8083:8083"
