@@ -306,19 +306,7 @@ export default {
         },
 
         async requestArtifact(item) {
-            let configuration = await dataUtils.getConnectorConfiguration();
-            let subscriptionLocations = [];
-            subscriptionLocations.push({
-                display: configuration.endpoint,
-                value: configuration.endpoint
-            });
-            for (let route of this.$data.routes) {
-                subscriptionLocations.push({
-                    display: route.description,
-                    value: route.selfLink
-                });
-            }
-            this.$refs.artifactDialog.show(this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"], this.$data.selectedResource["ids:standardLicense"]["@id"], item, subscriptionLocations, this.clickAcceptContract);
+            this.$refs.artifactDialog.show(this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"], this.$data.selectedResource["ids:standardLicense"]["@id"], item, this.clickAcceptContract);
         },
 
         clickAcceptContract(artifact, subscribe, subscriptionLocation) {

@@ -12,16 +12,6 @@
             <h4 class="data-consumption-page-dialog-title">License:</h4>
             {{ license }}
             <v-checkbox v-model="subscribe" label="Subscribe"></v-checkbox>
-            <v-row no-gutters>
-                <v-col cols="12" md="1">
-                </v-col>
-                <v-col cols="12" md="11">
-                    <v-select class="artifact-dialog-location" v-model="subscriptionLocation"
-                        :items="subscriptionLocations" label="Subscription location" :disabled="!subscribe"
-                        item-text="display" item-value="value">
-                    </v-select>
-                </v-col>
-            </v-row>
         </v-card-text>
 
         <v-divider></v-divider>
