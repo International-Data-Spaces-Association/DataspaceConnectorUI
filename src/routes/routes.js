@@ -19,10 +19,13 @@ function getRoutes() {
 
 function generateRoutes(pageStructure, routes, currentBreadcrumb, parent) {
   for (let page of pageStructure) {
-    currentBreadcrumb.push({
-      text: PageStructure.getDisplayName(page.name),
-      href: page.path
-    });
+    let breadCrumb = {
+      text: PageStructure.getDisplayName(page.name)
+    };
+    if (page.path != null) {
+      breadCrumb.href = "#/" + page.path
+    }
+    currentBreadcrumb.push(breadCrumb);
     if (page.path != null) {
       routes.push({
         path: page.path,
