@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [9.3.0] - XXXX-XX-XX (compatible with DSC 7.0.0)
+
+### Added
+- 
+
+### Fixes
+- Removed route selection for IDS subscription
+- Breadcrumbs: remove null links
+
 ## [9.2.0] - 2022-04-08 (compatible with DSC 7.0.0)
 
 ### Added
