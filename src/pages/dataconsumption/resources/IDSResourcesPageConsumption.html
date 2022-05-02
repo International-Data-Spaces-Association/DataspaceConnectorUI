@@ -23,6 +23,14 @@
             </v-tooltip>
             <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
+                <v-icon class="mr-2" @click="subscribeItem(item)" v-bind="attrs" v-on="on">
+                  mdi-rss
+                </v-icon>
+              </template>
+              <span>Subscribe</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
                 <v-icon class="mr-2" @click="deleteItem(item)" v-bind="attrs" v-on="on">
                   mdi-delete
                 </v-icon>

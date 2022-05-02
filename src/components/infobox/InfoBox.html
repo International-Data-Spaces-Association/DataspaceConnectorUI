@@ -138,4 +138,17 @@
             Running apps cannot be deleted and must be stopped first.
         </v-card-text>
     </v-card-text>
+    <v-card-text v-if="currentRoute  == 'subscriptions'">
+        <v-card-text>
+            Overview of all currently active subscriptions.
+            <br>
+            <br>
+            Subscriptions can be deleted.
+        </v-card-text>
+    </v-card-text>
+    <v-card-text v-if="currentRoute  == 'subscriberesource'">
+        <v-card-text>
+            Subscribe to resources as IDS or non-IDS system
+        </v-card-text>
+    </v-card-text>
 </v-card>

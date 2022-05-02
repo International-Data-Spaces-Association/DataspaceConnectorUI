@@ -34,7 +34,7 @@ export default {
                 value: 'actions',
                 sortable: false,
                 align: 'right',
-                width: 100
+                width: 130
             }
             ],
             resources: [],
@@ -86,6 +86,9 @@ export default {
         },
         showItem(item) {
             this.$refs.resourceDetailsDialog.showRequest(item.id);
+        },
+        subscribeItem(item) {
+            this.$router.push('subscriberesource?id=' + item.id);
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Requested Resource";

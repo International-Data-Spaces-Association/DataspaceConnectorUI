@@ -268,7 +268,9 @@ export default {
             }
         }
 
-        return clientDataModel.convertIdsResource(resource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
+        let res = clientDataModel.convertIdsResource(resource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
+        res.remoteId = resource.remoteId;
+        return res;
     },
 
     async getPolicyNameByPattern(pattern) {
@@ -1358,20 +1360,19 @@ export default {
         return await restUtils.callConnector("POST", "/api/ids/contract", params, contractOffer[0]["ids:permission"]);
     },
 
-    async subscribeToResource(recipientId, resoureceId, subscriptionLocation) {
+    async subscribeToResource(recipientId, resoureceId, subscriptionLocation, pushData) {
         let params = {
             "recipient": recipientId,
         }
 
-        let configuration = await this.getConnectorConfiguration();
+        // let configuration = await this.getConnectorConfiguration();
 
         let body = {
             "title": "default",
             "description": "Notify on update",
             "target": resoureceId,
             "location": subscriptionLocation,
-            "subscriber": configuration.id,
-            "pushData": true
+            "pushData": pushData
         }
         body = JSON.stringify(body);
 

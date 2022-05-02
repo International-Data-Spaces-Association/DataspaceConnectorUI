@@ -12,6 +12,7 @@ import InstallAppsPage from "@/pages/appstores/installapps/InstallAppsPage.vue";
 import SettingsPage from "@/pages/settings/SettingsPage.vue";
 import BackendConnectionsPage from "@/pages/backendconnections/BackendConnectionsPage.vue";
 import SubscriptionsPage from "@/pages/subscriptions/SubscriptionsPage.vue";
+import SubscribeResourcePage from "@/pages/subscriptions/subscribe/SubscribeResourcePage.vue";
 import ResourceCatalogsPage from "@/pages/dataoffering/resources/addresource/catalog/ResourceCatalogsPage.vue";
 
 export default {
@@ -104,7 +105,13 @@ export default {
             path: "subscriptions",
             name: "Subscriptions",
             icon: "mdi-rss",
-            component: SubscriptionsPage
+            component: SubscriptionsPage,
+            subpages: [{
+                path: "subscriberesource",
+                name: "Subscribe Resource",
+                component: SubscribeResourcePage,
+                showInMenu: false
+            }]
         }, {
             path: "brokers",
             name: "Brokers",

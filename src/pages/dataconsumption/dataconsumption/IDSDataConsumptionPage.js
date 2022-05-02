@@ -183,6 +183,7 @@ export default {
         },
         async requestSearchResult(item) {
             this.$root.$emit('showBusyIndicator', true);
+            console.trace();
             this.$data.recipientId = item.accessUrl;
             await this.receiveCatalogs();
             let filterdResources = [];
@@ -254,7 +255,7 @@ export default {
 
         async subscribeToResource(subscriptionLocation) {
             try {
-                this.$data.subscribeToResourceResponse = await dataUtils.subscribeToResource(this.$data.recipientId, this.$data.selectedResource["@id"], subscriptionLocation);
+                this.$data.subscribeToResourceResponse = await dataUtils.subscribeToResource(this.$data.recipientId, this.$data.selectedResource["@id"], subscriptionLocation, true);
             } catch (error) {
                 errorUtils.showError(error, "subscribe to Resource");
             }
