@@ -59,7 +59,7 @@ export default {
                 for (let resource of this.$data.resources) {
                     resource.hasSubscription = false;
                     for (let subscription of this.$data.subscriptions) {
-                        if (subscription.target.includes(resource.remoteId)) {
+                        if (subscription.target.includes(resource.remoteId) || subscription.target.includes(resource.selfLink)) {
                             resource.hasSubscription = true;
                             break;
                         }

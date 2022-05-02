@@ -13,8 +13,7 @@
         <v-tab-item :eager="true">
           <div class="subscribe-tab-div">
             <v-form v-model="valid" ref="form">
-              <v-text-field label="Provider Connector URL" v-model="recipientId" :rules="urlRule">
-              </v-text-field>
+              <p><b>Recipient:</b> {{recipientId}}</p>
               <p><b>Target:</b> {{resource.remoteId}}</p>
               <p><b>Location:</b> {{idsSubscribeLocation}}</p>
               <v-checkbox v-model="push" label="Push data"></v-checkbox>
@@ -25,6 +24,7 @@
         <v-tab-item :eager="true">
           <div class="subscribe-tab-div">
             <v-form v-model="nonIdsValid" ref="form">
+              <p><b>Recipient:</b> {{recipientId}}</p>
               <p><b>Target:</b> {{resource.remoteId}}</p>
               <v-select v-model="nonIdsSubscribeLocationType" :items="nonIdsSubscribeLocationTypes"
                 label="Location type">

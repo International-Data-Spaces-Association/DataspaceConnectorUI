@@ -185,6 +185,7 @@ export default {
         for (let idsResource of response) {
             let resource = clientDataModel.convertIdsResource(idsResource);
             resource.remoteId = idsResource.remoteId.substring(idsResource.remoteId.lastIndexOf("/") + 1, idsResource.remoteId.length);
+            resource.selfLink = idsResource._links.self.href;
             resources.push(resource);
         }
         return resources;
@@ -270,6 +271,7 @@ export default {
 
         let res = clientDataModel.convertIdsResource(resource, representation, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
         res.remoteId = resource.remoteId;
+        res.selfLink = resource._links.self.href;
         return res;
     },
 
@@ -1365,18 +1367,32 @@ export default {
             "recipient": recipientId,
         }
 
-        // let configuration = await this.getConnectorConfiguration();
-
         let body = {
-            "title": "default",
-            "description": "Notify on update",
             "target": resoureceId,
             "location": subscriptionLocation,
+            "subscriber": subscriptionLocation,
             "pushData": pushData
         }
         body = JSON.stringify(body);
 
         let response = await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
+        return response;
+    },
+
+    async nonIdsSubscribeToResource(recipientId, resoureceId, subscriptionLocation, pushData) {
+        let params = {
+            "recipient": recipientId,
+        }
+
+        let body = {
+            "target": resoureceId,
+            "location": subscriptionLocation,
+            "subscriber": subscriptionLocation,
+            "pushData": pushData
+        }
+        body = JSON.stringify(body);
+
+        let response = await restUtils.callConnector("POST", "/api/subscriptions", params, body);
         return response;
     },
 
