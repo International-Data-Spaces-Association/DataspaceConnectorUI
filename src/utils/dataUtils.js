@@ -375,12 +375,30 @@ export default {
         for (let route of routes) {
             let routeId = this.getIdOfConnectorResponse(route);
             if (this.routeContainsEndpoint(route, appEndpointIds)) {
-                this.deleteRoute(routeId);
+                await this.deleteRoute(routeId);
             } else {
                 let subRoutes = await this.getRouteSteps(routeId);
                 for (let subRoute of subRoutes) {
                     if (this.routeContainsEndpoint(subRoute, appEndpointIds)) {
-                        this.deleteRoute(routeId);
+                        await this.deleteRoute(routeId);
+                        break;
+                    }
+                }
+            }
+        }
+    },
+
+    async deleteAllRoutesOfGenericEndpoint(genericEndpointId) {
+        let routes = await this.getRoutes();
+        for (let route of routes) {
+            let routeId = this.getIdOfConnectorResponse(route);
+            if (this.routeContainsEndpoint(route, [genericEndpointId])) {
+                await this.deleteRoute(routeId);
+            } else {
+                let subRoutes = await this.getRouteSteps(routeId);
+                for (let subRoute of subRoutes) {
+                    if (this.routeContainsEndpoint(subRoute, [genericEndpointId])) {
+                        await this.deleteRoute(routeId);
                         break;
                     }
                 }
@@ -740,7 +758,9 @@ export default {
         let resource = await this.getResource(id);
         await restUtils.callConnector("DELETE", "/api/offers/" + resource.id);
         await restUtils.callConnector("DELETE", "/api/representations/" + resource.representationId);
-        await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
+        if (resource.artifactId !== undefined && resource.artifactId != null && resource.artifactId.trim() != "") {
+            await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
+        }
     },
 
     async deleteRequestedResource(id) {
