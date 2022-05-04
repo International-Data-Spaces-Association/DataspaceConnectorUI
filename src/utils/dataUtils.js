@@ -764,7 +764,12 @@ export default {
     },
 
     async deleteRequestedResource(id) {
+        let resource = await this.getRequestedResource(id);
         await restUtils.callConnector("DELETE", "/api/requests/" + id);
+        await restUtils.callConnector("DELETE", "/api/representations/" + resource.representationId);
+        if (resource.artifactId !== undefined && resource.artifactId != null && resource.artifactId.trim() != "") {
+            await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
+        }
     },
 
     async getRoute(id) {
