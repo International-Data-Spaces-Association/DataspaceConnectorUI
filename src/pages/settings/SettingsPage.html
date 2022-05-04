@@ -99,6 +99,7 @@
                     :type="showPasswordTrustStore ? 'text' : 'password'" :append-icon="showPasswordTrustStore ?
                     'mdi-eye' :
                     'mdi-eye-off'" @click:append="showPasswordTrustStore = !showPasswordTrustStore"> </v-text-field>
+                <v-text-field label="TrustStore Alias" v-model="trustStoreAlias"> </v-text-field>
             </v-col>
         </v-row>
         <v-row class="settings-row" no-gutters>
@@ -110,6 +111,7 @@
                 <v-text-field label="KeyStore Password" v-model="keyStorePassword"
                     :type="showPasswordKeyStore ? 'text' : 'password'" :append-icon="showPasswordKeyStore ? 'mdi-eye' :
                     'mdi-eye-off'" @click:append="showPasswordKeyStore = !showPasswordKeyStore"> </v-text-field>
+                <v-text-field label="KeyStore Alias" v-model="keyStoreAlias"> </v-text-field>
             </v-col>
         </v-row>
     </v-form>

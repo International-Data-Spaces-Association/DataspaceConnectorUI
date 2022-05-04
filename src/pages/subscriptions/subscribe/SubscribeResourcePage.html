@@ -1,0 +1,48 @@
+<div>
+  <v-row no-gutters>
+    <v-col cols="12" md="11" sm="12">
+      <p class="subscribe-id">Subscribe Resource "{{resource.title}}"</p>
+      <v-divider></v-divider>
+    </v-col>
+  </v-row>
+  <v-row no-gutters>
+    <v-col cols="12" md="8" sm="12">
+      <v-tabs class="subscribe-tab" v-model="active_tab" hide-slider>
+        <v-tab>IDS Subscription</v-tab>
+        <v-tab>Non-IDS Subscription</v-tab>
+        <v-tab-item :eager="true">
+          <div class="subscribe-tab-div">
+            <v-form v-model="valid" ref="form">
+              <p><b>Recipient:</b> {{recipientId}}</p>
+              <p><b>Target:</b> {{resource.remoteId}}</p>
+              <p><b>Location:</b> {{idsSubscribeLocation}}</p>
+              <v-checkbox v-model="push" label="Push data"></v-checkbox>
+              <v-btn color="primary" @click.native="subscribeIds" :disabled="!valid">Subscribe</v-btn>
+            </v-form>
+          </div>
+        </v-tab-item>
+        <v-tab-item :eager="true">
+          <div class="subscribe-tab-div">
+            <v-form v-model="nonIdsValid" ref="form">
+              <p><b>Recipient:</b> {{recipientId}}</p>
+              <p><b>Target:</b> {{resource.remoteId}}</p>
+              <v-select v-model="nonIdsSubscribeLocationType" :items="nonIdsSubscribeLocationTypes"
+                label="Location type">
+              </v-select>
+              <v-text-field label="Backend URL" v-model="nonIdsSubscribeBackendUrl" :rules="urlRule"
+                v-if="nonIdsSubscribeLocationType == 'Backend'">
+              </v-text-field>
+              <v-select v-model="nonIdsSubscribeLocationRoute" :items="nonIdsSubscribeLocationRoutes" label="Location"
+                item-text="display" item-value="value" :rules="requiredRule"
+                v-if="nonIdsSubscribeLocationType == 'Route'">
+              </v-select>
+              <v-checkbox v-model="nonIdsPush" label="Push data"></v-checkbox>
+              <v-btn color="primary" @click.native="subscribeNonIds" :disabled="!nonIdsValid">Subscribe</v-btn>
+            </v-form>
+          </div>
+        </v-tab-item>
+      </v-tabs>
+    </v-col>
+  </v-row>
+
+</div>
