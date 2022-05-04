@@ -1237,8 +1237,8 @@ export default {
     },
 
     async changeConnectorConfiguration(id, title, description, curator, maintainer, useProxy, proxyUrl, proxyNoProxy,
-        useAuthentication, proxyUsername, proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword,
-        keyStoreUrl, keyStorePassword) {
+        useAuthentication, proxyUsername, proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword, trustStoreAlias,
+        keyStoreUrl, keyStorePassword, keyStoreAlias) {
         let proxySettings = null;
         let proxyAuth = null;
         if (useAuthentication) {
@@ -1262,11 +1262,13 @@ export default {
             "logLevel": loglevel,
             "deployMode": deployMode,
             "truststore": {
-                "location": trustStoreUrl
+                "location": trustStoreUrl,
+                "alias": trustStoreAlias
             },
             "proxy": proxySettings,
             "keystore": {
-                "location": keyStoreUrl
+                "location": keyStoreUrl,
+                "alias": keyStoreAlias
             }
         };
         if (trustStorePassword != null) {
