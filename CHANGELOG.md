@@ -28,6 +28,7 @@ ATTENTION: This release requires at least DSC version 7.1.0, which introduces `a
 - Sticky logo on small screens showing scroll bar in navigation
 - Moved CSS styles from App.vue into separate default.css
 - Updated package.json version number
+- Display title in backend connection remove dialog instead of URL.
 
 ### Fixed
 - Screen refreshing when pressing enter in URL field at Data Consumption view
