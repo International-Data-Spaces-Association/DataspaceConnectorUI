@@ -675,7 +675,7 @@ export default {
         let genericEndpointId = this.getIdOfConnectorResponse(response);
 
         let bodyData = null;
-        if (username != null) {
+        if (username !== undefined && username !== null) {
             bodyData = {
                 "basicAuth": {
                     "key": username,
@@ -683,15 +683,20 @@ export default {
                 },
                 "type": sourceType
             };
-        } else {
+        } else if (authHeaderName !== undefined && authHeaderName !== null && authHeaderValue !== undefined && authHeaderValue !== null){
             bodyData = {
                 "apiKey": {
-                    "key": authHeaderName === undefined ? "" : authHeaderName,
-                    "value": authHeaderValue === undefined ? "" : authHeaderValue
+                    "key": authHeaderName,
+                    "value": authHeaderValue
                 },
                 "type": sourceType
             };
+        } else {
+            bodyData = {
+                "type": sourceType
+            };
         }
+
         if (sourceType === "DATABASE") {
             bodyData.url = url;
             bodyData.driverClassName = driverClassName;
@@ -720,7 +725,7 @@ export default {
 
         if (sourceType !== "OTHER") {
             let bodyData = null;
-            if (username != null) {
+            if (username !== undefined && username !== null) {
                 bodyData = {
                     "basicAuth": {
                         "key": username,
@@ -729,16 +734,22 @@ export default {
                     "type": sourceType,
                     "url": url
                 };
-            } else {
+            } else if (authHeaderName !== undefined && authHeaderName !== null && authHeaderValue !== undefined && authHeaderValue !== null){
                 bodyData = {
                     "apiKey": {
-                        "key": authHeaderName === undefined ? "" : authHeaderName,
-                        "value": authHeaderValue === undefined ? "" : authHeaderValue
+                        "key": authHeaderName,
+                        "value": authHeaderValue
                     },
                     "type": sourceType,
                     "url": url
                 };
+            } else {
+                bodyData = {
+                    "type": sourceType,
+                    "url": url
+                };
             }
+
             if (sourceType === "DATABASE") {
                 bodyData.url = url;
                 bodyData.driverClassName = driverClassName;
@@ -1357,8 +1368,7 @@ export default {
             "recipient": recipientId,
             "elementId": catalogId
         }
-        let response = await restUtils.callConnector("POST", "/api/ids/description", params);
-        return response;
+        return await restUtils.callConnector("POST", "/api/ids/description", params);
     },
 
     /*     async receiveIdsArtifact(recipientId, artifactId) {
@@ -1406,8 +1416,7 @@ export default {
         }
         body = JSON.stringify(body);
 
-        let response = await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
-        return response;
+        return await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
     },
 
     async nonIdsSubscribeToResource(recipientId, resoureceId, subscriptionLocation, pushData) {
@@ -1423,8 +1432,7 @@ export default {
         }
         body = JSON.stringify(body);
 
-        let response = await restUtils.callConnector("POST", "/api/subscriptions", params, body);
-        return response;
+        return await restUtils.callConnector("POST", "/api/subscriptions", params, body);
     },
 
     async dispatchViaRoutes(artifactId, routes) {
