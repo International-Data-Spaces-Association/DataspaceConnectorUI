@@ -3,8 +3,8 @@
         File Types
     </template>
     <template v-slot:content>
-        <apexchart :options="options" :series="series" v-bind:class="{ hideChart: !chartVisible }">
-        </apexchart>
+        <apex-chart :options="options" :series="series" v-bind:class="{ hideChart: !chartVisible }">
+        </apex-chart>
         <p class="text-center text-subtitle-1 text--primary" v-bind:class="{ hideNoChartData: chartVisible }">No resources available</p>
     </template>
 </dashboard-card>

@@ -15,7 +15,7 @@ const router = new VueRouter({
 });
 
 Vue.use(VueRouter);
-Vue.component('apexchart', VueApexCharts)
+Vue.component('apex-chart', VueApexCharts)
 
 Vue.config.productionTip = false
 

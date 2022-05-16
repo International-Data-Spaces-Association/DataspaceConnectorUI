@@ -34,7 +34,7 @@ import {
 import render from "./render";
 
 export default {
-  name: "flowchart",
+  name: "flow-chart",
   props: {
     nodes: {
       type: Array,
