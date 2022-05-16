@@ -16,6 +16,9 @@ export default {
         return {
             search: '',
             headers: [{
+                text: 'Title',
+                value: 'title'
+            },{
                 text: 'URL',
                 value: 'accessUrl'
             }],
@@ -67,8 +70,7 @@ export default {
         },
         async getGenericEndpoints() {
             try {
-                let response = await dataUtils.getGenericEndpoints();
-                this.$data.backendConnections = response;
+                this.$data.backendConnections = await dataUtils.getGenericEndpoints();
                 this.$data.readonly = this.$parent.$parent.$parent.$parent.readonly;
                 this.$forceUpdate();
                 if (this.$data.newBackendConnection) {
@@ -88,9 +90,7 @@ export default {
             if (resource.fileType === undefined) {
                 this.$refs.form.reset();
             } else {
-                if (resource.fileType !== undefined) {
-                    this.$data.filetype = resource.fileType;
-                }
+                this.$data.filetype = resource.fileType;
             }
 
             this.$data.selected = [];

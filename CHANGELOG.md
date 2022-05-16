@@ -19,6 +19,8 @@ ATTENTION: This release requires at least DSC version 7.1.0, which introduces `a
 - Advanced mode toggle (bottom of navigation bar) hiding in default's disabled mode several navigation bar elements
 - Header shows connector description
 - Check if a contract's validity time range fits to the current date, otherwise do not show buttons to request artifact
+- Display title in backend connection remove dialog instead of URL
+- Display title in backend connection select dialog 
 
 ### Changed
 - Several labels to explain functionalities simpler
@@ -28,7 +30,6 @@ ATTENTION: This release requires at least DSC version 7.1.0, which introduces `a
 - Sticky logo on small screens showing scroll bar in navigation
 - Moved CSS styles from App.vue into separate default.css
 - Updated package.json version number
-- Display title in backend connection remove dialog instead of URL.
 
 ### Fixed
 - Screen refreshing when pressing enter in URL field at Data Consumption view
