@@ -38,6 +38,19 @@ ATTENTION: This release requires at least DSC version 7.1.0, which introduces `a
 - Unused imports
 
 
+## [9.3.0] - 2022-05-04 (compatible with DSC 7.x)
+
+### Added
+- Add IDS/Non-IDS subscription to requested resource
+- Delete associated routes of generic endpoint on delete
+- Keystore/Truststore alias on settings page
+
+### Fixes
+- Removed route selection for IDS subscription
+- Breadcrumbs: remove null links
+- Docker Image with Non-Root-User
+- Delete representation & artifact when requested resource is deleted
+
 ## [9.2.0] - 2022-04-08 (compatible with DSC 7.0.0)
 
 ### Added

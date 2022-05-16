@@ -45,6 +45,11 @@ let connectorUrl = "https://localhost:8080"
 
 You can change the main colors of the user interface in `src/theme/default.js`
 
+### Test backend
+
+The UI backend provides an endpoint (http://[localhost:8083]/testdata) that can be used as backend connection (type: REST) in the DSC for testing purposes.
+This can process POST and GET requests.
+
 ## Start with Docker
 
 Build docker image:

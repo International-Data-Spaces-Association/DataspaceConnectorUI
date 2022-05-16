@@ -52,17 +52,19 @@ export default {
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Backend Connection";
-            this.$refs.confirmationDialog.text = "Are you sure you want to delete the Backend Connection '" + item.url + "'?";
+            this.$refs.confirmationDialog.text = "Are you sure you want to delete the Backend Connection '" + item.accessUrl + "'?";
+            this.$refs.confirmationDialog.text2 = "Associated routes will be deleted.";
             this.$refs.confirmationDialog.callbackData = {
                 item: item
             };
             this.$refs.confirmationDialog.callback = this.deleteCallback;
             this.$refs.confirmationDialog.dialog = true;
         },
-        deleteCallback(choice, callbackData) {
+        async deleteCallback(choice, callbackData) {
             if (choice == "yes") {
                 this.$root.$emit('showBusyIndicator', true);
-                this.deleteBackendConnection(callbackData.item.id, callbackData.item.dataSource.id);
+                await dataUtils.deleteAllRoutesOfGenericEndpoint(callbackData.item.id);
+                await this.deleteBackendConnection(callbackData.item.id, callbackData.item.dataSource.id);
             }
         },
         async deleteBackendConnection(id, dataSourceId) {

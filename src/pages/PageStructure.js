@@ -13,6 +13,7 @@ import AppStoresPage from "@/pages/appstores/AppStoresPage.vue";
 import InstallAppsPage from "@/pages/appstores/installapps/InstallAppsPage.vue";
 import BackendConnectionsPage from "@/pages/backendconnections/BackendConnectionsPage.vue";
 import SubscriptionsPage from "@/pages/subscriptions/SubscriptionsPage.vue";
+import SubscribeResourcePage from "@/pages/subscriptions/subscribe/SubscribeResourcePage.vue";
 import ResourceCatalogsPage from "@/pages/dataoffering/resources/addresource/catalog/ResourceCatalogsPage.vue";
 
 export default {
@@ -110,7 +111,25 @@ export default {
                 icon: "mdi-briefcase-variant-outline",
                 component: null,
                 subpages: [
-                   {
+                    {
+                        path: "brokers",
+                        name: "Brokers",
+                        icon: "mdi-briefcase-variant-outline",
+                        component: BrokersPage,
+                        subpages: []
+                    }, {
+                        path: "appstores",
+                        name: "App Stores",
+                        icon: "mdi-storefront-outline",
+                        component: AppStoresPage,
+                        subpages: [{
+                            path: "installapps",
+                            name: "Install apps",
+                            component: InstallAppsPage,
+                            subpages: [],
+                            showInMenu: false
+                        }]
+                    }, {
                         path: "apps",
                         name: "Apps",
                         icon: "mdi-apps",
@@ -118,16 +137,8 @@ export default {
                         subpages: [],
                         showInAdvancedViewOnly: true,
                     },
-                    {
-                        path: "brokers",
-                        name: "Brokers",
-                        icon: "mdi-briefcase-variant-outline",
-                        component: BrokersPage,
-                        subpages: []
-                    },
                 ]
-            },
-            {
+        }, {
             path: null,
             name: "Settings",
             icon: "mdi-cog-outline",
@@ -148,23 +159,17 @@ export default {
                     path: "subscriptions",
                     name: "Subscriptions",
                     icon: "mdi-rss",
-                    component: SubscriptionsPage
-                }, {
-                    path: "appstores",
-                    name: "App Stores",
-                    icon: "mdi-storefront-outline",
-                    component: AppStoresPage,
+                    component: SubscriptionsPage,
                     subpages: [{
-                        path: "installapps",
-                        name: "Install apps",
-                        component: InstallAppsPage,
-                        subpages: [],
+                        path: "subscriberesource",
+                        name: "Subscribe Resource",
+                        component: SubscribeResourcePage,
                         showInMenu: false
                     }]
                 }
                 ]
             }
-        ]
+        ];
     },
     getDisplayName(name) {
         var displayName = name;

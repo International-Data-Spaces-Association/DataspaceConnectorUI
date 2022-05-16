@@ -124,7 +124,7 @@ export default {
 
     createConnectorConfig(id, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
         useProxy, proxyUrl, proxyUsername, proxyPassword, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
-        keyStoreUrl, keyStorePassword) {
+        trustStoreAlias, keyStoreUrl, keyStorePassword, keyStoreAlias) {
         let configuration = {};
         if (id === undefined) {
             configuration.id = "";
@@ -221,6 +221,11 @@ export default {
         } else {
             configuration.trustStorePassword = trustStorePassword;
         }
+        if (trustStoreAlias === undefined) {
+            configuration.trustStoreAlias = "";
+        } else {
+            configuration.trustStoreAlias = trustStoreAlias;
+        }
         if (keyStoreUrl === undefined) {
             configuration.keyStoreUrl = "";
         } else {
@@ -230,6 +235,11 @@ export default {
             configuration.keyStorePassword = "";
         } else {
             configuration.keyStorePassword = keyStorePassword;
+        }
+        if (keyStoreAlias === undefined) {
+            configuration.keyStoreAlias = "";
+        } else {
+            configuration.keyStoreAlias = keyStoreAlias;
         }
 
         return configuration;
@@ -398,8 +408,10 @@ export default {
         let connectorDeployMode = "";
         let trustStoreUrl = "";
         let trustStorePassword = "";
+        let trustStoreAlias = "";
         let keyStoreUrl = "";
         let keyStorePassword = "";
+        let keyStoreAlias = "";
 
         if (idsConfiguration !== undefined) {
             id = dataUtils.getIdOfConnectorResponse(idsConfiguration);
@@ -425,11 +437,13 @@ export default {
             logLevel = idsConfiguration.logLevel;
             connectorDeployMode = idsConfiguration.deployMode;
             trustStoreUrl = idsConfiguration.trustStore.location;
+            trustStoreAlias = idsConfiguration.trustStore.alias;
             keyStoreUrl = idsConfiguration.keyStore.location;
+            keyStoreAlias = idsConfiguration.keyStore.alias;
         }
 
         return this.createConnectorConfig(id, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
-            useProxy, proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
-            keyStoreUrl, keyStorePassword);
+            useProxy, proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword, trustStoreAlias,
+            keyStoreUrl, keyStorePassword, keyStoreAlias);
     }
 }

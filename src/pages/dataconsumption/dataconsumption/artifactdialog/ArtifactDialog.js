@@ -1,4 +1,5 @@
 import PolicyLine from "@/components/policy/PolicyLine.vue";
+import dataUtils from "@/utils/dataUtils";
 
 export default {
     components: {
@@ -11,28 +12,23 @@ export default {
             license: "",
             artifact: null,
             callback: null,
-            subscribe: false,
-            subscriptionLocations: [],
-            subscriptionLocation: null
+            subscribe: false
         };
     },
     mounted: function () { },
     methods: {
-        show(rules, license, artifact, subscriptionLocations, callback) {
+        show(rules, license, artifact, callback) {
             this.$data.rules = rules;
             this.$data.license = license;
             this.$data.artifact = artifact;
             this.$data.subscribe = false;
-            this.$data.subscriptionLocations = subscriptionLocations;
-            if (subscriptionLocations !== undefined && subscriptionLocations != null && subscriptionLocations.length > 0) {
-                this.$data.subscriptionLocation = subscriptionLocations[0].value;
-            }
             this.$data.callback = callback;
             this.$data.dialog = true;
         },
-        clickAcceptContract() {
+        async clickAcceptContract() {
             this.$data.dialog = false;
-            this.$data.callback(this.$data.artifact, this.$data.subscribe, this.$data.subscriptionLocation);
+            let configuration = await dataUtils.getConnectorConfiguration();
+            this.$data.callback(this.$data.artifact, this.$data.subscribe, configuration.endpoint);
         }
     }
 };

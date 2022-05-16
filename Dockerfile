@@ -7,4 +7,6 @@ RUN npm run-script build
 RUN npm prune --production
 RUN rm -r .git
 RUN sed -i "s@http://localhost:8083@@g" dist/js/*.js
+RUN groupadd -r nonroot && useradd -r -g nonroot nonroot
+USER nonroot
 ENTRYPOINT ["./entryPoint.sh"]

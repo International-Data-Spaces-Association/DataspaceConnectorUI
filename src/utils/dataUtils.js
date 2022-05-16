@@ -185,6 +185,7 @@ export default {
         for (let idsResource of response) {
             let resource = clientDataModel.convertIdsResource(idsResource);
             resource.remoteId = idsResource.remoteId.substring(idsResource.remoteId.lastIndexOf("/") + 1, idsResource.remoteId.length);
+            resource.selfLink = idsResource._links.self.href;
             resources.push(resource);
         }
         return resources;
@@ -270,7 +271,10 @@ export default {
             }
         }
 
-        return clientDataModel.convertIdsResource(resource, representation, "", policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
+        let res = clientDataModel.convertIdsResource(resource, representation, "", policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId);
+        res.remoteId = resource.remoteId;
+        res.selfLink = resource._links.self.href;
+        return res;
     },
 
     async getPolicyNameByPattern(pattern) {
@@ -373,12 +377,30 @@ export default {
         for (let route of routes) {
             let routeId = this.getIdOfConnectorResponse(route);
             if (this.routeContainsEndpoint(route, appEndpointIds)) {
-                this.deleteRoute(routeId);
+                await this.deleteRoute(routeId);
             } else {
                 let subRoutes = await this.getRouteSteps(routeId);
                 for (let subRoute of subRoutes) {
                     if (this.routeContainsEndpoint(subRoute, appEndpointIds)) {
-                        this.deleteRoute(routeId);
+                        await this.deleteRoute(routeId);
+                        break;
+                    }
+                }
+            }
+        }
+    },
+
+    async deleteAllRoutesOfGenericEndpoint(genericEndpointId) {
+        let routes = await this.getRoutes();
+        for (let route of routes) {
+            let routeId = this.getIdOfConnectorResponse(route);
+            if (this.routeContainsEndpoint(route, [genericEndpointId])) {
+                await this.deleteRoute(routeId);
+            } else {
+                let subRoutes = await this.getRouteSteps(routeId);
+                for (let subRoute of subRoutes) {
+                    if (this.routeContainsEndpoint(subRoute, [genericEndpointId])) {
+                        await this.deleteRoute(routeId);
                         break;
                     }
                 }
@@ -664,8 +686,8 @@ export default {
         } else {
             bodyData = {
                 "apiKey": {
-                    "key": authHeaderName == undefined ? "" : authHeaderName,
-                    "value": authHeaderValue == undefined ? "" : authHeaderValue
+                    "key": authHeaderName === undefined ? "" : authHeaderName,
+                    "value": authHeaderValue === undefined ? "" : authHeaderValue
                 },
                 "type": sourceType
             };
@@ -710,8 +732,8 @@ export default {
             } else {
                 bodyData = {
                     "apiKey": {
-                        "key": authHeaderName == undefined ? "" : authHeaderName,
-                        "value": authHeaderValue == undefined ? "" : authHeaderValue
+                        "key": authHeaderName === undefined ? "" : authHeaderName,
+                        "value": authHeaderValue === undefined ? "" : authHeaderValue
                     },
                     "type": sourceType,
                     "url": url
@@ -742,11 +764,18 @@ export default {
         let resource = await this.getResource(id);
         await restUtils.callConnector("DELETE", "/api/offers/" + resource.id);
         await restUtils.callConnector("DELETE", "/api/representations/" + resource.representationId);
-        await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
+        if (resource.artifactId !== undefined && resource.artifactId != null && resource.artifactId.trim() !== "") {
+            await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
+        }
     },
 
     async deleteRequestedResource(id) {
+        let resource = await this.getRequestedResource(id);
         await restUtils.callConnector("DELETE", "/api/requests/" + id);
+        await restUtils.callConnector("DELETE", "/api/representations/" + resource.representationId);
+        if (resource.artifactId !== undefined && resource.artifactId != null && resource.artifactId.trim() !== "") {
+            await restUtils.callConnector("DELETE", "/api/artifacts/" + resource.artifactId);
+        }
     },
 
     async getRoute(id) {
@@ -768,10 +797,10 @@ export default {
 
     async getEndpointList(node) {
         let endpointList = [];
-        if (node.type == "backendnode") {
+        if (node.type === "backendnode") {
             let endpoint = await this.getGenericEndpoint(node.objectId);
             endpointList.push(endpoint);
-        } else if (node.type == "appnode") {
+        } else if (node.type === "appnode") {
             let endpoint = await this.getApp(node.objectId);
             endpointList.push(endpoint);
         }
@@ -1217,8 +1246,8 @@ export default {
     },
 
     async changeConnectorConfiguration(id, title, description, curator, maintainer, useProxy, proxyUrl, proxyNoProxy,
-        useAuthentication, proxyUsername, proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword,
-        keyStoreUrl, keyStorePassword) {
+        useAuthentication, proxyUsername, proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword, trustStoreAlias,
+        keyStoreUrl, keyStorePassword, keyStoreAlias) {
         let proxySettings = null;
         let proxyAuth = null;
         if (useAuthentication) {
@@ -1242,11 +1271,13 @@ export default {
             "logLevel": loglevel,
             "deployMode": deployMode,
             "truststore": {
-                "location": trustStoreUrl
+                "location": trustStoreUrl,
+                "alias": trustStoreAlias
             },
             "proxy": proxySettings,
             "keystore": {
-                "location": keyStoreUrl
+                "location": keyStoreUrl,
+                "alias": keyStoreAlias
             }
         };
         if (trustStorePassword != null) {
@@ -1362,24 +1393,37 @@ export default {
         return await restUtils.callConnector("POST", "/api/ids/contract", params, contractOffer[0]["ids:permission"]);
     },
 
-    async subscribeToResource(recipientId, resoureceId, subscriptionLocation) {
+    async subscribeToResource(recipientId, resoureceId, subscriptionLocation, pushData) {
         let params = {
             "recipient": recipientId,
         }
 
-        let configuration = await this.getConnectorConfiguration();
-
         let body = {
-            "title": "default",
-            "description": "Notify on update",
             "target": resoureceId,
             "location": subscriptionLocation,
-            "subscriber": configuration.id,
-            "pushData": true
+            "subscriber": subscriptionLocation,
+            "pushData": pushData
         }
         body = JSON.stringify(body);
 
         let response = await restUtils.callConnector("POST", "/api/ids/subscribe", params, body);
+        return response;
+    },
+
+    async nonIdsSubscribeToResource(recipientId, resoureceId, subscriptionLocation, pushData) {
+        let params = {
+            "recipient": recipientId,
+        }
+
+        let body = {
+            "target": resoureceId,
+            "location": subscriptionLocation,
+            "subscriber": subscriptionLocation,
+            "pushData": pushData
+        }
+        body = JSON.stringify(body);
+
+        let response = await restUtils.callConnector("POST", "/api/subscriptions", params, body);
         return response;
     },
 

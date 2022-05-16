@@ -22,8 +22,10 @@ export default {
             connectorDeployMode: "",
             trustStoreUrl: "",
             trustStorePassword: "",
+            trustStoreAlias: "",
             keyStoreUrl: "",
             keyStorePassword: "",
+            keyStoreAlias: "",
             showPasswordTrustStore: false,
             showPasswordKeyStore: false,
             connectorTitle: "",
@@ -92,11 +94,13 @@ export default {
                 this.$data.connectorStatus = configuration.connectorStatus;
                 this.$data.connectorDeployMode = configuration.connectorDeployMode;
                 this.$data.trustStoreUrl = configuration.trustStoreUrl;
+                this.$data.trustStoreAlias = configuration.trustStoreAlias;
                 this.$data.trustStorePassword = configuration.trustStorePassword;
                 this.$data.trustStorePasswordOriginal = configuration.trustStorePassword;
                 this.$data.keyStoreUrl = configuration.keyStoreUrl;
                 this.$data.keyStorePassword = configuration.keyStorePassword;
                 this.$data.keyStorePasswordOriginal = configuration.keyStorePassword;
+                this.$data.keyStoreAlias = configuration.keyStoreAlias;
             }
             catch (error) {
                 errorUtils.showError(error, "Get connector settings");
@@ -158,7 +162,7 @@ export default {
                 await dataUtils.changeConnectorConfiguration(this.$data.configId, this.$data.connectorTitle,
                     this.$data.connectorDescription, this.$data.connectorCurator, this.$data.connectorMaintainer, this.$data.useProxy === 'true',
                     this.$data.proxyUrl, noProxy, useAuthentication, proxyUsername, proxyPassword, this.$data.logLevel, this.$data.connectorDeployMode,
-                    this.$data.trustStoreUrl, trustStorePassword, this.$data.keyStoreUrl, keyStorePassword);
+                    this.$data.trustStoreUrl, trustStorePassword, this.$data.trustStoreAlias, this.$data.keyStoreUrl, keyStorePassword, this.$data.keyStoreAlias);
             }
             catch (error) {
                 errorUtils.showError(error, "Save connector settings");
