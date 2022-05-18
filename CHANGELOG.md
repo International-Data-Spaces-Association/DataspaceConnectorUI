@@ -39,6 +39,15 @@ ATTENTION: This release requires at least DSC version 7.1.0, which introduces `a
 ### Removed
 - Unused imports
 
+### Dependencies
+- @vue/cli-plugin-babel: 4.5.15 -> ^5.0.4
+- @vue/cli-plugin-eslint: 4.5.15 -> ~5.0.0
+- @vue/cli-service: ^4.5.15 -> ^5.-0.4
+- eslint: ^6.7.2, -> ^7.32.0
+- eslint-plugin-vue: ^6.2.2 -> ^8.0.3
+- ADDED @babel/core: ^7.12.16
+- ADDED @babel/eslint-parser: ^7.12.16
+
 
 ## [9.3.0] - 2022-05-04 (compatible with DSC 7.x)
 
