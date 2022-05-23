@@ -1,14 +1,17 @@
+import 'dotenv/config'
 import express from "express";
 import cors from "cors";
 import axios from "axios";
 import https from "https";
 import bodyParser from "body-parser";
 import path from "path";
+import ontologyLoader from "./ontologyLoader.js"
 
 const vuePath = path.join(path.resolve(),'..', '..', 'dist');
-const DEBUG = false;
 const app = express();
 const port = 8083;
+
+let DEBUG = false;
 let connectorUrl = "https://localhost:8080"
 let auth = {
     username: 'admin',
@@ -21,8 +24,16 @@ let httpsAgent = new https.Agent({
     //ca: fs.readFileSync('dsc.crt')
 });
 
+if (process.env.USE_ONTOLOGY !== undefined && process.env.USE_ONTOLOGY === "true") {
+    ontologyLoader.loadOntology();
+}
+
 if (process.env.CONNECTOR_URL !== undefined) {
     connectorUrl = process.env.CONNECTOR_URL;
+}
+
+if (process.env.DEBUG !== undefined) {
+    DEBUG = process.env.DEBUG;
 }
 
 if (process.env.CONNECTOR_USER !== undefined) {
@@ -44,6 +55,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+
 
 function post(url, data) {
     if (DEBUG) {
@@ -114,7 +126,7 @@ function stringifySafe(obj, replacer, spaces, cycleReplacer) {
 
 function filterError(origError) {
     if (origError.response !== undefined) {
-        // remove config & request data, because it contains sensitive data. 
+        // remove config & request data, because it contains sensitive data.
         origError.response.config = null;
         origError.response.request = null;
     }
@@ -141,6 +153,10 @@ function serializer(replacer, cycleReplacer) {
         return replacer == null ? value : replacer.call(this, key, value)
     }
 }
+
+app.get('/ontology', function (req, res) {
+    res.send(ontologyLoader.getOntology());
+});
 
 app.get('/testdata', function (req, res) {
     res.send("TEST DATA FROM BACKEND");

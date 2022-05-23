@@ -13,7 +13,11 @@
   "dependencies": {
     "axios": "^0.26.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
     "express": "^4.17.1",
-    "express-basic-auth": "^1.2.1"
+    "express-basic-auth": "^1.2.1",
+    "n3": "^1.16.2",
+    "rdf-data-factory": "^1.1.0",
+    "rdf-parse": "^2.0.0"
   }
 }
