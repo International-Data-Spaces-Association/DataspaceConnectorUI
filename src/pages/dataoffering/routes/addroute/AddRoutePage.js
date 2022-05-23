@@ -3,7 +3,7 @@ import EditNodeDialog from "./dialog/EditNodeDialog.vue";
 import EditIdsEndpointDialog from "./dialog/editidsendpointdialog/EditIdsEndpointDialog.vue";
 import EditConnectionDialog from "./dialog/EditConnectionDialog.vue";
 import AddNodeDialog from "./dialog/AddNodeDialog.vue";
-import Flowchart from "@/components/flowchart/Flowchart.vue";
+import FlowChart from "@/components/flowchart/FlowChart.vue";
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 
@@ -13,7 +13,7 @@ export default {
         EditIdsEndpointDialog,
         EditConnectionDialog,
         AddNodeDialog,
-        Flowchart
+        FlowChart
     },
     data() {
         return {

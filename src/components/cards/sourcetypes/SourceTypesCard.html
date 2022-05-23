@@ -3,9 +3,9 @@
         Source Types
     </template>
     <template v-slot:content>
-        <apexchart width="380" height="200" :options="options" :series="series"
+        <apex-chart width="380" height="200" :options="options" :series="series"
             v-bind:class="{ hideChart: !chartVisible }">
-        </apexchart>
-        <div class="noChartDataDiv" v-bind:class="{ hideNoChartData: chartVisible }">No resources</div>
+        </apex-chart>
+        <div class="text-center text-subtitle-1 text--primary" v-bind:class="{ hideNoChartData: chartVisible }">No resources</div>
     </template>
 </dashboard-card>

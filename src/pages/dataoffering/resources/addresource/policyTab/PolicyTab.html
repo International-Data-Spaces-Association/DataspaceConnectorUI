@@ -1,0 +1,105 @@
+<div>
+    <v-container fluid>
+        <v-row>
+            <v-col cols="12" md="7" xs="12">
+                    <p class="label-text">Options:</p>
+                    <div class="text-subtitle-2 font-weight-regular option-color">
+                        1. Select a Policy Pattern template. Adjust it as you need.
+                    </div>
+                    <div class="text-subtitle-2 font-weight-regular option-color">
+                        2. Or, create a new Policy Pattern from scratch below.
+                    </div>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12" md="7" xs="6">
+                <v-card tile class="pa-4">
+                    <p class="label-text">Select a Policy Pattern template</p>
+                    <v-card-text class="pa-0">
+                        <v-form>
+                            <v-row dense>
+                                <v-col cols="12" md="8" xs="6">
+                                    <v-select
+                                            :items="policyTemplateTitles"
+                                            item-text="templateName"
+                                            label="Select a template"
+                                            v-model="policyTemplateName"
+                                            :readonly="readonly"
+                                    ></v-select>
+                                </v-col>
+                                <v-col cols="12" md="4" xs="6">
+                                    <v-btn color="primary" @click="applyTemplateDetails" class="prev-page-button ma-3">Apply</v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-form>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12" md="7" xs="6">
+                <v-card tile class="pa-4">
+                    <p class="label-text">Edit/Create Policy Patterns</p>
+                    <v-card-text class="pa-0">
+                        <v-form>
+                            <policy-line v-for="policyLine in policyLines" v-bind:key="policyLine.name" :name="policyLine.name"
+                                         :ruleJson="policyLine.ruleJson" :policyName="policyLine.policyName"
+                                         :policyDescription="policyLine.policyDescription" :ref="policyLine.name" :readonly="readonly"
+                                         @removePolicy="removePolicy" @validationChanged="validationChanged">
+                            </policy-line>
+                            <v-btn color="primary" small class="policy-page-add-button" @click.native="addPolicy" v-show="!readonly">+</v-btn>
+                        </v-form>
+                        <p class="label-text">Contract validity period</p>
+                        <v-form v-model="contractPeriodValid">
+                            <v-row no-gutters>
+                                <v-col cols="12" md="5">
+                                    <v-menu v-model="contractPeriodFromMenu" :close-on-content-click="false" :nudge-right="40"
+                                            transition="scale-transition" offset-y min-width="auto" :readonly="readonly">
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-text-field v-model="contractPeriodFromValue" label="From" prepend-icon="mdi-calendar"
+                                                          :readonly="readonly" :rules="defaultRule" v-bind="attrs" v-on="on">
+                                            </v-text-field>
+                                        </template>
+                                        <v-date-picker v-model="contractPeriodFromValue" @input="contractPeriodFromMenu = false"
+                                                       :readonly="readonly">
+                                        </v-date-picker>
+                                    </v-menu>
+                                </v-col>
+                                <v-col cols="12" md="5">
+                                    <v-menu v-model="contractPeriodToMenu" :close-on-content-click="false" :nudge-right="40"
+                                            transition="scale-transition" offset-y min-width="auto" :readonly="readonly">
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-text-field v-model="contractPeriodToValue" label="To" prepend-icon="mdi-calendar" readonly
+                                                          :rules="defaultRule" v-bind="attrs" v-on="on">
+                                            </v-text-field>
+                                        </template>
+                                        <v-date-picker v-model="contractPeriodToValue" @input="contractPeriodToMenu = false"
+                                                       :readonly="readonly">
+                                        </v-date-picker>
+                                    </v-menu>
+                                </v-col>
+                            </v-row>
+                        </v-form>
+                    </v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12" md="7" xs="12">
+                <v-card tile class="pa-4">
+                    <p class="label-text">Optional: Save as Template</p>
+                    <v-checkbox
+                            v-model="saveAsTemplate"
+                            label="Save as template"
+                            :readonly="readonly"
+                    ></v-checkbox>
+                    <v-text-field :disabled="!saveAsTemplate" label="Template Name" :rules="defaultRule" v-model="newTemplateTitle" :readonly="readonly">
+                    </v-text-field>
+                </v-card>
+            </v-col>
+        </v-row>
+        <v-col cols="12" md="4" xs="6">
+            <v-btn color="primary" @click.native="previousPage" class="prev-page-button">Back</v-btn>
+            <v-btn color="primary" @click.native="nextPage" :disabled="!valid">Next</v-btn>        </v-col>
+    </v-container>
+</div>

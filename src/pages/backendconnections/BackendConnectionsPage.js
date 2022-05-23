@@ -13,6 +13,9 @@ export default {
         return {
             search: '',
             headers: [{
+                text: 'Title',
+                value: 'title'
+            },{
                 text: 'URL',
                 value: 'accessUrl'
             },
@@ -49,8 +52,8 @@ export default {
         },
         deleteItem(item) {
             this.$refs.confirmationDialog.title = "Delete Backend Connection";
-            this.$refs.confirmationDialog.text = "Are you sure you want to delete the Backend Connection '" + item.accessUrl + "'?";
-            this.$refs.confirmationDialog.text2 = "Associated routes will be deleted.";
+            this.$refs.confirmationDialog.text = "Are you sure you want to delete the Backend Connection '" + item.title +"'?";
+            this.$refs.confirmationDialog.text2 = "Associated routes will be deleted too.";
             this.$refs.confirmationDialog.callbackData = {
                 item: item
             };

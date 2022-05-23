@@ -17,7 +17,7 @@
             <v-select label="Payment Modality" v-model="paymentMethod" :items="paymentMethods" item-text="displayName"
                 item-value="jsonInput" readonly>
             </v-select>
-            <v-btn color="primary" @click.native="nextPage" v-show="!onlyMetaData">
+            <v-btn color="primary" @click.native="nextPage" v-show="!onlyMetaData || this.$parent.displayOntologyPage">
                 Next</v-btn>
         </v-form>
         <v-form v-if="!readonly" v-model="valid" ref="form">
@@ -37,7 +37,7 @@
             <v-select label="Payment Modality" v-model="paymentMethod" :items="paymentMethods" item-text="displayName"
                 item-value="jsonInput" :rules="defaultRule" required>
             </v-select>
-            <v-btn color="primary" @click.native="nextPage" :disabled="!valid" v-show="!onlyMetaData">
+            <v-btn color="primary" @click.native="nextPage" :disabled="!valid" v-show="!onlyMetaData || this.$parent.displayOntologyPage">
                 Next</v-btn>
         </v-form>
     </v-col>

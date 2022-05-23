@@ -1,15 +1,17 @@
+import 'dotenv/config'
 import express from "express";
 import cors from "cors";
 import axios from "axios";
 import https from "https";
-import fs from "fs";
 import bodyParser from "body-parser";
 import path from "path";
+import ontologyLoader from "./ontologyLoader.js"
 
-const vuePath = path.resolve() + '/../../dist';
-const DEBUG = false;
+const vuePath = path.join(path.resolve(),'..', '..', 'dist');
 const app = express();
 const port = 8083;
+
+let DEBUG = false;
 let connectorUrl = "https://localhost:8080"
 let auth = {
     username: 'admin',
@@ -22,8 +24,16 @@ let httpsAgent = new https.Agent({
     //ca: fs.readFileSync('dsc.crt')
 });
 
+if (process.env.USE_ONTOLOGY !== undefined && process.env.USE_ONTOLOGY === "true") {
+    ontologyLoader.loadOntology();
+}
+
 if (process.env.CONNECTOR_URL !== undefined) {
     connectorUrl = process.env.CONNECTOR_URL;
+}
+
+if (process.env.DEBUG !== undefined) {
+    DEBUG = process.env.DEBUG;
 }
 
 if (process.env.CONNECTOR_USER !== undefined) {
@@ -33,7 +43,10 @@ if (process.env.CONNECTOR_USER !== undefined) {
 if (process.env.CONNECTOR_PASSWORD !== undefined) {
     auth.password = process.env.CONNECTOR_PASSWORD;
 }
-
+// initialize health before basicAuth to allow access without authentication
+app.use('/health', function (req, res) {
+    res.end('OK')
+});
 app.use(express.static(vuePath));
 
 
@@ -42,6 +55,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
+
 
 function post(url, data) {
     if (DEBUG) {
@@ -112,7 +126,7 @@ function stringifySafe(obj, replacer, spaces, cycleReplacer) {
 
 function filterError(origError) {
     if (origError.response !== undefined) {
-        // remove config & request data, because it contains sensitive data. 
+        // remove config & request data, because it contains sensitive data.
         origError.response.config = null;
         origError.response.request = null;
     }
@@ -140,6 +154,10 @@ function serializer(replacer, cycleReplacer) {
     }
 }
 
+app.get('/ontology', function (req, res) {
+    res.send(ontologyLoader.getOntology());
+});
+
 app.get('/testdata', function (req, res) {
     res.send("TEST DATA FROM BACKEND");
 });
@@ -150,7 +168,7 @@ app.post('/testdata', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    res.sendFile(vuePath + "index.html");
+    res.sendFile(path.join(vuePath, "index.html"));
 });
 
 app.post('/', (req, res) => {
@@ -225,5 +243,5 @@ app.post('/', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Backend listening at http://localhost:${port}`)
 });

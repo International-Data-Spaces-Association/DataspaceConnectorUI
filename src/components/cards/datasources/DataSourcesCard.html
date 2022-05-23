@@ -1,0 +1,16 @@
+<dashboard-card class="datasourcescard">
+    <template v-slot:header>
+        Data Sources
+    </template>
+    <template v-slot:content>
+        <div class="text-center kpi_number">
+            {{totalNumber}}
+        </div>
+    </template>
+    <template v-slot:button>
+        <v-btn class="no-uppercase" color="primary" :to="{path:'backendconnectionsoffering'}" depressed>
+            Register data source
+        </v-btn>
+<!--        <v-btn>test</v-btn>-->
+    </template>
+</dashboard-card>

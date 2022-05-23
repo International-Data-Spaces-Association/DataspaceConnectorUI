@@ -1,0 +1,19 @@
+<dashboard-card class="sourcetypescard">
+    <template v-slot:header>
+        Own URL
+    </template>
+    <template v-slot:content>
+        <div class="text-center">
+            <div class="kpi_number text-sm-body-1">{{defaultEndpoint}}</div>
+        </div>
+    </template>
+    <template v-slot:button>
+        <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+                  <v-btn class="no-uppercase" color="primary" @click="copyCode" @mouseout="reset" v-bind="attrs"
+                        v-on="on" depressed>Copy URL</v-btn>
+            </template>
+            <span>{{copyText}}</span>
+        </v-tooltip>
+    </template>
+</dashboard-card>

@@ -44,7 +44,7 @@ export default {
             this.$refs.addResourcePage.set(resource, false);
             this.$data.dialog = true;
         },
-        saved(catalogIds, title, description, language, paymentMethod, keywords, version, standardlicense, publisher, policyDescriptions,
+        saved(catalogIds, title, description, language, paymentMethod, keywords, version, standardlicense, publisher, templateTitle, policyDescriptions,
             contractPeriodFromValue, contractPeriodToValue, filetype, bytesize, brokerList) {
             let isNew = false;
             if (this.$data.node == null) {
@@ -70,6 +70,7 @@ export default {
             resource.version = version;
             resource.standardlicense = standardlicense;
             resource.publisher = publisher;
+            resource.title = templateTitle;
             resource.policyDescriptions = policyDescriptions;
             resource.contractPeriodFromValue = contractPeriodFromValue;
             resource.contractPeriodToValue = contractPeriodToValue;

@@ -9,13 +9,13 @@ import VueApexCharts from 'vue-apexcharts';
 
 // configure router
 const router = new VueRouter({
-  // mode: 'history',
+  mode: 'history',
   routes, // short for routes: routes
   linkExactActiveClass: "nav-item active"
 });
 
 Vue.use(VueRouter);
-Vue.component('apexchart', VueApexCharts)
+Vue.component('apex-chart', VueApexCharts)
 
 Vue.config.productionTip = false
 
