@@ -3,10 +3,11 @@ All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
 
-## [10.0.0] - XXXX-XX-XX (compatible with DSC 7.1.0)
-ATTENTION: This release requires at least DSC version 7.1.0, which introduces `addition` field in EndpointView. See [Changelog DSC v7.1.0](https://github.com/International-Data-Spaces-Association/DataspaceConnector/releases/tag/v7.1.0,changelog)
+## [10.0.0] - 2022-05-23 (compatible with DSC 7.1.0)
+**_ATTENTION: This release requires at least DSC version 7.1.0, which introduces `addition` field in EndpointView. See [Changelog DSC v7.1.0](https://github.com/International-Data-Spaces-Association/DataspaceConnector/releases/tag/v7.1.0,changelog)_**
 
 ### Added
+- Functionality to add custom properties to Resources (see [README.md](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI#add-custom-attributes-to-resources))
 - Dashboard card showing the configured default endpoint
 - Dashboard card showing number of data sources
 - Dashboard card showing number of policy templates
@@ -20,7 +21,7 @@ ATTENTION: This release requires at least DSC version 7.1.0, which introduces `a
 - Header shows connector description
 - Check if a contract's validity time range fits to the current date, otherwise do not show buttons to request artifact
 - Display title in backend connection remove dialog instead of URL
-- Display title in backend connection select dialog 
+- Display title in backend connection select dialog
 
 ### Changed
 - Several labels to explain functionalities simpler

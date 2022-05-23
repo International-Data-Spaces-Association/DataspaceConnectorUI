@@ -1,0 +1,170 @@
+import fs from 'fs';
+import util from 'util';
+import N3 from 'n3';
+import rdfParserImport from 'rdf-parse';
+import { DataFactory } from 'rdf-data-factory';
+
+const rdfParser = rdfParserImport.default;
+const store = new N3.Store();
+const factory = new DataFactory();
+
+let config = null;
+let DEBUG = true;
+
+const ONTOLOGY_FILE = "ontology.ttl";
+const CONFIG_FILE = "ontology.config.json";
+
+const ELEMENT_SELECTTYPE_OBJECT = "http://www.w3.org/2002/07/owl#Class";
+const ELEMENT_TEXTTYPE_OBJECT = "http://www.w3.org/2002/07/owl#DatatypeProperty";
+
+const ELEMENT_PREDICATE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+const CATEGORY_PREDICATE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+const SUBCATEGORY_PREDICATE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+
+const ELEMENT_LABEL_PREDICATE = "http://www.w3.org/2000/01/rdf-schema#label";
+const CATEGORY_LABEL_PREDICATE = "http://www.w3.org/2000/01/rdf-schema#label"
+const SUBCATEGORY_LABEL_PREDICATE = "http://www.w3.org/2000/01/rdf-schema#label";
+
+
+if (process.env.DEBUG !== undefined && process.env.DEBUG === "true") {
+    DEBUG = true;
+}
+
+async function loadOntology() {
+    config = JSON.parse(fs.readFileSync(CONFIG_FILE));
+    if (config == null) {
+        console.error("No config available");
+    }
+    if (DEBUG === true){
+        console.log(config);
+    }
+
+    await importFile();
+    if (DEBUG === true) {
+        for (const quad of store) {
+            console.log(quad);
+        }
+    }
+
+    await buildSelectStructure();
+
+    await buildTextStructure()
+
+    if (DEBUG === true) {
+        console.log(util.inspect(config, false, null, true /* enable colors */))
+    }
+}
+
+function importFile() {
+    return new Promise((resolve) => {
+        try {
+            const textStream = fs.createReadStream(ONTOLOGY_FILE);
+            const quadStream = rdfParser.parse(textStream, { contentType: 'text/turtle' });
+            store.import(quadStream).on('end', () => resolve());
+        } catch (err) {
+            console.error(err);
+        }
+    });
+}
+
+async function buildSelectStructure() {
+    for(const element of config.select){
+        //Check if category is present in TTL
+        if(store.has(factory.namedNode(element.identifier), factory.namedNode(ELEMENT_PREDICATE), factory.namedNode(ELEMENT_SELECTTYPE_OBJECT))){
+
+            //Element identifier
+            if (DEBUG === true) {
+                console.log("Category identifier: "+element.identifier);
+            }
+
+            //Element title
+            let titleQuad = store.getQuads(factory.namedNode(element.identifier), factory.namedNode(ELEMENT_LABEL_PREDICATE), null);
+            element.title = titleQuad[0].object.value;
+            if (DEBUG === true) {
+                console.log("Category title: "+element.title);
+            }
+
+            //Categories
+            if (DEBUG === true) {
+                console.log("Category elements:");
+            }
+            element.categories = [];
+
+            let categoryElements = store.getQuads(null, factory.namedNode(CATEGORY_PREDICATE), factory.namedNode(element.identifier));
+            for (const quad of categoryElements){
+                let category = {};
+
+                //Identifier
+                category.identifier = quad.subject.value;
+                if (DEBUG === true) {
+                    console.log("Category identifier: "+category.identifier);
+                }
+
+                //label
+                let categoryElements2 = store.getQuads(factory.namedNode(category.identifier), factory.namedNode(CATEGORY_LABEL_PREDICATE), null);
+                category.title = categoryElements2[0].object.value;
+                if (DEBUG === true) {
+                    console.log("Category title: " +category.title);
+                }
+
+                //subcategories
+                category.subcategories = [];
+                let subcategories = store.getQuads(null, factory.namedNode(SUBCATEGORY_PREDICATE), factory.namedNode(category.identifier));
+
+                for (const subcategory of subcategories){
+                    let subcategoryElement = {};
+
+                    //subcategory identifier
+                    subcategoryElement.identifier = subcategory.subject.value;
+                    if (DEBUG === true) {
+                        console.log("Subcategory identifier: "+subcategoryElement.identifier);
+                    }
+
+                    //subcategory title
+                    let subcategories = store.getQuads(subcategoryElement.identifier, factory.namedNode(SUBCATEGORY_LABEL_PREDICATE), null);
+                    subcategoryElement.title = subcategories[0].object.value;
+                    if (DEBUG === true) {
+                        console.log("Subcategory title: "+subcategoryElement.title);
+                    }
+
+                    category.subcategories.push(subcategoryElement);
+
+                }
+                if (DEBUG === true) {
+                    console.log("-------------");
+                }
+                element.categories.push(category);
+            }
+        } else {
+            console.error("Identifier "+element.identifier +" not found");
+        }
+    }
+}
+
+async function buildTextStructure() {
+    for(const element of config.text){
+        //Check if category is present in TTL
+        if(store.has(factory.namedNode(element.identifier), factory.namedNode(ELEMENT_PREDICATE), factory.namedNode(ELEMENT_TEXTTYPE_OBJECT))){
+            let elementTitle = store.getQuads(factory.namedNode(element.identifier), factory.namedNode(ELEMENT_LABEL_PREDICATE), null);
+            element.title = elementTitle[0].object.value;
+            if (DEBUG === true) {
+                console.log("Element title: "+element.title);
+            }
+        } else {
+            console.error("Identifier "+element.identifier +" not found");
+        }
+    }
+}
+
+function getOntology(){
+    //If feature is disabled return empty arrays
+    if(config == null || (process.env.USE_ONTOLOGY !== undefined && process.env.USE_ONTOLOGY === "false")){
+        return {
+            "select":[],
+            "text":[]
+        };
+    }
+    return config;
+}
+
+export default {loadOntology,getOntology};

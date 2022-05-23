@@ -2,6 +2,7 @@
     <div>
         <v-tabs class="pagestab" v-model="active_tab" ref="pagestab">
             <v-tab :disabled="!readonly">Meta data</v-tab>
+            <v-tab :disabled="!readonly" v-if="displayOntologyPage === true">Additional</v-tab>
             <v-tab :disabled="!readonly" v-show="!onlyMetaData">Policy</v-tab>
             <v-tab :disabled="!readonly" v-show="!onlyMetaData">Representation</v-tab>
             <v-tab :disabled="!readonly" v-show="!onlyMetaData">Catalogs</v-tab>
@@ -9,6 +10,10 @@
             <v-tab-item :eager="true">
                 <resource-meta-data-page ref="metaDataPage" @nextPage="nextPage" :readonly="readonly">
                 </resource-meta-data-page>
+            </v-tab-item>
+            <v-tab-item :eager="true" v-if="displayOntologyPage === true">
+                <resource-ontology-page ref="ontologyPage" @previousPage="previousPage" @nextPage="nextPage" :readonly="readonly">
+                </resource-ontology-page>
             </v-tab-item>
             <v-tab-item :eager="true">
                 <policy-tab ref="policyTab" @previousPage="previousPage" @nextPage="nextPage" :readonly="readonly">

@@ -959,7 +959,7 @@ export default {
     },
 
     async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, templateTitle, policyDescriptions,
-        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, file, genericEndpoint) {
+        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, file, genericEndpoint, additionalFields = {}) {
         try {
             let routeSelfLink = null;
             if (genericEndpoint != null) {
@@ -969,7 +969,7 @@ export default {
                 await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.selfLink + "\"");
             }
             let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                policyDescriptions, templateTitle, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink);
+                policyDescriptions, templateTitle, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink, additionalFields);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
         } catch (error) {
             errorUtils.showError(error, "Save resource");
@@ -977,9 +977,9 @@ export default {
     },
 
     async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, templateTitle,
-        contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink) {
+        contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink, additionalFields= {}) {
         // TODO Sovereign, EndpointDocumentation
-        let response = (await restUtils.callConnector("POST", "/api/offers", null, {
+        let resourceFields = {
             "title": title,
             "description": description,
             "keywords": keywords,
@@ -987,7 +987,8 @@ export default {
             "language": language,
             "paymentMethod": paymentMethod,
             "license": standardlicense
-        }));
+        }
+        let response = (await restUtils.callConnector("POST", "/api/offers", null, Object.assign(resourceFields, additionalFields)));
 
         let resourceId = this.getIdOfConnectorResponse(response);
         for (let catalogId of catalogIds) {
@@ -1033,9 +1034,9 @@ export default {
 
     async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
         keywords, standardlicense, publisher, samples, templateTitle, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
-        filetype, brokerUris, brokerDeleteUris, file, genericEndpoint, ruleId, artifactId) {
+        filetype, brokerUris, brokerDeleteUris, file, genericEndpoint, ruleId, artifactId, additionalFields = {}) {
         try {
-            await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, {
+            let resourceFields = {
                 "title": title,
                 "description": description,
                 "keywords": keywords,
@@ -1044,7 +1045,8 @@ export default {
                 "paymentMethod": paymentMethod,
                 "license": standardlicense,
                 "samples": samples
-            });
+            }
+            await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, Object.assign(resourceFields, additionalFields));
 
             for (let catalogId of catalogIds) {
                 await restUtils.callConnector("POST", "/api/catalogs/" + catalogId + "/offers", null, [resourceId]);
@@ -1588,6 +1590,9 @@ export default {
         return (await this.getAllContracts())
             .filter(str => str.title !== "" && str.title.length >= 0 )
             .length;
+    },
+    async getOntology(){
+        return (await restUtils.get("ontology")).data;
     }
 }
 

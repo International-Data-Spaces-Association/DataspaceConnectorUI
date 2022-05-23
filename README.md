@@ -72,6 +72,97 @@ environment:
           - CONNECTOR_PASSWORD=testpw
 ```
 
+## Add custom attributes to Resources
+The Dataspace Connector allows to define additional attributes for each of its entities (see [Dataspace Connector Documentation](https://international-data-spaces-association.github.io/DataspaceConnector/Documentation/v6/DataModel). If the additional fields are set for a `Resource` entity, this information can be used to provider further metadata, e.g. for registering these data at an IDS Metadata Broker (which must support these Metadata-fields too). The Dataspace Connector UI provides the functionality to define custom fields, which are shown in the frontend to define such additional information on a Resource level (see Screenshot below). By default the functionality is disabled and thus not shown in the UI.
+
+![Screenshot of additional meta information for a Resource offering](images/feature-additional-parameters.png)
+
+You can define additional elements via three input options: 
+- text fields
+- select boxes (e.g., a category)
+- select boxes with according sub-select boxes (e.g., category with sub-categories) 
+
+### Enable and adjust the configuration
+To enable the feature, go to the backend folder `src/backend/` and adjust `.env` file: `USE_ONTOLOGY = true`. In case you are deploying the frontend via Docker set environment variables accordingly. The processing of the feature takes place in `ontologyLoader.js`. A demo configuration is already given by the files `src/backend/ontology.ttl` and `src/backend/ontology.config.json`.
+
+#### Adjust the ontology
+You need to adjust the content of the file `src/backend/ontology.ttl`, which already provides some examples.
+
+##### Select boxes
+For select boxes, you have to define an `owl:class` element:
+```
+dsc:DataCategory a owl:Class ;
+                 rdfs:label "Data category"@en ;
+                 rdfs:comment "Class of all data categories."@en .
+                 
+dsc:dataCategory a owl:ObjectProperty ;
+                 rdfs:domain ids:DataResource ;
+                 rdfs:range dsc:DataCategory ;
+                 rdfs:label "Data category"@en .
+```
+
+If you want to define a select box with a sub-select box, in addition you need to add (do not forget to link the elements of the class to this sub-category (see below)):
+```
+dsc:DataSubcategory a owl:Class ;
+                    rdfs:label "Data subcategory"@en ;
+                    rdfs:comment "Class of all data subcategories."@en .
+                    
+dsc:dataSubcategory a owl:ObjectProperty ;
+                    rdfs:domain ids:DataResource ;
+                    rdfs:range dsc:DataSubcategory ;
+                    rdfs:label "Data subcategory"@en .
+```
+
+To add categories to the root select box, simply add elements referring to the class:
+```
+cat:Infrastructure a dsc:DataCategory ;
+                   rdfs:label "Infrastructure"@en .
+```
+
+To add elements for sub-select boxes, add them accordingly: 
+```
+sub:RoadNetwork a cat:Infrastructure ;
+                rdfs:label "Road Network"@en .
+```
+
+##### Text fields
+For text fields, you have to define an `owl:DatatypeProperty` element:
+```
+dsc:dataModel a owl:DatatypeProperty ;
+              rdfs:domain ids:DataResource ;
+              rdfs:range rdfs:Literal ;
+              rdfs:label "Data model"@en .
+```
+
+#### Customizing
+In case you cannot stick to the given ontology, you may change the static variables for predicates and objects to identify the structure of the given ontology in `ontologyLoader.js`. 
+
+#### Adjust the configuration `ontology.config.json`
+In order to map and display the additional fields, you need to adjust the configuration file. Each select box needs to be defined as object in `select` array, and text fields need to be defined as objects in `text` array.
+```
+{
+  "select":[
+    {...}, ..., {...}
+  ],
+  "text":[
+    {...}, ..., {...}
+  ]
+}
+```
+
+#### Select box configuration
+You need to define four properties on each object:
+- `"identifier": string`: The identifier of the ontology class for a select box, e.g. `http://w3id.org/dsc#DataCategory`.
+- `"required": boolean`: If it is required to select an option from the select box.
+- `"identifier_children": string`: The identifier of the ontology class for a sub-select box, e.g. `http://w3id.org/dsc#DataSubcategory`.
+- `"required_children": boolean`: If it is required to select an option from the sub-select box.
+
+#### Text field configuration
+You need to define two properties on each object:
+- `"identifier": string`: The identifier of the ontology class for a text field, e.g. `http://w3id.org/dsc#dataModel`.
+- `"required": boolean`: If it is required to enter text in the text field.
+
+
 ## Development
 
 Please read the [development guide](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI/blob/develop/DEVELOPMENT_GUIDE.md).
