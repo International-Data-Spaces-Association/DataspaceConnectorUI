@@ -45,6 +45,14 @@ let connectorUrl = "https://localhost:8080"
 
 You can change the main colors of the user interface in `src/theme/default.js`
 
+### Protect backend with Basic Auth
+If you need to protect the website via Basic Auth, you can adjust the username and password via environment variables of the backend, simply by adjusting the `src/backend/.env` file or by setting the environment variables in your Docker environment.
+To activate the protection, you need to provide a username and a password, both with a length > 0. Otherwise (default behaviour), it is inactive.
+```
+BASIC_AUTH_USER=username
+BASIC_AUTH_PASSWORD=password
+```
+
 ### Test backend
 
 The UI backend provides an endpoint (http://[localhost:8083]/testdata) that can be used as backend connection (type: REST) in the DSC for testing purposes.

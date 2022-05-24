@@ -6,6 +6,7 @@ import https from "https";
 import bodyParser from "body-parser";
 import path from "path";
 import ontologyLoader from "./ontologyLoader.js"
+import basicAuth from "express-basic-auth";
 
 const vuePath = path.join(path.resolve(),'..', '..', 'dist');
 const app = express();
@@ -23,6 +24,9 @@ let httpsAgent = new https.Agent({
     rejectUnauthorized: false
     //ca: fs.readFileSync('dsc.crt')
 });
+
+let basicAuthUser = process.env.BASIC_AUTH_USER || '';
+let basicAuthPassword = process.env.BASIC_AUTH_PASSWORD || '';
 
 if (process.env.USE_ONTOLOGY !== undefined && process.env.USE_ONTOLOGY === "true") {
     ontologyLoader.loadOntology();
@@ -43,19 +47,32 @@ if (process.env.CONNECTOR_USER !== undefined) {
 if (process.env.CONNECTOR_PASSWORD !== undefined) {
     auth.password = process.env.CONNECTOR_PASSWORD;
 }
+
 // initialize health before basicAuth to allow access without authentication
 app.use('/health', function (req, res) {
     res.end('OK')
 });
+
+// require basicauth implicitly if user and pass are set via env to strings with length > 0
+if(typeof basicAuthUser === 'string' && basicAuthUser.length > 0
+    && typeof basicAuthPassword === 'string' && basicAuthPassword.length > 0) {
+    console.log('Enabling basic authentication');
+
+    let basicAuthOptions = {
+        users: {},
+        challenge: true
+    };
+
+    basicAuthOptions.users[basicAuthUser] = basicAuthPassword;
+    app.use(basicAuth(basicAuthOptions));
+}
+
 app.use(express.static(vuePath));
-
-
 app.use(cors({ credentials: true, origin: true }));
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
-
 
 function post(url, data) {
     if (DEBUG) {
