@@ -13,7 +13,7 @@
     "postinstall": "cd src/backend && npm install"
   },
   "dependencies": {
-    "apexcharts": "^3.33.1",
+    "apexcharts": "^3.35.2",
     "axios": "0.26.0",
     "concurrently": "^5.3.0",
     "core-js": "^3.21.1",
