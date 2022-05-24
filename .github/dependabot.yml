@@ -4,11 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "main"
+    target-branch: "develop"
     open-pull-requests-limit: 30
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "main"
+    target-branch: "develop"
     open-pull-requests-limit: 30
