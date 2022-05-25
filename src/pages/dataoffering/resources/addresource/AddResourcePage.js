@@ -53,19 +53,11 @@ export default {
     },
     methods: {
         previousPage() {
-            //If ontology is not shown, skip this tab
-            if(this.$data.displayOntologyPage === false && this.$data.active_tab === 2){
-                this.$data.active_tab--;
-            }
             this.$data.active_tab--;
             this.tabChanged();
         },
 
         nextPage() {
-            //If ontology is not shown, skip this tab
-            if(this.$data.displayOntologyPage === false && this.$data.active_tab === 0){
-                this.$data.active_tab++;
-            }
             this.$data.active_tab++;
             this.tabChanged();
         },
@@ -166,7 +158,10 @@ export default {
             let standardlicense = this.$refs.metaDataPage.standardlicense;
             let publisher = this.$refs.metaDataPage.publisher;
             let samples = this.$refs.metaDataPage.samples;
-            let additionalFields = this.$refs.ontologyPage.formValues;
+            let additionalFields = {};
+            if(this.$data.displayOntologyPage === true){
+                additionalFields = this.$refs.ontologyPage.formValues;
+           }
             let templateTitle = this.$refs.policyTab.getTemplateTitle();
             let policyDescriptions = this.$refs.policyTab.getDescriptions();
             let contractPeriodFromValue = this.$refs.policyTab.getContractPeriodFromValue();
