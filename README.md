@@ -99,47 +99,55 @@ You need to adjust the content of the file `src/backend/ontology.ttl`, which alr
 ##### Select boxes
 For select boxes, you have to define an `owl:class` element:
 ```
-dsc:DataCategory a owl:Class ;
-                 rdfs:label "Data category"@en ;
-                 rdfs:comment "Class of all data categories."@en .
+dsc:DataCategory 
+    a owl:Class ;
+    rdfs:label "Data category"@en ;
+    rdfs:comment "Class of all data categories."@en .
                  
-dsc:dataCategory a owl:ObjectProperty ;
-                 rdfs:domain ids:DataResource ;
-                 rdfs:range dsc:DataCategory ;
-                 rdfs:label "Data category"@en .
+dsc:dataCategory 
+    a owl:ObjectProperty ;
+    rdfs:domain ids:Resource ;
+    rdfs:range dsc:DataCategory ;
+    rdfs:label "Data category"@en .
 ```
 
 If you want to define a select box with a sub-select box, in addition you need to add (do not forget to link the elements of the class to this sub-category (see below)):
 ```
-dsc:DataSubcategory a owl:Class ;
-                    rdfs:label "Data subcategory"@en ;
-                    rdfs:comment "Class of all data subcategories."@en .
+dsc:DataSubcategory 
+    a owl:Class ;
+    rdfs:label "Data subcategory"@en ;
+    rdfs:comment "Class of all data subcategories."@en .
                     
-dsc:dataSubcategory a owl:ObjectProperty ;
-                    rdfs:domain ids:DataResource ;
-                    rdfs:range dsc:DataSubcategory ;
-                    rdfs:label "Data subcategory"@en .
+dsc:dataSubcategory 
+    a owl:ObjectProperty ;
+    rdfs:domain ids:Resource ;
+    rdfs:range dsc:DataSubcategory ;
+    rdfs:label "Data subcategory"@en .
 ```
 
 To add categories to the root select box, simply add elements referring to the class:
 ```
-cat:Infrastructure a dsc:DataCategory ;
-                   rdfs:label "Infrastructure"@en .
+cat:Infrastructure 
+    a dsc:DataCategory ;
+    rdfs:label "Infrastructure"@en .
 ```
 
 To add elements for sub-select boxes, add them accordingly: 
 ```
-sub:RoadNetwork a cat:Infrastructure ;
-                rdfs:label "Road Network"@en .
+sub:RoadNetwork 
+    a cat:Infrastructure ;
+    rdf:type   dsc:DataSubcategory ;
+    rdfs:label "Road Network"@en .
 ```
 
 ##### Text fields
 For text fields, you have to define an `owl:DatatypeProperty` element:
 ```
-dsc:dataModel a owl:DatatypeProperty ;
-              rdfs:domain ids:DataResource ;
-              rdfs:range rdfs:Literal ;
-              rdfs:label "Data model"@en .
+dsc:dataModel 
+    a owl:DatatypeProperty ;
+    rdfs:domain ids:Resource ;
+    rdfs:range rdfs:Literal ;
+    rdfs:label "Data model"@en .
 ```
 
 #### Customizing
@@ -160,9 +168,9 @@ In order to map and display the additional fields, you need to adjust the config
 
 #### Select box configuration
 You need to define four properties on each object:
-- `"identifier": string`: The identifier of the ontology class for a select box, e.g. `http://w3id.org/dsc#DataCategory`.
+- `"identifier": string`: The identifier of the ontology class for a select box, e.g. `http://w3id.org/dsc#DataCategory`. This identifier is used to analyze the structure of your ttl file. Be aware that this identifier is overwritten within the process of parsing, as the expected key needs to be a parameter instead of a class. Thus, in this example `http://w3id.org/dsc#dataCategory` would be the key (notice the lower case `d`)
 - `"required": boolean`: If it is required to select an option from the select box.
-- `"identifier_children": string`: The identifier of the ontology class for a sub-select box, e.g. `http://w3id.org/dsc#DataSubcategory`.
+- `"identifier_children": string`: The identifier of the ontology class for a sub-select box, e.g. `http://w3id.org/dsc#DataSubcategory`. This field is not used for parsing. It is just used for the front-end to determine the correct key for the selected value.
 - `"required_children": boolean`: If it is required to select an option from the sub-select box.
 
 #### Text field configuration
@@ -172,18 +180,17 @@ You need to define two properties on each object:
 
 
 ## Development
-
 Please read the [development guide](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI/blob/develop/DEVELOPMENT_GUIDE.md).
 
-## Contributing
 
+## Contributing
 Please read through our [contributing guidelines](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI/blob/develop/CONTRIBUTING.md).
 
 ### Main Contact
-[Bastian Wetljen | Fraunhofer FKIE](mailto:bastian.weltjen@fkie.fraunhofer.de) 
+[Sebastian Opriel](https://github.com/SebastianOpriel), [sovity GmbH](https://sovity.de)
 
 ### Contributors
 * [Bastian Wetljen](https://github.com/BastianWel), [Fraunhofer FKIE](https://www.fkie.fraunhofer.de)
-* [Sebastian Opriel](https://github.com/SebastianOpriel), [sovity GmbH](http://sovity.de)
-* [Melissa Das](https://github.com/melissadas), [sovity GmbH](http://sovity.de)
-* [Philipp Reusch](https://github.com/pdrd), [sovity GmbH](http://sovity.de)
+* [Sebastian Opriel](https://github.com/SebastianOpriel), [sovity GmbH](https://sovity.de)
+* [Melissa Das](https://github.com/melissadas), [sovity GmbH](https://sovity.de)
+* [Philipp Reusch](https://github.com/pdrd), [sovity GmbH](https://sovity.de)
