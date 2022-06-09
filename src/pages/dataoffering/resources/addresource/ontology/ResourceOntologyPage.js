@@ -13,6 +13,7 @@ export default {
             valid: false,
             readonly: false,
             ontology: '',
+            onlyMetaData: false,
         };
     },
     async mounted () {
@@ -63,7 +64,8 @@ export default {
                 }
             }
         },
-        loadResource(resource) {
+        loadResource(resource, onlyMetaData) {
+            this.$data.onlyMetaData = onlyMetaData;
             for (const element of this.$data.ontology.select){
                 if (resource.additional[element.identifier] !== undefined){
                     for (const category of element.categories){
