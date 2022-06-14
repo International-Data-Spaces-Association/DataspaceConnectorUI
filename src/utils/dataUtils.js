@@ -575,7 +575,7 @@ export default {
                 "title": title
             });
         } catch (error) {
-            errorUtils.showError(error, "Update broker");
+            errorUtils.showError(error, "Update app store");
         }
     },
 
