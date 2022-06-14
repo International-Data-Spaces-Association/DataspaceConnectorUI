@@ -14,7 +14,7 @@
                           @change='(selectedEntry) => {optionSelected(element.identifier,selectedEntry)}'
                           :rules="defaultRule(element.required)" :required="element.required">
                 </v-select>
-                <v-select :label="element.title"
+                <v-select :label="element.title_children"
                           :items="ontologyVal[element.identifier].subcategories"
                           :item-value="element.identifier"
                           item-text="title"

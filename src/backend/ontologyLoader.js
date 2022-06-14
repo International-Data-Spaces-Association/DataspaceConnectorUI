@@ -92,6 +92,15 @@ async function buildSelectStructure() {
             console.log("Category title: " + element.title);
         }
 
+        //Subelement title
+        if(element.identifier_children !== ""){
+            titleQuad = store.getQuads(factory.namedNode(element.identifier_children), factory.namedNode(ELEMENT_LABEL_PREDICATE), null);
+            element.title_children = titleQuad[0].object.value;
+            if (DEBUG === true) {
+                console.log("Subcategory title: " + element.title_children);
+            }
+        }
+
         //Categories
         if (DEBUG === true) {
             console.log("Category elements:");
