@@ -15,6 +15,7 @@ import BackendConnectionsPage from "@/pages/backendconnections/BackendConnection
 import SubscriptionsPage from "@/pages/subscriptions/SubscriptionsPage.vue";
 import SubscribeResourcePage from "@/pages/subscriptions/subscribe/SubscribeResourcePage.vue";
 import ResourceCatalogsPage from "@/pages/dataoffering/resources/addresource/catalog/ResourceCatalogsPage.vue";
+import DapsPage from "@/pages/daps/DapsPage.vue";
 
 export default {
     getPageStructure() {
@@ -149,6 +150,12 @@ export default {
                     path: "settings",
                     name: "General",
                     component: SettingsPage,
+                    subpages: []
+                }, {
+                    path: "daps",
+                    name: "Whitelisted DAPS",
+                    icon: "mdi-database",
+                    component: DapsPage,
                     subpages: []
                 }, {
                     path: "backendconnections",

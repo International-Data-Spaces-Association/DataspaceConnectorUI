@@ -1593,7 +1593,41 @@ export default {
     },
     async getOntology(){
         return (await restUtils.get("ontology")).data;
-    }
+    },
+
+    async getDaps() {
+        return (await restUtils.callConnector("GET", "/api/daps"))._embedded.daps;
+    },
+
+    async createDaps(title, description, location, whitelisted){
+        try {
+            await restUtils.callConnector("POST", "/api/daps", null, {
+                "title": title,
+                "description": description,
+                "location" : location,
+                "whitelisted" : whitelisted
+            });
+        } catch (error) {
+            errorUtils.showError(error, "Create Daps");
+        }
+    },
+
+    async updateDaps(id, title, description, location, whitelisted) {
+        try {
+            await restUtils.callConnector("PUT", "/api/daps/" + id, null, {
+                "title": title,
+                "description": description,
+                "location" : location,
+                "whitelisted" : whitelisted
+            });
+        } catch (error) {
+            errorUtils.showError(error, "Update Daps");
+        }
+    },
+
+    async deleteDaps(id) {
+        return await restUtils.callConnector("DELETE", "/api/daps/" + id);
+    },
 }
 
 

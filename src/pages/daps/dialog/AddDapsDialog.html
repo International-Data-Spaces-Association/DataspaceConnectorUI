@@ -1,0 +1,39 @@
+<v-dialog v-model="dialog" width="500">
+    <template v-slot:activator="{ on, attrs }">
+        <v-btn v-bind="attrs" v-on="on" elevation="1" color="primary"
+               @click="addButtonClicked">Add Daps
+        </v-btn>
+    </template>
+
+    <v-form v-model="valid">
+        <v-card>
+            <v-card-title class="headline grey lighten-2">
+                {{ dialogTitle }}
+            </v-card-title>
+
+            <v-card-text>
+                <v-text-field label="Title" v-model="title" :rules="defaultRule"></v-text-field>
+
+                <v-text-field label="Description" v-model="description"></v-text-field>
+
+                <v-text-field label="URL" v-model="location" :rules="urlRule">
+                </v-text-field>
+
+                Whitelisted
+                <v-radio-group v-model="whitelisted" row>
+                    <v-radio label="True" value="true"></v-radio>
+                    <v-radio label="False" value="false"></v-radio>
+                </v-radio-group>
+            </v-card-text>
+
+            <v-divider></v-divider>
+
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" @click="saveDaps" :disabled="!valid">
+                    Save
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-form>
+</v-dialog>

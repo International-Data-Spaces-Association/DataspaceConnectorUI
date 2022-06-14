@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Functionality to add custom properties to Resources (see [README.md](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI#add-custom-attributes-to-resources))
 - Functionality to add a Basic Auth to protect the backend (see [README.md](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI#protect-backend-with-basic-auth))
 - Functionality to set DeployMode of a Connector via Settings
+- Functionality to manage whitelisted DAPS
 - Dashboard card showing the configured default endpoint
 - Dashboard card showing number of data sources
 - Dashboard card showing number of policy templates
