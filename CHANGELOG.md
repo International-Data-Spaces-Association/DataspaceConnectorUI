@@ -39,6 +39,7 @@ All notable changes to this project will be documented in this file.
 - Screen refreshing when pressing enter in URL field at Data Consumption view
 - Raised a broad range of comparisons of variables from value to type level
 - Validation for database URLs does not require http prefix
+- Opening browser in dev mode on wrong URL (0.0.0.0 instead of localhost)
 
 ### Removed
 - Unused imports
