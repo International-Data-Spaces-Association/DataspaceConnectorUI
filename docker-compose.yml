@@ -1,8 +1,8 @@
 version: '3.5'
 
 services:
-    dataspaceconnector-ui:
-        image: dataspaceconnector-ui
+    dataspace-connector-ui:
+        image: dataspace-connector-ui
         environment:
             - CONNECTOR_URL=https://localhost:8080
             - CONNECTOR_USER=admin

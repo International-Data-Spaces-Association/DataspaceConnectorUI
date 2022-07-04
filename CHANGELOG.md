@@ -40,6 +40,8 @@ All notable changes to this project will be documented in this file.
 - Raised a broad range of comparisons of variables from value to type level
 - Validation for database URLs does not require http prefix
 - Opening browser in dev mode on wrong URL (0.0.0.0 instead of localhost)
+- Adjust image name to `dataspace-connector-ui`
+- Add image source `https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI` to Dockerfile
 
 ### Removed
 - Unused imports
