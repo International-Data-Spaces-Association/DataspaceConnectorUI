@@ -1,38 +1,8 @@
 .offeredresourcescard {
-    width: 400px;
-    height: 300px;
+    width: 100%;
 }
 
-.offeredresourcescard .statsdiv {
-    margin-left: 10px;
-}
-
-.offeredresourcescard .statsrow {
-    clear: left;
-    margin-top: 50px;
-}
-
-.offeredresourcescard .cardtext {
-    font-size: 20px;
-}
-
-.offeredresourcescard .row {
-    margin-bottom: 40px;
-}
-
-.offeredresourcescard .number {
-    font-size: 60px;
-    font-weight: bold;
-    float: left;
-    color: var(--v-accent-base);
-}
-
-.offeredresourcescard .type {
-    font-size: 24px;
-    left: 5px;
-    position: relative;
-}
-
-.hideOfferedResourceData {
-    visibility: hidden;
+.overline {
+    margin-top:-1rem;
+    margin-bottom:-1rem;
 }

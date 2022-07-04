@@ -2,8 +2,8 @@
   <v-row no-gutters>
     <v-col cols="12" md="11">
       <v-tabs class="pagestab" v-model="active_tab" ref="pagestab" hide-slider v-if="fromRoutePage === undefined">
-        <v-tab :disabled="readonly || editMode">Local data</v-tab>
-        <v-tab :disabled="readonly || editMode">Remote data</v-tab>
+        <v-tab :disabled="readonly || editMode">Upload data</v-tab>
+        <v-tab :disabled="readonly || editMode">External data source</v-tab>
         <v-tab-item :eager="true">
           <v-form v-model="validLocal" ref="form">
             <v-file-input label="File input" show-size @change="fileChange" :rules="defaultRule"

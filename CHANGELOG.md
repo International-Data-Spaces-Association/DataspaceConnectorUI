@@ -2,6 +2,49 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+
+## [10.0.0] - 2022-07-04 (compatible with DSC 7.1.0)
+**_ATTENTION: This release requires at least DSC version 7.1.0, which introduces `addition` field in EndpointView. See [Changelog DSC v7.1.0](https://github.com/International-Data-Spaces-Association/DataspaceConnector/releases/tag/v7.1.0,changelog)_**
+
+### Added
+- Functionality to add custom properties to Resources (see [README.md](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI#add-custom-attributes-to-resources))
+- Functionality to add a Basic Auth to protect the backend (see [README.md](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI#protect-backend-with-basic-auth))
+- Functionality to set DeployMode of a Connector via Settings
+- Functionality to manage whitelisted DAPS
+- Dashboard card showing the configured default endpoint
+- Dashboard card showing number of data sources
+- Dashboard card showing number of policy templates
+- Dashboard card showing number of data offerings
+- Dashboard card showing number of active contracts
+- Customizable background color of navigation via variable `navigationBackground`
+- Health check in backend for kubernetes probes
+- Title and description for data sources
+- Templating for policies (Contract + Rules as templates)
+- Advanced mode toggle (bottom of navigation bar) hiding in default's disabled mode several navigation bar elements
+- Header shows connector description
+- Check if a contract's validity time range fits to the current date, otherwise do not show buttons to request artifact
+- Display title in backend connection remove dialog instead of URL
+- Display title in backend connection select dialog
+
+### Changed
+- Several labels to explain functionalities simpler
+- Navigation elements structure
+- Adjusted shown fields in Add and Adjust popup for Backend Connections
+- Colors of dropdown elements
+- Sticky logo on small screens showing scroll bar in navigation
+- Moved CSS styles from App.vue into separate default.css
+- Updated package.json version number
+
+### Fixed
+- Screen refreshing when pressing enter in URL field at Data Consumption view
+- Raised a broad range of comparisons of variables from value to type level
+- Validation for database URLs does not require http prefix
+- Opening browser in dev mode on wrong URL (0.0.0.0 instead of localhost)
+
+### Removed
+- Unused imports
+
+
 ## [9.3.0] - 2022-05-04 (compatible with DSC 7.x)
 
 ### Added

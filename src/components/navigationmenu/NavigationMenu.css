@@ -1,5 +1,5 @@
 .v-navigation-drawer {
-  background-color: var(--v-primary-base) !important;
+  background-color: var(--v-navigationBackground-base) !important;
 }
 
 .navigation-menu {
@@ -10,11 +10,17 @@
   height: 80px;
   background-color: var(--v-text4-base);
   margin-bottom: 40px;
+  text-align: center;
+  padding-top: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.fraunhofer-logo {
-  margin-left: 58px;
-  margin-top: 21px;
+.custom-logo {
+	max-width: 80%;
+	max-height: 80%;
+	margin: 0 auto;
 }
 
 .navigation-menu .v-list-item__title {
@@ -38,7 +44,7 @@
 }
 
 .navigation-menu .v-icon {
-  color: white !important;
+  color: var(--v-lighttext-base) !important;
   font-size: 40px;
 }
 

@@ -2,13 +2,14 @@ import NavigationMenu from "@/components/navigationmenu/NavigationMenu.vue";
 import InfoBox from "@/components/infobox/InfoBox.vue";
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
-
+import { VSwitch } from "vuetify/lib/components";
 // import BrokersPage from "@/pages/brokers/BrokersPage.vue";
 
 export default {
     components: {
         NavigationMenu,
-        InfoBox
+        InfoBox,
+        VSwitch
     },
     data: () => ({
         drawer: null,
@@ -16,8 +17,10 @@ export default {
         showBusyIndicator: false,
         blockNavigationMenu: false,
         uiTitle: "IDS Configuration Manager",
+        description: "A Connector to show ease of use of data sovereignty",
         errorSnackbar: false,
-        errorText: ""
+        errorText: "",
+        advancedView: false,
     }),
     watch: {
         $route() {
@@ -29,7 +32,7 @@ export default {
     },
     mounted: function () {
         errorUtils.setVueRoot(this.$root);
-        if (process.env.VUE_APP_UI_TITLE !== undefined && process.env.VUE_APP_UI_TITLE != "#UI_TITLE#") {
+        if (process.env.VUE_APP_UI_TITLE !== undefined && process.env.VUE_APP_UI_TITLE !== "#UI_TITLE#") {
             this.$data.uiTitle = process.env.VUE_APP_UI_TITLE;
         }
         this.setTitleFromConnector();
@@ -50,6 +53,7 @@ export default {
             try {
                 let connectorData = (await dataUtils.getConnectorConfiguration());
                 this.$data.uiTitle = connectorData.title;
+                this.$data.description = connectorData.description;
             } catch (error) {
                 errorUtils.showError(error, "Get connector settings");
             }

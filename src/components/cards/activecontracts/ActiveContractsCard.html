@@ -1,0 +1,15 @@
+<dashboard-card class="activecontractcard">
+    <template v-slot:header>
+        Active Contracts
+    </template>
+    <template v-slot:content>
+        <div class="text-center kpi_number">
+            {{totalNumber}}
+        </div>
+    </template>
+    <template v-slot:button>
+        <v-btn class="no-uppercase" color="primary" :to="{path:'idsresourcesoffering'}" depressed>
+            View agreements
+        </v-btn>
+    </template>
+</dashboard-card>

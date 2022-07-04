@@ -1,17 +1,16 @@
-<dashboard-card class="offeredresourcescard" max-width="400">
+<dashboard-card class="offeredresourcescard ">
     <template v-slot:header>
-        Offered Resources
+        Data Offerings
     </template>
     <template v-slot:content>
-        <div class="statsdiv" v-bind:class="{ hideOfferedResourceData: !offeredResourcesAvailable }">
-            <div class="statsrow">
-                <div class="number">{{ totalNumber }}</div>
-                <div class="type">{{ totalNumberType }}</div>
-            </div>
-            <div class="statsrow">
-                <div class="number"> {{ totalSize }}</div>
-                <div class="type">{{ totalSizeType }}</div>
-            </div>
+        <div class="text-center" v-if="offeredResourcesAvailable">
+            <div class="kpi_number">{{ totalNumber }}</div>
+            <div class="overline">{{ totalSize }} {{ totalSizeType }}</div>
         </div>
+    </template>
+    <template v-slot:button>
+        <v-btn class="no-uppercase" color="primary" :to="{path:'addresource'}" depressed>
+            Share Data
+        </v-btn>
     </template>
 </dashboard-card>

@@ -1,0 +1,30 @@
+<v-row no-gutters>
+    <v-col cols="12" md="12">
+        <v-form v-model="valid" ref="form" :readonly="readonly">
+            <div v-for="element in ontology.text">
+                <v-text-field :label="element.title" v-model="formValues[element.identifier]" :required="element.required">
+                </v-text-field>
+            </div>
+            <div v-for="element in ontology.select">
+                <v-select :label="element.title"
+                          :items="element.categories"
+                          :item-value="element.identifier"
+                          item-text="title"
+                          v-model="formValues[element.identifier]"
+                          @change='(selectedEntry) => {optionSelected(element.identifier,selectedEntry)}'
+                          :rules="defaultRule(element.required)" :required="element.required">
+                </v-select>
+                <v-select :label="element.title_children"
+                          :items="ontologyVal[element.identifier].subcategories"
+                          :item-value="element.identifier"
+                          item-text="title"
+                          v-model="formValues[element.identifier_children]"
+                          v-if="Array.isArray(ontologyVal[element.identifier].subcategories) && ontologyVal[element.identifier].subcategories.length > 0"
+                          :rules="defaultRule(element.required_children)" :required="element.required_children">
+                </v-select>
+            </div>
+            <v-btn color="primary" @click.native="previousPage" class="prev-page-button">Back</v-btn>
+            <v-btn color="primary" @click.native="nextPage" :disabled="!valid" v-show="!onlyMetaData">Next</v-btn>
+        </v-form>
+    </v-col>
+</v-row>

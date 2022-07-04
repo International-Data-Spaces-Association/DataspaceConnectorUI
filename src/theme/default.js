@@ -1,4 +1,5 @@
 export default {
+    navigationBackground: '#239b7e',
     primary: '#239b7e',
     primary2: '#5FB6A1',
     primary3: '#ACDACF',

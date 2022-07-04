@@ -83,10 +83,12 @@
         </v-row>
         <v-row class="settings-row" no-gutters>
             <v-col cols="12" md="2">
-                Connector DeployMode
+                Connector Deploy Mode
             </v-col>
             <v-col cols="12" md="9">
-                {{ connectorDeployMode }}
+                <v-select label="Deploy Mode" v-model="connectorDeployMode" :items="connectorDeployModes" item-text="displayName"
+                          item-value="displayName" required>
+                </v-select>
             </v-col>
         </v-row>
         <v-row class="settings-row" no-gutters>

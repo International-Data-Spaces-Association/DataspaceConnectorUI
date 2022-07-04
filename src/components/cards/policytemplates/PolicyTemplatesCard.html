@@ -1,0 +1,15 @@
+<dashboard-card class="policytemplatescard">
+    <template v-slot:header>
+        Policy Templates
+    </template>
+    <template v-slot:content>
+        <div class="text-center kpi_number">
+            {{totalNumber}}
+        </div>
+    </template>
+    <template v-slot:button>
+        <v-btn class="no-uppercase" color="primary" :to="{path:'policytemplates'}" depressed>
+            Define policy
+        </v-btn>
+    </template>
+</dashboard-card>

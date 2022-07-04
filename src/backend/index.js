@@ -1,15 +1,18 @@
+import 'dotenv/config'
 import express from "express";
 import cors from "cors";
 import axios from "axios";
 import https from "https";
-import fs from "fs";
 import bodyParser from "body-parser";
 import path from "path";
+import ontologyLoader from "./ontologyLoader.js"
+import basicAuth from "express-basic-auth";
 
-const vuePath = path.resolve() + '/../../dist';
-const DEBUG = false;
+const vuePath = path.join(path.resolve(),'..', '..', 'dist');
 const app = express();
 const port = 8083;
+
+let DEBUG = false;
 let connectorUrl = "https://localhost:8080"
 let auth = {
     username: 'admin',
@@ -22,8 +25,19 @@ let httpsAgent = new https.Agent({
     //ca: fs.readFileSync('dsc.crt')
 });
 
+let basicAuthUser = process.env.BASIC_AUTH_USER || '';
+let basicAuthPassword = process.env.BASIC_AUTH_PASSWORD || '';
+
+if (process.env.USE_ONTOLOGY !== undefined && process.env.USE_ONTOLOGY === "true") {
+    ontologyLoader.loadOntology();
+}
+
 if (process.env.CONNECTOR_URL !== undefined) {
     connectorUrl = process.env.CONNECTOR_URL;
+}
+
+if (process.env.DEBUG !== undefined) {
+    DEBUG = process.env.DEBUG;
 }
 
 if (process.env.CONNECTOR_USER !== undefined) {
@@ -34,9 +48,26 @@ if (process.env.CONNECTOR_PASSWORD !== undefined) {
     auth.password = process.env.CONNECTOR_PASSWORD;
 }
 
+// initialize health before basicAuth to allow access without authentication
+app.use('/health', function (req, res) {
+    res.end('OK')
+});
+
+// require basicauth implicitly if user and pass are set via env to strings with length > 0
+if(typeof basicAuthUser === 'string' && basicAuthUser.length > 0
+    && typeof basicAuthPassword === 'string' && basicAuthPassword.length > 0) {
+    console.log('Enabling basic authentication');
+
+    let basicAuthOptions = {
+        users: {},
+        challenge: true
+    };
+
+    basicAuthOptions.users[basicAuthUser] = basicAuthPassword;
+    app.use(basicAuth(basicAuthOptions));
+}
+
 app.use(express.static(vuePath));
-
-
 app.use(cors({ credentials: true, origin: true }));
 app.use(bodyParser.urlencoded({
     extended: true
@@ -112,7 +143,7 @@ function stringifySafe(obj, replacer, spaces, cycleReplacer) {
 
 function filterError(origError) {
     if (origError.response !== undefined) {
-        // remove config & request data, because it contains sensitive data. 
+        // remove config & request data, because it contains sensitive data.
         origError.response.config = null;
         origError.response.request = null;
     }
@@ -140,6 +171,10 @@ function serializer(replacer, cycleReplacer) {
     }
 }
 
+app.get('/ontology', function (req, res) {
+    res.send(ontologyLoader.getOntology());
+});
+
 app.get('/testdata', function (req, res) {
     res.send("TEST DATA FROM BACKEND");
 });
@@ -150,7 +185,7 @@ app.post('/testdata', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    res.sendFile(vuePath + "index.html");
+    res.sendFile(path.join(vuePath, "index.html"));
 });
 
 app.post('/', (req, res) => {
@@ -225,5 +260,5 @@ app.post('/', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Backend listening at http://localhost:${port}`)
 });

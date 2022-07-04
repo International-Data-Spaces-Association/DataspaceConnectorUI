@@ -1,0 +1,138 @@
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+@prefix ids:     <https://w3id.org/idsa/core/> .
+@prefix idsm:    <https://w3id.org/idsa/metamodel/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix dbpedia: <http://dbpedia.org/ontology/> .
+
+@prefix dsc:     <http://w3id.org/dsc#> .
+@prefix cat:     <http://w3id.org/dsc/data-categories#> .
+@prefix sub:     <http://w3id.org/dsc/data-subcategories#> .
+@prefix tmode:   <http://w3id.org/dsc/transport-mode#> .
+
+
+# ----- CLASSES -----
+
+dsc:DataCategory
+    a            owl:Class ;
+    rdfs:label   "Data category"@en ;
+    rdfs:comment "Class of all data categories."@en .
+
+dsc:DataSubcategory
+    a            owl:Class ;
+    rdfs:label   "Data subcategory"@en ;
+    rdfs:comment "Class of all data subcategories."@en .
+
+dsc:TransportMode
+    a          owl:Class ;
+    rdfs:label "Transport mode"@en ;
+    rdfs:comment
+               "Mode of transport is a term used to distinguish between different ways of transportation or transporting people or goods."@en .
+
+
+# ----- PROPERTIES -----
+
+dsc:dataCategory
+    a           owl:ObjectProperty ;
+    rdfs:domain ids:Resource ;
+    rdfs:range  dsc:DataCategory ;
+    rdfs:label  "Data category"@en .
+
+dsc:dataSubcategory
+    a           owl:ObjectProperty ;
+    rdfs:domain ids:Resource ;
+    rdfs:range  dsc:DataSubcategory ;
+    rdfs:label  "Data subcategory"@en .
+
+dsc:transportMode
+    a           owl:ObjectProperty ;
+    rdfs:domain ids:Resource ;
+    rdfs:range  dsc:TransportMode ;
+    rdfs:label  "Transport mode"@en .
+
+dsc:dataModel
+    a           owl:DatatypeProperty ;
+    rdfs:domain ids:Resource ;
+    rdfs:range  rdfs:Literal ;
+    rdfs:label  "Data model"@en .
+
+dsc:dataFormatAdditionalDescription
+    a           owl:DatatypeProperty ;
+    rdfs:domain ids:Resource ;
+    rdfs:range  rdfs:Literal ;
+    rdfs:label  "Additional description for the data format"@en .
+
+# Controlled vocabulary for TransportMode
+
+tmode:Rail
+    a          dsc:TransportMode ;
+    rdfs:label "Rail"@en .
+
+tmode:Road
+    a          dsc:TransportMode ;
+    rdfs:label "Road"@en .
+
+tmode:Water
+    a          dsc:TransportMode ;
+    rdfs:label "Water"@en .
+
+tmode:Air
+    a          dsc:TransportMode ;
+    rdfs:label "Air"@en .
+
+
+# Controlled vocabulary for Data Category
+
+cat:WeatherInformation
+    a          dsc:DataCategory ;
+    rdfs:label "Weather Information"@en .
+
+cat:Infrastructure
+    a          dsc:DataCategory ;
+    rdfs:label "Infrastructure"@en .
+
+cat:Various
+    a          dsc:DataCategory ;
+    rdfs:label "Various"@en .
+
+
+# Controlled vocabulary for Data Subcategory
+
+sub:CargoLogistics
+    a          cat:Various ;
+    rdf:type   dsc:DataSubcategory ;
+    rdfs:label "Cargo & Logistics"@en .
+
+sub:TollInformation
+    a          cat:Various ;
+    rdf:type   dsc:DataSubcategory ;
+    rdfs:label "Toll Information"@en .
+
+sub:GeneralInformationAboutPlanningOfRoutes
+    a          cat:Infrastructure ;
+    rdf:type   dsc:DataSubcategory ;
+    rdfs:label "General Information About Planning Of Routes"@en .
+
+sub:PedestrianNetworks
+    a          cat:Infrastructure ;
+    rdf:type   dsc:DataSubcategory ;
+    rdfs:label "Pedestrian Networks"@en .
+
+sub:CyclingNetworks
+    a          cat:Infrastructure ;
+    rdf:type   dsc:DataSubcategory ;
+    rdfs:label "Cycling Networks"@en .
+
+sub:RoadNetwork
+    a          cat:Infrastructure ;
+    rdf:type   dsc:DataSubcategory ;
+    rdfs:label "Road Network"@en .
+
+sub:WaterRoutes
+    a          cat:Infrastructure ;
+    rdf:type   dsc:DataSubcategory ;
+    rdfs:label "Water Routes"@en .
+

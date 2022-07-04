@@ -1,0 +1,22 @@
+{
+  "select": [
+    {
+      "identifier": "http://w3id.org/dsc#DataCategory",
+      "identifier_children": "http://w3id.org/dsc#dataSubcategory",
+      "required": true,
+      "required_children": true
+    },
+    {
+      "identifier": "http://w3id.org/dsc#TransportMode",
+      "identifier_children": "",
+      "required": false,
+      "required_children": false
+    }
+  ],
+  "text": [
+    {
+      "identifier": "http://w3id.org/dsc#dataModel",
+      "required": false
+    }
+  ]
+}

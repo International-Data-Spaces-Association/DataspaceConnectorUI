@@ -12,6 +12,6 @@
     color: var(--v-text1-base);
 }
 
-.v-toolbar__content .v-icon {
-    color: var(--v-text1-base) !important;
+.advancedView{
+    background-color: var(--v-text4-base);
 }
