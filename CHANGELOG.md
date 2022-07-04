@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
 
-## [10.0.0] - 2022-05-23 (compatible with DSC 7.1.0)
+## [10.0.0] - 2022-07-04 (compatible with DSC 7.1.0)
 **_ATTENTION: This release requires at least DSC version 7.1.0, which introduces `addition` field in EndpointView. See [Changelog DSC v7.1.0](https://github.com/International-Data-Spaces-Association/DataspaceConnector/releases/tag/v7.1.0,changelog)_**
 
 ### Added
@@ -43,15 +43,6 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 - Unused imports
-
-### Dependencies
-- @vue/cli-plugin-babel: 4.5.15 -> ^5.0.4
-- @vue/cli-plugin-eslint: 4.5.15 -> ~5.0.0
-- @vue/cli-service: ^4.5.15 -> ^5.-0.4
-- eslint: ^6.7.2, -> ^7.32.0
-- eslint-plugin-vue: ^6.2.2 -> ^8.0.3
-- ADDED @babel/core: ^7.12.16
-- ADDED @babel/eslint-parser: ^7.12.16
 
 
 ## [9.3.0] - 2022-05-04 (compatible with DSC 7.x)
