@@ -1294,10 +1294,10 @@ export default {
             }
         };
         if (trustStorePassword != null) {
-            config.truststoreSettings.password = trustStorePassword;
+            config.truststore.password = trustStorePassword;
         }
         if (keyStorePassword != null) {
-            config.keystoreSettings.password = keyStorePassword;
+            config.keystore.password = keyStorePassword;
         }
         await restUtils.callConnector("PUT", "/api/configurations/" + id, null, config);
     },
