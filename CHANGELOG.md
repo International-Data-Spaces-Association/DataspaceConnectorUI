@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - Policy template checkbox not loaded correctly on view
 
 ### Removed
+- Subtitle of dashboard page
 
 ### Dependencies
 

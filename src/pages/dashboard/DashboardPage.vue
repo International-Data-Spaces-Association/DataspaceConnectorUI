@@ -3,43 +3,40 @@
     <div class="text-h5 header-text">
       Dashboard
     </div>
-    <div class="text-subtitle-1 font-weight-regular">
-      Overview of all currently offered IDS resources.
-    </div>
-      <v-row>
-        <v-col
-            cols="12"
-            sm="12"
-            md="3"
-            class="d-flex"
-        >
-          <data-sources-card></data-sources-card>
-        </v-col>
-        <v-col
-            cols="12"
-            sm="12"
-            md="3"
-            class="d-flex"
-        >
-          <policy-templates-card></policy-templates-card>
-        </v-col>
-        <v-col
-            cols="12"
-            sm="12"
-            md="3"
-            class="d-flex"
-        >
-          <offered-resources-card></offered-resources-card>
-        </v-col>
-        <v-col
-            cols="12"
-            sm="12"
-            md="3"
-            class="d-flex"
-        >
-          <active-contracts-card></active-contracts-card>
-        </v-col>
-      </v-row>
+    <v-row>
+      <v-col
+          cols="12"
+          sm="12"
+          md="3"
+          class="d-flex"
+      >
+        <data-sources-card></data-sources-card>
+      </v-col>
+      <v-col
+          cols="12"
+          sm="12"
+          md="3"
+          class="d-flex"
+      >
+        <policy-templates-card></policy-templates-card>
+      </v-col>
+      <v-col
+          cols="12"
+          sm="12"
+          md="3"
+          class="d-flex"
+      >
+        <offered-resources-card></offered-resources-card>
+      </v-col>
+      <v-col
+          cols="12"
+          sm="12"
+          md="3"
+          class="d-flex"
+      >
+        <active-contracts-card></active-contracts-card>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col
           cols="12"
