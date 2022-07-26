@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Inconsistent keyStore and trustStore variable naming between UI and DSC
 - Ontology page view undefined on view of a specific resource
+- Policy template checkbox not loaded correctly on view
 
 ### Removed
 
