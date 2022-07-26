@@ -48,7 +48,7 @@ export default {
         },
         loadResource(resource, onlyMetaData) {
             this.$data.onlyMetaData = onlyMetaData;
-            if (resource.title == "") {
+            if (resource.title === "") {
                 this.$refs.form.reset();
             } else {
                 this.$data.title = resource.title;
