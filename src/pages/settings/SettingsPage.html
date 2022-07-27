@@ -5,6 +5,7 @@
                 Connector
             </v-col>
             <v-col cols="12" md="9">
+                <v-text-field label="Connector ID" v-model="connectorId" :rules="urlRule"> </v-text-field>
                 <v-text-field label="Title" v-model="connectorTitle"> </v-text-field>
                 <v-text-field label="Description" v-model="connectorDescription"> </v-text-field>
                 <v-text-field label="Curator" v-model="connectorCurator" :rules="urlRule"> </v-text-field>

@@ -1258,7 +1258,7 @@ export default {
         return clientDataModel.convertIdsConfiguration(configuration);
     },
 
-    async changeConnectorConfiguration(id, title, description, curator, maintainer, useProxy, proxyUrl, proxyNoProxy,
+    async changeConnectorConfiguration(id, connectorId, title, description, curator, maintainer, useProxy, proxyUrl, proxyNoProxy,
         useAuthentication, proxyUsername, proxyPassword, loglevel, deployMode, trustStoreUrl, trustStorePassword, trustStoreAlias,
         keyStoreUrl, keyStorePassword, keyStoreAlias) {
         let proxySettings = null;
@@ -1277,6 +1277,7 @@ export default {
             };
         }
         let config = {
+            "connectorId": connectorId,
             "title": title,
             "description": description,
             "curator": curator,
