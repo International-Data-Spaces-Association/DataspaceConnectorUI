@@ -150,7 +150,7 @@ export default {
                     }
                 }
                 this.$data.newTemplateTitle = resource.contractName;
-                if(this.$data.newTemplateTitle !== undefined ){
+                if(this.$data.newTemplateTitle){
                     this.$data.saveAsTemplate = true;
                 }
                 this.$data.contractPeriodFromValue = resource.contractPeriodFromValue;
