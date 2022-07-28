@@ -70,9 +70,10 @@ if(typeof basicAuthUser === 'string' && basicAuthUser.length > 0
 app.use(express.static(vuePath));
 app.use(cors({ credentials: true, origin: true }));
 app.use(bodyParser.urlencoded({
-    extended: true
+    extended: true,
+    limit: '4096mb'
 }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '4096mb'}));
 
 function post(url, data) {
     if (DEBUG) {

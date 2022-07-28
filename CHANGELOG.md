@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - Ontology page view undefined on view of a specific resource
 - Policy template checkbox not loaded correctly on view
 - Button "Register data source" links to blank page
+- Txt file upload with file larger than 1 MB failed. Set max file upload to 4 GB
 
 ### Removed
 - Subtitle of dashboard page
