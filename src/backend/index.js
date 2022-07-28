@@ -37,7 +37,7 @@ if (process.env.CONNECTOR_URL !== undefined) {
 }
 
 if (process.env.DEBUG !== undefined) {
-    DEBUG = process.env.DEBUG;
+    DEBUG = process.env.DEBUG === "true";
 }
 
 if (process.env.CONNECTOR_USER !== undefined) {
@@ -76,7 +76,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json({limit: '4096mb'}));
 
 function post(url, data) {
-    if (DEBUG) {
+    if (DEBUG === true) {
         console.log(">>> POST " + url);
         console.log(">>> DATA: ", data);
     }
@@ -88,7 +88,7 @@ function post(url, data) {
 }
 
 function put(url, data) {
-    if (DEBUG) {
+    if (DEBUG === true) {
         console.log(">>> PUT " + url);
         console.log(">>> DATA: ", data);
     }
@@ -100,7 +100,7 @@ function put(url, data) {
 }
 
 function get(url) {
-    if (DEBUG) {
+    if (DEBUG === true) {
         console.log(">>> GET " + url);
     }
     return axios.get(url, {
@@ -111,7 +111,7 @@ function get(url) {
 }
 
 function del(url, data) {
-    if (DEBUG) {
+    if (DEBUG === true) {
         console.log(">>> DELETE " + url);
         console.log(">>> DATA: ", data);
     }
