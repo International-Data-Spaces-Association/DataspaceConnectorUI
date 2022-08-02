@@ -4,6 +4,7 @@ import AddBackendConnectionDialog from "@/pages/backendconnections/dialog/AddBac
 import dataUtils from "@/utils/dataUtils";
 import errorUtils from "@/utils/errorUtils";
 import validationUtils from "../../../../../utils/validationUtils";
+import mime from 'mime';
 
 export default {
     components: {
@@ -134,7 +135,9 @@ export default {
                 };
             }
             if (file.name.lastIndexOf(".") != -1) {
-                this.$data.filetype = file.name.substring(file.name.lastIndexOf(".") + 1, file.name.length);
+                let extension = file.name.substring(file.name.lastIndexOf(".") + 1, file.name.length);
+                //file type is actually mime type
+                this.$data.filetype = mime.getType(extension)
             } else {
                 this.$data.filetype = "";
             }
