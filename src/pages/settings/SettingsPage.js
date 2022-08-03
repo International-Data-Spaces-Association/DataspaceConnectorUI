@@ -28,6 +28,7 @@ export default {
             keyStoreAlias: "",
             showPasswordTrustStore: false,
             showPasswordKeyStore: false,
+            connectorId: "",
             connectorTitle: "",
             connectorDescription: "",
             defaultEndpoint: "",
@@ -70,6 +71,7 @@ export default {
             try {
                 let configuration = await dataUtils.getConnectorConfiguration();
                 this.$data.configId = configuration.id;
+                this.$data.connectorId = configuration.connectorId;
                 this.$data.connectorTitle = configuration.title;
                 this.$data.connectorDescription = configuration.description;
                 this.$data.connectorCurator = configuration.curator;
@@ -159,7 +161,7 @@ export default {
             }
 
             try {
-                await dataUtils.changeConnectorConfiguration(this.$data.configId, this.$data.connectorTitle,
+                await dataUtils.changeConnectorConfiguration(this.$data.configId, this.$data.connectorId, this.$data.connectorTitle,
                     this.$data.connectorDescription, this.$data.connectorCurator, this.$data.connectorMaintainer, this.$data.useProxy === 'true',
                     this.$data.proxyUrl, noProxy, useAuthentication, proxyUsername, proxyPassword, this.$data.logLevel, this.$data.connectorDeployMode,
                     this.$data.trustStoreUrl, trustStorePassword, this.$data.trustStoreAlias, this.$data.keyStoreUrl, keyStorePassword, this.$data.keyStoreAlias);

@@ -127,7 +127,7 @@ export default {
         return resource;
     },
 
-    createConnectorConfig(id, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
+    createConnectorConfig(id, connectorId, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
         useProxy, proxyUrl, proxyUsername, proxyPassword, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword,
         trustStoreAlias, keyStoreUrl, keyStorePassword, keyStoreAlias) {
         let configuration = {};
@@ -140,6 +140,11 @@ export default {
             configuration.title = "";
         } else {
             configuration.title = title;
+        }
+        if (connectorId === undefined) {
+            configuration.connectorId = "";
+        } else {
+            configuration.connectorId = connectorId;
         }
         if (description === undefined) {
             configuration.description = "";
@@ -395,6 +400,7 @@ export default {
 
     convertIdsConfiguration(idsConfiguration) {
         let id = "";
+        let connectorId = "";
         let title = "";
         let description = "";
         let endpoint = "";
@@ -420,6 +426,7 @@ export default {
 
         if (idsConfiguration !== undefined) {
             id = dataUtils.getIdOfConnectorResponse(idsConfiguration);
+            connectorId = idsConfiguration.connectorId;
             title = idsConfiguration.title;
             description = idsConfiguration.description;
             endpoint = idsConfiguration.defaultEndpoint;
@@ -447,7 +454,7 @@ export default {
             keyStoreAlias = idsConfiguration.keyStore.alias;
         }
 
-        return this.createConnectorConfig(id, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
+        return this.createConnectorConfig(id, connectorId, title, description, endpoint, version, curator, maintainer, inboundModelVersion, outboundModelVersion,
             useProxy, proxyUrl, username, password, noProxyArray, logLevel, connectorStatus, connectorDeployMode, trustStoreUrl, trustStorePassword, trustStoreAlias,
             keyStoreUrl, keyStorePassword, keyStoreAlias);
     }

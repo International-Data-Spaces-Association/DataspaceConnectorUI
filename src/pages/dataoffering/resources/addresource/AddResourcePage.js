@@ -63,7 +63,7 @@ export default {
         },
         tabChanged() {
             if (this.$data.active_tab === 1) {
-                if (this.$refs.ontologyPage !== undefined) {
+                if (this.$data.displayOntologyPage === true) {
                     this.$refs.ontologyPage.gotVisible();
                 }
             } else if (this.$data.active_tab === 2) {
@@ -90,11 +90,12 @@ export default {
             this.$data.active_tab = 0;
             this.$root.$emit('showBusyIndicator', true);
             try {
-                let response = await dataUtils.getResource(id);
-                this.$data.currentResource = response;
+                this.$data.currentResource = await dataUtils.getResource(id);
                 this.$data.isNewResource = false;
                 this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
-                this.$refs.ontologyPage.loadResource(this.$data.currentResource);
+                if (this.$data.displayOntologyPage === true) {
+                    this.$refs.ontologyPage.loadResource(this.$data.currentResource);
+                }
                 this.$refs.policyTab.loadResource(this.$data.currentResource);
                 this.$refs.representationPage.loadResource(this.$data.currentResource, false);
                 this.$refs.catalogsPage.loadResource(this.$data.currentResource);
@@ -111,11 +112,12 @@ export default {
             this.$data.active_tab = 0;
             this.$root.$emit('showBusyIndicator', true);
             try {
-                let response = await dataUtils.getRequestedResource(id);
-                this.$data.currentResource = response;
+                this.$data.currentResource = await dataUtils.getRequestedResource(id);
                 this.$data.isNewResource = false;
                 this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
-                this.$refs.ontologyPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
+                if (this.$data.displayOntologyPage === true) {
+                    this.$refs.ontologyPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
+                }
                 await this.$refs.policyTab.loadRequestedResource(this.$data.currentResource);
                 this.$refs.representationPage.loadResource(this.$data.currentResource, true);
                 this.$refs.catalogsPage.loadResource(this.$data.currentResource);
@@ -131,7 +133,9 @@ export default {
             this.$data.onlyMetaData = onlyMetaData;
             this.$data.isNewResource = false;
             this.$refs.metaDataPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
-            this.$refs.ontologyPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
+            if (this.$data.displayOntologyPage === true) {
+                this.$refs.ontologyPage.loadResource(this.$data.currentResource, this.$data.onlyMetaData);
+            }
             if (!onlyMetaData) {
                 this.$refs.policyTab.loadResource(this.$data.currentResource);
                 this.$refs.representationPage.loadResource(this.$data.currentResource, false);
@@ -143,7 +147,9 @@ export default {
         setReadOnly(readonly) {
             this.$data.readonly = readonly;
             this.$refs.metaDataPage.readonly = readonly;
-            this.$refs.ontologyPage.readonly = readonly;
+            if (this.$data.displayOntologyPage === true) {
+                this.$refs.ontologyPage.readonly = readonly;
+            }
             this.$refs.policyTab.readonly = readonly;
             this.$refs.representationPage.readonly = readonly;
             this.$refs.catalogsPage.readonly = readonly;
@@ -159,9 +165,9 @@ export default {
             let publisher = this.$refs.metaDataPage.publisher;
             let samples = this.$refs.metaDataPage.samples;
             let additionalFields = {};
-            if(this.$data.displayOntologyPage === true){
+            if (this.$data.displayOntologyPage === true) {
                 additionalFields = this.$refs.ontologyPage.formValues;
-           }
+            }
             let templateTitle = this.$refs.policyTab.getTemplateTitle();
             let policyDescriptions = this.$refs.policyTab.getDescriptions();
             let contractPeriodFromValue = this.$refs.policyTab.getContractPeriodFromValue();

@@ -37,7 +37,7 @@ if (process.env.CONNECTOR_URL !== undefined) {
 }
 
 if (process.env.DEBUG !== undefined) {
-    DEBUG = process.env.DEBUG;
+    DEBUG = process.env.DEBUG === "true";
 }
 
 if (process.env.CONNECTOR_USER !== undefined) {
@@ -70,12 +70,13 @@ if(typeof basicAuthUser === 'string' && basicAuthUser.length > 0
 app.use(express.static(vuePath));
 app.use(cors({ credentials: true, origin: true }));
 app.use(bodyParser.urlencoded({
-    extended: true
+    extended: true,
+    limit: '4096mb'
 }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '4096mb'}));
 
 function post(url, data) {
-    if (DEBUG) {
+    if (DEBUG === true) {
         console.log(">>> POST " + url);
         console.log(">>> DATA: ", data);
     }
@@ -87,7 +88,7 @@ function post(url, data) {
 }
 
 function put(url, data) {
-    if (DEBUG) {
+    if (DEBUG === true) {
         console.log(">>> PUT " + url);
         console.log(">>> DATA: ", data);
     }
@@ -99,7 +100,7 @@ function put(url, data) {
 }
 
 function get(url) {
-    if (DEBUG) {
+    if (DEBUG === true) {
         console.log(">>> GET " + url);
     }
     return axios.get(url, {
@@ -110,7 +111,7 @@ function get(url) {
 }
 
 function del(url, data) {
-    if (DEBUG) {
+    if (DEBUG === true) {
         console.log(">>> DELETE " + url);
         console.log(">>> DATA: ", data);
     }

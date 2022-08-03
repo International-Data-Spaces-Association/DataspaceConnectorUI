@@ -122,8 +122,8 @@ export default {
         },
         loadResource(resource) {
             this.$data.policyLines = [];
-            if (resource.id == -1) {
-                // resource.id == -1 means this is a new IDS Endpoint node at the route page.
+            if (resource.id === -1) {
+                // resource.id === -1 means this is a new IDS Endpoint node at the route page.
                 // For this new node one policy line is added, so the user can save the first click on "+".
                 this.$data.policyLines.push({
                     "name": Date.now()
@@ -150,6 +150,9 @@ export default {
                     }
                 }
                 this.$data.newTemplateTitle = resource.contractName;
+                if(this.$data.newTemplateTitle){
+                    this.$data.saveAsTemplate = true;
+                }
                 this.$data.contractPeriodFromValue = resource.contractPeriodFromValue;
                 this.$data.contractPeriodToValue = resource.contractPeriodToValue;
             }
