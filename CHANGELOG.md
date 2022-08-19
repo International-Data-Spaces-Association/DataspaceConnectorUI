@@ -2,12 +2,10 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
-## [10.0.1] - XXXX-XX-XX
+## [10.0.1] - 2022-08-19
 
 ### Added
 - Connector ID adjustable via Settings page
-
-### Changed
 
 ### Fixed
 - Inconsistent keyStore and trustStore variable naming between UI and DSC
@@ -18,8 +16,6 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 - Subtitle of dashboard page
-
-### Dependencies
 
 
 ## [10.0.0] - 2022-05-23 (compatible with DSC 7.1.0)
