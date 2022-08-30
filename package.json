@@ -13,7 +13,7 @@
     "startprod": "concurrently \"npm run serveprod\" \"npm run backend\""
   },
   "dependencies": {
-    "apexcharts": "^3.35.4",
+    "apexcharts": "^3.35.5",
     "axios": "^0.27.2",
     "concurrently": "^7.3.0",
     "core-js": "^3.24.1",
