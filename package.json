@@ -33,7 +33,7 @@
     "@vue/cli-plugin-eslint": "~5.0.8",
     "@vue/cli-service": "^5.0.8",
     "eslint": "^8.22.0",
-    "eslint-plugin-vue": "^9.3.0",
+    "eslint-plugin-vue": "^9.4.0",
     "sass": "^1.54.4",
     "sass-loader": "^13.0.2",
     "vue-cli-plugin-vuetify": "^2.5.5",
