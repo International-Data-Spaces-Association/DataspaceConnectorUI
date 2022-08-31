@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [x.x.x] - xxx-xx-xx
+### Dependencies
+- Bumps vue from 2.7.9 to 2.7.10.
+- Bumps vue-template-compiler from 2.7.9 to 2.7.10.
+- Bumps @babel/core from 7.18.10 to 7.18.13.
+- Bumps vue-router from 3.5.4 to 3.6.4.
+- Bumps apexcharts from 3.35.4 to 3.35.5.
+- Bumps vue-cli-plugin-vuetify from 2.5.4 to 2.5.5.
+- Bumps core-js from 3.24.1 to 3.25.0.
+- Bumps eslint-plugin-vue from 9.3.0 to 9.4.0.
+- Bumps eslint from 8.22.0 to 8.23.0.
+- Bumps sass from 1.54.4 to 1.54.6.
+
 ## [10.0.1] - 2022-08-19
 
 ### Added
