@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Log ontology if DEBUG is enabled
 
+### Removed
+- entrypoint.sh now is a direct command in Dockerfile
+- buildDockerImage.sh Instead use `sudo docker build -t dataspace-connector-ui .`
+
 
 ## [10.0.1] - 2022-08-19
 

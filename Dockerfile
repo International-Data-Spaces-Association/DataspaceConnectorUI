@@ -10,4 +10,4 @@ RUN rm -r .git
 RUN sed -i "s@http://localhost:8083@@g" dist/js/*.js
 RUN groupadd -r nonroot && useradd -r -g nonroot nonroot
 USER nonroot
-ENTRYPOINT ["./entryPoint.sh"]
+CMD ["npm", "run", "backend"]
