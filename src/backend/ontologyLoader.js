@@ -9,7 +9,7 @@ const store = new N3.Store();
 const factory = new DataFactory();
 
 let config = null;
-let DEBUG = true;
+let DEBUG = false;
 
 const ONTOLOGY_FILE = "ontology.ttl";
 const CONFIG_FILE = "ontology.config.json";
