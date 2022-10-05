@@ -24,7 +24,7 @@
     "vue": "^2.7.10",
     "vue-apexcharts": "^1.6.0",
     "vue-router": "^3.6.4",
-    "vuetify": "^2.6.7"
+    "vuetify": "^2.6.11"
   },
   "devDependencies": {
     "@babel/core": "^7.18.13",
