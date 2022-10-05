@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 (Skipped major version 1, 2 and 3 to match versioning of IDS DataSpaceConnector)
 
+## [x.x.x] - xxx-xx-xx
+
+
 ## [10.0.1] - 2022-08-19
 
 ### Added
