@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Log ontology if DEBUG is enabled
 
+### Changed
+- Renamed default title and description of UI
+
 
 ## [10.0.1] - 2022-08-19
 
