@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Log ontology if DEBUG is enabled
+- Policy in Policy Template is doubled
 
 ### Removed
 - entrypoint.sh now is a direct command in Dockerfile
@@ -13,6 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Renamed default title and description of UI
+- Prevent adding contract templates with duplicate titles by adding "(1)" to its title
 
 
 ## [10.0.1] - 2022-08-19
