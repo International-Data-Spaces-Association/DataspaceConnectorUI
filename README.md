@@ -62,7 +62,7 @@ This can process POST and GET requests.
 
 Build docker image:
 ```bash
-./buildDockerImage.sh
+sudo docker build -t dataspace-connector-ui .
 ```
 Run docker image:
 ```bash
