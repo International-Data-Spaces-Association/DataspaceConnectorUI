@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [x.x.x] - xxxx-xx-xx
+## [10.1.0] - 2022-10-06
 
 ### Fixed
 - Log ontology if DEBUG is enabled
