@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file.
 - entrypoint.sh now is a direct command in Dockerfile
 - buildDockerImage.sh Instead use `sudo docker build -t dataspace-connector-ui .`
 
+### Changed
+- Renamed default title and description of UI
+
 
 ## [10.0.1] - 2022-08-19
 
