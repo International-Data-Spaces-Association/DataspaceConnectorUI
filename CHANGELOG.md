@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 - Log ontology if DEBUG is enabled
 - Policy in Policy Template is doubled
 
+### Changed
+- Prevent adding contract templates with duplicate titles by adding "(1)" to its title
 
 ## [10.0.1] - 2022-08-19
 

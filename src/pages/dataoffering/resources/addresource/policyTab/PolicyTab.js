@@ -181,8 +181,17 @@ export default {
                 }
             }
         },
+        getUniqueName(allContracts, name){
+            for (let templateName of allContracts) {
+                if (templateName.title === name){
+                    return this.getUniqueName(allContracts, name+"(1)");
+                }
+            }
+            return name;
+        },
         getTemplateTitle() {
             if (this.$data.saveAsTemplate) {
+                this.$data.newTemplateTitle = this.getUniqueName(this.$data.allContracts, this.$data.newTemplateTitle);
                 return this.$data.newTemplateTitle;
             }
             else {

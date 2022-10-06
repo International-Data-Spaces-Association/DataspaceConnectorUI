@@ -2,6 +2,7 @@ import PolicyLine from "@/components/policy/PolicyLine.vue";
 import validationUtils from "@/utils/validationUtils";
 import dataUtils from "@/utils/dataUtils";
 import {VMenu} from "vuetify/lib";
+import errorUtils from "@/utils/errorUtils";
 
 export default {
     components: {
@@ -25,13 +26,15 @@ export default {
             contractPeriodFromValue: null,
             contractPeriodToMenu: false,
             contractPeriodToValue: null,
-            defaultRule: validationUtils.getRequiredRule()
+            defaultRule: validationUtils.getRequiredRule(),
+            allContracts: []
         };
     },
     mounted: function () {
         this.$data.policyLines.push({
             "name": Date.now()
         });
+        this.getAllContracts()
     },
     watch: {
         contractPeriodValid: function () {
@@ -140,15 +143,30 @@ export default {
             }
             this.validationChanged();
         },
+        async getAllContracts() {
+            try {
+                this.$data.allContracts = await dataUtils.getAllPolicyTemplates();
+            } catch (error) {
+                errorUtils.showError(error, "Get policy templates");
+            }
+        },
+        getUniqueName(allContracts, name){
+            for ( let templateName of allContracts) {
+                if (templateName.title === name){
+                    return this.getUniqueName(allContracts, name+"(1)");
+                }
+            }
+            return name;
+        },
         async savePolicyTemplate(){
             this.$root.$emit('showBusyIndicator', true);
             this.$data.dialog = false;
+            this.$data.name = await this.getUniqueName(this.$data.allContracts, this.$data.name);
             if(this.$data.currentPolicy === null) {
                 try {
                     await dataUtils.createContract(this.$data.name, this.$data.desc, this.getContractPeriodFromValue(),
                         this.getContractPeriodToValue(), this.getDescriptions()).value;
                 } catch (error){
-                    console.log("Error on savePolicyTemplate(): ", error);
                     this.$root.$emit('error', "Create policy template failed.");
                 }
                 this.$emit('policyTemplateSaved');
@@ -157,16 +175,17 @@ export default {
                     await dataUtils.updateContract(this.$data.currentPolicy.id, this.$data.name, this.$data.desc,
                         this.getContractPeriodFromValue(), this.getContractPeriodToValue(), this.getDescriptions());
                 } catch (error) {
-                    console.log("Error on updatePolicyTemplate(): ", error);
                     this.$root.$emit('error', "Update policy template failed.");
                 }
                 this.$emit('policyTemplateSaved');
             }
+            //Update afterwards list of Contracts
+            this.getAllContracts();
         },
         async edit(policy) {
             this.$data.policyLines = [];
             this.$data.currentPolicy = policy;
-            this.$data.name = policy.title;
+            this.$data.name = this.getUniqueName(this.$data.allContracts, policy.title);
             this.$data.desc = policy.description;
             this.$data.contractPeriodFromValue = new Date(policy.contractStart).toISOString().substring(0,10);
             this.$data.contractPeriodToValue = new Date(policy.contractEnd).toISOString().substring(0,10);
