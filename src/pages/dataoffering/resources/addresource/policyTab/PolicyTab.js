@@ -186,7 +186,7 @@ export default {
                 return this.$data.newTemplateTitle;
             }
             else {
-                return this.$data.policyTemplateName;
+                return "";
             }
         },
         getDescriptions() {

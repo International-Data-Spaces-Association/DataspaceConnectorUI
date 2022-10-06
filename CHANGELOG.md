@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Log ontology if DEBUG is enabled
+- Policy in Policy Template is doubled
 
 
 ## [10.0.1] - 2022-08-19
