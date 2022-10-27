@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 
 
+## [x.x.x] - xxxx-xx-xx
+
+### Added
+- Endpoint Documentation to Meta Data page
+
+### Changed
+- renamed variable standardlicense to standardLicense
+
+
 ## [10.1.0] - 2022-10-06
 
 ### Fixed

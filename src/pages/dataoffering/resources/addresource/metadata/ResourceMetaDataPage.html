@@ -9,7 +9,9 @@
             </v-text-field>
             <v-text-field label="Keywords" v-model="keywords" readonly>
             </v-text-field>
-            <v-text-field label="Standard License" v-model="standardlicense" readonly>
+            <v-text-field label="Standard License" v-model="standardLicense" readonly>
+            </v-text-field>
+            <v-text-field label="Endpoint Documentation" v-model="endpointDocumentation" readonly>
             </v-text-field>
             <v-select label="Language" v-model="language" :items="languageItems" item-text="displayName"
                 item-value="originalName" readonly>
@@ -29,7 +31,9 @@
             </v-text-field>
             <v-text-field label="Keywords" v-model="keywords" :rules="defaultRule" required>
             </v-text-field>
-            <v-text-field label="Standard License" v-model="standardlicense" :rules="urlRule" required>
+            <v-text-field label="Standard License" v-model="standardLicense" :rules="urlRule" required>
+            </v-text-field>
+            <v-text-field label="Endpoint Documentation" v-model="endpointDocumentation" :rules="urlNotRequiredRule" required>
             </v-text-field>
             <v-select label="Language" v-model="language" :items="languageItems" item-text="displayName"
                 item-value="originalName" :rules="defaultRule" required>

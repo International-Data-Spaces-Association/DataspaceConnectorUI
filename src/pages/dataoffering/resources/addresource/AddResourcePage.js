@@ -161,7 +161,8 @@ export default {
             let language = this.$refs.metaDataPage.language;
             let paymentMethod = this.$refs.metaDataPage.paymentMethod;
             let keywords = dataUtils.commaSeperatedStringToArray(this.$refs.metaDataPage.keywords);
-            let standardlicense = this.$refs.metaDataPage.standardlicense;
+            let standardLicense = this.$refs.metaDataPage.standardLicense;
+            let endpointDocumentation = this.$refs.metaDataPage.endpointDocumentation;
             let publisher = this.$refs.metaDataPage.publisher;
             let samples = this.$refs.metaDataPage.samples;
             let additionalFields = {};
@@ -189,22 +190,22 @@ export default {
 
             if (this.fromRoutePage === 'true') {
                 // On route page this data is initially stored only in the node and will be saved with the route.
-                this.$emit("saved", catalogIds, title, description, language, paymentMethod, keywords, 0, standardlicense, publisher, templateTitle,
-                    policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, 0, brokerList);
+                this.$emit("saved", catalogIds, title, description, language, paymentMethod, keywords, 0, standardLicense, publisher, templateTitle,
+                    policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, 0, brokerList, endpointDocumentation);
             } else {
                 this.$root.$emit('showBusyIndicator', true);
                 this.$root.$emit('blockNavigationMenu', true);
                 if (this.$data.currentResource == null) {
-                    await dataUtils.createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                        templateTitle, policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, brokerList, file, genericEndpoint, additionalFields);
+                    await dataUtils.createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardLicense, publisher,
+                        templateTitle, policyDescriptions, contractPeriodFromValue, contractPeriodToValue, filetype, brokerList, file, genericEndpoint, additionalFields, endpointDocumentation);
                     await this.$router.push('idsresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                     this.$root.$emit('blockNavigationMenu', false);
                 } else {
                     await dataUtils.editResource(this.$data.currentResource.id, this.$data.currentResource.representationId, catalogIds, deletedCatalogIds,
-                        title, description, language, paymentMethod, keywords, standardlicense, publisher, samples, templateTitle, policyDescriptions, contractPeriodFromValue,
+                        title, description, language, paymentMethod, keywords, standardLicense, publisher, samples, templateTitle, policyDescriptions, contractPeriodFromValue,
                         contractPeriodToValue, filetype, brokerList, brokerDeleteList, file, genericEndpoint, this.$data.currentResource.ruleId,
-                        this.$data.currentResource.artifactId, additionalFields);
+                        this.$data.currentResource.artifactId, additionalFields, endpointDocumentation);
                     this.$router.push('idsresourcesoffering');
                     this.$root.$emit('showBusyIndicator', false);
                     this.$root.$emit('blockNavigationMenu', false);
