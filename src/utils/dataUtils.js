@@ -958,8 +958,8 @@ export default {
         }
     },
 
-    async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, templateTitle, policyDescriptions,
-        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, file, genericEndpoint, additionalFields = {}) {
+    async createResourceWithMinimalRoute(catalogIds, title, description, language, paymentMethod, keywords, standardLicense, publisher, templateTitle, policyDescriptions,
+        contractPeriodFromValue, contractPeriodToValue, filetype, brokerUris, file, genericEndpoint, additionalFields, endpointDocumentation = {}) {
         try {
             let routeSelfLink = null;
             if (genericEndpoint != null) {
@@ -968,17 +968,17 @@ export default {
                 routeSelfLink = response._links.self.href;
                 await restUtils.callConnector("PUT", "/api/routes/" + routeId + "/endpoint/start", null, "\"" + genericEndpoint.selfLink + "\"");
             }
-            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-                policyDescriptions, templateTitle, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink, additionalFields);
+            let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardLicense, publisher,
+                policyDescriptions, templateTitle, contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink, additionalFields, endpointDocumentation);
             await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
         } catch (error) {
             errorUtils.showError(error, "Save resource");
         }
     },
 
-    async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher, policyDescriptions, templateTitle,
-        contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink, additionalFields= {}) {
-        // TODO Sovereign, EndpointDocumentation
+    async createResource(catalogIds, title, description, language, paymentMethod, keywords, standardLicense, publisher, policyDescriptions, templateTitle,
+        contractPeriodFromValue, contractPeriodToValue, filetype, file, routeSelfLink, additionalFields, endpointDocumentation= {}) {
+        // TODO Sovereign
         let resourceFields = {
             "title": title,
             "description": description,
@@ -986,7 +986,8 @@ export default {
             "publisher": publisher,
             "language": language,
             "paymentMethod": paymentMethod,
-            "license": standardlicense
+            "license": standardLicense,
+            "endpointDocumentation": endpointDocumentation
         }
         let response = (await restUtils.callConnector("POST", "/api/offers", null, Object.assign(resourceFields, additionalFields)));
 
@@ -1033,8 +1034,8 @@ export default {
     },
 
     async editResource(resourceId, representationId, catalogIds, deletedCatalogIds, title, description, language, paymentMethod,
-        keywords, standardlicense, publisher, samples, templateTitle, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
-        filetype, brokerUris, brokerDeleteUris, file, genericEndpoint, ruleId, artifactId, additionalFields = {}) {
+        keywords, standardLicense, publisher, samples, templateTitle, policyDescriptions, contractPeriodFromValue, contractPeriodToValue,
+        filetype, brokerUris, brokerDeleteUris, file, genericEndpoint, ruleId, artifactId, additionalFields, endpointDocumentation = {}) {
         try {
             let resourceFields = {
                 "title": title,
@@ -1043,7 +1044,8 @@ export default {
                 "publisher": publisher,
                 "language": language,
                 "paymentMethod": paymentMethod,
-                "license": standardlicense,
+                "license": standardLicense,
+                "endpointDocumentation": endpointDocumentation,
                 "samples": samples
             }
             await restUtils.callConnector("PUT", "/api/offers/" + resourceId, null, Object.assign(resourceFields, additionalFields));
@@ -1117,7 +1119,8 @@ export default {
                 "publisher": resource.publisher,
                 "language": resource.language,
                 "paymentMethod": resource.paymentMethod,
-                "license": resource.standardlicense,
+                "license": resource.standardLicense,
+                "endpointDocumentation": resource.endpointDocumentation,
                 "samples": samples
             });
         } catch (error) {
@@ -1142,7 +1145,8 @@ export default {
         let language = resource.language;
         let paymentMethod = resource.paymentMethod;
         let keywords = resource.keywords;
-        let standardlicense = resource.standardlicense;
+        let standardLicense = resource.standardLicense;
+        let endpointDocumentation = resource.endpointDocumentation;
         let publisher = resource.publisher;
         let policyDescriptions = resource.policyDescriptions;
         let contractPeriodFromValue = resource.contractPeriodFromValue;
@@ -1150,8 +1154,8 @@ export default {
         let filetype = resource.fileType;
         let brokerUris = resource.brokerUris;
         let contractName = resource.contractName;
-        let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardlicense, publisher,
-            policyDescriptions, contractName, contractPeriodFromValue, contractPeriodToValue, filetype, null, routeSelfLink);
+        let resourceResponse = await this.createResource(catalogIds, title, description, language, paymentMethod, keywords, standardLicense, publisher,
+            policyDescriptions, contractName, contractPeriodFromValue, contractPeriodToValue, filetype, null, routeSelfLink, undefined, endpointDocumentation);
 
         await this.updateResourceAtBrokers(brokerUris, resourceResponse.resourceId);
     },
@@ -1461,7 +1465,8 @@ export default {
             keywords.push(idsKeyword["@value"]);
         }
         let version = resource["ids:version"];
-        let standardlicense = resource["ids:standardLicense"]["@id"];
+        let standardLicense = resource["ids:standardLicense"]["@id"];
+        let endpointDocumentation = resource["ids:endpointDocumentation"]["@id"];
         let publisher = resource["ids:publisher"]["@id"];
         let fileType = null;
         if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
@@ -1474,8 +1479,10 @@ export default {
             contractPeriodToValue = resource["ids:contractOffer"][0]["ids:contractEnd"]["@value"];
         }
         let contractName = resource.contractName;
-        let clientResource = clientDataModel.createResource(resource["@id"], id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
-            publisher, fileType, contractName, "", contractPeriodFromValue, contractPeriodToValue, null);
+        let clientResource = clientDataModel.createResource(resource["@id"], id, creationDate, title, description,
+            language, paymentMethod, keywords, version, standardLicense, publisher, fileType, contractName, "",
+            contractPeriodFromValue, contractPeriodToValue, undefined, undefined, undefined, undefined, undefined,
+            undefined, undefined, undefined, endpointDocumentation);
         clientResource.idsResource = resource;
         resources.push(clientResource);
     },

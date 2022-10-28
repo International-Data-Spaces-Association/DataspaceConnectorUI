@@ -14,7 +14,8 @@ export default {
             description: "",
             keywords: "",
             publisher: "",
-            standardlicense: "",
+            standardLicense: "",
+            endpointDocumentation: "",
             language: "",
             samples: [],
             languageItems: [],
@@ -23,6 +24,7 @@ export default {
             valid: false,
             defaultRule: validationUtils.getRequiredRule(),
             urlRule: validationUtils.getUrlRequiredRule(),
+            urlNotRequiredRule: validationUtils.getUrlNotRequiredRule(),
             readonly: false,
             onlyMetaData: false
         };
@@ -56,7 +58,8 @@ export default {
                 this.$data.language = resource.language.substring(resource.language.lastIndexOf("/") + 1);
                 this.$data.paymentMethod = resource.paymentMethod;
                 this.$data.keywords = dataUtils.arrayToCommaSeperatedString(resource.keywords);
-                this.$data.standardlicense = resource.standardlicense;
+                this.$data.standardLicense = resource.standardLicense;
+                this.$data.endpointDocumentation = resource.endpointDocumentation;
                 this.$data.publisher = resource.publisher;
                 this.$data.samples = resource.samples;
             }

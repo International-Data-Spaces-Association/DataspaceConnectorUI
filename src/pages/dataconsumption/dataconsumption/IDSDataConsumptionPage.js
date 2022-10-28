@@ -68,7 +68,10 @@ export default {
                 value: 'publisher'
             }, {
                 text: 'License',
-                value: 'standardlicense'
+                value: 'standardLicense'
+            }, {
+                text: 'Endpoint Documentation',
+                value: 'endpointDocumentation'
             }, {
                 text: 'Offered from',
                 value: 'contractPeriodFromValue'
@@ -163,7 +166,7 @@ export default {
         },
         getConnectorSelfDescription() {
             // this.$root.$emit('showBusyIndicator', true);
-            // TODO Get resources 
+            // TODO Get resources
         },
         clear() {
             this.$data.selectedCatalog = "";
@@ -316,7 +319,12 @@ export default {
         },
 
         async requestArtifact(item) {
-            this.$refs.artifactDialog.show(this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"], this.$data.selectedResource["ids:standardLicense"]["@id"], item, this.clickAcceptContract);
+            this.$refs.artifactDialog.show(
+                this.$data.selectedResource["ids:contractOffer"][0]["ids:permission"],
+                this.$data.selectedResource["ids:standardLicense"]["@id"],
+                item,
+                this.clickAcceptContract
+            );
         },
 
         clickAcceptContract(artifact, subscribe, subscriptionLocation) {

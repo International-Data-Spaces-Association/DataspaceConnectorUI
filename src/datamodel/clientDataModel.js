@@ -1,8 +1,10 @@
 import dataUtils from "@/utils/dataUtils";
 
 export default {
-    createResource(url, id, creationDate, title, description, language, paymentMethod, keywords, version, standardlicense,
-        publisher, fileType, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, representationId, brokerUris, samples, catalogs, additional = {}) {
+    createResource(url, id, creationDate, title, description, language, paymentMethod, keywords, version,
+        standardLicense, publisher, fileType, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue,
+        ruleIds, ruleJsons, artifactId, representationId, brokerUris, samples, catalogs, additional,
+        endpointDocumentation = {}) {
         let resource = {};
         if (url === undefined) {
             resource.url = "";
@@ -49,10 +51,15 @@ export default {
         } else {
             resource.version = version;
         }
-        if (standardlicense === undefined) {
-            resource.standardlicense = "";
+        if (standardLicense === undefined) {
+            resource.standardLicense = "";
         } else {
-            resource.standardlicense = standardlicense;
+            resource.standardLicense = standardLicense;
+        }
+        if (endpointDocumentation === undefined) {
+            resource.endpointDocumentation = "";
+        } else {
+            resource.endpointDocumentation = endpointDocumentation;
         }
         if (publisher === undefined) {
             resource.publisher = "";
@@ -394,7 +401,7 @@ export default {
         return this.createResource(idsResource._links.self.href, dataUtils.getIdOfConnectorResponse(idsResource), idsResource.creationDate, title, description,
             idsResource.language.replace("https://w3id.org/idsa/code/", ""), idsResource.paymentModality, idsResource.keywords,
             idsResource.version, idsResource.license, idsResource.publisher, fileType, contractName, policyNames, contractPeriodFromValue, contractPeriodToValue, ruleIds, ruleJsons, artifactId, representationId, brokerUris,
-            idsResource.samples, catalogs, idsResource.additional);
+            idsResource.samples, catalogs, idsResource.additional,idsResource.endpointDocumentation);
     },
 
 
