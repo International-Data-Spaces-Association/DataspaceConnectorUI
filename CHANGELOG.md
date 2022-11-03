@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 
-## [x.x.x] - xxxx-xx-xx
+## [10.2.0] - 2022-11-03
 
 ### Added
 - Endpoint Documentation to Meta Data page
@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 - Fixed the UI to get the active configuration of the DSC
 
 ### Changed
-- renamed variable standardlicense to standardLicense
+- renamed variable `standardlicense` to `standardLicense`
 
 
 ## [10.1.0] - 2022-10-06
