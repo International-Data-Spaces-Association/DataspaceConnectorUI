@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Endpoint Documentation to Meta Data page
 
+### Fixed
+- Fixed the UI to get the active configuration of the DSC
+
 ### Changed
 - renamed variable standardlicense to standardLicense
 

@@ -1254,11 +1254,7 @@ export default {
     },
 
     async getConnectorConfiguration() {
-        let configurations = (await restUtils.callConnector("GET", "/api/configurations"))._embedded.configurations;
-        let configuration = undefined;
-        if (configurations !== undefined && configurations.length > 0) {
-            configuration = configurations[0];
-        }
+        let configuration = (await restUtils.callConnector("GET", "/api/configurations/active"));
         return clientDataModel.convertIdsConfiguration(configuration);
     },
 
