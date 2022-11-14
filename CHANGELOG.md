@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [x.x.x] - xxxx-xx-xx
+
+### Fixed
+- EndpointDocumentation accessed on wrong IDS infomodel object level
+
+
 ## [10.2.0] - 2022-11-03
 
 ### Added
