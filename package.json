@@ -1,6 +1,6 @@
 {
   "name": "dataspace-connector-ui",
-  "version": "10.2.0",
+  "version": "10.2.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --open --port 8082 --host localhost",
@@ -13,31 +13,31 @@
     "startprod": "concurrently \"npm run serveprod\" \"npm run backend\""
   },
   "dependencies": {
-    "apexcharts": "^3.36.0",
+    "apexcharts": "^3.36.3",
     "axios": "^0.27.2",
     "concurrently": "^7.5.0",
-    "core-js": "^3.26.0",
+    "core-js": "^3.26.1",
     "d3": "^7.6.1",
     "material-design-icons-iconfont": "^6.1.1",
     "mime": "^3.0.0",
     "moment": "^2.29.4",
-    "vue": "^2.7.13",
+    "vue": "^2.7.14",
     "vue-apexcharts": "^1.6.0",
     "vue-router": "^3.6.5",
     "vuetify": "^2.6.12"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.6",
+    "@babel/core": "^7.20.2",
     "@babel/eslint-parser": "^7.19.1",
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-plugin-eslint": "~5.0.8",
     "@vue/cli-service": "^5.0.8",
-    "sass": "^1.55.0",
-    "eslint": "^8.26.0",
+    "sass": "^1.56.1",
+    "eslint": "^8.27.0",
     "eslint-plugin-vue": "^9.7.0",
-    "sass-loader": "^13.1.0",
+    "sass-loader": "^13.2.0",
     "vue-cli-plugin-vuetify": "^2.5.8",
-    "vue-template-compiler": "^2.7.13",
+    "vue-template-compiler": "^2.7.14",
     "vuetify-loader": "^1.9.2"
   },
   "eslintConfig": {
