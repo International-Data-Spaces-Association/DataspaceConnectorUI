@@ -1462,7 +1462,13 @@ export default {
         }
         let version = resource["ids:version"];
         let standardLicense = resource["ids:standardLicense"]["@id"];
-        let endpointDocumentation = resource["ids:endpointDocumentation"]["@id"];
+        let endpointDocumentation = "";
+        if (resource["ids:resourceEndpoint"] !== undefined && resource["ids:resourceEndpoint"].length > 0) {
+            if(resource["ids:resourceEndpoint"][0]["ids:endpointDocumentation"] !== undefined &&
+                resource["ids:resourceEndpoint"][0]["ids:endpointDocumentation"].length > 0){
+                endpointDocumentation = resource["ids:resourceEndpoint"][0]["ids:endpointDocumentation"][0]["@id"];
+            }
+        }
         let publisher = resource["ids:publisher"]["@id"];
         let fileType = null;
         if (resource["ids:representation"] !== undefined && resource["ids:representation"].length > 0) {
