@@ -186,10 +186,17 @@ Please read the [development guide](https://github.com/International-Data-Spaces
 ## Contributing
 Please read through our [contributing guidelines](https://github.com/International-Data-Spaces-Association/DataspaceConnectorUI/blob/develop/CONTRIBUTING.md).
 
-### Main Contact
-[Sebastian Opriel](https://github.com/SebastianOpriel), [sovity GmbH](https://sovity.de)
+### Maintainer
 
-### Contributors
+**This project is currently no longer maintained but looking for new maintainers.**
+
+Applications for maintainers shall be directed to the [International Data Spaces Association](mailto:info@internationaldataspaces.org).
+
+This project was previously maintained by Fraunhofer FKIE and after that by sovity GmbH.
+Please do not approach former maintainers. If you have questions, plase open an issue / discussion for the community or approach the [International Data Spaces Association](mailto:info@internationaldataspaces.org).
+
+### Former Contributor and Maintainer
+* [Sebastian Opriel](https://github.com/SebastianOpriel), [sovity GmbH](https://sovity.de)
 * [Bastian Wetljen](https://github.com/BastianWel), [Fraunhofer FKIE](https://www.fkie.fraunhofer.de)
 * [Sebastian Opriel](https://github.com/SebastianOpriel), [sovity GmbH](https://sovity.de)
 * [Melissa Das](https://github.com/melissadas), [sovity GmbH](https://sovity.de)
